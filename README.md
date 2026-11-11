@@ -14,7 +14,7 @@ Feito para ser simples de usar, inclusive por pessoas mais velhas: letras grande
 - Pagamento simulado por Pix, cartão ou no local
 - Cupons de desconto com código
 - **Mapa interativo**: arraste, amplie (dois dedos, roda do mouse ou botões +/−), filtre por categoria, toque nos pinos para ver foto, distância, rota animada, detalhes e "Como chegar" no Google Maps
-- Passaporte com pontos, nível, reservas e carimbos
+- Passaporte com nível (Viajante, Explorador, Aventureiro) e barra animada, conquistas, mapa de destinos visitados, reservas e carimbos
 - Registrar visita (check-in com QR Code)
 - Avisos, perfil, opção de letra grande e ajuda
 

@@ -144,6 +144,21 @@ details.faq p{padding-bottom:16px;font-size:16px;color:var(--text)}
 .rcard{flex:none;width:200px;scroll-snap-align:start;text-align:left;border:1px solid var(--line);border-radius:18px;background:#fff;padding:8px 8px 12px;display:flex;flex-direction:column;gap:2px}
 .rcard .img{height:120px;border-radius:12px;background-size:cover;background-position:center;margin-bottom:6px}.rcard b{font-size:16px;line-height:1.25;color:var(--ink)}.rcard .price{font-size:15px;font-weight:800;color:var(--green)}
 @media (prefers-reduced-motion:reduce){.pc-bar i{transition:none}.tile{transition:none}}
+.plevel{margin-top:20px;padding:18px;border-radius:20px;color:#fff;background:linear-gradient(135deg,#0B3A66,#14775A)}
+.pl-name{font-size:30px;font-weight:800;line-height:1.1}.pl-pts{font-size:17px;font-weight:600;margin-top:2px}.pl-pts b{font-size:22px}
+.pl-steps{display:flex;justify-content:space-between;font-size:14px;font-weight:700;opacity:.9}.pl-steps span{display:flex;flex-direction:column;align-items:center;gap:2px;opacity:.6;flex:1}.pl-steps span:first-child{align-items:flex-start}.pl-steps span:last-child{align-items:flex-end}.pl-steps span.on{opacity:1}.pl-steps small{font-weight:500;font-size:12px}.pl-steps i{display:none}
+.pl-n{margin-top:10px;font-size:15px;font-weight:600}
+.badges{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.bdg{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 4px;border-radius:16px;border:1px solid var(--line);background:var(--soft);font-size:13px;font-weight:700;text-align:center;color:var(--muted);min-height:100px}
+.bdg .bi{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#fff;filter:grayscale(1);opacity:.55}.bdg .bi svg{width:24px;height:24px}
+.bdg.on{background:#FFF6D6;border-color:var(--yellow);color:var(--ink)}.bdg.on .bi{background:var(--yellow);filter:none;opacity:1;color:var(--ink);animation:pop .5s ease backwards}
+@keyframes pop{from{transform:scale(.5) rotate(-20deg)}60%{transform:scale(1.15)}}
+.slots{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+.slot{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--muted);text-align:center;padding:6px 0}
+.slot .sl-c{width:68px;height:68px;border-radius:50%;background-size:cover;background-position:center;border:3px dashed var(--line);filter:grayscale(1) opacity(.45)}
+.slot.on{color:var(--green)}.slot.on .sl-c{border:3px solid var(--green);filter:none;box-shadow:0 0 0 3px var(--green-bg)}
+.stamp{transition:transform .2s}.stamp:nth-child(odd){transform:rotate(-1.2deg)}.stamp:nth-child(even){transform:rotate(1.2deg)}.stamp:active{transform:scale(.97)}
+@media (prefers-reduced-motion:reduce){.bdg.on .bi{animation:none}.stamp{transition:none}}
 </style>
 
 <div class="phone" id="app"></div>
@@ -346,13 +361,20 @@ V.cupons=dest=>{const F=['Todos','Passeios','Comer','Hospedagem','Compras'];cons
 return `<div class="scr">${dest?`<div class="bar">${backBtn}</div>`:''}<div class="pad" style="${dest?'':'padding-top:48px'}"><h1 class="h1">Cupons</h1><p class="lead">${d?d.n+'. ':''}Mostre o código no local para ganhar o desconto.</p>
 ${dest?'':`<label class="search">${I.search}<input id="cq" type="text" placeholder="Buscar cupom" value="${U.cq||''}" aria-label="Buscar cupom"></label><div class="chips" style="margin-top:16px">${F.map(f=>`<button class="chip ${U.cupf===f?'on':''}" data-cupf="${f}">${f}</button>`).join('')}</div>`}
 <div class="stack" style="margin-top:16px">${L.map(c=>{const u=S.used.includes(c.id);return `<div class="coupon ${u?'used':''}"><div class="top"><div class="img" style="${bg(c.img)}"></div><div><span class="small">${c.t}</span><b style="display:block;font-size:18px;line-height:1.25">${c.n}</b><div class="off">${c.off}</div></div></div><p class="small">${c.d} Válido até ${c.v}.</p><button class="btn ${u?'light':'green'}" data-cupom="${c.id}">${u?'Ver código de novo':'Usar cupom'}</button></div>`}).join('')||'<p class="empty">Nenhum cupom nesta categoria.</p>'}</div></div></div>`};
+const visited=()=>DEST.filter(d=>S.stamps.some(s=>s.n.toLowerCase().includes(d.n.toLowerCase())));
+const LV=[['Viajante',0],['Explorador',500],['Aventureiro',1000]];
+const passLevel=pct=>{const cur=[...LV].reverse().find(l=>S.pts>=l[1]);return `<div class="plevel"><span class="small" style="color:#fff;opacity:.85">Seu nível</span><div class="pl-name">${cur[0]}</div><div class="pl-pts"><b data-count="${S.pts}">${S.pts}</b> pontos</div>
+<div class="pc-bar" role="progressbar" aria-valuenow="${S.pts}" aria-valuemin="0" aria-valuemax="1000"><i style="width:0" data-w="${pct}"></i></div>
+<div class="pl-steps">${LV.map(([n,v])=>`<span class="${S.pts>=v?'on':''}"><i></i>${n}<small>${v} pts</small></span>`).join('')}</div>
+<p class="pl-n">${S.pts>=1000?'Parabéns! Você é Aventureiro.':`Faltam ${1000-S.pts} pontos para o próximo nível.`}</p></div>`};
+const passBadges=()=>{const B=[['Primeira visita',I.check,S.stamps.length>=1],['Reservou um passeio',I.ticket,S.resv.length>0||S.stamps.length>4],['4 carimbos',I.pass,S.stamps.length>=4],['500 pontos',I.route,S.pts>=500],['1000 pontos',I.hike,S.pts>=1000]];
+return `<h2 class="h2">Conquistas</h2><div class="badges">${B.map(([n,i,on])=>`<button class="bdg ${on?'on':''}" data-badge="${n}|${on?1:0}" aria-label="${n}, ${on?'conquistada':'bloqueada'}"><span class="bi">${i}</span><span>${n}</span></button>`).join('')}</div>`};
+const passSlots=()=>{const vs=visited().map(d=>d.id);return `<div class="slots">${DEST.map(d=>`<button class="slot ${vs.includes(d.id)?'on':''}" data-go="destino:${d.id}" aria-label="${d.n}${vs.includes(d.id)?', visitado':', ainda não visitado'}"><span class="sl-c" style="${bg(d.img)}"></span><span>${d.n.replace('Floresta dos ','').replace(' Maranhenses','').replace(' das Mesas','')}</span></button>`).join('')}</div>`};
 V.passaporte=()=>{const pct=Math.min(100,S.pts/10);const open=S.resv.filter(r=>!r.done);return `<div class="scr"><div class="pad" style="padding-top:48px"><h1 class="h1">Meu passaporte</h1><p class="lead">Seus pontos, reservas e lugares visitados.</p>
-<div style="background:var(--green-bg);border-radius:18px;padding:18px;margin-top:20px"><span class="small" style="color:var(--green)">Seus pontos</span><div style="font-size:40px;font-weight:800;color:var(--green);line-height:1.1">${S.pts}</div>
-<div style="height:12px;background:#fff;border-radius:6px;margin-top:12px" role="progressbar" aria-valuenow="${S.pts}" aria-valuemax="1000"><div style="height:12px;width:${pct}%;background:var(--green);border-radius:6px"></div></div>
-<p class="small" style="margin-top:8px;color:var(--text)">${S.pts>=1000?'Parabéns! Você é Aventureiro.':`Faltam ${1000-S.pts} pontos para o próximo nível.`}</p></div>
+${passLevel(pct)}
 <h2 class="h2">Minhas reservas</h2>
 ${open.length?`<div class="stack">${open.map(r=>`<div class="resv"><b style="font-size:18px">${r.n}</b><span class="small">${r.date} · ${r.ppl} ${r.ppl===1?'pessoa':'pessoas'} · ${brl(r.total)}</span><span class="badge" style="${r.paid?'':'background:#FFF6E2;color:#8A5A00'}">${r.paid?'Pago':'Pagamento pendente'}</span><div class="stack" style="margin-top:6px">${r.paid?'':`<button class="btn" data-go="pagar:${r.key}">${I.card} Pagar</button>`}<button class="btn green" data-go="checkin:${r.key}">${I.qr} Registrar visita</button><button class="btn danger" data-cancel="${r.key}">Cancelar reserva</button></div></div>`).join('')}</div>`:`<p class="empty">Você ainda não tem reservas.<br><button class="btn light" style="margin-top:12px" data-go="passeios:lencois">Ver passeios</button></p>`}
-<h2 class="h2">Lugares visitados</h2>
+${passBadges()}<h2 class="h2">Lugares visitados</h2><p class="small" style="margin-top:6px">${visited().length} de ${DEST.length} destinos do Maranhão</p>${passSlots()}
 <div class="stamps">${S.stamps.map((s,i)=>`<button class="stamp" data-stamp="${i}" style="display:block;width:100%;background:#fff"><div class="img" style="${bg(s.img)}"></div><div><b>${s.n}</b><span>${s.d}</span></div></button>`).join('')}</div>
 <div style="margin-top:24px"><button class="btn light" data-reset>Recomeçar demonstração</button></div></div></div>`};
 let qrSeed=1;
@@ -399,8 +421,9 @@ ${m==='local'?`<p class="empty" style="margin-top:16px">Você paga direto ao gui
 <div style="margin-top:16px"><button class="btn green" data-paynow="${key}">${m==='pix'?'Já fiz o Pix':m==='card'?'Pagar '+brl(r.total):'Confirmar'}</button></div></div></div>`};
 /* ---------------- navegação ---------------- */
 let cur='splash';
+function countUp(){A.querySelectorAll('[data-count]').forEach(el=>{const to=+el.dataset.count;if(matchMedia('(prefers-reduced-motion:reduce)').matches||!to)return;const t0=performance.now();const f=n=>{const k=Math.min(1,(n-t0)/900);el.textContent=Math.round(to*(1-Math.pow(1-k,3)));if(k<1)requestAnimationFrame(f)};requestAnimationFrame(f)})}
 function render(keepScroll){const [v,arg]=cur.split(':');const s0=keepScroll&&A.querySelector('.scr')?A.querySelector('.scr').scrollTop:0;
-A.innerHTML=(V[v]||V.home)(arg)+(TABOF[v]?tabbar(TABOF[v]):'');const s=A.querySelector('.scr');if(s)s.scrollTop=s0;if(v==='mapa')initMap();if(v==='home')requestAnimationFrame(()=>requestAnimationFrame(()=>A.querySelectorAll('.pc-bar i').forEach(i=>i.style.width=i.dataset.w+'%')));
+A.innerHTML=(V[v]||V.home)(arg)+(TABOF[v]?tabbar(TABOF[v]):'');const s=A.querySelector('.scr');if(s)s.scrollTop=s0;if(v==='mapa')initMap();countUp();if(v==='home'||v==='passaporte')requestAnimationFrame(()=>requestAnimationFrame(()=>A.querySelectorAll('.pc-bar i').forEach(i=>i.style.width=i.dataset.w+'%')));
 const cq=document.getElementById('cq');if(cq)cq.addEventListener('input',ev=>{U.cq=ev.target.value;const p=ev.target.selectionStart;render(true);const n=document.getElementById('cq');n.focus();n.setSelectionRange(p,p)});
 const q=document.getElementById('q');if(q)q.addEventListener('input',ev=>{U.q=ev.target.value;const p=ev.target.selectionStart;render(true);const n=document.getElementById('q');n.focus();n.setSelectionRange(p,p)})}
 function go(v){if(v!==cur)U.hist.push(cur);cur=v;try{history.replaceState(null,'','#'+v.replace(':','-'))}catch(e){}render()}
@@ -427,6 +450,7 @@ const m=modal(`<h2 style="font-size:22px;font-weight:800">${c.n}</h2><p class="l
 const ok=m.querySelector('[data-ok]');if(ok)ok.addEventListener('click',()=>{S.used.push(c.id);S.pts+=20;save();m.remove();render(true);toast('Cupom usado. Você ganhou 20 pontos!')});return}
 if(d.copy){try{await navigator.clipboard.writeText(d.copy);toast('Telefone copiado: '+d.copy)}catch(err){toast('Telefone: '+d.copy)}return}
 if('docheck' in d){const r=S.resv.find(x=>x.key===d.docheck);if(r)r.done=true;S.pts+=50;S.stamps.unshift({n:r?r.n:'Lençóis Maranhenses',d:new Date().toLocaleDateString('pt-BR'),img:r?r.img:'p1'});save();U.hist=[];cur='passaporte';render();toast('Visita registrada! +50 pontos');return}
+if(d.badge){const[n,on]=d.badge.split('|');return toast(on==='1'?'Conquista desbloqueada: '+n:'Ainda bloqueada: '+n+'. Continue explorando!')}
 if(d.stamp){const s=S.stamps[+d.stamp];modal(`<div style="height:180px;border-radius:16px;${bg(s.img)};background-size:cover;background-position:center"></div><h2 style="font-size:22px;font-weight:800">${s.n}</h2><p class="lead">Visitado em ${s.d}.<br>Este carimbo está guardado no seu passaporte.</p><button class="btn light" data-close>Fechar</button>`);return}
 if('start' in d){if(S.logged){U.hist=[];cur='home';return render()}return go('login')}
 if('guest' in d){S.logged=true;save();U.hist=[];cur='home';render();return toast('Bem-vindo ao MaraPass!')}
