@@ -195,6 +195,15 @@ details.faq p{padding-bottom:16px;font-size:16px;color:var(--text)}
 .okmark{width:84px;height:84px;margin:0 auto}.okmark svg{width:100%;height:100%;fill:none;stroke:var(--green);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.okmark circle{stroke-dasharray:152;stroke-dashoffset:152;animation:dr .6s ease forwards}.okmark path{stroke-dasharray:44;stroke-dashoffset:44;animation:dr .4s .5s ease forwards}@keyframes dr{to{stroke-dashoffset:0}}
 .rcpt{border:1px dashed var(--line);border-radius:16px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;background:var(--soft)}.rcpt>div{display:flex;justify-content:space-between;gap:12px;font-size:15px}.rcpt span{color:var(--muted)}.rcpt b{text-align:right}.rcpt .tot{border-top:1px dashed var(--line);padding-top:8px;font-size:18px}.rcpt .tot b{color:var(--green)}
 @media (prefers-reduced-motion:reduce){.okmark circle,.okmark path{animation:none;stroke-dashoffset:0}.cardprev{transition:none}}
+.dw{position:relative}.heart{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.95);color:var(--red);display:flex;align-items:center;justify-content:center;box-shadow:0 1px 6px rgba(19,38,61,.3);transition:transform .15s}
+.heart:active{transform:scale(.88)}.heart.on svg{animation:pop .4s ease}.dw .heart{position:absolute;right:10px;top:10px}
+.pact{position:absolute;right:12px;top:44px;display:flex;gap:8px}.pact .heart:last-child{color:var(--btn)}
+.chip svg{flex:none}
+.months-w{margin-top:14px}.months{display:grid;grid-template-columns:repeat(12,1fr);gap:4px}
+.months span{height:36px;border-radius:9px;background:var(--soft);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--muted);animation:pop .35s ease backwards}
+.months .best{background:var(--green);color:#fff}.months .now{outline:3px solid var(--yellow);outline-offset:1px}
+.mnote{margin-top:8px;font-weight:600;color:#9A5B00}.mnote.ok{color:var(--green)}
+@media (prefers-reduced-motion:reduce){.months span,.heart.on svg{animation:none}.heart{transition:none}}
 </style>
 
 <div class="phone" id="app"></div>
@@ -258,8 +267,9 @@ const byId=(L,id)=>L.find(x=>x.id===id);
 /* ---------------- estado ---------------- */
 const S={pts:650,used:[],resv:[],stamps:[{n:'Lençóis Maranhenses',d:'12/08/2026',img:'p1'},{n:'São Luís',d:'05/07/2026',img:'p2'},{n:'Atins',d:'28/06/2026',img:'p3'},{n:'Rosário',d:'12/05/2026',img:'p4'}],name:'',logged:false,big:false,read:[]};
 try{const s=JSON.parse(localStorage.getItem('marapass4')||'null');if(s)Object.assign(S,s)}catch(e){}
+if(!Array.isArray(S.fav))S.fav=[];
 const save=()=>{try{localStorage.setItem('marapass4',JSON.stringify(S))}catch(e){}};
-const U={q:'',mapf:'Todos',cupf:'Todos',cupv:'disp',csort:false,hist:[],book:null};
+const U={hf:false,q:'',mapf:'Todos',cupf:'Todos',cupv:'disp',csort:false,hist:[],book:null};
 const A=document.getElementById('app');
 const bg=k=>`background-image:url(${IMG[k]||IMG.dunas_card})`;
 const brl=n=>'R$ '+n.toLocaleString('pt-BR');
@@ -285,22 +295,29 @@ const T=[['mapa',I.map,'Mapa','#E7F1FA','#0B3A66'],['cupons',I.ticket,'Cupons','
 return `<div class="tiles">${T.map(([g,i,l,b,c])=>`<button class="tile" data-go="${g}"><span class="ic" style="background:${b};color:${c}">${i}</span>${l}</button>`).join('')}</div>
 <button class="pcard" data-go="passaporte" aria-label="Abrir meu passaporte"><div class="pc-top"><div><span class="pc-k">Meu passaporte</span><b class="pc-pts" data-count="${S.pts}">${S.pts}</b><span class="pc-u"> pontos</span></div><span class="chev">${I.next}</span></div><div class="pc-bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:0" data-w="${pct}"></i></div><span class="pc-n">${nx}</span></button>
 <h2 class="h2">Passeios em destaque</h2><div class="rail">${EXP.slice(0,8).map(e=>`<button class="rcard" data-go="passeio:${e.id}"><div class="img" style="${bg(e.img)}"></div><b>${e.n}</b><span class="small">${e.h}</span><span class="price">${brl(e.p)}</span></button>`).join('')}</div>`};
-V.home=()=>{const q=U.q.trim().toLowerCase();const L=DEST.filter(d=>!q||(d.n+' '+d.s+' '+d.city).toLowerCase().includes(q));
+const HEART=on=>`<svg viewBox="0 0 24 24" width="18" height="18" fill="${on?'currentColor':'none'}" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><path d="M12 20.5S3.5 15 3.5 9A4.5 4.5 0 0 1 12 7a4.5 4.5 0 0 1 8.5 2c0 6-8.5 11.5-8.5 11.5z"/></svg>`;
+const heartBtn=id=>{const on=S.fav.includes(id);return `<button class="heart ${on?'on':''}" data-fav="${id}" aria-pressed="${on}" aria-label="${on?'Tirar dos favoritos':'Guardar nos favoritos'}">${HEART(on)}</button>`};
+const BESTM={lencois:[5,6,7,8],chapada:[4,5,6,7,8,9],saoluis:[0,1,2,3,4,5,6,7,8,9,10,11],munim:[6,7,8,9,10,11],guaras:[7,8,9,10,11],cultura:[5]};
+const MN=['J','F','M','A','M','J','J','A','S','O','N','D'],MF=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+const monthStrip=d=>{const b=BESTM[d.id]||[],now=new Date().getMonth(),ok=b.includes(now),all=b.length===12;
+return `<div class="months-w"><div class="months" role="img" aria-label="Melhores meses: ${d.best}">${MN.map((m,i)=>`<span class="${b.includes(i)?'best':''} ${i===now?'now':''}" style="animation-delay:${i*25}ms">${m}</span>`).join('')}</div><p class="small mnote ${ok?'ok':''}">${all?'Boa época durante o ano todo.':ok?'Agora, em '+MF[now]+', é uma boa época para ir.':'Agora, em '+MF[now]+', não é a melhor época. Melhor: '+d.best.toLowerCase()+'.'}</p></div>`};
+V.home=()=>{const q=U.q.trim().toLowerCase();const L=DEST.filter(d=>(!q||(d.n+' '+d.s+' '+d.city).toLowerCase().includes(q))&&(!U.hf||S.fav.includes(d.id)));
 const E=q?EXP.filter(e=>e.n.toLowerCase().includes(q)):[];
 return `<div class="scr"><div class="pad" style="padding-top:48px">
 <div style="display:flex;align-items:center;justify-content:space-between"><div style="width:84px">${LOGO}</div><div style="display:flex;gap:10px"><button class="hdr-btn" data-go="avisos" aria-label="Avisos">${I.bell}${NOTIF.some(n=>!S.read.includes(n.id))?'<span class="dot"></span>':''}</button><button class="avatar" data-go="perfil" aria-label="Meu perfil">${(S.name||'V')[0].toUpperCase()}</button></div></div>
 <h1 class="h1" style="margin-top:18px">${(h=>h<12?'Bom dia':h<18?'Boa tarde':'Boa noite')(new Date().getHours())}, ${S.name||'viajante'}!</h1><p class="lead">Para onde você quer ir?</p>
 <label class="search">${I.search}<input id="q" type="text" placeholder="Digite um lugar ou passeio" value="${U.q.replace(/"/g,'&quot;')}" aria-label="Buscar">${U.q?`<button class="clear" data-clear aria-label="Limpar busca">${I.x}</button>`:''}</label>
 ${q?'':homeExtra()}<div id="results"><h2 class="h2">${q?'Destinos encontrados':'Destinos'}</h2>
-<div class="stack">${L.map(d=>`<button class="dest" data-go="destino:${d.id}"><div class="img" style="${bg(d.img)}"></div><div class="txt"><div><b>${d.n}</b><span>${d.s}</span></div><span class="chev">${I.next}</span></div></button>`).join('')||'<p class="empty">Nenhum destino com esse nome.</p>'}</div>
+${q?'':`<div class="chips" style="margin-top:10px"><button class="chip ${U.hf?'':'on'}" data-hf="0">Todos</button><button class="chip ${U.hf?'on':''}" data-hf="1">${HEART(1)} Favoritos${S.fav.length?' ('+S.fav.length+')':''}</button></div>`}
+<div class="stack">${L.map(d=>`<div class="dw"><button class="dest" data-go="destino:${d.id}"><div class="img" style="${bg(d.img)}"></div><div class="txt"><div><b>${d.n}</b><span>${d.s}</span></div><span class="chev">${I.next}</span></div></button>${heartBtn(d.id)}</div>`).join('')||`<p class="empty">${U.hf&&!q?'Você ainda não favoritou nenhum destino.<br>Toque no coração de um destino para guardá-lo aqui.':'Nenhum destino com esse nome.'}</p>`}</div>
 ${E.length?`<h2 class="h2">Passeios encontrados</h2><div class="stack">${E.map(expItem).join('')}</div>`:''}</div>
 </div></div>`};
 const expItem=e=>`<button class="item" data-go="passeio:${e.id}"><div class="img" style="${bg(e.img)}"></div><div class="t"><b>${e.n}</b><span class="small">Duração: ${e.h}</span><div class="price">${brl(e.p)} por pessoa</div></div></button>`;
 V.destino=id=>{const d=byId(DEST,id)||DEST[0];const ne=EXP.filter(e=>e.dest===d.id).length,nr=REST.filter(r=>r.dest===d.id).length,nc=CUP.filter(c=>c.dest===d.id).length;
 const row=(go,icn,bgc,col,t,s)=>`<button class="row-btn" data-go="${go}"><span class="ic" style="background:${bgc};color:${col}">${icn}</span><div><b>${t}</b><span>${s}</span></div><span class="chev">${I.next}</span></button>`;
-return `<div class="scr"><div class="photo" style="${bg(d.hero)}">${backBtn}${d.credit?'<span class="credit">Foto: Wikimedia Commons</span>':''}</div><div class="pad">
+return `<div class="scr"><div class="photo" style="${bg(d.hero)}">${backBtn}<div class="pact">${heartBtn(d.id)}<button class="heart" data-share="${d.id}" aria-label="Compartilhar ${d.n}"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.6-4.6M8.2 13.2l7.6 4.6"/></svg></button></div>${d.credit?'<span class="credit">Foto: Wikimedia Commons</span>':''}</div><div class="pad">
 <h1 class="h1" style="margin-top:20px">${d.n}</h1><p class="lead" style="margin-top:8px">${d.d}</p>
-<div class="facts" style="margin-top:16px"><div class="fact"><span>Cidade de apoio</span><b>${d.city}</b></div><div class="fact"><span>Melhor época</span><b>${d.best}</b></div></div>
+<div class="facts" style="margin-top:16px"><div class="fact"><span>Cidade de apoio</span><b>${d.city}</b></div><div class="fact"><span>Melhor época</span><b>${d.best}</b></div></div>${monthStrip(d)}
 <h2 class="h2">O que você quer ver?</h2><div class="stack">
 ${row('passeios:'+d.id,I.hike,'#E7F4EE','#14775A','Passeios',ne+(ne===1?' opção':' opções'))}
 ${nr?row('comer:'+d.id,I.food,'#FDEDE6','#C2410C','Onde comer',nr+(nr===1?' restaurante':' restaurantes')):''}
@@ -492,6 +509,9 @@ if(d.go){const [v,a]=d.go.split(':');if(v==='cupons'&&a)return go('cupons:'+a);i
 if('back' in d)return back();
 if('clear' in d){U.q='';return render()}
 if(d.mapf){U.mapf=d.mapf;return render(true)}
+if(d.hf!==undefined){U.hf=d.hf==='1';return render(true)}
+if(d.fav){const i=S.fav.indexOf(d.fav);if(i<0)S.fav.push(d.fav);else S.fav.splice(i,1);save();toast(i<0?'Guardado nos favoritos':'Tirado dos favoritos');return render(true)}
+if(d.share){const x=byId(DEST,d.share),url=location.href.split('#')[0]+'#destino-'+x.id;try{if(navigator.share){await navigator.share({title:'MaraPass: '+x.n,text:x.s,url})}else{await navigator.clipboard.writeText(url);toast('Link copiado')}}catch(err){if(err&&err.name!=='AbortError')toast('Não foi possível compartilhar')}return}
 if(d.cupf){U.cupf=d.cupf;return render(true)}
 if(d.cupv){U.cupv=d.cupv;return render(true)}
 if('csort' in d){U.csort=!U.csort;return render(true)}

@@ -8,6 +8,7 @@ Feito para ser simples de usar, inclusive por pessoas mais velhas: letras grande
 
 - Cadastro rápido (só o nome) ou entrar sem cadastro
 - Tela inicial com saudação por horário, atalhos rápidos, cartão do passaporte com barra de progresso animada e carrossel de passeios em destaque
+- Favoritar destinos (coração), filtrar por favoritos, compartilhar e ver numa faixa de 12 meses a melhor época de cada destino, com aviso se agora é boa época
 - Ver destinos: Lençóis Maranhenses, Chapada das Mesas, São Luís, Munim, Floresta dos Guarás e Cultura Maranhense
 - Ver passeios, restaurantes e pousada de cada destino
 - Reservar passeio em etapas: dia, horário (manhã ou tarde), número de pessoas (com ícones) e cupom, com resumo do preço e barra fixa de confirmação
