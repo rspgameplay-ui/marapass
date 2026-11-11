@@ -159,6 +159,17 @@ details.faq p{padding-bottom:16px;font-size:16px;color:var(--text)}
 .slot.on{color:var(--green)}.slot.on .sl-c{border:3px solid var(--green);filter:none;box-shadow:0 0 0 3px var(--green-bg)}
 .stamp{transition:transform .2s}.stamp:nth-child(odd){transform:rotate(-1.2deg)}.stamp:nth-child(even){transform:rotate(1.2deg)}.stamp:active{transform:scale(.97)}
 @media (prefers-reduced-motion:reduce){.bdg.on .bi{animation:none}.stamp{transition:none}}
+.steps{display:flex;gap:4px;margin-top:14px}.steps span{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:13px;font-weight:700;color:var(--muted);position:relative}
+.steps span::before{content:"";position:absolute;top:13px;left:-50%;width:100%;height:3px;background:var(--line);z-index:0}.steps span:first-child::before{display:none}.steps span.ok::before{background:var(--green)}
+.steps i{position:relative;z-index:1;width:28px;height:28px;border-radius:50%;background:var(--line);color:var(--muted);font-style:normal;font-size:14px;display:flex;align-items:center;justify-content:center;transition:background .25s,transform .25s}
+.steps span.ok{color:var(--green)}.steps span.ok i{background:var(--green);color:#fff;transform:scale(1.08)}.steps i svg{width:16px;height:16px}
+.slotsel{display:grid;grid-template-columns:1fr 1fr;gap:10px}.slotsel .opt{flex-direction:row}.slotsel b{display:block;font-size:17px}.slotsel small{display:block;font-size:13px;font-weight:500;color:var(--muted)}
+.ppl{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px;color:var(--green)}.ppl span{animation:pop .3s ease backwards}.ppl svg{width:26px;height:26px}
+.bill{margin-top:20px;padding:16px;border-radius:18px;background:var(--soft);display:flex;flex-direction:column;gap:8px}.bill>div{display:flex;justify-content:space-between;font-size:16px}.bill .save{color:var(--green);font-weight:700}
+.bill .tot{border-top:1px dashed var(--line);padding-top:10px;font-size:20px;font-weight:800;color:var(--ink)}
+.sbar{position:sticky;bottom:90px;margin:16px -18px 0;padding:12px 18px;background:rgba(255,255,255,.96);border-top:1px solid var(--line);display:flex;gap:12px;align-items:center;backdrop-filter:blur(6px)}
+.sb-t{display:flex;flex-direction:column;font-size:13px;color:var(--muted);font-weight:600}.sb-t b{font-size:20px;color:var(--ink)}.sbar .btn{flex:1}
+@media (prefers-reduced-motion:reduce){.steps i{transition:none}.ppl span{animation:none}}
 </style>
 
 <div class="phone" id="app"></div>
@@ -282,17 +293,19 @@ V.passeio=id=>{const e=byId(EXP,id)||EXP[0];const c=e.cup&&byId(CUP,e.cup);retur
 ${c&&!S.used.includes(c.id)?`<button class="badge" style="margin-top:14px;min-height:44px;padding:8px 14px;font-size:16px" data-go="reservar:${e.id}">${I.ticket.replace('<svg','<svg style="width:18px;height:18px;vertical-align:-3px"')} Tem cupom: ${c.off}</button>`:''}
 <div class="stack" style="margin-top:16px"><button class="btn" data-go="reservar:${e.id}">${I.cal} Escolher data e reservar</button>
 <a class="btn light" href="${gmaps(e.from+' Maranhão')}" target="_blank" rel="noopener">${I.route} Ver ponto de saída</a></div></div></div>`};
-V.reservar=id=>{const e=byId(EXP,id)||EXP[0];if(!U.book||U.book.id!==e.id)U.book={id:e.id,day:null,ppl:2,cup:false};const b=U.book;const c=e.cup&&byId(CUP,e.cup);const cupOk=c&&!S.used.includes(c.id);
+const stepsBar=(b,cupOk)=>{const S4=[['Dia',b.day!==null],['Horário',!!b.slot],['Pessoas',b.ppl>0],...(cupOk?[['Cupom',b.cup]]:[])];const done=S4.filter(s=>s[1]).length;
+return `<div class="steps" aria-label="${done} de ${S4.length} passos feitos">${S4.map(([n,ok],i)=>`<span class="${ok?'ok':''}"><i>${ok?I.check:i+1}</i>${n}</span>`).join('')}</div>`};
+V.reservar=id=>{const e=byId(EXP,id)||EXP[0];if(!U.book||U.book.id!==e.id)U.book={id:e.id,day:null,ppl:2,cup:false,slot:'Manhã'};const b=U.book;const c=e.cup&&byId(CUP,e.cup);const cupOk=c&&!S.used.includes(c.id);
 const days=[...Array(7)].map((_,i)=>{const d=new Date();d.setDate(d.getDate()+i+1);return d});
 const disc=b.cup&&cupOk?c.val*b.ppl:0;const total=e.p*b.ppl-disc;
 return `<div class="scr"><div class="bar">${backBtn}</div><div class="pad">
-<h1 class="h1">Reservar</h1><p class="lead">${e.n}</p>
+<h1 class="h1">Reservar</h1><p class="lead">${e.n}</p>${stepsBar(b,cupOk)}
 <h2 class="h2">1. Qual dia?</h2><div class="chips" style="display:grid;grid-template-columns:repeat(4,1fr)">${days.map((d,i)=>`<button class="chip date ${b.day===i?'on':''}" data-day="${i}"><small>${d.toLocaleDateString('pt-BR',{weekday:'short'}).replace('.','')}</small>${d.getDate()}/${d.getMonth()+1}</button>`).join('')}</div>
-<h2 class="h2">2. Quantas pessoas?</h2><div class="stepper"><button data-ppl="-1" aria-label="Menos uma pessoa">−</button><b>${b.ppl} ${b.ppl===1?'pessoa':'pessoas'}</b><button data-ppl="1" aria-label="Mais uma pessoa">+</button></div>
-${cupOk?`<h2 class="h2">3. Usar cupom?</h2><button class="row-btn" data-togglecup style="${b.cup?'background:var(--green-bg)':''}"><span class="ic" style="background:#fff;color:var(--green)">${b.cup?I.check:I.ticket}</span><div><b>${c.off}</b><span>${b.cup?'Cupom aplicado. Toque para tirar.':'Toque para aplicar'}</span></div></button>`:''}
-<div class="total"><span class="lead">Total</span><b>${brl(total)}</b></div>
-${disc?`<p class="small" style="margin-top:6px">Você economizou ${brl(disc)} com o cupom.</p>`:''}
-<div style="margin-top:16px"><button class="btn green" data-confirm style="${b.day===null?'opacity:.6':''}">${b.day===null?'Escolha um dia acima':'Confirmar reserva'}</button></div>
+<h2 class="h2">2. Que horário?</h2><div class="slotsel">${[['Manhã','Saída às 8h'],['Tarde','Saída às 14h']].map(([k,h])=>`<button class="opt ${b.slot===k?'on':''}" data-slot="${k}"><span class="radio"></span><span><b>${k}</b><small>${h}</small></span></button>`).join('')}</div>
+<h2 class="h2">3. Quantas pessoas?</h2><div class="stepper"><button data-ppl="-1" aria-label="Menos uma pessoa">−</button><b>${b.ppl} ${b.ppl===1?'pessoa':'pessoas'}</b><button data-ppl="1" aria-label="Mais uma pessoa">+</button></div><div class="ppl" aria-hidden="true">${[...Array(b.ppl)].map((_,i)=>`<span style="animation-delay:${i*40}ms">${I.user}</span>`).join('')}</div>
+${cupOk?`<h2 class="h2">4. Usar cupom?</h2><button class="row-btn" data-togglecup style="${b.cup?'background:var(--green-bg)':''}"><span class="ic" style="background:#fff;color:var(--green)">${b.cup?I.check:I.ticket}</span><div><b>${c.off}</b><span>${b.cup?'Cupom aplicado. Toque para tirar.':'Toque para aplicar'}</span></div></button>`:''}
+<div class="bill"><div><span>${brl(e.p)} × ${b.ppl} ${b.ppl===1?'pessoa':'pessoas'}</span><b>${brl(e.p*b.ppl)}</b></div>${disc?`<div class="save"><span>Cupom ${c.off}</span><b>− ${brl(disc)}</b></div>`:''}<div class="tot"><span>Total</span><b>${brl(total)}</b></div><p class="small">${b.day===null?'':'Dia '+days[b.day].toLocaleDateString('pt-BR',{day:'2-digit',month:'long'})+' · '+b.slot+'. '}Ao registrar a visita você ganha <b>+50 pontos</b>.</p></div>
+<div class="sbar"><div class="sb-t"><span>Total</span><b>${brl(total)}</b></div><button class="btn green" data-confirm style="${b.day===null?'opacity:.6':''}">${b.day===null?'Escolha um dia':'Confirmar reserva'}</button></div>
 </div></div>`};
 V.rest=id=>{const r=byId(REST,id)||REST[0];const c=r.cup&&byId(CUP,r.cup);return `<div class="scr"><div class="photo" style="${bg(r.hero)}">${backBtn}</div><div class="pad">
 <h1 class="h1" style="margin-top:20px">${r.n}</h1><p class="lead" style="margin-top:8px">${r.s}</p>
@@ -436,12 +449,13 @@ if('back' in d)return back();
 if('clear' in d){U.q='';return render()}
 if(d.mapf){U.mapf=d.mapf;return render(true)}
 if(d.cupf){U.cupf=d.cupf;return render(true)}
+if(d.slot){U.book.slot=d.slot;return render(true)}
 if(d.day){U.book.day=+d.day;return render(true)}
 if(d.ppl){U.book.ppl=Math.max(1,Math.min(10,U.book.ppl+ +d.ppl));return render(true)}
 if('togglecup' in d){U.book.cup=!U.book.cup;return render(true)}
 if('confirm' in d){if(U.book.day===null){toast('Escolha o dia do passeio primeiro');A.querySelector('.chip.date').focus();return}const e2=byId(EXP,U.book.id);const c=e2.cup&&byId(CUP,e2.cup);const useC=U.book.cup&&c&&!S.used.includes(c.id);const day=new Date();day.setDate(day.getDate()+U.book.day+1);
-const total=e2.p*U.book.ppl-(useC?c.val*U.book.ppl:0);const key='r'+Date.now();S.resv.unshift({key,id:e2.id,n:e2.n,date:fmtDate(day),ppl:U.book.ppl,total,img:e2.img});if(useC)S.used.push(c.id);save();U.book=null;
-const m=modal(`<h2 style="font-size:24px;font-weight:800">Reserva feita!</h2><p class="lead"><b>${e2.n}</b><br>${fmtDate(day)}<br>${S.resv[0].ppl} ${S.resv[0].ppl===1?'pessoa':'pessoas'} · Total ${brl(total)}</p><p class="small">No dia, abra o Passaporte e toque em "Registrar visita" para ganhar pontos.</p><button class="btn" data-topay>Pagar agora</button><button class="btn light" data-seepass>Pagar depois</button>`);
+const total=e2.p*U.book.ppl-(useC?c.val*U.book.ppl:0);const key='r'+Date.now();S.resv.unshift({key,id:e2.id,n:e2.n,date:fmtDate(day)+' · '+U.book.slot,ppl:U.book.ppl,total,img:e2.img});if(useC)S.used.push(c.id);save();U.book=null;
+const m=modal(`<h2 style="font-size:24px;font-weight:800">Reserva feita!</h2><p class="lead"><b>${e2.n}</b><br>${fmtDate(day)} · ${S.resv[0].date.split(' · ').pop()}<br>${S.resv[0].ppl} ${S.resv[0].ppl===1?'pessoa':'pessoas'} · Total ${brl(total)}</p><p class="small">No dia, abra o Passaporte e toque em "Registrar visita" para ganhar pontos.</p><button class="btn" data-topay>Pagar agora</button><button class="btn light" data-seepass>Pagar depois</button>`);
 m.querySelector('[data-seepass]').addEventListener('click',()=>{m.remove();U.hist=[];cur='passaporte';render()});m.querySelector('[data-topay]').addEventListener('click',()=>{m.remove();U.hist=['passaporte'];U.pay='pix';cur='pagar:'+key;render()});return}
 if(d.cancel){const m=modal(`<h2 style="font-size:22px;font-weight:800">Cancelar esta reserva?</h2><p class="lead">${S.resv.find(r=>r.key===d.cancel).n}</p><button class="btn danger" data-yes>Sim, cancelar</button><button class="btn light" data-close>Não, manter</button>`);
 m.querySelector('[data-yes]').addEventListener('click',()=>{S.resv=S.resv.filter(r=>r.key!==d.cancel);save();m.remove();render(true);toast('Reserva cancelada')});return}
