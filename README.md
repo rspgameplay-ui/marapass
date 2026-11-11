@@ -12,7 +12,7 @@ Feito para ser simples de usar, inclusive por pessoas mais velhas: letras grande
 - Reservar passeio: escolher dia, número de pessoas e cupom
 - Pagamento simulado por Pix, cartão ou no local
 - Cupons de desconto com código
-- Mapa com lugares próximos e link para o Google Maps
+- **Mapa interativo**: arraste, amplie (dois dedos, roda do mouse ou botões +/−), filtre por categoria, toque nos pinos para ver foto, distância, rota animada, detalhes e "Como chegar" no Google Maps
 - Passaporte com pontos, nível, reservas e carimbos
 - Registrar visita (check-in com QR Code)
 - Avisos, perfil, opção de letra grande e ajuda
