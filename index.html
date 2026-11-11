@@ -134,6 +134,16 @@ details.faq p{padding-bottom:16px;font-size:16px;color:var(--text)}
 .mapcard .x{position:absolute;right:4px;top:2px;width:44px;height:44px;font-size:26px;color:var(--muted)}
 .item.sel{border-color:var(--btn);box-shadow:0 0 0 2px var(--btn) inset}.rowimg{flex:none;border-radius:12px;overflow:hidden;padding:0}
 @media (prefers-reduced-motion:reduce){.flow,.mpin.on .pulse{animation:none}.mpin .body{transition:none}}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:18px}
+.tile{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 2px;border:1px solid var(--line);border-radius:16px;background:#fff;font-size:14px;font-weight:700;color:var(--ink);min-height:84px;transition:transform .15s}
+.tile:active{transform:scale(.95)}.tile .ic{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center}.tile svg{width:24px;height:24px}
+.pcard{display:block;width:100%;text-align:left;margin-top:16px;padding:16px;border-radius:20px;color:#fff;background:linear-gradient(135deg,#0B3A66,#14775A)}
+.pc-top{display:flex;justify-content:space-between;align-items:center}.pc-k{display:block;font-size:14px;font-weight:600;opacity:.85}.pc-pts{font-size:34px;font-weight:800;line-height:1.1}.pc-u{font-size:16px;font-weight:600}
+.pcard .chev{color:#fff;background:rgba(255,255,255,.22)}.pc-bar{height:12px;border-radius:6px;background:rgba(255,255,255,.28);margin:12px 0 8px;overflow:hidden}.pc-bar i{display:block;height:100%;background:var(--yellow);border-radius:6px;transition:width 1s cubic-bezier(.2,.8,.2,1)}.pc-n{font-size:15px;font-weight:600}
+.rail{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-left:18px;margin:12px -18px 0;padding:0 18px 6px;scrollbar-width:none}.rail::-webkit-scrollbar{display:none}
+.rcard{flex:none;width:200px;scroll-snap-align:start;text-align:left;border:1px solid var(--line);border-radius:18px;background:#fff;padding:8px 8px 12px;display:flex;flex-direction:column;gap:2px}
+.rcard .img{height:120px;border-radius:12px;background-size:cover;background-position:center;margin-bottom:6px}.rcard b{font-size:16px;line-height:1.25;color:var(--ink)}.rcard .price{font-size:15px;font-weight:800;color:var(--green)}
+@media (prefers-reduced-motion:reduce){.pc-bar i{transition:none}.tile{transition:none}}
 </style>
 
 <div class="phone" id="app"></div>
@@ -219,13 +229,18 @@ V.splash=()=>`<div class="scr full" style="${bg('splash_bg')};background-size:co
 <p style="font-size:18px;margin-top:10px;opacity:.95">Seu passaporte turístico do Maranhão.</p>
 <button class="btn yellow" style="margin-top:24px" data-start>Começar ${I.next}</button>
 <p style="font-size:14px;margin-top:14px;text-align:center;opacity:.9">Lençóis Maranhenses · Maranhão, Brasil</p></div></div></div>`;
+const homeExtra=()=>{const pct=Math.min(100,Math.round(S.pts/10));const nx=S.pts>=1000?'Você é Aventureiro!':`Faltam ${1000-S.pts} pts para o próximo nível`;
+const T=[['mapa',I.map,'Mapa','#E7F1FA','#0B3A66'],['cupons',I.ticket,'Cupons','#FFF4D6','#8A5A00'],['checkin',I.qr,'Check-in','#E7F4EE','#14775A'],['passaporte',I.pass,'Reservas','#F1E8F7','#6B2F8F']];
+return `<div class="tiles">${T.map(([g,i,l,b,c])=>`<button class="tile" data-go="${g}"><span class="ic" style="background:${b};color:${c}">${i}</span>${l}</button>`).join('')}</div>
+<button class="pcard" data-go="passaporte" aria-label="Abrir meu passaporte"><div class="pc-top"><div><span class="pc-k">Meu passaporte</span><b class="pc-pts" data-count="${S.pts}">${S.pts}</b><span class="pc-u"> pontos</span></div><span class="chev">${I.next}</span></div><div class="pc-bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:0" data-w="${pct}"></i></div><span class="pc-n">${nx}</span></button>
+<h2 class="h2">Passeios em destaque</h2><div class="rail">${EXP.slice(0,8).map(e=>`<button class="rcard" data-go="passeio:${e.id}"><div class="img" style="${bg(e.img)}"></div><b>${e.n}</b><span class="small">${e.h}</span><span class="price">${brl(e.p)}</span></button>`).join('')}</div>`};
 V.home=()=>{const q=U.q.trim().toLowerCase();const L=DEST.filter(d=>!q||(d.n+' '+d.s+' '+d.city).toLowerCase().includes(q));
 const E=q?EXP.filter(e=>e.n.toLowerCase().includes(q)):[];
 return `<div class="scr"><div class="pad" style="padding-top:48px">
 <div style="display:flex;align-items:center;justify-content:space-between"><div style="width:84px">${LOGO}</div><div style="display:flex;gap:10px"><button class="hdr-btn" data-go="avisos" aria-label="Avisos">${I.bell}${NOTIF.some(n=>!S.read.includes(n.id))?'<span class="dot"></span>':''}</button><button class="avatar" data-go="perfil" aria-label="Meu perfil">${(S.name||'V')[0].toUpperCase()}</button></div></div>
-<h1 class="h1" style="margin-top:18px">Olá, ${S.name||'viajante'}!</h1><p class="lead">Para onde você quer ir?</p>
+<h1 class="h1" style="margin-top:18px">${(h=>h<12?'Bom dia':h<18?'Boa tarde':'Boa noite')(new Date().getHours())}, ${S.name||'viajante'}!</h1><p class="lead">Para onde você quer ir?</p>
 <label class="search">${I.search}<input id="q" type="text" placeholder="Digite um lugar ou passeio" value="${U.q.replace(/"/g,'&quot;')}" aria-label="Buscar">${U.q?`<button class="clear" data-clear aria-label="Limpar busca">${I.x}</button>`:''}</label>
-<div id="results"><h2 class="h2">${q?'Destinos encontrados':'Destinos'}</h2>
+${q?'':homeExtra()}<div id="results"><h2 class="h2">${q?'Destinos encontrados':'Destinos'}</h2>
 <div class="stack">${L.map(d=>`<button class="dest" data-go="destino:${d.id}"><div class="img" style="${bg(d.img)}"></div><div class="txt"><div><b>${d.n}</b><span>${d.s}</span></div><span class="chev">${I.next}</span></div></button>`).join('')||'<p class="empty">Nenhum destino com esse nome.</p>'}</div>
 ${E.length?`<h2 class="h2">Passeios encontrados</h2><div class="stack">${E.map(expItem).join('')}</div>`:''}</div>
 </div></div>`};
@@ -385,7 +400,7 @@ ${m==='local'?`<p class="empty" style="margin-top:16px">Você paga direto ao gui
 /* ---------------- navegação ---------------- */
 let cur='splash';
 function render(keepScroll){const [v,arg]=cur.split(':');const s0=keepScroll&&A.querySelector('.scr')?A.querySelector('.scr').scrollTop:0;
-A.innerHTML=(V[v]||V.home)(arg)+(TABOF[v]?tabbar(TABOF[v]):'');const s=A.querySelector('.scr');if(s)s.scrollTop=s0;if(v==='mapa')initMap();
+A.innerHTML=(V[v]||V.home)(arg)+(TABOF[v]?tabbar(TABOF[v]):'');const s=A.querySelector('.scr');if(s)s.scrollTop=s0;if(v==='mapa')initMap();if(v==='home')requestAnimationFrame(()=>requestAnimationFrame(()=>A.querySelectorAll('.pc-bar i').forEach(i=>i.style.width=i.dataset.w+'%')));
 const cq=document.getElementById('cq');if(cq)cq.addEventListener('input',ev=>{U.cq=ev.target.value;const p=ev.target.selectionStart;render(true);const n=document.getElementById('cq');n.focus();n.setSelectionRange(p,p)});
 const q=document.getElementById('q');if(q)q.addEventListener('input',ev=>{U.q=ev.target.value;const p=ev.target.selectionStart;render(true);const n=document.getElementById('q');n.focus();n.setSelectionRange(p,p)})}
 function go(v){if(v!==cur)U.hist.push(cur);cur=v;try{history.replaceState(null,'','#'+v.replace(':','-'))}catch(e){}render()}

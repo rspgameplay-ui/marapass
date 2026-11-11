@@ -7,6 +7,7 @@ Feito para ser simples de usar, inclusive por pessoas mais velhas: letras grande
 ## O que dá para fazer
 
 - Cadastro rápido (só o nome) ou entrar sem cadastro
+- Tela inicial com saudação por horário, atalhos rápidos, cartão do passaporte com barra de progresso animada e carrossel de passeios em destaque
 - Ver destinos: Lençóis Maranhenses, Chapada das Mesas, São Luís, Munim, Floresta dos Guarás e Cultura Maranhense
 - Ver passeios, restaurantes e pousada de cada destino
 - Reservar passeio: escolher dia, número de pessoas e cupom
