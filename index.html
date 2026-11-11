@@ -241,6 +241,19 @@ button,a,.chip,.tab{touch-action:manipulation}
 .dest{box-shadow:0 2px 10px rgba(19,38,61,.06)}
 .facts{overflow:hidden}
 @media (max-width:360px){.pad{padding:0 14px}.chips.scroll{margin-left:-14px;margin-right:-14px;padding-left:14px;padding-right:14px}.h1{font-size:23px}.tiles{gap:6px}.tile{font-size:13px}.wallet span{font-size:11.5px}.cp-n{font-size:19px}.sbar{padding:10px 14px}}
+
+/* ---- mapa refinado ---- */
+.mapbox{border:1px solid var(--line);box-shadow:0 4px 16px rgba(19,38,61,.08);border-radius:22px}
+.mapctl{right:12px;top:12px;gap:10px}
+.mapctl .zgrp{display:flex;flex-direction:column;background:#fff;border-radius:14px;box-shadow:0 2px 10px rgba(19,38,61,.22);overflow:hidden}
+.mapctl .zgrp button,.mapctl .zre{width:46px;height:46px;border-radius:0;box-shadow:none;background:#fff;color:var(--ink);display:flex;align-items:center;justify-content:center}
+.mapctl .zgrp button+button{border-top:1px solid var(--line)}
+.mapctl .zre{border-radius:14px;box-shadow:0 2px 10px rgba(19,38,61,.22);color:var(--btn)}
+.mapctl button:active{background:var(--soft)}
+.maphint{left:50%;top:auto;bottom:12px;transform:translateX(-50%);max-width:none;white-space:nowrap;background:rgba(19,38,61,.86);color:#fff;font-size:13px;padding:8px 14px;border-radius:20px}
+.mlegend{display:flex;justify-content:center;gap:16px;margin-top:10px;font-size:13px;font-weight:600;color:var(--muted)}
+.mlegend span{display:flex;align-items:center;gap:6px}.mlegend i{width:10px;height:10px;border-radius:50%}
+.mpin .body{filter:drop-shadow(0 2px 3px rgba(19,38,61,.35))}
 </style>
 
 <div class="phone" id="app"></div>
@@ -345,7 +358,7 @@ return `<div class="scr"><div class="pad" style="padding-top:calc(var(--top) + 4
 <h1 class="h1" style="margin-top:18px">${(h=>h<12?'Bom dia':h<18?'Boa tarde':'Boa noite')(new Date().getHours())}, ${S.name||'viajante'}!</h1><p class="lead">Para onde você quer ir?</p>
 <label class="search">${I.search}<input id="q" type="text" placeholder="Digite um lugar ou passeio" value="${U.q.replace(/"/g,'&quot;')}" aria-label="Buscar">${U.q?`<button class="clear" data-clear aria-label="Limpar busca">${I.x}</button>`:''}</label>
 ${q?'':homeExtra()}<div id="results"><h2 class="h2">${q?'Destinos encontrados':'Destinos'}</h2>
-${q?'':`<div class="chips" style="margin-top:10px"><button class="chip ${U.hf?'':'on'}" data-hf="0">Todos</button><button class="chip ${U.hf?'on':''}" data-hf="1">${HEART(1)} Favoritos${S.fav.length?' ('+S.fav.length+')':''}</button></div>`}
+${q?'':`<div class="chips" style="margin:4px 0 16px"><button class="chip ${U.hf?'':'on'}" data-hf="0">Todos</button><button class="chip ${U.hf?'on':''}" data-hf="1">${HEART(1)} Favoritos${S.fav.length?' ('+S.fav.length+')':''}</button></div>`}
 <div class="stack">${L.map(d=>`<div class="dw"><button class="dest" data-go="destino:${d.id}"><div class="img" style="${bg(d.img)}"></div><div class="txt"><div><b>${d.n}</b><span>${d.s}</span></div><span class="chev">${I.next}</span></div></button>${heartBtn(d.id)}</div>`).join('')||`<p class="empty">${U.hf&&!q?'Você ainda não favoritou nenhum destino.<br>Toque no coração de um destino para guardá-lo aqui.':'Nenhum destino com esse nome.'}</p>`}</div>
 ${E.length?`<h2 class="h2">Passeios encontrados</h2><div class="stack">${E.map(expItem).join('')}</div>`:''}</div>
 </div></div>`};
@@ -398,31 +411,29 @@ V.hotel=id=>{const h=byId(HOTEL,id)||HOTEL[0];const c=h.cup&&byId(CUP,h.cup);ret
 <div class="facts" style="margin-top:20px"><div class="fact"><span>Telefone</span><b>${h.tel}</b></div><div class="fact"><span>Cidade</span><b>Santo Amaro - MA</b></div></div>
 <div class="stack" style="margin-top:20px"><a class="btn" href="tel:${h.tel.replace(/\D/g,'')}">${I.phone} Ligar agora</a><button class="btn light" data-copy="${h.tel}">Copiar telefone</button>${c?`<button class="btn yellow" data-cupom="${c.id}">${I.ticket} ${S.used.includes(c.id)?'Cupom já usado':'Ver cupom de 20%'}</button>`:''}<a class="btn light" href="${gmaps(h.q)}" target="_blank" rel="noopener">${I.route} Como chegar</a></div></div></div>`};
 /* ---------------- mapa interativo (SVG, sem dependências) ---------------- */
-const PXY={'Lagoa Azul':[575,175],'Casa do Mangue':[285,440],'Restaurante o Buriti':[640,470],'Pousada Vila Lençóis':[430,470],'Rio Preguiças':[395,330]};
+const PXY={'Lagoa Azul':[540,190],'Casa do Mangue':[240,458],'Restaurante o Buriti':[640,470],'Pousada Vila Lençóis':[445,492],'Rio Preguiças':[402,316]};
 const TOWN=[330,400],CATC={Passeios:'#0B6FB8',Comer:'#D9480F',Hospedagem:'#7B3FA0'},CATI={Passeios:'<path d="M3 17c3-4 6-4 9 0s6 4 9 0M3 12c3-4 6-4 9 0s6 4 9 0"/>',Comer:'<path d="M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 3c-2 2-3 5-3 8h3v10"/>',Hospedagem:'<path d="M3 20V8M3 14h18v6M21 14v-3a3 3 0 0 0-3-3h-7v6"/>'};
 U.mp=U.mp||{x:150,y:0,k:1};U.sel=U.sel||null;
-const MAPART=`<defs><linearGradient id="sea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5BB6E8"/><stop offset="1" stop-color="#9ED8F2"/></linearGradient><pattern id="dots" width="14" height="14" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.2" fill="#E9D49B"/></pattern></defs>
-<rect width="800" height="600" fill="#DDEBC8"/>
+const MAPART=`<defs><linearGradient id="sea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3FA3DD"/><stop offset="1" stop-color="#8FD3F0"/></linearGradient><linearGradient id="sand" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FBF1D2"/><stop offset="1" stop-color="#F2E2B0"/></linearGradient><linearGradient id="land" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#D5E9B8"/><stop offset="1" stop-color="#C3DFA0"/></linearGradient><filter id="ds" x="-20%" y="-20%" width="140%" height="160%"><feDropShadow dx="0" dy="1.5" stdDeviation="1.6" flood-color="#13263D" flood-opacity=".22"/></filter></defs>
+<rect width="800" height="600" fill="url(#land)"/>
 <path d="M0 0H800V95C700 120 640 80 540 105S360 135 250 100 80 80 0 112Z" fill="url(#sea)"/>
-<path d="M0 112C80 80 170 100 250 100S420 135 540 105 700 120 800 95" fill="none" stroke="#fff" stroke-width="5" opacity=".8"/>
-<path d="M0 112C80 80 170 100 250 100S420 135 540 105 700 120 800 95V300C720 330 640 280 560 300S400 280 320 270 120 300 0 270Z" fill="#F4E6B8"/>
-<path d="M0 112C80 80 170 100 250 100S420 135 540 105 700 120 800 95V300C720 330 640 280 560 300S400 280 320 270 120 300 0 270Z" fill="url(#dots)"/>
-<g fill="none" stroke="#E2C98A" stroke-width="3" stroke-linecap="round" opacity=".9"><path d="M60 170c40-20 90 10 140-8M240 200c50-22 110 10 170-6M470 150c50-20 100 8 150-5M600 225c40-14 80 6 140-4M110 245c50-14 100 8 160-4"/></g>
-<g fill="#6FC3EC" stroke="#fff" stroke-width="3"><ellipse cx="575" cy="175" rx="46" ry="22"/><ellipse cx="500" cy="228" rx="30" ry="13"/><ellipse cx="660" cy="150" rx="28" ry="12"/><ellipse cx="215" cy="170" rx="26" ry="11"/></g>
-<path d="M0 270C120 300 220 270 320 270S480 300 560 300 720 330 800 300V600H0Z" fill="#C9E2A8"/>
-<g fill="#9CC878" opacity=".8"><ellipse cx="270" cy="450" rx="70" ry="38"/><ellipse cx="215" cy="500" rx="55" ry="30"/><ellipse cx="560" cy="440" rx="60" ry="30"/><ellipse cx="700" cy="420" rx="70" ry="34"/><ellipse cx="120" cy="380" rx="70" ry="40"/></g>
-<path d="M330 600C335 540 300 510 345 470S440 430 380 380 330 350 400 320 470 270 440 210 480 120 470 100" fill="none" stroke="#fff" stroke-width="30" stroke-linecap="round" opacity=".6"/>
-<path d="M330 600C335 540 300 510 345 470S440 430 380 380 330 350 400 320 470 270 440 210 480 120 470 100" fill="none" stroke="#4FA8DC" stroke-width="22" stroke-linecap="round"/>
-<g fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"><path d="M330 400C420 360 500 280 575 175"/><path d="M330 400C450 440 560 450 640 470"/><path d="M330 400L285 440M330 400L430 470"/></g>
-<g fill="none" stroke="#C9A24B" stroke-width="1.6" stroke-dasharray="5 6" stroke-linecap="round"><path d="M330 400C420 360 500 280 575 175"/><path d="M330 400C450 440 560 450 640 470"/><path d="M330 400L285 440M330 400L430 470"/></g>
-<g font-family="Plus Jakarta Sans,system-ui,sans-serif" font-weight="800" text-anchor="middle" paint-order="stroke" stroke="#fff" stroke-width="5" stroke-linejoin="round"><text x="160" y="70" font-size="20" fill="#0B3A66" stroke="none" opacity=".75">Oceano Atlântico</text><text x="360" y="205" font-size="17" fill="#8a6a1e">Lençóis Maranhenses</text><text x="372" y="572" font-size="14" fill="#1F6FA3" transform="rotate(-12 372 572)">Rio Preguiças</text></g>
-<g transform="translate(${TOWN[0]} ${TOWN[1]})"><circle r="20" fill="#13263D" stroke="#fff" stroke-width="4"/><path d="M-8 6V-2l8-7 8 7V6Z" fill="#fff"/><text y="38" text-anchor="middle" font-size="16" font-weight="800" fill="#13263D" stroke="#fff" stroke-width="5" paint-order="stroke" font-family="Plus Jakarta Sans,system-ui,sans-serif">Barreirinhas</text></g>`;
+<g fill="none" stroke="#fff" stroke-linecap="round" opacity=".55"><path d="M40 40c14-6 28 6 42 0M180 58c14-6 28 6 42 0M420 36c14-6 28 6 42 0M610 52c14-6 28 6 42 0M700 24c14-6 28 6 42 0" stroke-width="2.5"/></g>
+<path d="M0 112C80 80 170 100 250 100S420 135 540 105 700 120 800 95V300C720 330 640 280 560 300S400 280 320 270 120 300 0 270Z" fill="url(#sand)"/>
+<path d="M0 112C80 80 170 100 250 100S420 135 540 105 700 120 800 95" fill="none" stroke="#fff" stroke-width="6" opacity=".85"/>
+<g fill="none" stroke="#E7CF8F" stroke-width="3" stroke-linecap="round" opacity=".8"><path d="M60 170c40-20 90 10 140-8M250 210c50-22 110 10 170-6M470 150c50-20 100 8 150-5M610 235c40-14 80 6 140-4M110 245c50-14 100 8 160-4M300 150c30-12 60 6 90-2"/></g>
+<g fill="#5DBDEA" stroke="#fff" stroke-width="3"><ellipse cx="540" cy="190" rx="48" ry="23"/><ellipse cx="500" cy="232" rx="30" ry="13"/><ellipse cx="662" cy="148" rx="28" ry="12"/><ellipse cx="215" cy="172" rx="26" ry="11"/><ellipse cx="700" cy="250" rx="22" ry="9"/><ellipse cx="120" cy="205" rx="18" ry="8"/></g>
+<g fill="#9FD2A0" opacity=".9"><ellipse cx="240" cy="470" rx="78" ry="40"/><ellipse cx="160" cy="520" rx="60" ry="30"/><ellipse cx="575" cy="430" rx="62" ry="30"/><ellipse cx="710" cy="410" rx="72" ry="34"/><ellipse cx="110" cy="370" rx="72" ry="40"/><ellipse cx="560" cy="555" rx="90" ry="34"/></g>
+<path d="M330 600C335 540 300 510 345 470S440 430 380 380 330 350 400 320 470 270 440 210 480 120 470 100" fill="none" stroke="#fff" stroke-width="30" stroke-linecap="round" opacity=".7"/>
+<path d="M330 600C335 540 300 510 345 470S440 430 380 380 330 350 400 320 470 270 440 210 480 120 470 100" fill="none" stroke="#3E9DD6" stroke-width="20" stroke-linecap="round"/>
+<g fill="none" stroke-linecap="round" stroke-linejoin="round"><g stroke="#B9C7A0" stroke-width="9"><path d="M330 400C420 360 480 290 540 190"/><path d="M330 400C450 430 560 450 640 470"/><path d="M330 400L240 458M330 400L445 492"/></g><g stroke="#fff" stroke-width="5.5"><path d="M330 400C420 360 480 290 540 190"/><path d="M330 400C450 430 560 450 640 470"/><path d="M330 400L240 458M330 400L445 492"/></g></g>
+<g font-family="Plus Jakarta Sans,system-ui,sans-serif" font-weight="700" text-anchor="middle"><text x="450" y="58" font-size="18" fill="#fff" opacity=".9" letter-spacing="3">OCEANO ATLÂNTICO</text><text x="300" y="240" font-size="15" fill="#A07F2B" letter-spacing="1.5" opacity=".9">LENÇÓIS MARANHENSES</text><text x="410" y="575" font-size="14" fill="#2A7DB4" text-anchor="start" opacity=".95">Rio Preguiças</text></g>
+<g transform="translate(${TOWN[0]} ${TOWN[1]})" filter="url(#ds)"><rect x="-58" y="18" width="116" height="28" rx="14" fill="#13263D"/><text y="37" text-anchor="middle" font-size="15" font-weight="800" fill="#fff" font-family="Plus Jakarta Sans,system-ui,sans-serif">Barreirinhas</text><circle r="13" fill="#13263D" stroke="#fff" stroke-width="4"/><circle r="4.5" fill="#fff"/></g>`;
 V.mapa=()=>{const F=['Todos','Passeios','Comer','Hospedagem'];const L=PLACES.filter(p=>U.mapf==='Todos'||p.t===U.mapf);if(U.sel&&!L.some(p=>p.n===U.sel))U.sel=null;
 return `<div class="scr"><div class="pad" style="padding-top:calc(var(--top) + 4px)"><h1 class="h1">Mapa</h1><p class="lead">Lugares perto de Barreirinhas</p></div>
 <div class="pad"><div class="chips scroll" style="margin-top:14px">${F.map(f=>`<button class="chip ${U.mapf===f?'on':''}" data-mapf="${f}">${f}</button>`).join('')}</div></div>
 <div class="pad"><div class="mapbox" id="mapbox"><svg id="mapsvg" viewBox="0 0 800 600" role="group" aria-label="Mapa interativo da região de Barreirinhas"><g id="mapg">${MAPART}<g id="route"></g>${L.map(p=>{const [x,y]=PXY[p.n];const c=CATC[p.t];return `<g class="mpin" data-pin="${p.n}" tabindex="0" role="button" aria-label="${p.n}, ${p.dist}" transform="translate(${x} ${y})"><circle class="pulse" r="30" fill="${c}"/><g class="body"><path d="M0 0C-26-26-30-36-30-48a30 30 0 0 1 60 0C30-36 26-26 0 0Z" fill="${c}" stroke="#fff" stroke-width="4"/><g transform="translate(-13 -61) scale(1.08)" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${CATI[p.t]}</g></g></g>`}).join('')}</g></svg>
-<div class="mapctl"><button data-mz="1" aria-label="Aproximar">+</button><button data-mz="-1" aria-label="Afastar">−</button><button data-mz="0" aria-label="Centralizar mapa" style="font-size:20px">⌖</button></div>
-<div class="mapcard" id="mapcard" hidden></div><div class="maphint" id="maphint">Arraste, use dois dedos para ampliar e toque nos pinos</div></div></div>
+<div class="mapctl"><div class="zgrp"><button data-mz="1" aria-label="Aproximar"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button><button data-mz="-1" aria-label="Afastar"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14"/></svg></button></div><button class="zre" data-mz="0" aria-label="Centralizar mapa"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="6.5"/><circle cx="12" cy="12" r="2" fill="currentColor"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></button></div>
+<div class="mapcard" id="mapcard" hidden></div><div class="maphint" id="maphint">Arraste e use dois dedos para ampliar</div></div><div class="mlegend"><span><i style="background:#0B6FB8"></i>Passeios</span><span><i style="background:#D9480F"></i>Comer</span><span><i style="background:#7B3FA0"></i>Hospedagem</span></div></div>
 <div class="pad"><div class="stack" style="margin-top:16px">${L.map(p=>`<button class="item ${U.sel===p.n?'sel':''}" data-row="${p.n}" data-sel="${p.n}" aria-label="Mostrar ${p.n} no mapa"><div class="img" style="${bg(p.img)};width:72px;height:72px"></div><div class="t"><b>${p.n}</b><span class="small">${p.t} · ${p.dist}</span></div><span class="pinbtn" aria-hidden="true">${I.map}</span></button>`).join('')}</div>
 <a class="btn light" style="margin:16px 0" href="${gmaps('Barreirinhas, Maranhão')}" target="_blank" rel="noopener">${I.ext} Abrir no Google Maps</a></div></div>`};
 function initMap(){const box=document.getElementById('mapbox');if(!box)return;const svg=document.getElementById('mapsvg'),M=U.mp,W=800,H=600;
@@ -449,7 +460,7 @@ const focus=n=>{const[x,y]=PXY[n];if(M.k<1.6)M.k=1.6;const r=rect(),s=scale();M.
 svg.querySelectorAll('.mpin').forEach(n=>{const pick=()=>{if(moved>6)return;U.sel=U.sel===n.dataset.pin?null:n.dataset.pin;draw();if(U.sel)focus(U.sel)};n.addEventListener('click',pick);n.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();moved=0;pick()}})});
 box.addEventListener('click',e=>{const b=e.target.closest('[data-mz]');if(b){const z=+b.dataset.mz;if(z===0){M.k=1;M.x=150;M.y=0;apply()}else{const r=rect();zoomAt(z>0?1.5:1/1.5,r.left+r.width/2,r.top+r.height/2)}}if(e.target.closest('[data-unsel]')){U.sel=null;draw()}});
 document.querySelectorAll('[data-sel]').forEach(b=>b.addEventListener('click',()=>{const n=b.dataset.sel;U.sel=n;draw();focus(n);box.scrollIntoView({behavior:'smooth',block:'center'})}));
-apply();draw();if(window.ResizeObserver)new ResizeObserver(apply).observe(box)}
+setTimeout(()=>document.getElementById('maphint')?.classList.add('off'),3500);apply();draw();if(window.ResizeObserver)new ResizeObserver(apply).observe(box)}
 const daysLeft=v=>{const[d,m,y]=v.split('/').map(Number);const n=new Date();n.setHours(0,0,0,0);return Math.round((new Date(y,m-1,d)-n)/864e5)};
 const wallet=()=>{const av=CUP.filter(c=>!S.used.includes(c.id)&&daysLeft(c.v)>=0),fx=av.reduce((s,c)=>s+(c.val||0),0);
 return `<div class="wallet"><div><b>${av.length}</b><span>${av.length===1?'cupom disponível':'cupons disponíveis'}</span></div><div><b>${S.used.length}</b><span>${S.used.length===1?'usado':'usados'}</span></div>${fx?`<div><b>R$ ${fx}</b><span>em descontos fixos</span></div>`:''}</div>
