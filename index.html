@@ -204,6 +204,13 @@ details.faq p{padding-bottom:16px;font-size:16px;color:var(--text)}
 .months .best{background:var(--green);color:#fff}.months .now{outline:3px solid var(--yellow);outline-offset:1px}
 .mnote{margin-top:8px;font-weight:600;color:#9A5B00}.mnote.ok{color:var(--green)}
 @media (prefers-reduced-motion:reduce){.months span,.heart.on svg{animation:none}.heart{transition:none}}
+.fu{animation:fu .7s cubic-bezier(.2,.8,.2,1) backwards}.fd{animation:fd .8s ease backwards}@keyframes fu{from{opacity:0;transform:translateY(24px)}}@keyframes fd{from{opacity:0;transform:translateY(-12px) scale(.9)}}
+.pstats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:20px}.pstats>div{background:var(--soft);border-radius:16px;padding:12px 6px;text-align:center;display:flex;flex-direction:column}.pstats b{font-size:24px;font-weight:800;color:var(--btn)}.pstats span{font-size:13px;font-weight:600;color:var(--muted)}
+.pack{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.pk{display:flex;align-items:center;gap:10px;min-height:52px;padding:8px 10px;border:2px solid var(--line);border-radius:14px;font-size:15px;font-weight:700;text-align:left;color:var(--ink);transition:background .15s,border-color .15s}
+.pk .bx{width:26px;height:26px;flex:none;border-radius:8px;border:2px solid var(--muted);display:flex;align-items:center;justify-content:center;color:#fff}.pk .bx svg{width:16px;height:16px}.pk.on{border-color:var(--green);background:var(--green-bg)}.pk.on .bx{background:var(--green);border-color:var(--green);animation:pop .3s ease}
+.faq[hidden]{display:none}
+.confetti{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:70}.confetti i{position:absolute;top:-12px;width:9px;height:14px;border-radius:2px;animation:cf 2.2s ease-in forwards}@keyframes cf{to{transform:translate(var(--dx),640px) rotate(var(--r));opacity:.9}}
+@media (prefers-reduced-motion:reduce){.fu,.fd,.pk.on .bx{animation:none}.pk{transition:none}}
 </style>
 
 <div class="phone" id="app"></div>
@@ -267,7 +274,7 @@ const byId=(L,id)=>L.find(x=>x.id===id);
 /* ---------------- estado ---------------- */
 const S={pts:650,used:[],resv:[],stamps:[{n:'Lençóis Maranhenses',d:'12/08/2026',img:'p1'},{n:'São Luís',d:'05/07/2026',img:'p2'},{n:'Atins',d:'28/06/2026',img:'p3'},{n:'Rosário',d:'12/05/2026',img:'p4'}],name:'',logged:false,big:false,read:[]};
 try{const s=JSON.parse(localStorage.getItem('marapass4')||'null');if(s)Object.assign(S,s)}catch(e){}
-if(!Array.isArray(S.fav))S.fav=[];
+if(!Array.isArray(S.fav))S.fav=[];if(!S.pack||typeof S.pack!=='object')S.pack={};
 const save=()=>{try{localStorage.setItem('marapass4',JSON.stringify(S))}catch(e){}};
 const U={hf:false,q:'',mapf:'Todos',cupf:'Todos',cupv:'disp',csort:false,hist:[],book:null};
 const A=document.getElementById('app');
@@ -283,12 +290,12 @@ const backBtn=`<button class="back" data-back>${I.back}Voltar</button>`;
 const V={};
 V.splash=()=>`<div class="scr full" style="${bg('splash_bg')};background-size:cover;background-position:center 30%"><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,38,61,.55) 0%,rgba(11,38,61,0) 38%,rgba(11,38,61,0) 50%,rgba(11,38,61,.85) 100%)"></div>
 <div style="position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;padding:72px 28px 0;height:100%;color:#fff">
-<div style="width:150px;filter:drop-shadow(0 2px 10px rgba(0,0,0,.35))">${LOGO_W}</div>
+<div class="fd" style="width:150px;filter:drop-shadow(0 2px 10px rgba(0,0,0,.35))">${LOGO_W}</div>
 <p style="font-size:14px;letter-spacing:.24em;font-weight:700;margin-top:10px;text-shadow:0 1px 6px rgba(0,0,0,.4)">DESCUBRA · VIVA · VALORIZE</p>
 <div style="margin-top:auto;width:100%;padding-bottom:44px;text-align:left">
-<h1 style="font-size:32px;font-weight:800;line-height:1.12">Mais que destinos,<br>boas histórias.</h1>
-<p style="font-size:18px;margin-top:10px;opacity:.95">Seu passaporte turístico do Maranhão.</p>
-<button class="btn yellow" style="margin-top:24px" data-start>Começar ${I.next}</button>
+<h1 class="fu" style="font-size:32px;font-weight:800;line-height:1.12">Mais que destinos,<br>boas histórias.</h1>
+<p class="fu" style="animation-delay:.15s;font-size:18px;margin-top:10px;opacity:.95">Seu passaporte turístico do Maranhão.</p>
+<button class="btn yellow fu" style="animation-delay:.3s;margin-top:24px" data-start>Começar ${I.next}</button>
 <p style="font-size:14px;margin-top:14px;text-align:center;opacity:.9">Lençóis Maranhenses · Maranhão, Brasil</p></div></div></div>`;
 const homeExtra=()=>{const pct=Math.min(100,Math.round(S.pts/10));const nx=S.pts>=1000?'Você é Aventureiro!':`Faltam ${1000-S.pts} pts para o próximo nível`;
 const T=[['mapa',I.map,'Mapa','#E7F1FA','#0B3A66'],['cupons',I.ticket,'Cupons','#FFF4D6','#8A5A00'],['checkin',I.qr,'Check-in','#E7F4EE','#14775A'],['passaporte',I.pass,'Reservas','#F1E8F7','#6B2F8F']];
@@ -329,12 +336,14 @@ V.passeios=id=>{const d=byId(DEST,id)||DEST[0];return `<div class="scr"><div cla
 <div class="stack" style="margin-top:20px">${EXP.filter(e=>e.dest===d.id).map(expItem).join('')}</div></div></div>`};
 V.comer=id=>{const d=byId(DEST,id)||DEST[0];return `<div class="scr"><div class="bar">${backBtn}</div><div class="pad"><h1 class="h1">Onde comer</h1><p class="lead">${d.n}</p>
 <div class="stack" style="margin-top:20px">${REST.filter(r=>r.dest===d.id).map(r=>`<button class="item" data-go="rest:${r.id}"><div class="img" style="${bg(r.img)}"></div><div class="t"><b>${r.n}</b><span class="small">${r.s}</span></div></button>`).join('')}</div></div></div>`};
+const PACK=['Protetor solar','Chapéu ou boné','Roupa de banho','Garrafa de água','Sandália ou chinelo','Dinheiro ou Pix'];
+const packList=e=>{const got=S.pack[e.id]||[];return `<h2 class="h2">O que levar</h2><p class="small">Toque para marcar ${got.length}/${PACK.length}</p><div class="pack">${PACK.map((n,i)=>`<button class="pk ${got.includes(i)?'on':''}" data-pack="${e.id}|${i}" role="checkbox" aria-checked="${got.includes(i)}"><span class="bx">${got.includes(i)?I.check:''}</span>${n}</button>`).join('')}</div>${got.length===PACK.length?'<p class="badge" style="margin-top:10px">Tudo pronto para o passeio!</p>':''}`};
 V.passeio=id=>{const e=byId(EXP,id)||EXP[0];const c=e.cup&&byId(CUP,e.cup);return `<div class="scr"><div class="photo" style="${bg(e.hero||e.img)};height:260px">${backBtn}</div><div class="pad">
 <h1 class="h1" style="margin-top:20px">${e.n}</h1><p class="lead" style="margin-top:8px">${e.d}</p>
 <div class="facts" style="margin-top:20px"><div class="fact"><span>Duração</span><b>${e.h}</b></div><div class="fact"><span>Saída</span><b>${e.from}</b></div><div class="fact"><span>Preço</span><b style="color:var(--green)">${brl(e.p)} por pessoa</b></div></div>
 ${c&&!S.used.includes(c.id)?`<button class="badge" style="margin-top:14px;min-height:44px;padding:8px 14px;font-size:16px" data-go="reservar:${e.id}">${I.ticket.replace('<svg','<svg style="width:18px;height:18px;vertical-align:-3px"')} Tem cupom: ${c.off}</button>`:''}
-<div class="stack" style="margin-top:16px"><button class="btn" data-go="reservar:${e.id}">${I.cal} Escolher data e reservar</button>
-<a class="btn light" href="${gmaps(e.from+' Maranhão')}" target="_blank" rel="noopener">${I.route} Ver ponto de saída</a></div></div></div>`};
+${packList(e)}<div class="stack" style="margin-top:16px"><button class="btn" data-go="reservar:${e.id}">${I.cal} Escolher data e reservar</button>
+<a class="btn light" href="${gmaps(e.from+' Maranhão')}" target="_blank" rel="noopener">${I.route} Ver ponto de saída</a></div><div class="sbar"><div class="sb-t"><span>A partir de</span><b>${brl(e.p)}</b></div><button class="btn green" data-go="reservar:${e.id}">Reservar</button></div></div></div>`};
 const stepsBar=(b,cupOk)=>{const S4=[['Dia',b.day!==null],['Horário',!!b.slot],['Pessoas',b.ppl>0],...(cupOk?[['Cupom',b.cup]]:[])];const done=S4.filter(s=>s[1]).length;
 return `<div class="steps" aria-label="${done} de ${S4.length} passos feitos">${S4.map(([n,ok],i)=>`<span class="${ok?'ok':''}"><i>${ok?I.check:i+1}</i>${n}</span>`).join('')}</div>`};
 V.reservar=id=>{const e=byId(EXP,id)||EXP[0];if(!U.book||U.book.id!==e.id)U.book={id:e.id,day:null,ppl:2,cup:false,slot:'Manhã'};const b=U.book;const c=e.cup&&byId(CUP,e.cup);const cupOk=c&&!S.used.includes(c.id);
@@ -352,13 +361,13 @@ ${cupOk?`<h2 class="h2">4. Usar cupom?</h2><button class="row-btn" data-togglecu
 V.rest=id=>{const r=byId(REST,id)||REST[0];const c=r.cup&&byId(CUP,r.cup);return `<div class="scr"><div class="photo" style="${bg(r.hero)}">${backBtn}</div><div class="pad">
 <h1 class="h1" style="margin-top:20px">${r.n}</h1><p class="lead" style="margin-top:8px">${r.s}</p>
 <div class="facts" style="margin-top:20px"><div class="fact"><span>Horário</span><b>${r.hours}</b></div><div class="fact"><span>Endereço</span><b>${r.addr}</b></div><div class="fact"><span>Telefone</span><b>${r.tel}</b></div></div>
-<div class="stack" style="margin-top:20px"><button class="btn" data-copy="${r.tel}">${I.phone} Copiar telefone</button>
+<div class="stack" style="margin-top:20px"><a class="btn" href="tel:${r.tel.replace(/\D/g,'')}">${I.phone} Ligar agora</a><button class="btn light" data-copy="${r.tel}">Copiar telefone</button>
 ${c?`<button class="btn yellow" data-cupom="${c.id}">${I.ticket} ${S.used.includes(c.id)?'Cupom já usado':'Ver cupom de '+c.off.split(' ')[0]}</button>`:''}
 <a class="btn light" href="${gmaps(r.q)}" target="_blank" rel="noopener">${I.route} Como chegar</a></div></div></div>`};
 V.hotel=id=>{const h=byId(HOTEL,id)||HOTEL[0];const c=h.cup&&byId(CUP,h.cup);return `<div class="scr"><div class="photo" style="${bg(h.img)}">${backBtn}</div><div class="pad">
 <h1 class="h1" style="margin-top:20px">${h.n}</h1><p class="lead" style="margin-top:8px">${h.s}</p>
 <div class="facts" style="margin-top:20px"><div class="fact"><span>Telefone</span><b>${h.tel}</b></div><div class="fact"><span>Cidade</span><b>Santo Amaro - MA</b></div></div>
-<div class="stack" style="margin-top:20px"><button class="btn" data-copy="${h.tel}">${I.phone} Copiar telefone</button>${c?`<button class="btn yellow" data-cupom="${c.id}">${I.ticket} ${S.used.includes(c.id)?'Cupom já usado':'Ver cupom de 20%'}</button>`:''}<a class="btn light" href="${gmaps(h.q)}" target="_blank" rel="noopener">${I.route} Como chegar</a></div></div></div>`};
+<div class="stack" style="margin-top:20px"><a class="btn" href="tel:${h.tel.replace(/\D/g,'')}">${I.phone} Ligar agora</a><button class="btn light" data-copy="${h.tel}">Copiar telefone</button>${c?`<button class="btn yellow" data-cupom="${c.id}">${I.ticket} ${S.used.includes(c.id)?'Cupom já usado':'Ver cupom de 20%'}</button>`:''}<a class="btn light" href="${gmaps(h.q)}" target="_blank" rel="noopener">${I.route} Como chegar</a></div></div></div>`};
 /* ---------------- mapa interativo (SVG, sem dependências) ---------------- */
 const PXY={'Lagoa Azul':[575,175],'Casa do Mangue':[285,440],'Restaurante o Buriti':[640,470],'Pousada Vila Lençóis':[430,470],'Rio Preguiças':[395,330]};
 const TOWN=[330,400],CATC={Passeios:'#0B6FB8',Comer:'#D9480F',Hospedagem:'#7B3FA0'},CATI={Passeios:'<path d="M3 17c3-4 6-4 9 0s6 4 9 0M3 12c3-4 6-4 9 0s6 4 9 0"/>',Comer:'<path d="M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 3c-2 2-3 5-3 8h3v10"/>',Hospedagem:'<path d="M3 20V8M3 14h18v6M21 14v-3a3 3 0 0 0-3-3h-7v6"/>'};
@@ -442,7 +451,7 @@ const f=(x,y)=>`<rect x="${x+.5}" y="${y+.5}" width="6" height="6" fill="none" s
 return `<svg viewBox="-1 -1 23 23" width="220" height="220" fill="#111" shape-rendering="crispEdges" role="img" aria-label="Código QR">${o}${f(0,0)}${f(14,0)}${f(0,14)}</svg>`}
 V.checkin=key=>{const r=S.resv.find(x=>x.key===key);const name=r?r.n:'Lençóis Maranhenses';qrSeed=(key||'x').length+S.pts;return `<div class="scr"><div class="bar">${backBtn}</div><div class="pad" style="text-align:center">
 <h1 class="h1">Registrar visita</h1><p class="lead" style="margin-top:8px">Mostre este código para o guia ou atendente.</p>
-<div style="margin:24px auto;width:252px;padding:14px;border:2px solid var(--line);border-radius:20px">${qr()}</div>
+<div id="qrw" style="margin:24px auto 8px;width:252px;padding:14px;border:2px solid var(--line);border-radius:20px">${qr()}</div><p class="small" id="qrt" style="margin-bottom:12px">Código renovado em <b>30</b> s</p>
 <p class="lead"><b>${name}</b><br>Você ganha <b style="color:var(--green)">50 pontos</b></p>
 <div style="margin-top:20px"><button class="btn green" data-docheck="${key||''}">${I.check} O atendente leu o código</button></div></div></div>`};
 
@@ -454,11 +463,12 @@ V.login=()=>`<div class="scr full"><div class="bar">${backBtn}</div><div class="
 <p class="err" id="lerr" hidden>Digite seu nome para continuar.</p>
 <button class="btn" type="submit">Continuar ${I.next}</button>
 <button class="btn light" type="button" data-guest>Entrar sem cadastro</button></form></div></div>`;
-V.avisos=()=>`<div class="scr"><div class="bar">${backBtn}</div><div class="pad"><h1 class="h1">Avisos</h1><p class="lead">Toque em um aviso para abrir.</p>
+V.avisos=()=>`<div class="scr"><div class="bar">${backBtn}</div><div class="pad"><h1 class="h1">Avisos</h1><p class="lead">${(n=>n?n+(n===1?' aviso novo.':' avisos novos.'):'Você está em dia!')(NOTIF.filter(n=>!S.read.includes(n.id)).length)} Toque para abrir.</p>
 <div class="stack" style="margin-top:20px">${NOTIF.map(n=>`<button class="notif ${S.read.includes(n.id)?'':'new'}" data-notif="${n.id}"><div><b>${n.t}</b><span>${n.d}</span></div></button>`).join('')}</div>
 <div style="margin-top:16px"><button class="btn light" data-readall>Marcar todos como lidos</button></div></div></div>`;
 V.perfil=()=>`<div class="scr"><div class="bar">${backBtn}</div><div class="pad">
 <div style="display:flex;align-items:center;gap:14px"><span class="avatar" style="width:64px;height:64px;font-size:26px">${(S.name||'V')[0].toUpperCase()}</span><div><h1 class="h1">${S.name||'Viajante'}</h1><p class="small">${S.pts} pontos</p></div></div>
+<div class="pstats"><div><b>${S.pts}</b><span>pontos</span></div><div><b>${S.stamps.length}</b><span>carimbos</span></div><div><b>${S.fav.length}</b><span>favoritos</span></div></div>
 <form id="pf" class="stack" style="margin-top:24px" novalidate><label class="field" for="pn">Seu nome<input id="pn" value="${S.name}" placeholder="Digite seu nome"></label><button class="btn light" type="submit">Salvar nome</button></form>
 <h2 class="h2">Tamanho da letra</h2>
 <div class="stack"><button class="opt ${S.big?'':'on'}" data-size="0"><span class="radio"></span>Normal</button><button class="opt ${S.big?'on':''}" data-size="1"><span class="radio"></span><span style="font-size:22px">Letra grande</span></button></div>
@@ -467,7 +477,8 @@ V.perfil=()=>`<div class="scr"><div class="bar">${backBtn}</div><div class="pad"
 <button class="row-btn" data-go="passaporte"><span class="ic" style="background:var(--green-bg);color:var(--green)">${I.pass}</span><div><b>Meu passaporte</b><span>Pontos e reservas</span></div><span class="chev">${I.next}</span></button>
 <button class="row-btn" data-logout><span class="ic" style="background:#FCEBEA;color:var(--red)">${I.out}</span><div><b>Sair</b><span>Voltar para a tela inicial</span></div></button></div></div></div>`;
 V.ajuda=()=>`<div class="scr"><div class="bar">${backBtn}</div><div class="pad"><h1 class="h1">Ajuda</h1><p class="lead">Toque na pergunta para ver a resposta.</p>
-<div class="stack" style="margin-top:20px">${[['Como faço uma reserva?','Escolha um destino, toque em Passeios, escolha o passeio e toque em "Escolher data e reservar".'],['Como uso um cupom?','Abra Cupons, toque em "Usar cupom" e mostre o código no caixa.'],['Como ganho pontos?','Registre sua visita no Passaporte (+50) e use cupons (+20).'],['Posso cancelar?','Sim. Abra o Passaporte e toque em "Cancelar reserva".']].map(([q,a])=>`<details class="faq"><summary>${q}</summary><p>${a}</p></details>`).join('')}</div>
+<label class="search" style="margin-top:16px">${I.search}<input id="hq" type="search" placeholder="Buscar na ajuda" aria-label="Buscar na ajuda"></label><p class="empty" id="hnone" hidden style="margin-top:16px">Nenhuma pergunta encontrada. Fale com a gente abaixo.</p>
+<div class="stack" style="margin-top:16px">${[['Como faço uma reserva?','Escolha um destino, toque em Passeios, escolha o passeio e toque em "Escolher data e reservar".'],['Como uso um cupom?','Abra Cupons, toque em "Usar cupom" e mostre o código no caixa.'],['Como ganho pontos?','Registre sua visita no Passaporte (+50) e use cupons (+20).'],['Posso cancelar?','Sim. Abra o Passaporte e toque em "Cancelar reserva".'],['Como funciona o check-in?','No dia do passeio, abra o Passaporte, toque em "Registrar visita" e mostre o código ao guia.'],['Os pagamentos são reais?','Não. O MaraPass é um protótipo de demonstração: pagamentos, reservas e check-in são simulados.'],['Posso mudar o tamanho da letra?','Sim. Toque no seu perfil (a letra no canto da tela inicial) e escolha "Letra grande".']].map(([q,a])=>`<details class="faq"><summary>${q}</summary><p>${a}</p></details>`).join('')}</div>
 <h2 class="h2">Falar com a gente</h2><div class="stack"><button class="btn" data-copy="(98) 3000-0000">${I.phone} Copiar telefone de atendimento</button><a class="btn light" href="https://wa.me/559830000000" target="_blank" rel="noopener">Abrir WhatsApp</a></div></div></div>`;
 V.pagar=key=>{const r=S.resv.find(x=>x.key===key);if(!r)return V.passaporte();const m=U.pay||'pix';return `<div class="scr"><div class="bar">${backBtn}</div><div class="pad">
 <h1 class="h1">Pagamento</h1><p class="lead">${r.n} · ${r.ppl} ${r.ppl===1?'pessoa':'pessoas'}</p>
@@ -482,6 +493,12 @@ ${m==='local'?`<p class="empty" style="margin-top:16px">Você paga direto ao gui
 <div style="margin-top:16px"><button class="btn green" data-paynow="${key}">${m==='pix'?'Já fiz o Pix':m==='card'?'Pagar '+brl(r.total):'Confirmar'}</button></div></div></div>`};
 /* ---------------- navegação ---------------- */
 let cur='splash';
+let pixTimer2=0;
+function confetti(){if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;const c=document.createElement('div');c.className='confetti';c.setAttribute('aria-hidden','true');const col=['#FAC61D','#14775A','#0B6FB8','#C53B36','#7B3FA0'];let h='';for(let i=0;i<34;i++)h+=`<i style="left:${Math.random()*100}%;background:${col[i%5]};animation-delay:${(Math.random()*.5).toFixed(2)}s;--dx:${Math.round((Math.random()-.5)*140)}px;--r:${Math.round(Math.random()*720)}deg"></i>`;c.innerHTML=h;A.appendChild(c);setTimeout(()=>c.remove(),2800)}
+function initExtras(v){clearInterval(pixTimer2);
+if(v==='checkin'){let s=30;pixTimer2=setInterval(()=>{const w=document.getElementById('qrw');if(!w){clearInterval(pixTimer2);return}s--;if(s<=0){s=30;qrSeed++;w.innerHTML=qr()}const t=document.querySelector('#qrt b');if(t)t.textContent=s},1000)}
+if(v==='login'){const lp=document.getElementById('lp');if(lp)lp.addEventListener('input',()=>{const d=lp.value.replace(/\D/g,'').slice(0,11);lp.value=d.length>7?`(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`:d.length>2?`(${d.slice(0,2)}) ${d.slice(2)}`:d.length?`(${d}`:''});const ln=document.getElementById('ln');if(ln)ln.addEventListener('input',()=>{const e=document.getElementById('lerr');if(e)e.hidden=true})}
+if(v==='ajuda'){const q=document.getElementById('hq');if(q)q.addEventListener('input',()=>{const s=q.value.trim().toLowerCase();let n=0;document.querySelectorAll('.faq').forEach(f=>{const ok=!s||f.textContent.toLowerCase().includes(s);f.hidden=!ok;if(ok)n++;if(s&&ok)f.open=true});document.getElementById('hnone').hidden=n>0});document.querySelectorAll('.faq').forEach(f=>f.addEventListener('toggle',()=>{if(f.open)document.querySelectorAll('.faq').forEach(o=>{if(o!==f)o.open=false})}))}}
 let pixTimer=0;
 const validCard=()=>{const g=id=>document.getElementById(id),n=g('cn').value.replace(/\D/g,''),v=g('cv').value,c=g('cc').value.replace(/\D/g,'');
 const mm=+v.slice(0,2);const chk=[[g('cn'),n.length>=13&&n.length<=16],[g('cv'),/^\d\d\/\d\d$/.test(v)&&mm>=1&&mm<=12],[g('cc'),c.length>=3]];
@@ -497,7 +514,7 @@ cc.addEventListener('input',()=>{cc.value=cc.value.replace(/\D/g,'').slice(0,4)}
 
 function countUp(){A.querySelectorAll('[data-count]').forEach(el=>{const to=+el.dataset.count;if(matchMedia('(prefers-reduced-motion:reduce)').matches||!to)return;const t0=performance.now();const f=n=>{const k=Math.min(1,(n-t0)/900);el.textContent=Math.round(to*(1-Math.pow(1-k,3)));if(k<1)requestAnimationFrame(f)};requestAnimationFrame(f)})}
 function render(keepScroll){const [v,arg]=cur.split(':');const s0=keepScroll&&A.querySelector('.scr')?A.querySelector('.scr').scrollTop:0;
-A.innerHTML=(V[v]||V.home)(arg)+(TABOF[v]?tabbar(TABOF[v]):'');const s=A.querySelector('.scr');if(s)s.scrollTop=s0;if(v==='mapa')initMap();if(v==='pagar')initPay();countUp();if(v==='home'||v==='passaporte')requestAnimationFrame(()=>requestAnimationFrame(()=>A.querySelectorAll('.pc-bar i').forEach(i=>i.style.width=i.dataset.w+'%')));
+A.innerHTML=(V[v]||V.home)(arg)+(TABOF[v]?tabbar(TABOF[v]):'');const s=A.querySelector('.scr');if(s)s.scrollTop=s0;if(v==='mapa')initMap();if(v==='pagar')initPay();initExtras(v);countUp();if(v==='home'||v==='passaporte')requestAnimationFrame(()=>requestAnimationFrame(()=>A.querySelectorAll('.pc-bar i').forEach(i=>i.style.width=i.dataset.w+'%')));
 const cq=document.getElementById('cq');if(cq)cq.addEventListener('input',ev=>{U.cq=ev.target.value;const p=ev.target.selectionStart;render(true);const n=document.getElementById('cq');n.focus();n.setSelectionRange(p,p)});
 const q=document.getElementById('q');if(q)q.addEventListener('input',ev=>{U.q=ev.target.value;const p=ev.target.selectionStart;render(true);const n=document.getElementById('q');n.focus();n.setSelectionRange(p,p)})}
 function go(v){if(v!==cur)U.hist.push(cur);cur=v;try{history.replaceState(null,'','#'+v.replace(':','-'))}catch(e){}render()}
@@ -512,6 +529,7 @@ if(d.mapf){U.mapf=d.mapf;return render(true)}
 if(d.hf!==undefined){U.hf=d.hf==='1';return render(true)}
 if(d.fav){const i=S.fav.indexOf(d.fav);if(i<0)S.fav.push(d.fav);else S.fav.splice(i,1);save();toast(i<0?'Guardado nos favoritos':'Tirado dos favoritos');return render(true)}
 if(d.share){const x=byId(DEST,d.share),url=location.href.split('#')[0]+'#destino-'+x.id;try{if(navigator.share){await navigator.share({title:'MaraPass: '+x.n,text:x.s,url})}else{await navigator.clipboard.writeText(url);toast('Link copiado')}}catch(err){if(err&&err.name!=='AbortError')toast('Não foi possível compartilhar')}return}
+if(d.pack){const[id,i]=d.pack.split('|'),a=S.pack[id]=S.pack[id]||[],k=a.indexOf(+i);if(k<0)a.push(+i);else a.splice(k,1);save();return render(true)}
 if(d.cupf){U.cupf=d.cupf;return render(true)}
 if(d.cupv){U.cupv=d.cupv;return render(true)}
 if('csort' in d){U.csort=!U.csort;return render(true)}
@@ -529,7 +547,7 @@ if(d.cupom){const c=byId(CUP,d.cupom);const used=S.used.includes(c.id);const cod
 const m=modal(`<h2 style="font-size:22px;font-weight:800">${c.n}</h2><p class="lead">${c.off}. Mostre este código no caixa:</p><button class="code veil" data-reveal aria-label="Toque para revelar o código">Toque para revelar</button><div class="rv" hidden><button class="btn light" data-copy="${code}" data-msg="Código do cupom copiado">Copiar código</button></div><p class="small">Válido até ${c.v}.</p>${used?'<p class="badge">Você já usou este cupom</p>':'<button class="btn green" data-ok>Pronto, já usei</button>'}<button class="btn light" data-close>Fechar</button>`);
 const rv=m.querySelector('[data-reveal]');if(rv)rv.addEventListener('click',()=>{rv.textContent=code;rv.classList.remove('veil');rv.classList.add('shown');m.querySelector('.rv').hidden=false},{once:true});const ok=m.querySelector('[data-ok]');if(ok)ok.addEventListener('click',()=>{S.used.push(c.id);S.pts+=20;save();m.remove();render(true);toast('Cupom usado. Você ganhou 20 pontos!')});return}
 if(d.copy){try{await navigator.clipboard.writeText(d.copy);toast(d.msg||('Telefone copiado: '+d.copy))}catch(err){toast(d.msg?'Copie o código manualmente':'Telefone: '+d.copy)}return}
-if('docheck' in d){const r=S.resv.find(x=>x.key===d.docheck);if(r)r.done=true;S.pts+=50;S.stamps.unshift({n:r?r.n:'Lençóis Maranhenses',d:new Date().toLocaleDateString('pt-BR'),img:r?r.img:'p1'});save();U.hist=[];cur='passaporte';render();toast('Visita registrada! +50 pontos');return}
+if('docheck' in d){const r=S.resv.find(x=>x.key===d.docheck);if(r)r.done=true;S.pts+=50;S.stamps.unshift({n:r?r.n:'Lençóis Maranhenses',d:new Date().toLocaleDateString('pt-BR'),img:r?r.img:'p1'});save();U.hist=[];cur='passaporte';render();confetti();toast('Visita registrada! +50 pontos');return}
 if(d.badge){const[n,on]=d.badge.split('|');return toast(on==='1'?'Conquista desbloqueada: '+n:'Ainda bloqueada: '+n+'. Continue explorando!')}
 if(d.stamp){const s=S.stamps[+d.stamp];modal(`<div style="height:180px;border-radius:16px;${bg(s.img)};background-size:cover;background-position:center"></div><h2 style="font-size:22px;font-weight:800">${s.n}</h2><p class="lead">Visitado em ${s.d}.<br>Este carimbo está guardado no seu passaporte.</p><button class="btn light" data-close>Fechar</button>`);return}
 if('start' in d){if(S.logged){U.hist=[];cur='home';return render()}return go('login')}

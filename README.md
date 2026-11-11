@@ -17,7 +17,9 @@ Feito para ser simples de usar, inclusive por pessoas mais velhas: letras grande
 - **Mapa interativo**: arraste, amplie (dois dedos, roda do mouse ou botões +/−), filtre por categoria, toque nos pinos para ver foto, distância, rota animada, detalhes e "Como chegar" no Google Maps
 - Passaporte com nível (Viajante, Explorador, Aventureiro) e barra animada, conquistas, mapa de destinos visitados, reservas e carimbos
 - Registrar visita (check-in com QR Code)
-- Avisos, perfil, opção de letra grande e ajuda
+- Abertura animada, máscara de celular no cadastro, avisos com contagem de novos, perfil com estatísticas, letra grande e ajuda com busca
+- Passeio com lista "o que levar" (marcável), barra de reserva fixa e botão de ligar para restaurantes e pousada
+- Check-in com QR Code que se renova a cada 30 segundos e confete ao registrar a visita
 
 > Protótipo de demonstração: cadastro, pagamentos, reservas e check-in são simulados e ficam salvos só no navegador.
 
