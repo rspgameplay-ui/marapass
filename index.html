@@ -170,6 +170,19 @@ details.faq p{padding-bottom:16px;font-size:16px;color:var(--text)}
 .sbar{position:sticky;bottom:90px;margin:16px -18px 0;padding:12px 18px;background:rgba(255,255,255,.96);border-top:1px solid var(--line);display:flex;gap:12px;align-items:center;backdrop-filter:blur(6px)}
 .sb-t{display:flex;flex-direction:column;font-size:13px;color:var(--muted);font-weight:600}.sb-t b{font-size:20px;color:var(--ink)}.sbar .btn{flex:1}
 @media (prefers-reduced-motion:reduce){.steps i{transition:none}.ppl span{animation:none}}
+.wallet{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:8px;margin-top:16px}.wallet>div{background:var(--green-bg);border-radius:16px;padding:12px 8px;text-align:center;display:flex;flex-direction:column;gap:2px}
+.wallet b{font-size:22px;font-weight:800;color:var(--green);line-height:1.1}.wallet span{font-size:12.5px;font-weight:600;color:var(--text);line-height:1.2}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--soft);border-radius:16px;padding:4px;margin-top:14px}.seg button{min-height:46px;border-radius:12px;font-size:16px;font-weight:700;color:var(--muted);transition:background .2s,color .2s}.seg button.on{background:#fff;color:var(--btn);box-shadow:0 1px 4px rgba(19,38,61,.18)}
+.tk{position:relative;background:#fff;border:1px solid var(--line);border-radius:20px;overflow:hidden;transition:transform .15s}.tk:active{transform:scale(.99)}
+.tk-main{display:flex;gap:14px;align-items:center;padding:14px 14px 12px}.tk-main .img{width:72px;height:72px;border-radius:14px;background-size:cover;background-position:center;flex:none}
+.tk-t b{display:block;font-size:18px;line-height:1.25;color:var(--ink)}
+.tk-cut{position:relative;height:0;border-top:2px dashed var(--line);margin:0 18px}.tk-cut i{position:absolute;top:-13px;width:24px;height:24px;border-radius:50%;background:var(--bg);border:1px solid var(--line)}.tk-cut i:first-child{left:-31px}.tk-cut i:last-child{right:-31px}
+.tk-foot{display:flex;flex-direction:column;gap:10px;padding:12px 14px 14px}.tk-foot .btn{min-height:48px}
+.tag{display:inline-block;margin-top:6px;padding:4px 10px;border-radius:12px;background:var(--green-bg);color:var(--green);font-size:13px;font-weight:700}.tag.warn{background:#FFF1D6;color:#9A5B00}
+.tk.used{background:var(--soft)}.tk.used .off{color:var(--muted);text-decoration:line-through}.tk.used .tag{background:#E3E7EB;color:var(--muted)}
+.code.veil{width:100%;background:repeating-linear-gradient(45deg,#E7F4EE,#E7F4EE 10px,#D3EBDF 10px,#D3EBDF 20px);font-size:18px;letter-spacing:.02em;color:var(--green);cursor:pointer}
+.code.shown{animation:rvl .45s ease}@keyframes rvl{from{transform:rotateX(90deg);opacity:0}}
+@media (prefers-reduced-motion:reduce){.code.shown{animation:none}.tk,.seg button{transition:none}}
 </style>
 
 <div class="phone" id="app"></div>
@@ -234,7 +247,7 @@ const byId=(L,id)=>L.find(x=>x.id===id);
 const S={pts:650,used:[],resv:[],stamps:[{n:'Lençóis Maranhenses',d:'12/08/2026',img:'p1'},{n:'São Luís',d:'05/07/2026',img:'p2'},{n:'Atins',d:'28/06/2026',img:'p3'},{n:'Rosário',d:'12/05/2026',img:'p4'}],name:'',logged:false,big:false,read:[]};
 try{const s=JSON.parse(localStorage.getItem('marapass4')||'null');if(s)Object.assign(S,s)}catch(e){}
 const save=()=>{try{localStorage.setItem('marapass4',JSON.stringify(S))}catch(e){}};
-const U={q:'',mapf:'Todos',cupf:'Todos',hist:[],book:null};
+const U={q:'',mapf:'Todos',cupf:'Todos',cupv:'disp',csort:false,hist:[],book:null};
 const A=document.getElementById('app');
 const bg=k=>`background-image:url(${IMG[k]||IMG.dunas_card})`;
 const brl=n=>'R$ '+n.toLocaleString('pt-BR');
@@ -370,10 +383,14 @@ svg.querySelectorAll('.mpin').forEach(n=>{const pick=()=>{if(moved>6)return;U.se
 box.addEventListener('click',e=>{const b=e.target.closest('[data-mz]');if(b){const z=+b.dataset.mz;if(z===0){M.k=1;M.x=150;M.y=0;apply()}else{const r=rect();zoomAt(z>0?1.5:1/1.5,r.left+r.width/2,r.top+r.height/2)}}if(e.target.closest('[data-unsel]')){U.sel=null;draw()}});
 document.querySelectorAll('[data-sel]').forEach(b=>b.addEventListener('click',()=>{const n=b.dataset.sel;U.sel=n;draw();focus(n);box.scrollIntoView({behavior:'smooth',block:'center'})}));
 apply();draw();if(window.ResizeObserver)new ResizeObserver(apply).observe(box)}
-V.cupons=dest=>{const F=['Todos','Passeios','Comer','Hospedagem','Compras'];const L=CUP.filter(c=>(U.cupf==='Todos'||c.t===U.cupf)&&(!dest||c.dest===dest)&&(!U.cq||c.n.toLowerCase().includes(U.cq.toLowerCase())));const d=dest&&byId(DEST,dest);
+const daysLeft=v=>{const[d,m,y]=v.split('/').map(Number);const n=new Date();n.setHours(0,0,0,0);return Math.round((new Date(y,m-1,d)-n)/864e5)};
+const wallet=()=>{const av=CUP.filter(c=>!S.used.includes(c.id)&&daysLeft(c.v)>=0),fx=av.reduce((s,c)=>s+(c.val||0),0);
+return `<div class="wallet"><div><b>${av.length}</b><span>${av.length===1?'cupom disponível':'cupons disponíveis'}</span></div><div><b>${S.used.length}</b><span>${S.used.length===1?'usado':'usados'}</span></div>${fx?`<div><b>R$ ${fx}</b><span>em descontos fixos</span></div>`:''}</div>
+<div class="seg" role="tablist"><button role="tab" aria-selected="${U.cupv==='disp'}" class="${U.cupv==='disp'?'on':''}" data-cupv="disp">Disponíveis</button><button role="tab" aria-selected="${U.cupv==='usados'}" class="${U.cupv==='usados'?'on':''}" data-cupv="usados">Usados</button></div>`};
+V.cupons=dest=>{const F=['Todos','Passeios','Comer','Hospedagem','Compras'];const L=CUP.filter(c=>(U.cupf==='Todos'||c.t===U.cupf)&&(!dest||c.dest===dest)&&(!U.cq||c.n.toLowerCase().includes(U.cq.toLowerCase()))&&(dest||(U.cupv==='usados')===S.used.includes(c.id)));if(U.csort)L.sort((a,b)=>daysLeft(a.v)-daysLeft(b.v));const d=dest&&byId(DEST,dest);
 return `<div class="scr">${dest?`<div class="bar">${backBtn}</div>`:''}<div class="pad" style="${dest?'':'padding-top:48px'}"><h1 class="h1">Cupons</h1><p class="lead">${d?d.n+'. ':''}Mostre o código no local para ganhar o desconto.</p>
-${dest?'':`<label class="search">${I.search}<input id="cq" type="text" placeholder="Buscar cupom" value="${U.cq||''}" aria-label="Buscar cupom"></label><div class="chips" style="margin-top:16px">${F.map(f=>`<button class="chip ${U.cupf===f?'on':''}" data-cupf="${f}">${f}</button>`).join('')}</div>`}
-<div class="stack" style="margin-top:16px">${L.map(c=>{const u=S.used.includes(c.id);return `<div class="coupon ${u?'used':''}"><div class="top"><div class="img" style="${bg(c.img)}"></div><div><span class="small">${c.t}</span><b style="display:block;font-size:18px;line-height:1.25">${c.n}</b><div class="off">${c.off}</div></div></div><p class="small">${c.d} Válido até ${c.v}.</p><button class="btn ${u?'light':'green'}" data-cupom="${c.id}">${u?'Ver código de novo':'Usar cupom'}</button></div>`}).join('')||'<p class="empty">Nenhum cupom nesta categoria.</p>'}</div></div></div>`};
+${dest?'':wallet()}${dest?'':`<label class="search">${I.search}<input id="cq" type="text" placeholder="Buscar cupom" value="${U.cq||''}" aria-label="Buscar cupom"></label><div class="chips" style="margin-top:16px">${F.map(f=>`<button class="chip ${U.cupf===f?'on':''}" data-cupf="${f}">${f}</button>`).join('')}<button class="chip ${U.csort?'on':''}" data-csort aria-pressed="${!!U.csort}">Vencem primeiro</button></div>`}
+<div class="stack" style="margin-top:16px">${L.map(c=>{const u=S.used.includes(c.id);const dl=daysLeft(c.v);const urg=!u&&dl<=30;return `<div class="tk ${u?'used':''}"><div class="tk-main"><div class="img" style="${bg(c.img)}"></div><div class="tk-t"><span class="small">${c.t}</span><b>${c.n}</b><div class="off">${c.off}</div></div></div><div class="tk-cut"><i></i><i></i></div><div class="tk-foot"><div><p class="small">${c.d}</p>${u?'<span class="tag">Usado</span>':`<span class="tag ${urg?'warn':''}">${dl<0?'Vencido':dl===0?'Vence hoje':dl===1?'Vence amanhã':dl<=30?'Vence em '+dl+' dias':'Válido até '+c.v}</span>`}</div><button class="btn ${u?'light':'green'}" data-cupom="${c.id}">${u?'Ver código':'Usar cupom'}</button></div></div>`}).join('')||`<p class="empty">${U.cupv==='usados'&&!dest?'Você ainda não usou nenhum cupom.':'Nenhum cupom nesta categoria.'}</p>`}</div></div></div>`};
 const visited=()=>DEST.filter(d=>S.stamps.some(s=>s.n.toLowerCase().includes(d.n.toLowerCase())));
 const LV=[['Viajante',0],['Explorador',500],['Aventureiro',1000]];
 const passLevel=pct=>{const cur=[...LV].reverse().find(l=>S.pts>=l[1]);return `<div class="plevel"><span class="small" style="color:#fff;opacity:.85">Seu nível</span><div class="pl-name">${cur[0]}</div><div class="pl-pts"><b data-count="${S.pts}">${S.pts}</b> pontos</div>
@@ -449,6 +466,8 @@ if('back' in d)return back();
 if('clear' in d){U.q='';return render()}
 if(d.mapf){U.mapf=d.mapf;return render(true)}
 if(d.cupf){U.cupf=d.cupf;return render(true)}
+if(d.cupv){U.cupv=d.cupv;return render(true)}
+if('csort' in d){U.csort=!U.csort;return render(true)}
 if(d.slot){U.book.slot=d.slot;return render(true)}
 if(d.day){U.book.day=+d.day;return render(true)}
 if(d.ppl){U.book.ppl=Math.max(1,Math.min(10,U.book.ppl+ +d.ppl));return render(true)}
@@ -460,8 +479,8 @@ m.querySelector('[data-seepass]').addEventListener('click',()=>{m.remove();U.his
 if(d.cancel){const m=modal(`<h2 style="font-size:22px;font-weight:800">Cancelar esta reserva?</h2><p class="lead">${S.resv.find(r=>r.key===d.cancel).n}</p><button class="btn danger" data-yes>Sim, cancelar</button><button class="btn light" data-close>Não, manter</button>`);
 m.querySelector('[data-yes]').addEventListener('click',()=>{S.resv=S.resv.filter(r=>r.key!==d.cancel);save();m.remove();render(true);toast('Reserva cancelada')});return}
 if(d.cupom){const c=byId(CUP,d.cupom);const used=S.used.includes(c.id);const code='MARA'+(1000+c.n.length*37+c.id.charCodeAt(1));
-const m=modal(`<h2 style="font-size:22px;font-weight:800">${c.n}</h2><p class="lead">${c.off}. Mostre este código no caixa:</p><div class="code">${code}</div><p class="small">Válido até ${c.v}.</p>${used?'<p class="badge">Você já usou este cupom</p>':'<button class="btn green" data-ok>Pronto, já usei</button>'}<button class="btn light" data-close>Fechar</button>`);
-const ok=m.querySelector('[data-ok]');if(ok)ok.addEventListener('click',()=>{S.used.push(c.id);S.pts+=20;save();m.remove();render(true);toast('Cupom usado. Você ganhou 20 pontos!')});return}
+const m=modal(`<h2 style="font-size:22px;font-weight:800">${c.n}</h2><p class="lead">${c.off}. Mostre este código no caixa:</p><button class="code veil" data-reveal aria-label="Toque para revelar o código">Toque para revelar</button><div class="rv" hidden><button class="btn light" data-copy="${code}">Copiar código</button></div><p class="small">Válido até ${c.v}.</p>${used?'<p class="badge">Você já usou este cupom</p>':'<button class="btn green" data-ok>Pronto, já usei</button>'}<button class="btn light" data-close>Fechar</button>`);
+const rv=m.querySelector('[data-reveal]');if(rv)rv.addEventListener('click',()=>{rv.textContent=code;rv.classList.remove('veil');rv.classList.add('shown');m.querySelector('.rv').hidden=false},{once:true});const ok=m.querySelector('[data-ok]');if(ok)ok.addEventListener('click',()=>{S.used.push(c.id);S.pts+=20;save();m.remove();render(true);toast('Cupom usado. Você ganhou 20 pontos!')});return}
 if(d.copy){try{await navigator.clipboard.writeText(d.copy);toast('Telefone copiado: '+d.copy)}catch(err){toast('Telefone: '+d.copy)}return}
 if('docheck' in d){const r=S.resv.find(x=>x.key===d.docheck);if(r)r.done=true;S.pts+=50;S.stamps.unshift({n:r?r.n:'Lençóis Maranhenses',d:new Date().toLocaleDateString('pt-BR'),img:r?r.img:'p1'});save();U.hist=[];cur='passaporte';render();toast('Visita registrada! +50 pontos');return}
 if(d.badge){const[n,on]=d.badge.split('|');return toast(on==='1'?'Conquista desbloqueada: '+n:'Ainda bloqueada: '+n+'. Continue explorando!')}
