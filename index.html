@@ -13,6 +13,8 @@
 <body>
 <title>MaraPass</title>
 <meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
 <style>
 /* Layout: phone-sized app scaled to fit any screen; large type and big touch targets for older users. Single light brand look on purpose. */
@@ -254,6 +256,36 @@ button,a,.chip,.tab{touch-action:manipulation}
 .mlegend{display:flex;justify-content:center;gap:16px;margin-top:10px;font-size:13px;font-weight:600;color:var(--muted)}
 .mlegend span{display:flex;align-items:center;gap:6px}.mlegend i{width:10px;height:10px;border-radius:50%}
 .mpin .body{filter:drop-shadow(0 2px 3px rgba(19,38,61,.35))}
+
+/* ---- mapa real (Leaflet) ---- */
+.mapbox{height:400px;touch-action:auto;background:#DDE6EC}
+.lmap{position:absolute;inset:0;z-index:0;font-family:var(--f)}
+.mapbox>.laytog,.mapbox>.zre,.mapbox>.mapcard,.mapbox>.mapoff{z-index:1000}
+.laytog{position:absolute;left:12px;top:12px;display:flex;background:#fff;border-radius:14px;padding:4px;gap:4px;box-shadow:0 2px 10px rgba(19,38,61,.25)}
+.laytog button{min-height:38px;padding:0 14px;border-radius:10px;font-size:14px;font-weight:700;color:var(--muted);text-align:center}
+.laytog button.on{background:var(--btn);color:#fff}
+.mapbox>.zre{position:absolute;right:12px;top:124px;width:46px;height:46px;border-radius:14px;background:#fff;color:var(--btn);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 10px rgba(19,38,61,.25)}
+.lmap .leaflet-top.leaflet-right{top:2px;right:2px}
+.lmap .leaflet-control-zoom{border:0;border-radius:14px;overflow:hidden;box-shadow:0 2px 10px rgba(19,38,61,.25);margin:10px 10px 0 0}
+.lmap .leaflet-control-zoom a{width:46px;height:46px;line-height:44px;font-size:24px;color:var(--ink);font-weight:600}
+.lmap .leaflet-control-zoom a+a{border-top:1px solid var(--line)}
+.lmap .leaflet-control-attribution{font-size:9px;background:rgba(255,255,255,.75);padding:0 6px;border-radius:6px 0 0 0}
+.lmap .leaflet-bottom.leaflet-right{z-index:999}
+.lpin{width:44px;height:54px;transform-origin:50% 100%;transition:transform .18s;filter:drop-shadow(0 3px 4px rgba(0,0,0,.4))}
+.lpin.on{transform:scale(1.25)}
+.ltown{position:relative}.ltown i{position:absolute;left:-9px;top:-9px;width:18px;height:18px;border-radius:50%;background:#13263D;border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4)}
+.ltown span{position:absolute;left:-52px;top:14px;width:104px;text-align:center;background:#13263D;color:#fff;font-size:13px;font-weight:800;padding:4px 0;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.35)}
+.mapoff{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;padding:20px;font-weight:600;color:var(--text);background:var(--soft)}.mapoff[hidden]{display:none}.mapoff a{color:var(--btn);text-decoration:underline}
+.mapcard{z-index:1000}
+.lclu{width:52px;height:52px;border-radius:50%;background:#13263D;border:3px solid #fff;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;box-shadow:0 3px 8px rgba(0,0,0,.45);cursor:pointer}.lclu b{font-size:18px}.lclu span{font-size:9px;font-weight:700;margin-top:2px}
+.ltown.hid{display:none}
+
+/* ---- respiro entre botões ---- */
+.stack{gap:12px}.chips{gap:10px}.tiles{gap:10px}.badges{gap:10px}.pack{gap:10px}.wallet{gap:10px}.pstats{gap:10px}
+.slotsel{gap:12px}.mapcard .acts{gap:10px}.chips.date,.chip.date{margin:0}
+.stepper{gap:12px}.sbar{gap:14px}
+.pact{gap:10px}
+@media (max-width:360px){.tiles{gap:8px}}
 </style>
 
 <div class="phone" id="app"></div>
@@ -411,56 +443,52 @@ V.hotel=id=>{const h=byId(HOTEL,id)||HOTEL[0];const c=h.cup&&byId(CUP,h.cup);ret
 <div class="facts" style="margin-top:20px"><div class="fact"><span>Telefone</span><b>${h.tel}</b></div><div class="fact"><span>Cidade</span><b>Santo Amaro - MA</b></div></div>
 <div class="stack" style="margin-top:20px"><a class="btn" href="tel:${h.tel.replace(/\D/g,'')}">${I.phone} Ligar agora</a><button class="btn light" data-copy="${h.tel}">Copiar telefone</button>${c?`<button class="btn yellow" data-cupom="${c.id}">${I.ticket} ${S.used.includes(c.id)?'Cupom já usado':'Ver cupom de 20%'}</button>`:''}<a class="btn light" href="${gmaps(h.q)}" target="_blank" rel="noopener">${I.route} Como chegar</a></div></div></div>`};
 /* ---------------- mapa interativo (SVG, sem dependências) ---------------- */
-const PXY={'Lagoa Azul':[540,190],'Casa do Mangue':[240,458],'Restaurante o Buriti':[640,470],'Pousada Vila Lençóis':[445,492],'Rio Preguiças':[402,316]};
-const TOWN=[330,400],CATC={Passeios:'#0B6FB8',Comer:'#D9480F',Hospedagem:'#7B3FA0'},CATI={Passeios:'<path d="M3 17c3-4 6-4 9 0s6 4 9 0M3 12c3-4 6-4 9 0s6 4 9 0"/>',Comer:'<path d="M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 3c-2 2-3 5-3 8h3v10"/>',Hospedagem:'<path d="M3 20V8M3 14h18v6M21 14v-3a3 3 0 0 0-3-3h-7v6"/>'};
-U.mp=U.mp||{x:150,y:0,k:1};U.sel=U.sel||null;
-const MAPART=`<defs><linearGradient id="sea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3FA3DD"/><stop offset="1" stop-color="#8FD3F0"/></linearGradient><linearGradient id="sand" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FBF1D2"/><stop offset="1" stop-color="#F2E2B0"/></linearGradient><linearGradient id="land" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#D5E9B8"/><stop offset="1" stop-color="#C3DFA0"/></linearGradient><filter id="ds" x="-20%" y="-20%" width="140%" height="160%"><feDropShadow dx="0" dy="1.5" stdDeviation="1.6" flood-color="#13263D" flood-opacity=".22"/></filter></defs>
-<rect width="800" height="600" fill="url(#land)"/>
-<path d="M0 0H800V95C700 120 640 80 540 105S360 135 250 100 80 80 0 112Z" fill="url(#sea)"/>
-<g fill="none" stroke="#fff" stroke-linecap="round" opacity=".55"><path d="M40 40c14-6 28 6 42 0M180 58c14-6 28 6 42 0M420 36c14-6 28 6 42 0M610 52c14-6 28 6 42 0M700 24c14-6 28 6 42 0" stroke-width="2.5"/></g>
-<path d="M0 112C80 80 170 100 250 100S420 135 540 105 700 120 800 95V300C720 330 640 280 560 300S400 280 320 270 120 300 0 270Z" fill="url(#sand)"/>
-<path d="M0 112C80 80 170 100 250 100S420 135 540 105 700 120 800 95" fill="none" stroke="#fff" stroke-width="6" opacity=".85"/>
-<g fill="none" stroke="#E7CF8F" stroke-width="3" stroke-linecap="round" opacity=".8"><path d="M60 170c40-20 90 10 140-8M250 210c50-22 110 10 170-6M470 150c50-20 100 8 150-5M610 235c40-14 80 6 140-4M110 245c50-14 100 8 160-4M300 150c30-12 60 6 90-2"/></g>
-<g fill="#5DBDEA" stroke="#fff" stroke-width="3"><ellipse cx="540" cy="190" rx="48" ry="23"/><ellipse cx="500" cy="232" rx="30" ry="13"/><ellipse cx="662" cy="148" rx="28" ry="12"/><ellipse cx="215" cy="172" rx="26" ry="11"/><ellipse cx="700" cy="250" rx="22" ry="9"/><ellipse cx="120" cy="205" rx="18" ry="8"/></g>
-<g fill="#9FD2A0" opacity=".9"><ellipse cx="240" cy="470" rx="78" ry="40"/><ellipse cx="160" cy="520" rx="60" ry="30"/><ellipse cx="575" cy="430" rx="62" ry="30"/><ellipse cx="710" cy="410" rx="72" ry="34"/><ellipse cx="110" cy="370" rx="72" ry="40"/><ellipse cx="560" cy="555" rx="90" ry="34"/></g>
-<path d="M330 600C335 540 300 510 345 470S440 430 380 380 330 350 400 320 470 270 440 210 480 120 470 100" fill="none" stroke="#fff" stroke-width="30" stroke-linecap="round" opacity=".7"/>
-<path d="M330 600C335 540 300 510 345 470S440 430 380 380 330 350 400 320 470 270 440 210 480 120 470 100" fill="none" stroke="#3E9DD6" stroke-width="20" stroke-linecap="round"/>
-<g fill="none" stroke-linecap="round" stroke-linejoin="round"><g stroke="#B9C7A0" stroke-width="9"><path d="M330 400C420 360 480 290 540 190"/><path d="M330 400C450 430 560 450 640 470"/><path d="M330 400L240 458M330 400L445 492"/></g><g stroke="#fff" stroke-width="5.5"><path d="M330 400C420 360 480 290 540 190"/><path d="M330 400C450 430 560 450 640 470"/><path d="M330 400L240 458M330 400L445 492"/></g></g>
-<g font-family="Plus Jakarta Sans,system-ui,sans-serif" font-weight="700" text-anchor="middle"><text x="450" y="58" font-size="18" fill="#fff" opacity=".9" letter-spacing="3">OCEANO ATLÂNTICO</text><text x="300" y="240" font-size="15" fill="#A07F2B" letter-spacing="1.5" opacity=".9">LENÇÓIS MARANHENSES</text><text x="410" y="575" font-size="14" fill="#2A7DB4" text-anchor="start" opacity=".95">Rio Preguiças</text></g>
-<g transform="translate(${TOWN[0]} ${TOWN[1]})" filter="url(#ds)"><rect x="-58" y="18" width="116" height="28" rx="14" fill="#13263D"/><text y="37" text-anchor="middle" font-size="15" font-weight="800" fill="#fff" font-family="Plus Jakarta Sans,system-ui,sans-serif">Barreirinhas</text><circle r="13" fill="#13263D" stroke="#fff" stroke-width="4"/><circle r="4.5" fill="#fff"/></g>`;
+const GEO={'Lagoa Azul':[-2.6017,-42.9220],'Casa do Mangue':[-2.7598,-42.8312],'Restaurante o Buriti':[-2.5047,-43.2543],'Pousada Vila Lençóis':[-2.7672,-42.8141],'Rio Preguiças':[-2.7462,-42.8196]};
+const TOWNG=[-2.7536,-42.8247];
+const CATC={Passeios:'#0B6FB8',Comer:'#D9480F',Hospedagem:'#7B3FA0'},CATI={Passeios:'<path d="M3 17c3-4 6-4 9 0s6 4 9 0M3 12c3-4 6-4 9 0s6 4 9 0"/>',Comer:'<path d="M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 3c-2 2-3 5-3 8h3v10"/>',Hospedagem:'<path d="M3 20V8M3 14h18v6M21 14v-3a3 3 0 0 0-3-3h-7v6"/>'};
+U.sel=U.sel||null;U.lay=U.lay||'sat';U.lv=U.lv||null;
 V.mapa=()=>{const F=['Todos','Passeios','Comer','Hospedagem'];const L=PLACES.filter(p=>U.mapf==='Todos'||p.t===U.mapf);if(U.sel&&!L.some(p=>p.n===U.sel))U.sel=null;
 return `<div class="scr"><div class="pad" style="padding-top:calc(var(--top) + 4px)"><h1 class="h1">Mapa</h1><p class="lead">Lugares perto de Barreirinhas</p></div>
 <div class="pad"><div class="chips scroll" style="margin-top:14px">${F.map(f=>`<button class="chip ${U.mapf===f?'on':''}" data-mapf="${f}">${f}</button>`).join('')}</div></div>
-<div class="pad"><div class="mapbox" id="mapbox"><svg id="mapsvg" viewBox="0 0 800 600" role="group" aria-label="Mapa interativo da região de Barreirinhas"><g id="mapg">${MAPART}<g id="route"></g>${L.map(p=>{const [x,y]=PXY[p.n];const c=CATC[p.t];return `<g class="mpin" data-pin="${p.n}" tabindex="0" role="button" aria-label="${p.n}, ${p.dist}" transform="translate(${x} ${y})"><circle class="pulse" r="30" fill="${c}"/><g class="body"><path d="M0 0C-26-26-30-36-30-48a30 30 0 0 1 60 0C30-36 26-26 0 0Z" fill="${c}" stroke="#fff" stroke-width="4"/><g transform="translate(-13 -61) scale(1.08)" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${CATI[p.t]}</g></g></g>`}).join('')}</g></svg>
-<div class="mapctl"><div class="zgrp"><button data-mz="1" aria-label="Aproximar"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button><button data-mz="-1" aria-label="Afastar"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14"/></svg></button></div><button class="zre" data-mz="0" aria-label="Centralizar mapa"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="6.5"/><circle cx="12" cy="12" r="2" fill="currentColor"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></button></div>
-<div class="mapcard" id="mapcard" hidden></div><div class="maphint" id="maphint">Arraste e use dois dedos para ampliar</div></div><div class="mlegend"><span><i style="background:#0B6FB8"></i>Passeios</span><span><i style="background:#D9480F"></i>Comer</span><span><i style="background:#7B3FA0"></i>Hospedagem</span></div></div>
+<div class="pad"><div class="mapbox" id="mapbox"><div id="lmap" class="lmap" role="application" aria-label="Mapa da região de Barreirinhas"></div>
+<div class="laytog" role="group" aria-label="Tipo de mapa"><button class="${U.lay==='sat'?'on':''}" data-lay="sat">Satélite</button><button class="${U.lay==='map'?'on':''}" data-lay="map">Mapa</button></div>
+<button class="zre" data-recenter aria-label="Mostrar todos os lugares"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="6.5"/><circle cx="12" cy="12" r="2" fill="currentColor"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></button>
+<div class="mapcard" id="mapcard" hidden></div><div class="mapoff" id="mapoff" hidden>Sem internet para carregar o mapa.<br><a href="${gmaps('Barreirinhas, Maranhão')}" target="_blank" rel="noopener">Abrir no Google Maps</a></div></div>
+<div class="mlegend"><span><i style="background:#0B6FB8"></i>Passeios</span><span><i style="background:#D9480F"></i>Comer</span><span><i style="background:#7B3FA0"></i>Hospedagem</span></div></div>
 <div class="pad"><div class="stack" style="margin-top:16px">${L.map(p=>`<button class="item ${U.sel===p.n?'sel':''}" data-row="${p.n}" data-sel="${p.n}" aria-label="Mostrar ${p.n} no mapa"><div class="img" style="${bg(p.img)};width:72px;height:72px"></div><div class="t"><b>${p.n}</b><span class="small">${p.t} · ${p.dist}</span></div><span class="pinbtn" aria-hidden="true">${I.map}</span></button>`).join('')}</div>
 <a class="btn light" style="margin:16px 0" href="${gmaps('Barreirinhas, Maranhão')}" target="_blank" rel="noopener">${I.ext} Abrir no Google Maps</a></div></div>`};
-function initMap(){const box=document.getElementById('mapbox');if(!box)return;const svg=document.getElementById('mapsvg'),M=U.mp,W=800,H=600;
-const rect=()=>svg.getBoundingClientRect();
-const scale=()=>{const r=rect();return Math.max(r.width/(W/M.k),r.height/(H/M.k))};
-const clamp=()=>{const r=rect(),s=scale();M.k=Math.min(4,Math.max(1,M.k));const vw=r.width/scale(),vh=r.height/scale();M.x=Math.min(Math.max(M.x,0),Math.max(W-vw,0));M.y=Math.min(Math.max(M.y,0),Math.max(H-vh,0))};
-const apply=()=>{const r=rect();if(!r.width||!r.height)return;clamp();const s=scale();svg.setAttribute('viewBox',`${M.x} ${M.y} ${r.width/s} ${r.height/s}`);svg.style.setProperty('--ps',(1/Math.sqrt(M.k)).toFixed(3))};
-const toW=(cx,cy)=>{const r=rect(),s=scale();return[M.x+(cx-r.left)/s,M.y+(cy-r.top)/s]};
-const zoomAt=(f,cx,cy)=>{const[wx,wy]=toW(cx,cy);M.k=Math.min(4,Math.max(1,M.k*f));const r=rect(),s=scale();M.x=wx-(cx-r.left)/s;M.y=wy-(cy-r.top)/s;apply()};
-const P=new Map();let moved=0,pd=0;
-svg.addEventListener('pointerdown',e=>{P.set(e.pointerId,[e.clientX,e.clientY]);moved=0;if(P.size===2){const[a,b]=[...P.values()];pd=Math.hypot(a[0]-b[0],a[1]-b[1])}document.getElementById('maphint')?.classList.add('off')});
-svg.addEventListener('pointermove',e=>{if(!P.has(e.pointerId))return;const old=P.get(e.pointerId);P.set(e.pointerId,[e.clientX,e.clientY]);
-if(P.size===2){const[a,b]=[...P.values()],d=Math.hypot(a[0]-b[0],a[1]-b[1]);if(pd)zoomAt(d/pd,(a[0]+b[0])/2,(a[1]+b[1])/2);pd=d;moved=9;return}
-const dx=e.clientX-old[0],dy=e.clientY-old[1];moved+=Math.abs(dx)+Math.abs(dy);if(moved<6)return;if(!svg.hasPointerCapture(e.pointerId))svg.setPointerCapture(e.pointerId);const s=scale();M.x-=dx/s;M.y-=dy/s;apply();box.classList.add('drag')});
-const up=e=>{P.delete(e.pointerId);pd=0;box.classList.remove('drag');setTimeout(()=>{moved=0},0)};svg.addEventListener('pointerup',up);svg.addEventListener('pointercancel',up);
-svg.addEventListener('wheel',e=>{e.preventDefault();zoomAt(e.deltaY<0?1.25:.8,e.clientX,e.clientY)},{passive:false});
-svg.addEventListener('dblclick',e=>zoomAt(1.8,e.clientX,e.clientY));
-const draw=()=>{const rt=document.getElementById('route');const p=PLACES.find(x=>x.n===U.sel);svg.querySelectorAll('.mpin').forEach(n=>n.classList.toggle('on',n.dataset.pin===U.sel));document.querySelectorAll('[data-row]').forEach(n=>n.classList.toggle('sel',n.dataset.row===U.sel));
-const card=document.getElementById('mapcard');if(!p){rt.innerHTML='';card.hidden=true;return}
-const[x,y]=PXY[p.n],mx=(TOWN[0]+x)/2+(y-TOWN[1])*.12,my=(TOWN[1]+y)/2-(x-TOWN[0])*.12;
-rt.innerHTML=`<path d="M${TOWN[0]} ${TOWN[1]}Q${mx} ${my} ${x} ${y}" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" opacity=".9"/><path class="flow" d="M${TOWN[0]} ${TOWN[1]}Q${mx} ${my} ${x} ${y}" fill="none" stroke="${CATC[p.t]}" stroke-width="5" stroke-linecap="round" stroke-dasharray="2 11"/>`;
-card.hidden=false;card.innerHTML=`<div class="img" style="${bg(p.img)}"></div><div class="t"><b>${p.n}</b><span class="small">${p.t} · ${p.dist}</span><div class="acts"><button class="mini" data-go="${p.go}">Ver detalhes</button><a class="mini ghost" href="${gmaps(p.q)}" target="_blank" rel="noopener">Como chegar</a></div></div><button class="x" data-unsel="1" aria-label="Fechar">×</button>`};
-const focus=n=>{const[x,y]=PXY[n];if(M.k<1.6)M.k=1.6;const r=rect(),s=scale();M.x=x-r.width/s/2;M.y=y-(r.height/s)*.55;apply()};
-svg.querySelectorAll('.mpin').forEach(n=>{const pick=()=>{if(moved>6)return;U.sel=U.sel===n.dataset.pin?null:n.dataset.pin;draw();if(U.sel)focus(U.sel)};n.addEventListener('click',pick);n.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();moved=0;pick()}})});
-box.addEventListener('click',e=>{const b=e.target.closest('[data-mz]');if(b){const z=+b.dataset.mz;if(z===0){M.k=1;M.x=150;M.y=0;apply()}else{const r=rect();zoomAt(z>0?1.5:1/1.5,r.left+r.width/2,r.top+r.height/2)}}if(e.target.closest('[data-unsel]')){U.sel=null;draw()}});
-document.querySelectorAll('[data-sel]').forEach(b=>b.addEventListener('click',()=>{const n=b.dataset.sel;U.sel=n;draw();focus(n);box.scrollIntoView({behavior:'smooth',block:'center'})}));
-setTimeout(()=>document.getElementById('maphint')?.classList.add('off'),3500);apply();draw();if(window.ResizeObserver)new ResizeObserver(apply).observe(box)}
+let LM=null;
+function initMap(){const el=document.getElementById('lmap');if(!el)return;if(LM){try{LM.remove()}catch(e){}LM=null}
+if(!window.L){document.getElementById('mapoff').hidden=false;return}
+const L_=window.L,list=PLACES.filter(p=>U.mapf==='Todos'||p.t===U.mapf);
+const map=LM=L_.map(el,{zoomControl:false,attributionControl:true,tap:true,zoomSnap:.5,maxZoom:18});
+L_.control.zoom({position:'topright',zoomInTitle:'Aproximar',zoomOutTitle:'Afastar'}).addTo(map);
+const sat=L_.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:18,attribution:'Imagens © Esri'});
+const lab=L_.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png',{maxZoom:18,subdomains:'abcd',attribution:'© OpenStreetMap © CARTO'});
+const std=L_.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{maxZoom:18,subdomains:'abcd',attribution:'© OpenStreetMap © CARTO'});
+if(U.lay==='sat'){sat.addTo(map);lab.addTo(map)}else std.addTo(map);
+map.attributionControl.setPrefix(false);
+const town=L_.marker(TOWNG,{icon:L_.divIcon({className:'',html:'<div class="ltown"><i></i><span>Barreirinhas</span></div>',iconSize:[0,0]}),keyboard:false,interactive:false}).addTo(map);
+const route=L_.layerGroup().addTo(map);const mk={};
+const pinIcon=(p,on)=>L_.divIcon({className:'',iconSize:[44,54],iconAnchor:[22,52],html:`<div class="lpin ${on?'on':''}" style="--c:${CATC[p.t]}"><svg viewBox="-32 -82 64 84" width="44" height="54"><path d="M0 0C-26-26-30-36-30-48a30 30 0 0 1 60 0C30-36 26-26 0 0Z" fill="${CATC[p.t]}" stroke="#fff" stroke-width="4"/><g transform="translate(-13 -61) scale(1.08)" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${CATI[p.t]}</g></svg></div>`});
+list.forEach(p=>{const m=L_.marker(GEO[p.n],{icon:pinIcon(p,U.sel===p.n),title:p.n,alt:p.n,riseOnHover:true}).addTo(map);m.on('click',()=>{U.sel=U.sel===p.n?null:p.n;draw(true)});mk[p.n]=m});
+const fitAll=anim=>{const pts=list.map(p=>GEO[p.n]).concat([TOWNG]);map.fitBounds(L_.latLngBounds(pts),{padding:[44,44],maxZoom:13,animate:anim})};
+const draw=fly=>{const p=PLACES.find(x=>x.n===U.sel);list.forEach(q=>{mk[q.n].setIcon(pinIcon(q,q.n===U.sel));mk[q.n].setZIndexOffset(q.n===U.sel?1000:0)});try{declutter()}catch(e){}document.querySelectorAll('[data-row]').forEach(n=>n.classList.toggle('sel',n.dataset.row===U.sel));route.clearLayers();
+const card=document.getElementById('mapcard');if(!p){card.hidden=true;return}
+L_.polyline([TOWNG,GEO[p.n]],{color:'#fff',weight:7,opacity:.9}).addTo(route);L_.polyline([TOWNG,GEO[p.n]],{color:CATC[p.t],weight:4,dashArray:'2 10',lineCap:'round',className:'flow'}).addTo(route);
+card.hidden=false;card.innerHTML=`<div class="img" style="${bg(p.img)}"></div><div class="t"><b>${p.n}</b><span class="small">${p.t} · ${p.dist}</span><div class="acts"><button class="mini" data-go="${p.go}">Ver detalhes</button><a class="mini ghost" href="${gmaps(p.q)}" target="_blank" rel="noopener">Como chegar</a></div></div><button class="x" data-unsel="1" aria-label="Fechar">×</button>`;
+if(fly){const b=L_.latLngBounds([TOWNG,GEO[p.n]]);map.flyToBounds(b,{paddingTopLeft:[50,60],paddingBottomRight:[50,150],maxZoom:14,duration:.8})}};
+const near=list.filter(p=>map.distance(GEO[p.n],TOWNG)<6000);let clu=null;
+if(near.length>1){clu=L_.marker(TOWNG,{icon:L_.divIcon({className:'',iconSize:[52,52],iconAnchor:[26,26],html:`<div class="lclu" role="button" aria-label="${near.length} lugares em Barreirinhas, toque para ver"><b>${near.length}</b><span>lugares</span></div>`}),zIndexOffset:500,title:near.length+' lugares em Barreirinhas'});clu.on('click',()=>map.flyTo(TOWNG,14.5,{duration:.7}))}
+const declutter=()=>{if(map!==LM)return;const z=map.getZoom(),grp=!!clu&&z<12.5&&!near.some(p=>p.n===U.sel);near.forEach(p=>{const e=mk[p.n].getElement();if(e)e.style.display=grp?'none':''});if(clu){const e=clu.getElement();if(e)e.style.display=grp?'':'none'}const tw=document.querySelector('.ltown');if(tw)tw.classList.toggle('hid',grp)};
+if(clu)clu.addTo(map);
+map.on('zoomend',declutter);
+if(U.lv)map.setView(U.lv.c,U.lv.z,{animate:false});else fitAll(false);declutter();
+map.on('moveend',()=>{U.lv={c:map.getCenter(),z:map.getZoom()}});
+const box=document.getElementById('mapbox');
+box.addEventListener('click',e=>{if(e.target.closest('[data-unsel]')){U.sel=null;draw()}if(e.target.closest('[data-recenter]')){U.sel=null;draw();fitAll(true)}const lb=e.target.closest('[data-lay]');if(lb&&lb.dataset.lay!==U.lay){U.lay=lb.dataset.lay;box.querySelectorAll('[data-lay]').forEach(b=>b.classList.toggle('on',b===lb));map.eachLayer(l=>{if(l instanceof L_.TileLayer)map.removeLayer(l)});if(U.lay==='sat'){sat.addTo(map);lab.addTo(map)}else std.addTo(map)}});
+document.querySelectorAll('[data-sel]').forEach(b=>b.addEventListener('click',()=>{U.sel=b.dataset.sel;draw(true);box.scrollIntoView({behavior:'smooth',block:'center'})}));
+setTimeout(()=>map.invalidateSize(),60);draw(false)}
 const daysLeft=v=>{const[d,m,y]=v.split('/').map(Number);const n=new Date();n.setHours(0,0,0,0);return Math.round((new Date(y,m-1,d)-n)/864e5)};
 const wallet=()=>{const av=CUP.filter(c=>!S.used.includes(c.id)&&daysLeft(c.v)>=0),fx=av.reduce((s,c)=>s+(c.val||0),0);
 return `<div class="wallet"><div><b>${av.length}</b><span>${av.length===1?'cupom disponível':'cupons disponíveis'}</span></div><div><b>${S.used.length}</b><span>${S.used.length===1?'usado':'usados'}</span></div>${fx?`<div><b>R$ ${fx}</b><span>em descontos fixos</span></div>`:''}</div>

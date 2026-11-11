@@ -14,7 +14,7 @@ Feito para ser simples de usar, inclusive por pessoas mais velhas: letras grande
 - Reservar passeio em etapas: dia, horário (manhã ou tarde), número de pessoas (com ícones) e cupom, com resumo do preço e barra fixa de confirmação
 - Pagamento simulado por Pix (QR Code com contagem de expiração), cartão (prévia ao vivo, bandeira, validação por campo e parcelas) ou no local, com recibo animado no fim
 - Cupons em formato de ingresso, com carteira de resumo, abas Disponíveis/Usados, aviso de vencimento, ordenação por validade e código que se revela ao toque (com botão de copiar)
-- **Mapa interativo**: arraste, amplie (dois dedos, roda do mouse ou botões +/−), filtre por categoria, toque nos pinos para ver foto, distância, rota animada, detalhes e "Como chegar" no Google Maps
+- **Mapa real** (Leaflet): imagem de satélite das dunas ou mapa de ruas, pinos por categoria nas coordenadas reais, lugares próximos agrupados em Barreirinhas, rota até o lugar, cartão com "Ver detalhes" e "Como chegar" no Google Maps. Precisa de internet para carregar o mapa.
 - Passaporte com nível (Viajante, Explorador, Aventureiro) e barra animada, conquistas, mapa de destinos visitados, reservas e carimbos
 - Registrar visita (check-in com QR Code)
 - Abertura animada, máscara de celular no cadastro, avisos com contagem de novos, perfil com estatísticas, letra grande e ajuda com busca
@@ -29,4 +29,4 @@ Abra o arquivo `index.html` no navegador, ou acesse a versão publicada no GitHu
 
 ## Tecnologia
 
-Um único arquivo HTML com CSS e JavaScript puros, sem dependências. As imagens estão embutidas no próprio arquivo.
+Um único arquivo HTML com CSS e JavaScript puros. A única biblioteca externa é o Leaflet (mapa), com imagens da Esri e mapas da CARTO/OpenStreetMap. As imagens estão embutidas no próprio arquivo.
