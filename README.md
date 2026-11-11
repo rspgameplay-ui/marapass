@@ -11,7 +11,7 @@ Feito para ser simples de usar, inclusive por pessoas mais velhas: letras grande
 - Ver destinos: Lençóis Maranhenses, Chapada das Mesas, São Luís, Munim, Floresta dos Guarás e Cultura Maranhense
 - Ver passeios, restaurantes e pousada de cada destino
 - Reservar passeio em etapas: dia, horário (manhã ou tarde), número de pessoas (com ícones) e cupom, com resumo do preço e barra fixa de confirmação
-- Pagamento simulado por Pix, cartão ou no local
+- Pagamento simulado por Pix (QR Code com contagem de expiração), cartão (prévia ao vivo, bandeira, validação por campo e parcelas) ou no local, com recibo animado no fim
 - Cupons em formato de ingresso, com carteira de resumo, abas Disponíveis/Usados, aviso de vencimento, ordenação por validade e código que se revela ao toque (com botão de copiar)
 - **Mapa interativo**: arraste, amplie (dois dedos, roda do mouse ou botões +/−), filtre por categoria, toque nos pinos para ver foto, distância, rota animada, detalhes e "Como chegar" no Google Maps
 - Passaporte com nível (Viajante, Explorador, Aventureiro) e barra animada, conquistas, mapa de destinos visitados, reservas e carimbos
