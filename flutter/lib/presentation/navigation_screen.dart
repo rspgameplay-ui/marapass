@@ -775,151 +775,155 @@ class _NavigationScreenState extends ConsumerState<NavigationScreen>
                         child: PointerShield(
                           enabled: in3d,
                           child: Column(
-                          children: [
-                            Container(
-                              width: double.infinity,
+                            children: [
+                              Container(
+                                width: double.infinity,
 
-                              decoration: BoxDecoration(
-                                color: const Color(0xfffcfefe),
-                                borderRadius: BorderRadius.circular(20),
-                                boxShadow: const [
-                                  BoxShadow(
-                                    color: Color(0x33092034),
-                                    blurRadius: 16,
-                                    offset: Offset(0, 5),
-                                  ),
-                                ],
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 12,
-                              ),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 56,
-                                    height: 56,
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xff087f8b),
-                                      borderRadius: BorderRadius.circular(16),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xfffcfefe),
+                                  borderRadius: BorderRadius.circular(20),
+                                  boxShadow: const [
+                                    BoxShadow(
+                                      color: Color(0x33092034),
+                                      blurRadius: 16,
+                                      offset: Offset(0, 5),
                                     ),
-                                    child: Icon(
-                                      n.lowSignal
-                                          ? Icons.gps_off
-                                          : n.deviated
-                                          ? Icons.alt_route
-                                          : _maneuverIcon(n.nextStep),
-                                      color: Colors.white,
-                                      size: 32,
+                                  ],
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 12,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: 56,
+                                      height: 56,
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xff087f8b),
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                      child: Icon(
+                                        n.lowSignal
+                                            ? Icons.gps_off
+                                            : n.deviated
+                                            ? Icons.alt_route
+                                            : _maneuverIcon(n.nextStep),
+                                        color: Colors.white,
+                                        size: 32,
+                                      ),
                                     ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          n.lowSignal
-                                              ? 'Localização imprecisa'
-                                              : n.rerouting
-                                              ? 'Recalculando rota'
-                                              : n.deviated
-                                              ? 'Fora da rota'
-                                              : formatDistance(n.nextDistance),
-                                          style: const TextStyle(
-                                            color: const Color(0xff067681),
-                                            fontSize: 24,
-                                            fontWeight: FontWeight.bold,
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            n.lowSignal
+                                                ? 'Localização imprecisa'
+                                                : n.rerouting
+                                                ? 'Recalculando rota'
+                                                : n.deviated
+                                                ? 'Fora da rota'
+                                                : formatDistance(
+                                                    n.nextDistance,
+                                                  ),
+                                            style: const TextStyle(
+                                              color: const Color(0xff067681),
+                                              fontSize: 24,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                           ),
-                                        ),
-                                        Text(
-                                          n.lowSignal
-                                              ? 'Orientação pausada até obter posição precisa'
-                                              : n.deviated
-                                              ? n.travelMode.name == 'nautical'
-                                                    ? 'Confira a travessia com o condutor; a rota foi mantida'
-                                                    : 'Aguarde um novo percurso'
-                                              : n.nextStep?.instruction ??
-                                                    'Continue',
-                                          style: const TextStyle(
-                                            color: MaraColors.navy,
-                                            fontSize: 17,
-                                            fontWeight: FontWeight.w600,
+                                          Text(
+                                            n.lowSignal
+                                                ? 'Orientação pausada até obter posição precisa'
+                                                : n.deviated
+                                                ? n.travelMode.name ==
+                                                          'nautical'
+                                                      ? 'Confira a travessia com o condutor; a rota foi mantida'
+                                                      : 'Aguarde um novo percurso'
+                                                : n.nextStep?.instruction ??
+                                                      'Continue',
+                                            style: const TextStyle(
+                                              color: MaraColors.navy,
+                                              fontSize: 17,
+                                              fontWeight: FontWeight.w600,
+                                            ),
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                            ListenableBuilder(
-                              listenable: _driveVoice,
-                              builder: (context, _) {
-                                final status = _driveVoice.status;
-                                if (status == null)
-                                  return const SizedBox.shrink();
-                                return Card(
+                              ListenableBuilder(
+                                listenable: _driveVoice,
+                                builder: (context, _) {
+                                  final status = _driveVoice.status;
+                                  if (status == null)
+                                    return const SizedBox.shrink();
+                                  return Card(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                        vertical: 6,
+                                      ),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            status,
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          if (_driveVoice.pending != null)
+                                            Wrap(
+                                              children: [
+                                                TextButton(
+                                                  onPressed:
+                                                      _driveVoice.canConfirm
+                                                      ? _driveVoice.cancel
+                                                      : null,
+                                                  child: const Text(
+                                                    'Manter rota',
+                                                  ),
+                                                ),
+                                                TextButton(
+                                                  onPressed:
+                                                      _driveVoice.canConfirm
+                                                      ? _driveVoice.confirm
+                                                      : null,
+                                                  child: const Text(
+                                                    'Confirmar destino',
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                              if (n.simulating || n.message != null)
+                                Material(
+                                  color: const Color(0xfffff3d0),
+                                  borderRadius: BorderRadius.circular(12),
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(
                                       horizontal: 12,
-                                      vertical: 6,
+                                      vertical: 5,
                                     ),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          status,
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                        if (_driveVoice.pending != null)
-                                          Wrap(
-                                            children: [
-                                              TextButton(
-                                                onPressed:
-                                                    _driveVoice.canConfirm
-                                                    ? _driveVoice.cancel
-                                                    : null,
-                                                child: const Text(
-                                                  'Manter rota',
-                                                ),
-                                              ),
-                                              TextButton(
-                                                onPressed:
-                                                    _driveVoice.canConfirm
-                                                    ? _driveVoice.confirm
-                                                    : null,
-                                                child: const Text(
-                                                  'Confirmar destino',
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                      ],
+                                    child: Text(
+                                      n.message ??
+                                          'Simulação · posição fictícia',
+                                      style: const TextStyle(fontSize: 12),
                                     ),
-                                  ),
-                                );
-                              },
-                            ),
-                            if (n.simulating || n.message != null)
-                              Material(
-                                color: const Color(0xfffff3d0),
-                                borderRadius: BorderRadius.circular(12),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 5,
-                                  ),
-                                  child: Text(
-                                    n.message ?? 'Simulação · posição fictícia',
-                                    style: const TextStyle(fontSize: 12),
                                   ),
                                 ),
-                              ),
-                          ],
-                        ),
+                            ],
+                          ),
                         ),
                       ),
                       Positioned(
@@ -929,58 +933,62 @@ class _NavigationScreenState extends ConsumerState<NavigationScreen>
                         child: PointerShield(
                           enabled: in3d,
                           child: Material(
-                          color: Colors.white,
-                          elevation: 5,
-                          borderRadius: const BorderRadius.vertical(
-                            top: Radius.circular(20),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 5,
+                            color: Colors.white,
+                            elevation: 5,
+                            borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(20),
                             ),
-                            child: Row(
-                              children: [
-                                IconButton(
-                                  onPressed: discoveries,
-                                  tooltip: 'Descobertas no caminho',
-                                  icon: const Icon(Icons.explore_outlined),
-                                ),
-                                Expanded(
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        '${formatDuration(n.remainingSeconds)} • ${formatDistance(n.remainingMeters)}',
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.w800,
-                                        ),
-                                      ),
-                                      if (_changedDestination != null)
-                                        Text(
-                                          destination.name,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: const TextStyle(fontSize: 12),
-                                        ),
-                                      if (arrival != null)
-                                        Text(
-                                          'Chegada às $arrival',
-                                          style: const TextStyle(fontSize: 12),
-                                        ),
-                                    ],
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 5,
+                              ),
+                              child: Row(
+                                children: [
+                                  IconButton(
+                                    onPressed: discoveries,
+                                    tooltip: 'Descobertas no caminho',
+                                    icon: const Icon(Icons.explore_outlined),
                                   ),
-                                ),
-                                TextButton(
-                                  onPressed: n.pause,
-                                  child: const Text('Encerrar'),
-                                ),
-                              ],
+                                  Expanded(
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          '${formatDuration(n.remainingSeconds)} • ${formatDistance(n.remainingMeters)}',
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.w800,
+                                          ),
+                                        ),
+                                        if (_changedDestination != null)
+                                          Text(
+                                            destination.name,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                        if (arrival != null)
+                                          Text(
+                                            'Chegada às $arrival',
+                                            style: const TextStyle(
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                  TextButton(
+                                    onPressed: n.pause,
+                                    child: const Text('Encerrar'),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
                         ),
                       ),
                       Positioned(
@@ -1040,76 +1048,77 @@ class _NavigationScreenState extends ConsumerState<NavigationScreen>
                         child: PointerShield(
                           enabled: in3d,
                           child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            _NavigationControl(
-                              label: n.voice
-                                  ? 'Silenciar orientação'
-                                  : 'Ativar orientação por voz',
-                              icon: n.voice
-                                  ? Icons.volume_up_outlined
-                                  : Icons.volume_off_outlined,
-                              onTap: () => n.setVoice(!n.voice),
-                            ),
-                            if (!n.simulating) ...[
-                              const SizedBox(height: 8),
-                              ListenableBuilder(
-                                listenable: _driveVoice,
-                                builder: (context, _) => _NavigationControl(
-                                  label: _driveVoice.enabled
-                                      ? 'Desativar Marapés'
-                                      : 'Ativar Marapés',
-                                  icon: _driveVoice.enabled
-                                      ? Icons.mic
-                                      : Icons.mic_none,
-                                  color: _driveVoice.enabled
-                                      ? const Color(0xffa3e8e8)
-                                      : Colors.white,
-                                  onTap: _driveVoice.toggle,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              _NavigationControl(
+                                label: n.voice
+                                    ? 'Silenciar orientação'
+                                    : 'Ativar orientação por voz',
+                                icon: n.voice
+                                    ? Icons.volume_up_outlined
+                                    : Icons.volume_off_outlined,
+                                onTap: () => n.setVoice(!n.voice),
+                              ),
+                              if (!n.simulating) ...[
+                                const SizedBox(height: 8),
+                                ListenableBuilder(
+                                  listenable: _driveVoice,
+                                  builder: (context, _) => _NavigationControl(
+                                    label: _driveVoice.enabled
+                                        ? 'Desativar Marapés'
+                                        : 'Ativar Marapés',
+                                    icon: _driveVoice.enabled
+                                        ? Icons.mic
+                                        : Icons.mic_none,
+                                    color: _driveVoice.enabled
+                                        ? const Color(0xffa3e8e8)
+                                        : Colors.white,
+                                    onTap: _driveVoice.toggle,
+                                  ),
                                 ),
-                              ),
-                            ],
-                            if (in3d) ...[
+                              ],
+                              if (in3d) ...[
+                                const SizedBox(height: 8),
+                                _NavigationControl(
+                                  label: satellite
+                                      ? 'Mapa estilizado'
+                                      : 'Satélite regional',
+                                  icon: satellite
+                                      ? Icons.map_outlined
+                                      : Icons.satellite_alt_outlined,
+                                  onTap: () =>
+                                      setState(() => satellite = !satellite),
+                                ),
+                              ],
+                              if (supports3d &&
+                                  !perspectiveFailed &&
+                                  _visitProfile != RoutingProfile.walking) ...[
+                                const SizedBox(height: 8),
+                                _NavigationControl(
+                                  label: perspective ? 'Vista 2D' : 'Vista 3D',
+                                  icon: perspective
+                                      ? Icons.layers_outlined
+                                      : Icons.view_in_ar_outlined,
+                                  onTap: () => setState(
+                                    () => perspective = !perspective,
+                                  ),
+                                ),
+                              ],
                               const SizedBox(height: 8),
-                              _NavigationControl(
-                                label: satellite
-                                    ? 'Mapa estilizado'
-                                    : 'Satélite regional',
-                                icon: satellite
-                                    ? Icons.map_outlined
-                                    : Icons.satellite_alt_outlined,
-                                onTap: () =>
-                                    setState(() => satellite = !satellite),
-                              ),
+                              if (!n.follow)
+                                FilledButton.icon(
+                                  onPressed: () => n.setFollow(true),
+                                  icon: const Icon(Icons.my_location),
+                                  label: const Text('Voltar à rota'),
+                                )
+                              else
+                                _NavigationControl(
+                                  label: 'Seguindo minha posição',
+                                  icon: Icons.gps_fixed,
+                                  onTap: () => n.setFollow(true),
+                                ),
                             ],
-                            if (supports3d &&
-                                !perspectiveFailed &&
-                                _visitProfile != RoutingProfile.walking) ...[
-                              const SizedBox(height: 8),
-                              _NavigationControl(
-                                label: perspective ? 'Vista 2D' : 'Vista 3D',
-                                icon: perspective
-                                    ? Icons.layers_outlined
-                                    : Icons.view_in_ar_outlined,
-                                onTap: () =>
-                                    setState(() => perspective = !perspective),
-                              ),
-                            ],
-                            const SizedBox(height: 8),
-                            if (!n.follow)
-                              FilledButton.icon(
-                                onPressed: () => n.setFollow(true),
-                                icon: const Icon(Icons.my_location),
-                                label: const Text('Voltar à rota'),
-                              )
-                            else
-                              _NavigationControl(
-                                label: 'Seguindo minha posição',
-                                icon: Icons.gps_fixed,
-                                onTap: () => n.setFollow(true),
-                              ),
-                          ],
-                        ),
+                          ),
                         ),
                       ),
                     ],
