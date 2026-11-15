@@ -2,7 +2,7 @@ name: APK de teste (Android debug)
 
 on:
   push:
-    branches: [ci/apk-debug]
+    branches: [ci/apk-debug, feat/mvp-app]
   workflow_dispatch:
 
 permissions:
