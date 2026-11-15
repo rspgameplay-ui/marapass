@@ -42,6 +42,20 @@ jobs:
           if [ -d dist ]; then cp -r dist /tmp/ci/navigation3d-dist; fi
           exit 0
 
+      - name: Aplica dart format nos arquivos da integração
+        if: github.ref_name == 'integracao/v10-gps-3d'
+        shell: bash
+        run: |
+          cd flutter
+          dart format lib/presentation/navigation_screen.dart lib/application/navigation_session.dart lib/maps/pointer_shield.dart lib/maps/pointer_shield_stub.dart lib/maps/pointer_shield_web.dart test/pointer_shield_test.dart test/gps_startup_test.dart
+          cd ..
+          if ! git diff --quiet; then
+            git config user.name "github-actions"
+            git config user.email "github-actions@users.noreply.github.com"
+            git commit -am "Formata com dart format os arquivos da integração do 3D"
+            git push origin HEAD:integracao/v10-gps-3d
+          fi
+
       - name: Publica os registros na branch ci-resultados
         shell: bash
         run: |
