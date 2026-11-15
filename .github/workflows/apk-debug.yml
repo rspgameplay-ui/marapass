@@ -1,0 +1,43 @@
+name: APK de teste (Android debug)
+
+on:
+  push:
+    branches: [ci/apk-debug]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.8'
+          channel: stable
+          cache: true
+
+      - name: Dependências
+        working-directory: flutter
+        run: flutter pub get
+
+      - name: Compila o APK debug
+        working-directory: flutter
+        run: flutter build apk --debug --dart-define-from-file=config/catalogo.json
+
+      - name: Publica o APK como artefato
+        uses: actions/upload-artifact@v4
+        with:
+          name: marapass-debug-apk
+          path: flutter/build/app/outputs/flutter-apk/app-debug.apk
+          retention-days: 14
+          if-no-files-found: error
