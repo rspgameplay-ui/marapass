@@ -1,0 +1,43 @@
+00:00 +0: loading /workspace/marapass-baseline/flutter/test/terrain_test.dart
+00:00 +0: /workspace/marapass-baseline/flutter/test/terrain_test.dart: zero é altitude válida; posição editada invalida a amostra
+00:00 +1: /workspace/marapass-baseline/flutter/test/terrain_test.dart: amostras cobrem a base pública e mantêm coordenadas e ausência de dados
+00:00 +1 -1: /workspace/marapass-baseline/flutter/test/terrain_test.dart: amostras cobrem a base pública e mantêm coordenadas e ausência de dados [E]
+  Expected: <4224>
+    Actual: <4217>
+
+  package:matcher                                     expect
+  package:flutter_test/src/widget_tester.dart 473:18  expect
+  test/terrain_test.dart 54:7                         main.<fn>
+
+00:00 +1 -1: /workspace/marapass-baseline/flutter/test/terrain_test.dart: ficha topográfica e mapa regional cabem em tela pequena
+00:02 +2 -1: /workspace/marapass-baseline/flutter/test/terrain_test.dart: seletor oferece relevo sem perder consulta de lugares
+00:04 +3 -1: loading /workspace/marapass-baseline/flutter/test/municipal_review_test.dart
+00:04 +3 -1: /workspace/marapass-baseline/flutter/test/municipal_review_test.dart: catálogo e painel preservam os mesmos registros e corrigem lagoas
+00:05 +3 -2: /workspace/marapass-baseline/flutter/test/municipal_review_test.dart: catálogo e painel preservam os mesmos registros e corrigem lagoas [E]
+  Expected: <50>
+    Actual: <51>
+
+  package:matcher                                     expect
+  package:flutter_test/src/widget_tester.dart 473:18  expect
+  test/municipal_review_test.dart 22:5                main.<fn>
+
+00:05 +3 -2: /workspace/marapass-baseline/flutter/test/municipal_review_test.dart: guia de Santo Amaro do Maranhão filtra o mapa e cabe em celular
+00:06 +4 -2: /workspace/marapass-baseline/flutter/test/municipal_review_test.dart: guia de Primeira Cruz filtra o mapa e cabe em celular
+00:06 +5 -2: /workspace/marapass-baseline/flutter/test/municipal_review_test.dart: ficha natural mantém planejamento e não oferece Waze direto
+00:07 +6 -2: /workspace/marapass-baseline/flutter/test/municipal_review_test.dart: gravador apresenta controles com texto ampliado no celular
+00:07 +7 -2: loading /workspace/marapass-baseline/flutter/test/municipalities_test.dart
+00:08 +7 -2: /workspace/marapass-baseline/flutter/test/municipalities_test.dart: base tem 217 códigos únicos, pontos com município e fonte rastreável
+00:08 +7 -3: /workspace/marapass-baseline/flutter/test/municipalities_test.dart: base tem 217 códigos únicos, pontos com município e fonte rastreável [E]
+  Expected: is in ['2026-10-30', '2026-11-05']
+    Actual: '2026-11-09'
+
+  package:matcher                                     expect
+  package:flutter_test/src/widget_tester.dart 473:18  expect
+  test/municipalities_test.dart 32:9                  main.<fn>
+
+00:08 +7 -3: Some tests failed.
+
+Failing tests:
+  /workspace/marapass-baseline/flutter/test/municipal_review_test.dart: catálogo e painel preservam os mesmos registros e corrigem lagoas
+  /workspace/marapass-baseline/flutter/test/municipalities_test.dart: base tem 217 códigos únicos, pontos com município e fonte rastreável
+  /workspace/marapass-baseline/flutter/test/terrain_test.dart: amostras cobrem a base pública e mantêm coordenadas e ausência de dados

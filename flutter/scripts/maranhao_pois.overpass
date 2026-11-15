@@ -1,0 +1,10 @@
+[out:json][timeout:60][maxsize:67108864];
+area["ISO3166-2"="BR-MA"]["boundary"="administrative"]->.ma;
+(
+ nwr(area.ma)["name"]["tourism"~"^(attraction|museum|viewpoint|zoo|theme_park|gallery|hotel|guest_house|hostel|camp_site|information)$"];
+ nwr(area.ma)["name"]["historic"~"^(monument|memorial|fort|ruins|archaeological_site)$"];
+ nwr(area.ma)["name"]["amenity"~"^(restaurant|cafe|fast_food|food_court|bar|fuel|pharmacy|hospital|bus_station|ferry_terminal|marketplace|atm|bank)$"];
+ nwr(area.ma)["name"]["shop"~"^(craft|art|souvenir)$"];
+ nwr(area.ma)["name"]["waterway"="waterfall"];
+ nwr(area.ma)["name"]["natural"="beach"];
+);out meta center;

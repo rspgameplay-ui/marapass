@@ -1,0 +1,22 @@
+[
+  {
+    "file": "marapass-v36-source-and-build.tar.gz",
+    "bytes": 31169364,
+    "sha256": "e7a89c906e7b1e3a9bb13b66afacf618930d9894ee3f97bf0b617981f8add7fc"
+  },
+  {
+    "file": "marapass-sites-history.bundle",
+    "bytes": 39604681,
+    "sha256": "fd424a6dd738d459a3c67ee9abb0a90033d840297a08117a9aaef8e05bba2318"
+  },
+  {
+    "file": "v36-files-sha256.json",
+    "bytes": 62537,
+    "sha256": "871941649473f52e6b779f610ce9272d1e278f9c2fef68ad25c23d91d8e986a7"
+  },
+  {
+    "file": "marapass-gps-v36-homologacao.tar.gz",
+    "bytes": 22250286,
+    "sha256": "fec341d9a07ed207bdd65c0ecb8506b17eced42a9d37b74047c0b65f98f7797e"
+  }
+]

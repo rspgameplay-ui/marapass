@@ -1,0 +1,121 @@
+{
+  "checkedAt": "2026-11-05",
+  "sourceEdition": "ANTAQ — linhas de travessias, 06/05/2025",
+  "sourceUrl": "https://www.gov.br/antaq/pt-br/central-de-conteudos/informacoes-geograficas",
+  "downloadUrl": "https://www.gov.br/antaq/pt-br/central-de-conteudos/Linhasdetravessias06052025.zip",
+  "archiveSha256": "13a72f45a311168f8d57c50d261a3aa4b39c3188ee069617e572a76cd502d215",
+  "routes": [
+    {
+      "id": "antaq:300044",
+      "name": "Tatus ↔ Canárias",
+      "sourceFeatureId": "300044",
+      "sourceAntaqId": "175",
+      "mode": "water",
+      "status": "documented_reference",
+      "operationallyVerified": false,
+      "geometryUse": "planning_only",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -41.83015,
+            -2.831645
+          ],
+          [
+            -41.830696,
+            -2.831574
+          ],
+          [
+            -41.833846,
+            -2.828974
+          ],
+          [
+            -41.839919,
+            -2.825482
+          ],
+          [
+            -41.840223,
+            -2.824476
+          ],
+          [
+            -41.837547,
+            -2.821744
+          ],
+          [
+            -41.835801,
+            -2.818138
+          ],
+          [
+            -41.835858,
+            -2.816562
+          ],
+          [
+            -41.836882,
+            -2.813317
+          ],
+          [
+            -41.837737,
+            -2.809275
+          ],
+          [
+            -41.83935,
+            -2.806921
+          ],
+          [
+            -41.842405,
+            -2.802898
+          ],
+          [
+            -41.844474,
+            -2.800298
+          ],
+          [
+            -41.846277,
+            -2.792859
+          ],
+          [
+            -41.847409,
+            -2.780786
+          ],
+          [
+            -41.846256,
+            -2.773539
+          ],
+          [
+            -41.846163,
+            -2.771888
+          ],
+          [
+            -41.846466,
+            -2.767181
+          ]
+        ]
+      },
+      "endpoints": [
+        {
+          "name": "Tatus · Ilha Grande/PI",
+          "coordinates": [
+            -41.83015,
+            -2.831645
+          ]
+        },
+        {
+          "name": "Canárias · Araioses/MA",
+          "coordinates": [
+            -41.846466,
+            -2.767181
+          ]
+        }
+      ],
+      "sourceDate": "2025-05-06",
+      "authorizationDate": "2024-07-10",
+      "authorizationUrl": "https://sophia.antaq.gov.br/Terminal/Acervo/Detalhe/36910",
+      "durationMinutesInAuthorization": 20,
+      "durationNote": "Tempo médio descrito no ato de 2024; não é previsão de chegada atual.",
+      "serviceNote": "Outorga documentada. Operação atual, horários, preços, pontos exatos de embarque e disponibilidade precisam de confirmação com o prestador.",
+      "islandIds": [
+        "geonames:3403422"
+      ]
+    }
+  ]
+}

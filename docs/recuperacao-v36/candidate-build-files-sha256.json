@@ -1,0 +1,447 @@
+[
+  {
+    "path": ".last_build_id",
+    "bytes": 32,
+    "sha256": "249ab578dfbb0ad527620e066fc19e98da0adf62a89859cedcde8f5b7e4dd5c1"
+  },
+  {
+    "path": "_headers",
+    "bytes": 624,
+    "sha256": "fd7f15d526f52c203879359b1f6b96bc687441006eeae874779557e647726842"
+  },
+  {
+    "path": "admin/LEIA-ME.md",
+    "bytes": 1222,
+    "sha256": "d3aa58ea5561a7b983e0f693d9ad6ffe455173a0afa1bf13a64362bf92812208"
+  },
+  {
+    "path": "admin/_headers",
+    "bytes": 618,
+    "sha256": "e63bf3591b6b7bcd3768cbc51a4bfadfb1d66349d3523a0c67639f627c96cf25"
+  },
+  {
+    "path": "admin/app.js",
+    "bytes": 39548,
+    "sha256": "2d0b508955d721683ba50ddaad4cc203114fca84ec9b2cfa7c2a4d3c69e9849a"
+  },
+  {
+    "path": "admin/data/condominiums.json",
+    "bytes": 399410,
+    "sha256": "b626a30d18cfbabb138843290367c011e1c6bb6eeb99142dd4d33aa912689dff"
+  },
+  {
+    "path": "admin/data/municipalities.json",
+    "bytes": 80301,
+    "sha256": "6b14af163dbaeae986ca345977a1e0a517afd86a8d6b8f3326144126a4136791"
+  },
+  {
+    "path": "admin/data/places.json",
+    "bytes": 2868228,
+    "sha256": "c304e48d96fa49ce683e7f7cc36d33a7b0cf26d7fc5369bc8fb78825d081ce3e"
+  },
+  {
+    "path": "admin/index.html",
+    "bytes": 17467,
+    "sha256": "e59b5a7c1f1d2a5739e7def28af4f1c5cd228d2a8d61718ff3a7e27dccfffff6"
+  },
+  {
+    "path": "admin/map-content.css",
+    "bytes": 3546,
+    "sha256": "8364a87b0eee6b47ddbc0cceb55912065e28a6464affc0d00dd4af587d449413"
+  },
+  {
+    "path": "admin/map-content.js",
+    "bytes": 28386,
+    "sha256": "12963c52c5d919e75e2863bcbec614945c7021a5a230a72e27682eaf8edbadfb"
+  },
+  {
+    "path": "admin/parceiro.css",
+    "bytes": 814,
+    "sha256": "1378b9eed3fa1cc2c024ab4f77922ff6205c522fef6b0baa9fbc0c5659843c96"
+  },
+  {
+    "path": "admin/parceiro.html",
+    "bytes": 3141,
+    "sha256": "177e86037fb88831bf1bb7866e3033aa95bd359f898817e579b41d55797b95cf"
+  },
+  {
+    "path": "admin/parceiro.js",
+    "bytes": 6667,
+    "sha256": "f1a4a6dee601d504087d250196ac0282cf98c0f1a9b392037c461c5cb2807fc7"
+  },
+  {
+    "path": "admin/style.css",
+    "bytes": 13197,
+    "sha256": "c75fe551f2fb8c4e1943efaf221653035b3875085c8710abbed902893b305424"
+  },
+  {
+    "path": "assets/AssetManifest.bin",
+    "bytes": 2004,
+    "sha256": "ea7845cb7416d82e87f46168a45fa8bc145bdc101caf1257200fc7181bd08c2d"
+  },
+  {
+    "path": "assets/AssetManifest.bin.json",
+    "bytes": 2674,
+    "sha256": "09e1bcc7624676812edeaa87c1943f6bb745574e0bf59e5ff81d28e89c818f46"
+  },
+  {
+    "path": "assets/FontManifest.json",
+    "bytes": 403,
+    "sha256": "ed939b0b94003321c31b8e67d1e713fdbe1da9297200dc61f0c6659d8e13fc5d"
+  },
+  {
+    "path": "assets/NOTICES",
+    "bytes": 1407675,
+    "sha256": "cf11e33a857a25288bca73eeab8c56a09ba3c6a6237621aa6d06cecd81ff2fee"
+  },
+  {
+    "path": "assets/assets/data/.places.json.zDgv9E",
+    "bytes": 1310720,
+    "sha256": "962688b7d70f312e94fcc3ae64caa3d5bd6f9e7e5508c8ca1d14ab4137a76232"
+  },
+  {
+    "path": "assets/assets/data/coastal_islands.json",
+    "bytes": 221320,
+    "sha256": "fb9c6b9a05cf6122be269c0d13a5c9d2951571ef3e4657995bbe4886838ad5dc"
+  },
+  {
+    "path": "assets/assets/data/condominiums.json",
+    "bytes": 399410,
+    "sha256": "b626a30d18cfbabb138843290367c011e1c6bb6eeb99142dd4d33aa912689dff"
+  },
+  {
+    "path": "assets/assets/data/elevations.json",
+    "bytes": 305614,
+    "sha256": "5a3bbf351059f6d747561fcc59ced1b9fdd2d73df722550ddbcd11ad65f36cc8"
+  },
+  {
+    "path": "assets/assets/data/island_land_access.json",
+    "bytes": 1110,
+    "sha256": "96aaeab68c10f6027fcf05d7ee912709df8d8059c7c09dd6dad2df0e170bed37"
+  },
+  {
+    "path": "assets/assets/data/municipalities.json",
+    "bytes": 80301,
+    "sha256": "6b14af163dbaeae986ca345977a1e0a517afd86a8d6b8f3326144126a4136791"
+  },
+  {
+    "path": "assets/assets/data/nautical_connections.json",
+    "bytes": 2912,
+    "sha256": "47cbc76e464898897ce7326788cbcfd633bc6e4fbf07603aebbe77045d220e12"
+  },
+  {
+    "path": "assets/assets/data/places.json",
+    "bytes": 2868228,
+    "sha256": "c304e48d96fa49ce683e7f7cc36d33a7b0cf26d7fc5369bc8fb78825d081ce3e"
+  },
+  {
+    "path": "assets/assets/data/simulation_route.json",
+    "bytes": 366812,
+    "sha256": "c1b128a765c51c2f9d26bbd3fe073f3862f0cc5f02efd6435d0c39f233472a8e"
+  },
+  {
+    "path": "assets/assets/data/source_manifest.json",
+    "bytes": 1767,
+    "sha256": "773a582cc75af0d06e7ea915feb1bd5f78f50eef97168e9d2333f1babedc202e"
+  },
+  {
+    "path": "assets/assets/data/terrain_manifest.json",
+    "bytes": 654,
+    "sha256": "4c67ab5cd8b782b35af3fc606b0b7ba64b94c7997f3a5ae9f0b41c26cfe61456"
+  },
+  {
+    "path": "assets/assets/fonts/Manrope.ttf",
+    "bytes": 164700,
+    "sha256": "3ae11c49db0455a3cc33e37d380f20fdb8c7f8b41dc07625c177e3d87a9d6ae6"
+  },
+  {
+    "path": "assets/assets/fonts/Manrope_OFL.txt",
+    "bytes": 4387,
+    "sha256": "58172e0c0fac2cda8a37b348164bb55e44b0e69051e557e92b1d3f6910141f7b"
+  },
+  {
+    "path": "assets/assets/fonts/Roboto-Bold.ttf",
+    "bytes": 170760,
+    "sha256": "7d0b991ee3e0be7af01ad7ea8cd2beea6c00a25e679a0226b6737f079aafff86"
+  },
+  {
+    "path": "assets/assets/fonts/Roboto-Regular.ttf",
+    "bytes": 171676,
+    "sha256": "79e851404657dac2106b3d22ad256d47824a9a5765458edb72c9102a45816d95"
+  },
+  {
+    "path": "assets/assets/fonts/Roboto_LICENSE.txt",
+    "bytes": 11358,
+    "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+  },
+  {
+    "path": "assets/assets/map/OpenFreeMap_STYLE_LICENSE.md",
+    "bytes": 3223,
+    "sha256": "932694202d771c52089e87f13105e02f2b68341f584b0f3d8adc557c9d7cefa3"
+  },
+  {
+    "path": "assets/assets/map/maranhao.geojson",
+    "bytes": 115051,
+    "sha256": "cc70dd35b30cc716e34b4bd9597c254bafc4f7ab346d6f14b88e69427122a740"
+  },
+  {
+    "path": "assets/assets/map/municipalities.geojson",
+    "bytes": 839778,
+    "sha256": "fe63392cb77a2a6f156b5af2497bd7869ca117e0f006f06ce541226a25e93b40"
+  },
+  {
+    "path": "assets/assets/map/roads_reference.json",
+    "bytes": 9882205,
+    "sha256": "eb91dd2d4380fa5af66bf996a3e8ade1653eb98c62271fd8b717d3c2f8434d28"
+  },
+  {
+    "path": "assets/assets/map/style_day.json",
+    "bytes": 37840,
+    "sha256": "9d138a388ce908725345d0e6fa66e6a1bb9c35c6ed9af4439536da14453c3bda"
+  },
+  {
+    "path": "assets/assets/map/style_night.json",
+    "bytes": 37842,
+    "sha256": "8687b8ee2c9fe00342639ccca0abebf9ffa36cfc85a65723a57aefe822483480"
+  },
+  {
+    "path": "assets/assets/map/terrain_ma.png",
+    "bytes": 3034722,
+    "sha256": "fff78f8e1ed8380306008322552c86ee972cace38d3f0b14fe9b989eb2764a60"
+  },
+  {
+    "path": "assets/fonts/MaterialIcons-Regular.otf",
+    "bytes": 18976,
+    "sha256": "44e41e49715731a864c21627dff8bfbb36722f455df0b8690c0ef7b7d4260bac"
+  },
+  {
+    "path": "assets/fonts/fallback/Roboto-Regular.ttf",
+    "bytes": 171676,
+    "sha256": "79e851404657dac2106b3d22ad256d47824a9a5765458edb72c9102a45816d95"
+  },
+  {
+    "path": "assets/packages/cupertino_icons/assets/CupertinoIcons.ttf",
+    "bytes": 1472,
+    "sha256": "3d90c370aa4cf00dc57ee2b902f6652147c0f81e03e483df584a9c08b1687c9d"
+  },
+  {
+    "path": "assets/packages/flutter_map/lib/assets/flutter_map_logo.png",
+    "bytes": 2424,
+    "sha256": "6051ae42fb505931a833e58f9209a9f96669a4d0e4b3f06f6d82cde12a0e0401"
+  },
+  {
+    "path": "assets/packages/google_maps_flutter_web/assets/blue-dot.png",
+    "bytes": 1754,
+    "sha256": "31e556d6952d869bf353ff14b01f5a36722bdf2d17b2eae411bc6c9dfea21fc6"
+  },
+  {
+    "path": "assets/packages/google_maps_flutter_web/assets/my_location-sprite-2x.png",
+    "bytes": 1582,
+    "sha256": "15810e5a3da6005042be8268d3defd4bb7f4c4d2c39fbd784d4548a872d346c8"
+  },
+  {
+    "path": "assets/shaders/ink_sparkle.frag",
+    "bytes": 8890,
+    "sha256": "2dca5ab93d4ec29e963f996f3916320ba60825e9537dfb149a68008c7a16b026"
+  },
+  {
+    "path": "assets/shaders/stretch_effect.frag",
+    "bytes": 6737,
+    "sha256": "ab412f07a5b9b50b67a885b24dbe16929738ae28630407d6490c924caf0a3220"
+  },
+  {
+    "path": "canvaskit/canvaskit.js",
+    "bytes": 86987,
+    "sha256": "bb559f6080c7d312ac2a912b4abec9f68ff3d3022d4a603c7796b9b31460642b"
+  },
+  {
+    "path": "canvaskit/canvaskit.js.symbols",
+    "bytes": 1356926,
+    "sha256": "384f80b392972c83fd4f262527e3d06215a297d33ed59732c726721e9d9311bd"
+  },
+  {
+    "path": "canvaskit/canvaskit.wasm",
+    "bytes": 7284602,
+    "sha256": "fbed517a43e82452404446683f00f2e876d835aed84410695759e67b6bb01cd3"
+  },
+  {
+    "path": "canvaskit/chromium/canvaskit.js",
+    "bytes": 86226,
+    "sha256": "6018b12bd8ed37e6952eee72d59c1cf7ad707ccdb74a0a45190010f77edd9068"
+  },
+  {
+    "path": "canvaskit/chromium/canvaskit.js.symbols",
+    "bytes": 1235870,
+    "sha256": "31c86fac6042dd8b756150832c1d15495d0d07742e2718f75dbdde5a5a91455e"
+  },
+  {
+    "path": "canvaskit/chromium/canvaskit.wasm",
+    "bytes": 5428806,
+    "sha256": "ae8ff1d858140f7b1300ced3fa89fb8c9dce0a400a0f4f1e11f6dcfb3315fdcf"
+  },
+  {
+    "path": "canvaskit/skwasm.js",
+    "bytes": 63537,
+    "sha256": "71d7d3e34bf71b52bdba3b588b103bba8148ba28de5754083e01b3398e7a6e1c"
+  },
+  {
+    "path": "canvaskit/skwasm.js.symbols",
+    "bytes": 1540006,
+    "sha256": "9137f1a3ae744dea575043abfc6e063a047e910e6dab1ee53e496c975d1c033e"
+  },
+  {
+    "path": "canvaskit/skwasm.wasm",
+    "bytes": 3593715,
+    "sha256": "e540fd5e8303b7b68ec2718cb49e9c421f8ade3075b15e02a7059a62654df9a1"
+  },
+  {
+    "path": "canvaskit/skwasm_heavy.js",
+    "bytes": 63650,
+    "sha256": "cec554b46ddcf4c0e63d799e0556d546f42d2c3f69316fb4f67ed776f6104558"
+  },
+  {
+    "path": "canvaskit/skwasm_heavy.js.symbols",
+    "bytes": 1672152,
+    "sha256": "b6b79ed497e11d4cd13cc46724f9e289eacc744d2d185e31c72d595cdf62772b"
+  },
+  {
+    "path": "canvaskit/skwasm_heavy.wasm",
+    "bytes": 5216217,
+    "sha256": "565f5cc1cca6ab120f11934b105f01fec4b58b480c82e0889dca93af8e6f8635"
+  },
+  {
+    "path": "canvaskit/webparagraph/canvaskit.js",
+    "bytes": 76114,
+    "sha256": "3110e3e4d9b7b5657d336f253aaca8acca5777cde9319fb69ac302d6ff5a8b23"
+  },
+  {
+    "path": "canvaskit/webparagraph/canvaskit.js.symbols",
+    "bytes": 963641,
+    "sha256": "44d6c47919106235cf32252252490cdf798d907ee874ba343ab53dc94bc2a9dc"
+  },
+  {
+    "path": "canvaskit/webparagraph/canvaskit.wasm",
+    "bytes": 3729129,
+    "sha256": "0ce1b05082efdc8529550e8a01f6ff0593972d55525035010e26f5600aa9f254"
+  },
+  {
+    "path": "canvaskit/wimp.js",
+    "bytes": 59127,
+    "sha256": "8fd8a47480c6eb0a374d159912d0b3fb15661b41f5c113ecdd39c2f01f2bee46"
+  },
+  {
+    "path": "canvaskit/wimp.js.symbols",
+    "bytes": 1813030,
+    "sha256": "b4907ebd33131302a8cd99f7c55f52357bdfde04f421b605a616ba8764ae1de4"
+  },
+  {
+    "path": "canvaskit/wimp.wasm",
+    "bytes": 3581677,
+    "sha256": "e924eaafd801d41e017d178f3fd5cf8a417f641fe35c9ed34a4e1d7582283e0c"
+  },
+  {
+    "path": "favicon.png",
+    "bytes": 452,
+    "sha256": "3ea971e956280566bb1a5d71e1411bce536e5f8e57701440360ffe1b75042198"
+  },
+  {
+    "path": "flutter.js",
+    "bytes": 12136,
+    "sha256": "2beb1ce6b159c71540aa66030af1d7964b6a92377cc78473745e02f97b74effe"
+  },
+  {
+    "path": "flutter_bootstrap.js",
+    "bytes": 13119,
+    "sha256": "2d0331e8f64354ca29fd48711b32d9c53d35cda8fae22f3c032047104229916f"
+  },
+  {
+    "path": "flutter_service_worker.js",
+    "bytes": 784,
+    "sha256": "a131df5ca46154cc4eb79044f7f5a14029c2f8bfccf8cef34e3ec3b5a9f5a88c"
+  },
+  {
+    "path": "google_places/index.html",
+    "bytes": 6995,
+    "sha256": "d6481fb4aecc3c29b16f46bb22305ce114cbe65d9d4f63f9120e05ff266e4bba"
+  },
+  {
+    "path": "google_places/panel.css",
+    "bytes": 1018,
+    "sha256": "49b6995e4a3ab051dce5c17fcccbc0106d09da6d2870a258b3e2258503a7b130"
+  },
+  {
+    "path": "google_places/panel.js",
+    "bytes": 4483,
+    "sha256": "e805bb1672c844916654b7755b2d38af6b5d9ddb0bca15a7fabc0121f1fb433a"
+  },
+  {
+    "path": "icons/Icon-192.png",
+    "bytes": 2430,
+    "sha256": "1cf496453a6d3a5a554af93efe854244fa286ff0d1429fd495f646cf199d1842"
+  },
+  {
+    "path": "icons/Icon-512.png",
+    "bytes": 6966,
+    "sha256": "29d58d0f2c099914c03f6ff483d8ff1e6358f7be0d6a98b1c94e40b512f20404"
+  },
+  {
+    "path": "icons/Icon-maskable-192.png",
+    "bytes": 2430,
+    "sha256": "1cf496453a6d3a5a554af93efe854244fa286ff0d1429fd495f646cf199d1842"
+  },
+  {
+    "path": "icons/Icon-maskable-512.png",
+    "bytes": 6966,
+    "sha256": "29d58d0f2c099914c03f6ff483d8ff1e6358f7be0d6a98b1c94e40b512f20404"
+  },
+  {
+    "path": "index.html",
+    "bytes": 1828,
+    "sha256": "b5ecdfcfa7076cb02867a5e1dc40ff369ccf2328d529866f991d120ea4b747c5"
+  },
+  {
+    "path": "main.dart.js",
+    "bytes": 5003703,
+    "sha256": "f7523932865e6735e4435ed2ee1d272f2c007dd0d744fc86304c7b0b37787610"
+  },
+  {
+    "path": "manifest.json",
+    "bytes": 859,
+    "sha256": "9b05fcff8c2b9eaf5c1b0d486f8c9f608eb10277dd63615e11a829656252ef67"
+  },
+  {
+    "path": "navigation-3d/assets/index-G5-Tfjq6.js",
+    "bytes": 1873313,
+    "sha256": "d646cbb8b45819621e9d42922dc8d81f02dab3fac352abf75ae55a4ad58266f8"
+  },
+  {
+    "path": "navigation-3d/assets/index-S-HJ2tGl.css",
+    "bytes": 77917,
+    "sha256": "138d603193a18b05e0ceda160d45eb0c773afbd22992dff20ed673fb386aa73e"
+  },
+  {
+    "path": "navigation-3d/index.html",
+    "bytes": 380,
+    "sha256": "602f6c18a291e10258be3f893a00a152c432818180cab388e9266f551adbf23c"
+  },
+  {
+    "path": "recovery-build.json",
+    "bytes": 214,
+    "sha256": "0388d3319c0a5225ce0561f279ee734310f36c40f0c7ab600a1acaca779857b9"
+  },
+  {
+    "path": "seguranca/index.html",
+    "bytes": 9710,
+    "sha256": "2ca498528117daf5fdd83752737328ab22fbbdd40dbcec2493dbe06ade121184"
+  },
+  {
+    "path": "version.json",
+    "bytes": 96,
+    "sha256": "73825e2f52c4c20f93263bcca25fa46f598eb194a45574819319dda7b8008e26"
+  },
+  {
+    "path": "voice/recognition_adapter.js",
+    "bytes": 5537,
+    "sha256": "b1a903a68d8e21a10fa171c6d6da6fac4e80e83d9f9380d5e252a5e466adaa7f"
+  }
+]

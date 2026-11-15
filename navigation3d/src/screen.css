@@ -1,0 +1,19 @@
+@import "tailwindcss";
+html,body,#root{height:100%;margin:0;overflow:hidden;background:#e3eee0;font-family:system-ui,sans-serif}
+.status{position:absolute;inset:45% auto auto 50%;transform:translate(-50%,-50%);display:flex;align-items:center;gap:8px;white-space:nowrap;background:white;color:#143643;border-radius:18px;padding:9px 14px;box-shadow:0 5px 18px #133c4630}
+.poi{display:flex;align-items:center;gap:7px;max-width:175px;background:white;color:#17384a;white-space:nowrap;border-radius:13px;padding:5px 8px 5px 5px;border:1px solid #def0ee;box-shadow:0 4px 14px #163d4c38;cursor:pointer;text-align:left}
+.poi i{background:#00838c;color:#fff;border-radius:9px;padding:5px}.poi span{min-width:0}.poi b,.poi small{display:block;overflow:hidden;text-overflow:ellipsis}.poi b{font-size:11px}.poi small{font-size:10px;color:#456977}
+.maplibregl-ctrl-bottom-left{bottom:3px;left:6px}.maplibregl-ctrl-attrib{font-size:10px}
+.boat-marker{background:#fff;border:2px solid #00a7b7;border-radius:50%;padding:4px;font-size:22px}
+
+/* The marker stays legible across zoom levels and needs no second GL renderer. */
+.vehicle-marker{width:34px;height:56px;pointer-events:none;isolation:isolate}
+.vehicle-marker::before{content:"";position:absolute;inset:20px -11px -8px;border-radius:50%;background:#0e879a33;border:1px solid #b7f5fc9c;z-index:-1}
+.car-body{position:absolute;inset:1px 3px;border-radius:43% 43% 32% 32% / 23% 23% 17% 17%;border:1.5px solid #f7ffff;background:linear-gradient(90deg,#057587,#16cddd 20%,#77f4f6 48%,#14b7cc 76%,#06667f);box-shadow:0 3px 0 #073649,0 5px 10px #0e344e9e}
+.car-glass{position:absolute;inset:14px 7px 12px;border-radius:36% 36% 25% 25%;border:1px solid #5ce3ef;background:linear-gradient(150deg,#1f5973 6%,#102b44 40%,#10314a 70%,#237083)}
+.car-roof{position:absolute;inset:23px 8px 20px;border-radius:4px;background:linear-gradient(115deg,#5de1e5,#0299af);box-shadow:0 1px 1px #092939;display:grid;place-items:center}
+.car-roof::after{content:"";width:8px;height:5px;border:solid #eaffff;border-width:2px 2px 0;border-radius:5px 5px 0 0}
+.car-headlights,.car-taillights{position:absolute;inset:7px 7px auto;height:3px;border-radius:3px;background:linear-gradient(90deg,#f8f4b2 30%,transparent 30% 70%,#f8f4b2 70%)}
+.car-taillights{inset:auto 7px 5px;background:linear-gradient(90deg,#ff695f 30%,transparent 30% 70%,#ff695f 70%)}
+.poi{max-width:148px}
+@media(max-width:600px){.poi{max-width:122px;gap:5px}.poi i{padding:4px}}

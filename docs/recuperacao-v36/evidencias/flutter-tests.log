@@ -1,0 +1,186 @@
+00:00 +0: loading /workspace/marapass-sites-original/flutter/test/nautical_connections_test.dart
+00:00 +0: /workspace/marapass-sites-original/flutter/test/nautical_connections_test.dart: travessia mantém geometria da fonte e separa documentação de operação
+00:00 +1: /workspace/marapass-sites-original/flutter/test/nautical_connections_test.dart: Carrapatal mostra pendência sem oferecer início de navegação
+00:00 +2: /workspace/marapass-sites-original/flutter/test/nautical_connections_test.dart: Canárias expõe traçado com tempo documental e confirmação pendente
+00:01 +3: loading /workspace/marapass-sites-original/flutter/test/navigation_voice_test.dart
+00:01 +3: /workspace/marapass-sites-original/flutter/test/navigation_voice_test.dart: prioriza voz brasileira premium e usa ritmo móvel mais rápido
+00:01 +4: /workspace/marapass-sites-original/flutter/test/navigation_voice_test.dart: silenciar durante a configuração cancela a instrução pendente
+00:01 +5: loading /workspace/marapass-sites-original/flutter/test/location_service_test.dart
+00:01 +5: /workspace/marapass-sites-original/flutter/test/location_service_test.dart: aquisição aguarda precisão e cancela a leitura temporária
+00:01 +6: /workspace/marapass-sites-original/flutter/test/location_service_test.dart: recusa é específica e não inicia observação
+00:01 +7: /workspace/marapass-sites-original/flutter/test/location_service_test.dart: timeout e imprecisão encerram leitura sem fingir GPS válido
+00:02 +8: /workspace/marapass-sites-original/flutter/test/location_service_test.dart: encerrar aquisição impede iniciar navegação posteriormente
+00:02 +9: /workspace/marapass-sites-original/flutter/test/location_service_test.dart: inicia com posição precisa e encerra se a permissão for revogada
+00:02 +10: /workspace/marapass-sites-original/flutter/test/location_service_test.dart: posição antiga ou inválida não é utilizável
+00:02 +11: loading /workspace/marapass-sites-original/flutter/test/journey_test.dart
+00:02 +11: /workspace/marapass-sites-original/flutter/test/journey_test.dart: seleção usa corredor real da rota, interesses, salvos e posição à frente
+00:02 +12: /workspace/marapass-sites-original/flutter/test/journey_test.dart: cupom exige parceiro, ID, publicação recente e vigência; cache nunca ativa
+00:02 +13: /workspace/marapass-sites-original/flutter/test/journey_test.dart: índice reflete edição de coordenadas e retirada de ponto
+00:02 +14: /workspace/marapass-sites-original/flutter/test/journey_test.dart: preferências persistem sem conta e valores corrompidos retornam ao padrão
+00:02 +15: /workspace/marapass-sites-original/flutter/test/journey_test.dart: atualização retira oferta removida e falha de rede retira confirmação
+00:02 +16: /workspace/marapass-sites-original/flutter/test/journey_test.dart: resposta de rota anterior não contamina uma seleção nova
+00:02 +17: loading /workspace/marapass-sites-original/flutter/test/condominiums_test.dart
+00:02 +17: /workspace/marapass-sites-original/flutter/test/condominiums_test.dart: residential references are attributed, municipal, noncommercial and unique
+00:02 +18: /workspace/marapass-sites-original/flutter/test/condominiums_test.dart: optional layer is searchable and keeps saved properties accessible
+00:02 +19: /workspace/marapass-sites-original/flutter/test/condominiums_test.dart: private residential references do not become tourist discoveries
+00:03 +20: loading /workspace/marapass-sites-original/flutter/test/navigation_screen_test.dart
+00:03 +20: /workspace/marapass-sites-original/flutter/test/navigation_screen_test.dart: lagoa de referência não dispara rota de carro com autoPlan
+00:04 +21: /workspace/marapass-sites-original/flutter/test/navigation_screen_test.dart: planejador calcula rota interna e mantém layout compacto com texto ampliado
+00:07 +22: loading /workspace/marapass-sites-original/flutter/test/voice_conversation_test.dart
+00:07 +22: /workspace/marapass-sites-original/flutter/test/voice_conversation_test.dart: real catalogue resolves Vamos à praia do Olho d'Água
+00:07 +23: /workspace/marapass-sites-original/flutter/test/voice_conversation_test.dart: real catalogue resolves Me leve até a Praia do Olho Dagua
+00:07 +24: /workspace/marapass-sites-original/flutter/test/voice_conversation_test.dart: real catalogue resolves Quero conhecer a praia do olho d’água
+00:07 +25: /workspace/marapass-sites-original/flutter/test/voice_conversation_test.dart: real catalogue resolves Como chegar à Praia do Olho de Água?
+00:07 +26: /workspace/marapass-sites-original/flutter/test/voice_conversation_test.dart: small typo is marked approximate and still requires route confirmation
+00:08 +27: /workspace/marapass-sites-original/flutter/test/voice_conversation_test.dart: same name in two municipalities is never silently selected
+00:08 +28: /workspace/marapass-sites-original/flutter/test/voice_conversation_test.dart: municipality correction keeps category, coupons and date
+00:08 +29: /workspace/marapass-sites-original/flutter/test/voice_conversation_test.dart: only restaurants with coupons inherits municipality
+00:08 +30: /workspace/marapass-sites-original/flutter/test/voice_conversation_test.dart: missing municipality is clarified without losing the initial request
+00:08 +31: /workspace/marapass-sites-original/flutter/test/voice_conversation_test.dart: another beach excludes rejected destination and stays in known city
+00:08 +32: /workspace/marapass-sites-original/flutter/test/voice_conversation_test.dart: unknown names, no and cancel do not launch navigation
+00:08 +33: /workspace/marapass-sites-original/flutter/test/voice_conversation_test.dart: draft speech does not overwrite confirmed context
+00:08 +34: /workspace/marapass-sites-original/flutter/test/voice_conversation_test.dart: frase natural identifica Lençóis Maranhenses como rota
+00:08 +35: /workspace/marapass-sites-original/flutter/test/voice_conversation_test.dart: generic beach query retains alternatives
+00:08 +36: loading /workspace/marapass-sites-original/flutter/test/map_layout_test.dart
+00:08 +36: /workspace/marapass-sites-original/flutter/test/map_layout_test.dart: map starts collapsed and list expands without losing search
+INITIAL_MAP_FREE_AREA=74.5% viewport=390.0x774.0
+00:10 +37: loading /workspace/marapass-sites-original/flutter/test/beach_search_test.dart
+00:11 +37: /workspace/marapass-sites-original/flutter/test/beach_search_test.dart: voice variants resolve to Araçagy
+00:11 +38: /workspace/marapass-sites-original/flutter/test/beach_search_test.dart: search suggestions tolerate typos and retain normal filters
+00:11 +39: /workspace/marapass-sites-original/flutter/test/beach_search_test.dart: near-beach reference is not treated as verified driving access
+00:11 +40: /workspace/marapass-sites-original/flutter/test/beach_search_test.dart: where is Atins searches the beach
+00:11 +41: loading /workspace/marapass-sites-original/flutter/test/simulation_test.dart
+00:12 +41: /workspace/marapass-sites-original/flutter/test/simulation_test.dart: simulação inicia sem GPS e parar cancela o avanço
+00:13 +42: loading /workspace/marapass-sites-original/flutter/test/navigation_test.dart
+00:14 +42: /workspace/marapass-sites-original/flutter/test/navigation_test.dart: geometria real São Luís–Barreirinhas tem manobras ordenadas e alternativas rodoviárias
+00:14 +43: /workspace/marapass-sites-original/flutter/test/navigation_test.dart: projeção acompanha segmentos e mede desvio sem avançar em cruzamento distante
+00:14 +44: /workspace/marapass-sites-original/flutter/test/navigation_test.dart: GPS impreciso ou antigo não avança; chegada exige posição precisa e duas leituras
+00:14 +45: /workspace/marapass-sites-original/flutter/test/navigation_test.dart: API pede passos e geometria, limita encaixe em via e não inventa rota quando indisponível
+00:14 +46: /workspace/marapass-sites-original/flutter/test/navigation_test.dart: desvio exige três leituras e falha de recálculo respeita intervalo sem inventar geometria
+00:14 +47: /workspace/marapass-sites-original/flutter/test/navigation_test.dart: encerrar durante cálculo descarta resposta tardia
+00:14 +48: /workspace/marapass-sites-original/flutter/test/navigation_test.dart: instruções em português distinguem retorno, rotatória e balsa
+00:14 +49: loading /workspace/marapass-sites-original/flutter/test/environment_test.dart
+00:14 +49: /workspace/marapass-sites-original/flutter/test/environment_test.dart: appearance uses destination UTC-3 and explicit modes
+00:14 +50: /workspace/marapass-sites-original/flutter/test/environment_test.dart: wind compass wraps and uses Portuguese east/west
+00:14 +51: /workspace/marapass-sites-original/flutter/test/environment_test.dart: expired point is never presented as current
+00:14 +52: /workspace/marapass-sites-original/flutter/test/environment_test.dart: request sends municipality code, rejects another city
+00:14 +53: /workspace/marapass-sites-original/flutter/test/environment_test.dart: compact weather and detailed sheet fit narrow scaled screen
+00:15 +54: loading /workspace/marapass-sites-original/flutter/test/travel_safety_test.dart
+00:16 +54: /workspace/marapass-sites-original/flutter/test/travel_safety_test.dart: abre dicas locais e permite consultar cada etapa
+00:17 +55: loading /workspace/marapass-sites-original/flutter/test/published_catalog_test.dart
+00:18 +55: /workspace/marapass-sites-original/flutter/test/published_catalog_test.dart: dois dispositivos recebem a publicação e preservam cache offline; arquivo suprime referência
+00:18 +56: /workspace/marapass-sites-original/flutter/test/published_catalog_test.dart: falha numa página mantém snapshot inteiro anterior, sem misturar catálogo parcial
+00:18 +57: loading /workspace/marapass-sites-original/flutter/test/tourism_test.dart
+00:18 +57: /workspace/marapass-sites-original/flutter/test/tourism_test.dart: busca normaliza acentos sem exigir teclado em português
+00:18 +58: /workspace/marapass-sites-original/flutter/test/tourism_test.dart: benefício vencido ou vindo do cache não é apresentado como vigente
+00:18 +59: /workspace/marapass-sites-original/flutter/test/tourism_test.dart: clusters preservam todos os pontos e se abrem no zoom de detalhe
+00:18 +60: /workspace/marapass-sites-original/flutter/test/tourism_test.dart: agrupa vizinhos em zoom urbano e mantém coincidentes acessíveis
+00:18 +61: /workspace/marapass-sites-original/flutter/test/tourism_test.dart: uma sequência de vizinhos não vira um único grupo pela cidade
+00:18 +62: /workspace/marapass-sites-original/flutter/test/tourism_test.dart: distância é simétrica e não apresenta caminho rodoviário
+00:18 +63: loading /workspace/marapass-sites-original/flutter/test/catalog_workspace_test.dart
+00:19 +63: /workspace/marapass-sites-original/flutter/test/catalog_workspace_test.dart: rascunho, visibilidade, busca e persistência sobrevivem a atualização remota
+00:19 +64: /workspace/marapass-sites-original/flutter/test/catalog_workspace_test.dart: backup inválido nunca substitui dados e importação mantém registros existentes
+00:19 +65: loading /workspace/marapass-sites-original/flutter/test/map_screen_test.dart
+00:20 +65: /workspace/marapass-sites-original/flutter/test/map_screen_test.dart: mapa sem internet permite buscar e salvar um destino
+00:24 +66: loading /workspace/marapass-sites-original/flutter/test/terrain_test.dart
+00:24 +66: /workspace/marapass-sites-original/flutter/test/terrain_test.dart: zero é altitude válida; posição editada invalida a amostra
+00:24 +67: /workspace/marapass-sites-original/flutter/test/terrain_test.dart: amostras cobrem a base pública e mantêm coordenadas e ausência de dados
+00:24 +67 -1: /workspace/marapass-sites-original/flutter/test/terrain_test.dart: amostras cobrem a base pública e mantêm coordenadas e ausência de dados [E]
+  Expected: <4224>
+    Actual: <4217>
+
+  package:matcher                                     expect
+  package:flutter_test/src/widget_tester.dart 473:18  expect
+  test/terrain_test.dart 54:7                         main.<fn>
+
+00:24 +67 -1: /workspace/marapass-sites-original/flutter/test/terrain_test.dart: ficha topográfica e mapa regional cabem em tela pequena
+00:27 +68 -1: /workspace/marapass-sites-original/flutter/test/terrain_test.dart: seletor oferece relevo sem perder consulta de lugares
+00:28 +69 -1: loading /workspace/marapass-sites-original/flutter/test/track_recorder_test.dart
+00:29 +69 -1: /workspace/marapass-sites-original/flutter/test/track_recorder_test.dart: pausar e retomar não conecta deslocamento; salvar restaura os segmentos
+00:29 +70 -1: /workspace/marapass-sites-original/flutter/test/track_recorder_test.dart: GPS impreciso e saltos não geram distância artificial
+00:29 +71 -1: /workspace/marapass-sites-original/flutter/test/track_recorder_test.dart: cancelar busca não cria gravação após o cancelamento
+00:29 +72 -1: /workspace/marapass-sites-original/flutter/test/track_recorder_test.dart: dados ilegíveis são preservados e bloqueiam sobrescrita
+00:29 +73 -1: loading /workspace/marapass-sites-original/flutter/test/barreirinhas_test.dart
+00:30 +73 -1: /workspace/marapass-sites-original/flutter/test/barreirinhas_test.dart: identificador Google é opaco, preservado e não inventado
+00:30 +74 -1: /workspace/marapass-sites-original/flutter/test/barreirinhas_test.dart: piloto filtra catálogo real e preserva orientação de acesso em tela pequena
+00:32 +75 -1: loading /workspace/marapass-sites-original/flutter/test/catalog_center_test.dart
+00:32 +75 -1: /workspace/marapass-sites-original/flutter/test/catalog_center_test.dart: central cadastra um ponto, mantém rascunho e apresenta no mapa após ativar
+00:36 +76 -1: loading /workspace/marapass-sites-original/flutter/test/traveler_marker_test.dart
+00:37 +76 -1: /workspace/marapass-sites-original/flutter/test/traveler_marker_test.dart: heading interpolation crosses north using the shortest arc
+00:37 +77 -1: /workspace/marapass-sites-original/flutter/test/traveler_marker_test.dart: Portuguese cardinal labels
+00:37 +78 -1: loading /workspace/marapass-sites-original/flutter/test/municipal_review_test.dart
+00:38 +78 -1: /workspace/marapass-sites-original/flutter/test/municipal_review_test.dart: catálogo e painel preservam os mesmos registros e corrigem lagoas
+00:39 +78 -2: /workspace/marapass-sites-original/flutter/test/municipal_review_test.dart: catálogo e painel preservam os mesmos registros e corrigem lagoas [E]
+  Expected: <50>
+    Actual: <51>
+
+  package:matcher                                     expect
+  package:flutter_test/src/widget_tester.dart 473:18  expect
+  test/municipal_review_test.dart 22:5                main.<fn>
+
+00:39 +78 -2: /workspace/marapass-sites-original/flutter/test/municipal_review_test.dart: guia de Santo Amaro do Maranhão filtra o mapa e cabe em celular
+00:42 +79 -2: /workspace/marapass-sites-original/flutter/test/municipal_review_test.dart: guia de Primeira Cruz filtra o mapa e cabe em celular
+00:43 +80 -2: /workspace/marapass-sites-original/flutter/test/municipal_review_test.dart: ficha natural mantém planejamento e não oferece Waze direto
+00:45 +81 -2: /workspace/marapass-sites-original/flutter/test/municipal_review_test.dart: gravador apresenta controles com texto ampliado no celular
+00:46 +82 -2: loading /workspace/marapass-sites-original/flutter/test/municipalities_test.dart
+00:46 +82 -2: /workspace/marapass-sites-original/flutter/test/municipalities_test.dart: base tem 217 códigos únicos, pontos com município e fonte rastreável
+00:47 +82 -3: /workspace/marapass-sites-original/flutter/test/municipalities_test.dart: base tem 217 códigos únicos, pontos com município e fonte rastreável [E]
+  Expected: is in ['2026-10-30', '2026-11-05']
+    Actual: '2026-11-09'
+
+  package:matcher                                     expect
+  package:flutter_test/src/widget_tester.dart 473:18  expect
+  test/municipalities_test.dart 32:9                  main.<fn>
+
+00:47 +82 -3: loading /workspace/marapass-sites-original/flutter/test/search_relevance_test.dart
+00:47 +82 -3: /workspace/marapass-sites-original/flutter/test/search_relevance_test.dart: nomes de destinos prevalecem sobre menções em descrições
+00:48 +83 -3: /workspace/marapass-sites-original/flutter/test/search_relevance_test.dart: pontuação isolada não devolve catálogo inteiro
+00:48 +84 -3: loading /workspace/marapass-sites-original/flutter/test/map_race_test.dart
+00:49 +84 -3: /workspace/marapass-sites-original/flutter/test/map_race_test.dart: resposta da área anterior é descartada assim que a câmera muda
+00:49 +85 -3: loading /workspace/marapass-sites-original/flutter/test/voice_command_test.dart
+00:49 +85 -3: /workspace/marapass-sites-original/flutter/test/voice_command_test.dart: request resolves category, city and next January
+00:49 +86 -3: /workspace/marapass-sites-original/flutter/test/voice_command_test.dart: route request identifies destination without issuing a coupon
+00:49 +87 -3: /workspace/marapass-sites-original/flutter/test/voice_command_test.dart: spoken date and article are not mistaken for a business name
+00:49 +88 -3: /workspace/marapass-sites-original/flutter/test/voice_command_test.dart: invalid, old and ambiguous dates/cities are rejected
+00:50 +89 -3: /workspace/marapass-sites-original/flutter/test/voice_command_test.dart: long municipality names do not create a second destination
+00:50 +90 -3: /workspace/marapass-sites-original/flutter/test/voice_command_test.dart: tomorrow respects year rollover
+00:50 +91 -3: /workspace/marapass-sites-original/flutter/test/voice_command_test.dart: calendar sends explicit date and future offers have no usable-now badge
+00:50 +92 -3: /workspace/marapass-sites-original/flutter/test/voice_command_test.dart: offline is distinct from no offers
+00:50 +93 -3: loading /workspace/marapass-sites-original/flutter/test/journey_details_test.dart
+00:50 +93 -3: /workspace/marapass-sites-original/flutter/test/journey_details_test.dart: detalhe usa a oferta do parceiro, salva o lugar e aponta sem alterar o percurso
+00:52 +94 -3: loading /workspace/marapass-sites-original/flutter/test/catalog_test.dart
+00:52 +94 -3: /workspace/marapass-sites-original/flutter/test/catalog_test.dart: consulta apenas parceiros públicos da área e descarta ofertas vencidas
+00:52 +95 -3: /workspace/marapass-sites-original/flutter/test/catalog_test.dart: falha de rede vira estado de contingência, sem apagar dados locais
+00:52 +96 -3: loading /workspace/marapass-sites-original/flutter/test/gps_startup_test.dart
+00:53 +96 -3: /workspace/marapass-sites-original/flutter/test/gps_startup_test.dart: initial acquisition uses one-shot gateway without opening a watch
+00:53 +97 -3: /workspace/marapass-sites-original/flutter/test/gps_startup_test.dart: ten starts, duplicate clicks, stable camera and complete watch cleanup
+01:05 +98 -3: /workspace/marapass-sites-original/flutter/test/gps_startup_test.dart: burst keeps newest fix; pause discards pending callback
+01:05 +99 -3: /workspace/marapass-sites-original/flutter/test/gps_startup_test.dart: startup failure preserves route: PermissionDeniedException
+01:05 +100 -3: /workspace/marapass-sites-original/flutter/test/gps_startup_test.dart: startup failure preserves route: PositionUpdateException
+01:05 +101 -3: /workspace/marapass-sites-original/flutter/test/gps_startup_test.dart: startup failure preserves route: TimeoutException
+01:05 +102 -3: /workspace/marapass-sites-original/flutter/test/gps_startup_test.dart: closed watch releases camera and returns to preserved preview
+01:05 +103 -3: /workspace/marapass-sites-original/flutter/test/gps_startup_test.dart: long route accepts initial GPS while camera remains gated
+01:05 +104 -3: loading /workspace/marapass-sites-original/flutter/test/journey_reliability_test.dart
+01:06 +104 -3: /workspace/marapass-sites-original/flutter/test/journey_reliability_test.dart: mixed demo completes land-water-land offline without GPS
+01:07 +105 -3: /workspace/marapass-sites-original/flutter/test/journey_reliability_test.dart: ferry segment never asks car router to recalculate over water
+01:07 +106 -3: /workspace/marapass-sites-original/flutter/test/journey_reliability_test.dart: weak fix freezes progress, expands accuracy and recovers without losing route
+01:07 +107 -3: /workspace/marapass-sites-original/flutter/test/journey_reliability_test.dart: marker transition, reduced motion and screen reader state
+01:08 +108 -3: /workspace/marapass-sites-original/flutter/test/journey_reliability_test.dart: Google bitmaps are cached; marker uses flat central anchor and opacity
+01:08 +109 -3: loading /workspace/marapass-sites-original/flutter/test/coastal_islands_test.dart
+01:09 +109 -3: /workspace/marapass-sites-original/flutter/test/coastal_islands_test.dart: catálogo insular mantém origem, IDs únicos e não classifica empresas por nome
+01:09 +110 -3: /workspace/marapass-sites-original/flutter/test/coastal_islands_test.dart: ilhas persistem em atualização sem perder cadastros e abrangem quatro municípios
+01:11 +111 -3: /workspace/marapass-sites-original/flutter/test/coastal_islands_test.dart: busca e seleção de Canárias funcionam em celular com texto ampliado
+01:13 +112 -3: /workspace/marapass-sites-original/flutter/test/coastal_islands_test.dart: entrada Ilhas ativa mapa e permite remover filtro
+01:16 +113 -3: /workspace/marapass-sites-original/flutter/test/coastal_islands_test.dart: a direção e a rota usam o acesso da ilha em vez do seu marcador
+01:16 +114 -3: /workspace/marapass-sites-original/flutter/test/coastal_islands_test.dart: sem rumo, À frente aguarda e Todos próximos mostra as ilhas
+01:19 +115 -3: /workspace/marapass-sites-original/flutter/test/coastal_islands_test.dart: Tauá-Mirim oferece destino rodoviário no Coqueiro
+01:20 +116 -3: /workspace/marapass-sites-original/flutter/test/coastal_islands_test.dart: ilha não dispara rota de carro com autoPlan
+01:21 +117 -3: loading /workspace/marapass-sites-original/flutter/test/ahead_filter_test.dart
+01:21 +117 -3: /workspace/marapass-sites-original/flutter/test/ahead_filter_test.dart: o rumo do Safari pode ser inferido de dois pontos GPS confiáveis
+01:21 +118 -3: /workspace/marapass-sites-original/flutter/test/ahead_filter_test.dart: direção de movimento diferencia frente e trás
+01:21 +119 -3: Some tests failed.
+
+Failing tests:
+  /workspace/marapass-sites-original/flutter/test/municipal_review_test.dart: catálogo e painel preservam os mesmos registros e corrigem lagoas
+  /workspace/marapass-sites-original/flutter/test/municipalities_test.dart: base tem 217 códigos únicos, pontos com município e fonte rastreável
+  /workspace/marapass-sites-original/flutter/test/terrain_test.dart: amostras cobrem a base pública e mantêm coordenadas e ausência de dados
