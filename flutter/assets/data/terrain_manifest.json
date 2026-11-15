@@ -1,0 +1,17 @@
+{
+  "source": "Mapzen Terrain Tiles / USGS SRTM, GMTED2010",
+  "sourceUrl": "https://registry.opendata.aws/terrain-tiles/",
+  "attributionUrl": "https://github.com/tilezen/joerd/blob/master/docs/attribution.md",
+  "accessedAt": "2026-11-05",
+  "tileZoom": 8,
+  "pixelSpacingMetersApprox": 612,
+  "bounds": {
+    "south": -11.178401873711781,
+    "west": -49.21875,
+    "north": 0.0,
+    "east": -40.78125
+  },
+  "sha256": "fff78f8e1ed8380306008322552c86ee972cace38d3f0b14fe9b989eb2764a60",
+  "tileCount": 48,
+  "rendering": "Cores por altitude e sombreamento suave; máscara do Maranhão do IBGE. Uso regional, sem classificação de risco ou trilhas."
+}

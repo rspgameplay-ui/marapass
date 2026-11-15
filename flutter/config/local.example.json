@@ -1,0 +1,9 @@
+{
+  "SUPABASE_URL": "",
+  "SUPABASE_PUBLISHABLE_KEY": "",
+  "GOOGLE_MAPS_READY": false,
+  "GOOGLE_MAP_ID_ANDROID": "",
+  "GOOGLE_MAP_ID_IOS": "",
+  "MAPLIBRE_STYLE_URL": "https://tiles.openfreemap.org/styles/liberty",
+  "ROUTING_BASE_URL": "https://routing.openstreetmap.de/routed-car"
+}

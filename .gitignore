@@ -1,0 +1,11 @@
+.env
+.env.*
+!.env.example
+flutter/config/*.local.json
+**/key.properties
+**/*.jks
+**/*.keystore
+**/.dart_tool/
+**/node_modules/
+**/build/
+/dist/

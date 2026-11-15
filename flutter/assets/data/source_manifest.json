@@ -1,0 +1,50 @@
+{
+  "municipalities": 217,
+  "osmExtracted": 3997,
+  "osmAssigned": 3991,
+  "excludedWithoutUniqueMunicipality": 6,
+  "totalPlaces": 4217,
+  "citiesWithOsmPlaces": 146,
+  "osmBaseTimestamp": "2026-10-30T10:51:51Z",
+  "importedAt": "2026-10-30",
+  "categories": {
+    "destination": 217,
+    "tourist_transport": 77,
+    "lodging": 234,
+    "culture": 111,
+    "tours": 7,
+    "gastronomy": 2668,
+    "services": 807,
+    "nature": 82,
+    "crafts": 14
+  },
+  "sources": {
+    "localities": "https://www.ibge.gov.br/geociencias/organizacao-do-territorio/tipologias-do-territorio/27385-localidades.html",
+    "municipalBoundaries": "https://geoftp.ibge.gov.br/organizacao_do_territorio/malhas_territoriais/malhas_municipais/municipio_2025/UFs/MA/MA_Municipios_2025.zip",
+    "osm": "https://www.openstreetmap.org/copyright"
+  },
+  "sha256": {
+    "ibge_localities.zip": "1d96d5f0b379972a506d4b18c3696af974fbe59f8f6680557cb3a6dd38a0eb57",
+    "MA_Municipios_2025.zip": "6eb7b25dfdb82aa57f664f3b5101542011cd4b5aeee44c9f1cc41afc7b75a53e",
+    "osm_maranhao.json": "317d12086e94a28b0989601f24df145fea37da64591489cb95cd5105904c6361"
+  },
+  "editorialReview": {
+    "checkedAt": "2026-11-05",
+    "municipalities": [
+      "Santo Amaro do Maranhão",
+      "Primeira Cruz"
+    ],
+    "changedPlaceIds": [
+      "osm:node:5176384366",
+      "osm:node:5201075226",
+      "osm:node:5201075303",
+      "osm:node:5201075582",
+      "osm:node:9977348717",
+      "osm:way:594270795",
+      "osm:relation:7458131",
+      "lagoa-gaivota"
+    ],
+    "coordinatesChanged": false,
+    "notes": "Revisão editorial de categorias, descrições e fontes. A revisão de conteúdo não valida acessos ou coordenadas. Novos circuitos do ICMBio permanecem no guia, sem novos marcadores."
+  }
+}

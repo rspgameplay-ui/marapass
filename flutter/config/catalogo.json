@@ -1,0 +1,8 @@
+{
+  "SUPABASE_URL": "https://nwwxobiqynawxxnbvubz.supabase.co",
+  "SUPABASE_PUBLISHABLE_KEY": "__SUPABASE_PUBLISHABLE_KEY__",
+  "GOOGLE_MAPS_READY": false,
+  "GOOGLE_MAP_ID_ANDROID": "",
+  "GOOGLE_MAP_ID_IOS": "",
+  "MAPLIBRE_STYLE_URL": "https://tiles.openfreemap.org/styles/liberty"
+}

@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>MaraPass | Central Operacional V10</title>
+  <meta name="description" content="Central operacional MaraPass, com prioridades, empresas, catálogo, reservas e cupons.">
+  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="./map-content.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <div class="map-brand"><svg viewBox="-55 -55 110 110" width="42" height="42" role="img" aria-label="MaraPass"><g transform="rotate(0)"><path fill="#ffbf16" d="M0 0 L-1 -46 C-1 -57 -43 -28 -23 -12 Q-10 -5 0 0Z"/><path fill="#000" opacity=".1" d="M0 0 L-23 -12 Q-34 -25 -26 -35Z"/></g><g transform="rotate(60)"><path fill="#82634a" d="M0 0 L-1 -46 C-1 -57 -43 -28 -23 -12 Q-10 -5 0 0Z"/><path fill="#000" opacity=".1" d="M0 0 L-23 -12 Q-34 -25 -26 -35Z"/></g><g transform="rotate(120)"><path fill="#307ee9" d="M0 0 L-1 -46 C-1 -57 -43 -28 -23 -12 Q-10 -5 0 0Z"/><path fill="#000" opacity=".1" d="M0 0 L-23 -12 Q-34 -25 -26 -35Z"/></g><g transform="rotate(180)"><path fill="#dfc39b" d="M0 0 L-1 -46 C-1 -57 -43 -28 -23 -12 Q-10 -5 0 0Z"/><path fill="#000" opacity=".1" d="M0 0 L-23 -12 Q-34 -25 -26 -35Z"/></g><g transform="rotate(240)"><path fill="#35a55c" d="M0 0 L-1 -46 C-1 -57 -43 -28 -23 -12 Q-10 -5 0 0Z"/><path fill="#000" opacity=".1" d="M0 0 L-23 -12 Q-34 -25 -26 -35Z"/></g><g transform="rotate(300)"><path fill="#eb4d49" d="M0 0 L-1 -46 C-1 -57 -43 -28 -23 -12 Q-10 -5 0 0Z"/><path fill="#000" opacity=".1" d="M0 0 L-23 -12 Q-34 -25 -26 -35Z"/></g></svg><div class="logo">MaraPass<small>Maranhão infinito</small></div></div>
+      <div class="env"><span class="env-dot" aria-hidden="true"></span>AMBIENTE DE DESENVOLVIMENTO <span class="env-sep">·</span> MFA PROTEGIDO</div>
+    </div>
+  </header>
+  <main class="container">
+    <div class="heading">
+      <div class="overline">GESTÃO SEGURA</div>
+      <h1>Central Administrativa</h1>
+      <p>Mapa, conteúdo e operação em um painel compartilhado, com publicação e histórico.</p>
+    </div>
+    <div id="status" class="status" role="status" aria-live="polite">Entre com sua conta MaraPass para consultar o painel.</div>
+    <section id="loginSection" class="card entry">
+      <div class="overline">PRIMEIRO ACESSO</div>
+      <h2>Entrar na central MaraPass</h2>
+      <form id="loginForm">
+        <label for="email">E-mail</label>
+        <input id="email" type="email" autocomplete="username" required placeholder="seu@email.com">
+        <label for="password">Senha MaraPass</label>
+        <input id="password" type="password" autocomplete="current-password" required>
+        <button type="submit" id="loginButton" class="primary">Entrar com segurança <span aria-hidden="true">→</span></button>
+      </form>
+      <div class="action-row"><button type="button" id="forgotPassword" class="secondary">Esqueci minha senha</button></div>
+      <p class="hint">O login do aplicativo MaraPass é diferente do acesso administrativo à plataforma Supabase.</p>
+    </section>
+    <section id="requestRecoverySection" class="card entry hidden">
+      <div class="overline">RECUPERAÇÃO SEGURA</div>
+      <h2>Recuperar acesso</h2>
+      <p class="muted">Enviaremos um link de recuperação para o e-mail cadastrado no MaraPass.</p>
+      <form id="requestRecoveryForm">
+        <label for="recoveryEmail">E-mail</label>
+        <input id="recoveryEmail" type="email" autocomplete="email" required>
+        <div class="action-row"><button type="submit" id="sendRecovery" class="primary">Enviar link de recuperação</button>
+        <button type="button" id="backToLogin" class="secondary">Voltar ao login</button></div>
+      </form>
+      <p class="hint">Confira a caixa de entrada e o spam. Nunca envie seu link de recuperação a terceiros.</p>
+    </section>
+    <section id="changePasswordSection" class="card entry hidden">
+      <div class="overline">LINK DE RECUPERAÇÃO VALIDADO</div>
+      <h2>Definir nova senha</h2>
+      <form id="changePasswordForm">
+        <label for="newPassword">Nova senha</label>
+        <input id="newPassword" type="password" minlength="12" autocomplete="new-password" required>
+        <label for="confirmNewPassword">Confirme a nova senha</label>
+        <input id="confirmNewPassword" type="password" minlength="12" autocomplete="new-password" required>
+        <div class="action-row"><button type="submit" id="saveNewPassword" class="primary">Salvar nova senha</button></div>
+      </form>
+      <p class="hint">Use pelo menos 12 caracteres e uma senha exclusiva. O processo não altera sua permissão de administrador.</p>
+    </section>
+    <section id="mfaSection" class="card entry hidden">
+      <div class="overline">VERIFICAÇÃO DE IDENTIDADE</div>
+      <h2>Autenticação de dois fatores</h2>
+      <p id="mfaInfo" class="muted">Use seu aplicativo autenticador para confirmar o acesso.</p>
+      <img id="qrCode" class="qr hidden" alt="QR Code privado do seu fator de autenticação TOTP">
+      <div id="secretWrapper" class="hidden secretWrap">
+        <button type="button" id="secretToggle" class="secondary">Mostrar chave manual</button>
+        <div id="secretValue" class="secret hidden" aria-live="off"></div>
+      </div>
+      <label for="code">Código de seis dígitos</label>
+      <input id="code" type="text" inputmode="numeric" maxlength="6" pattern="[0-9]{6}" autocomplete="one-time-code" placeholder="000000">
+      <div class="action-row">
+        <button id="verifyButton" type="button" class="primary">Confirmar segundo fator</button>
+        <button id="restartMfa" type="button" class="secondary hidden">Gerar novo QR Code</button>
+        <button id="exitMfa" type="button" class="secondary">Encerrar sessão</button>
+      </div>
+      <p class="hint">Este QR Code é privado. Não compartilhe capturas, a chave TOTP ou códigos por mensagens. Mantenha um segundo autenticador de recuperação em local seguro.</p>
+    </section>
+    <section id="dashboardSection" class="hidden">
+      <div class="action-row"><a class="secondary" href="../">Abrir mapa turístico ↗</a><button type="button" id="mapGlobalExit" class="secondary">Sair</button></div><nav class="workspace-nav" aria-label="Áreas da Central Administrativa">
+        <button type="button" class="workspace-link" data-workspace="map">Mapa e conteúdo</button>
+        <button type="button" class="workspace-link active" data-workspace="today" aria-current="page"><span aria-hidden="true">◉</span> Hoje</button>
+        <button type="button" class="workspace-link" data-workspace="partners"><span aria-hidden="true">♧</span> Parceiros</button>
+        <button type="button" class="workspace-link" data-workspace="catalog"><span aria-hidden="true">▦</span> Catálogo</button>
+        <button type="button" class="workspace-link" data-workspace="bookings"><span aria-hidden="true">▤</span> Reservas</button>
+        <button type="button" class="workspace-link" data-workspace="coupons"><span aria-hidden="true">◇</span> Cupons</button>
+      </nav>
+      <section id="workspaceMap" class="hidden"></section>
+      <div id="workspaceOverview" class="workspace-overview">
+        <div class="overview-hero">
+          <div>
+            <div class="overline">SUA OPERAÇÃO HOJE</div>
+            <h2>O que precisa de atenção?</h2>
+            <p>Comece pelas tarefas importantes. Acompanhe sua operação sem navegar por tabelas desnecessárias.</p>
+          </div>
+          <div class="overview-hero-actions"><button type="button" id="quickCreateCompany" class="primary">+ Cadastrar empresa</button><span>Cadastro privado e auditado</span></div>
+        </div>
+      <div class="metrics">
+        <div class="metric"><strong id="appMetric">—</strong><span>Solicitações recebidas</span></div>
+        <div class="metric"><strong id="partnerMetric">—</strong><span>Parceiros aprovados</span></div>
+        <div class="metric"><strong id="expMetric">—</strong><span>Experiências publicadas</span></div>
+        <div class="metric"><strong id="reservationMetric">—</strong><span>Reservas solicitadas</span></div>
+      </div>
+      <div class="overview-grid">
+        <section class="card priority-card" aria-labelledby="priorityTitle">
+          <div class="home-card-head"><div><div class="overline">PRIORIDADES</div><h3 id="priorityTitle">Próximos passos</h3></div><span class="context-label">Dados reais</span></div>
+          <div id="priorityList" class="priority-list" aria-live="polite"><p class="muted">Aguardando indicadores do Supabase…</p></div>
+        </section>
+        <section class="card schedule-card" aria-labelledby="agendaTitle">
+          <div class="home-card-head"><div><div class="overline">AGENDA</div><h3 id="agendaTitle">Próximas reservas</h3></div><span class="context-label">Operação</span></div>
+          <div id="upcomingBookings" class="upcoming-list" aria-live="polite"><p class="muted">Carregando agenda…</p></div>
+          <button type="button" class="text-action" data-route="bookings">Consultar reservas <span aria-hidden="true">→</span></button>
+        </section>
+        <section class="card readiness-card" aria-labelledby="readinessTitle">
+          <div class="home-card-head"><div><div class="overline">PREPARAÇÃO COMERCIAL</div><h3 id="readinessTitle">Da empresa à primeira reserva</h3></div></div>
+          <div id="readinessSteps" class="readiness-steps"><p class="muted">Conferindo etapas…</p></div>
+        </section>
+        <section class="card future-card" aria-labelledby="futureTitle">
+          <div class="home-card-head"><div><div class="overline">EVOLUÇÃO DO MVP</div><h3 id="futureTitle">Próximos módulos</h3></div></div>
+          <div class="future-modules"><div><strong>Calendário de disponibilidade</strong><span>Capacidade por horário e bloqueios · em desenvolvimento</span></div><div><strong>Mensagens e atendimento</strong><span>Comunicação com parceiros e turistas · planejado</span></div><div><strong>Financeiro e indicadores</strong><span>Comissões, repasses e receita confirmada · planejado</span></div></div>
+          <p class="hint">Esses módulos não são apresentados como funcionais antes da integração e dos testes.</p>
+        </section>
+      </div>
+      </div>
+      <div id="workspaceTable" class="hidden">
+      <div class="card workspace-data-card">
+        <div class="module-header">
+          <div><div class="overline">DADOS REAIS · OPERAÇÕES AUDITADAS</div><h2>Operações do MaraPass</h2></div>
+          <div class="action-row"><button type="button" id="createCompanyButton" class="primary">+ Cadastrar empresa</button><button type="button" id="refreshButton" class="secondary">Atualizar</button><button type="button" id="exitDashboard" class="secondary">Sair</button></div>
+        </div>
+        <div class="tabs" id="tabs" role="group" aria-label="Módulos">
+          <button type="button" class="tab selected" data-tab="applications" aria-pressed="true">Solicitações</button>
+          <button type="button" class="tab" data-tab="partners" aria-pressed="false">Parceiros e convites</button>
+          <button type="button" class="tab" data-tab="establishments" aria-pressed="false">Estabelecimentos</button>
+          <button type="button" class="tab" data-tab="experiences" aria-pressed="false">Experiências</button>
+          <button type="button" class="tab" data-tab="offers" aria-pressed="false">Ofertas</button>
+          <button type="button" class="tab" data-tab="reservations" aria-pressed="false">Reservas</button>
+          <button type="button" class="tab" data-tab="coupons" aria-pressed="false">Cupons</button>
+        </div>
+        <div class="list-toolbar">
+          <label for="tableSearch" class="search-label">Buscar entre os registros carregados</label>
+          <div class="search-input-wrap"><span aria-hidden="true">⌕</span><input id="tableSearch" type="search" placeholder="Pesquisar nesta lista" autocomplete="off" aria-describedby="searchScope"><button id="clearTableSearch" type="button" class="clear-search secondary" aria-label="Limpar pesquisa">Limpar</button></div>
+          <p class="search-scope" id="searchScope">Filtro local de até 40 registros exibidos. Para busca completa por empresa ou CNPJ, precisaremos habilitar pesquisa no banco.</p>
+        </div>
+        <div class="table-scroller">
+          <table><thead id="tableHeaders"></thead><tbody id="tableBody"></tbody></table>
+        </div>
+        <p id="tableNote" class="hint">Cadastro de empresas, convites por e-mail e ativação comercial disponíveis com MFA.</p>
+      </div>
+      </div>
+    </section>
+    <dialog id="companyDialog" aria-labelledby="companyDialogTitle" class="admin-dialog company-dialog">
+      <form id="companyForm" novalidate>
+        <div class="overline">CADASTRO ADMINISTRATIVO</div>
+        <h2 id="companyDialogTitle">Cadastrar empresa</h2>
+        <p class="hint">Cadastro seguro com validação de CNPJ e proteção contra envios duplicados.</p>
+        <p class="muted">Cadastre a empresa e seu primeiro estabelecimento. Eles permanecerão privados. Depois, na aba Parceiros, utilize <strong>Enviar convite</strong> para validar o e-mail e solicitar a aceitação do responsável.</p>
+        <div class="company-fields">
+          <div class="span-2"><label for="companyLegal">Razão social *</label><input id="companyLegal" name="legalName" required minlength="2" maxlength="160" autocomplete="organization" placeholder="Nome empresarial"></div>
+          <div class="span-2"><label for="companyTrade">Nome fantasia *</label><input id="companyTrade" name="tradeName" required minlength="2" maxlength="160" placeholder="Como a empresa aparecerá no MaraPass"></div>
+          <div><label for="companyTax">CNPJ (opcional)</label><input id="companyTax" name="taxId" inputmode="numeric" maxlength="18" placeholder="00.000.000/0000-00"></div>
+          <div><label for="companyPhone">Telefone / WhatsApp</label><input id="companyPhone" name="contactPhone" type="tel" maxlength="32" placeholder="(98) 99999-9999"></div>
+          <div class="span-2"><label for="companyEmail">E-mail para contato *</label><input id="companyEmail" name="contactEmail" type="email" required maxlength="254" autocomplete="email" placeholder="responsavel@empresa.com.br"></div>
+          <div><label for="companyCity">Cidade *</label><input id="companyCity" name="city" required minlength="2" maxlength="120" placeholder="Barreirinhas"></div>
+          <div><label for="companyCategory">Categoria inicial *</label>
+            <select id="companyCategory" name="category" required>
+              <option value="tours">Passeios</option><option value="gastronomy">Gastronomia</option><option value="nature">Natureza</option><option value="culture">Cultura</option><option value="lodging">Hospedagem</option><option value="events">Eventos</option><option value="crafts">Artesanato</option><option value="photography">Fotografia</option><option value="tourist_transport">Transporte turístico</option><option value="services">Serviços</option>
+            </select>
+          </div>
+        </div>
+        <label class="company-ack"><input id="companyAcknowledge" type="checkbox" required> <span>Entendi que o cadastro <strong>não cria automaticamente a conta do responsável</strong>, não publica o estabelecimento e não envia convite automaticamente. O administrador poderá enviar o convite após conferir os dados, e só ativará a empresa quando a pessoa confirmar o e-mail e aceitar o vínculo.</span></label>
+        <div id="companyInlineStatus" class="form-status" role="status" aria-live="polite"></div>
+        <div class="action-row dialog-actions">
+          <button type="button" id="companyCancel" class="secondary">Cancelar</button>
+          <button type="submit" id="companySave" class="primary">Salvar empresa</button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="actionDialog" aria-labelledby="actionDialogTitle" class="admin-dialog">
+      <form method="dialog" id="actionForm">
+        <div class="overline">CONFIRMAÇÃO ADMINISTRATIVA</div>
+        <h2 id="actionDialogTitle">Confirmar operação</h2>
+        <p class="muted" id="actionMessage">Revise as informações antes de continuar.</p>
+        <div id="approvalNames" class="hidden">
+          <label for="legalName">Razão social (opcional nesta homologação)</label>
+          <input type="text" id="legalName" maxlength="160" autocomplete="organization">
+          <label for="tradeName">Nome fantasia (opcional)</label>
+          <input type="text" id="tradeName" maxlength="160">
+          <p class="hint">A decisão será registrada na auditoria. O convite por e-mail será enviado apenas pela função de parceiros.</p>
+        </div>
+        <div class="action-row confirm-actions">
+          <button type="button" id="cancelAction" class="secondary">Cancelar</button>
+          <button type="submit" id="confirmAction" class="primary">Confirmar alteração</button>
+        </div>
+      </form>
+    </dialog>
+    <footer>MaraPass V10 · Ambiente de desenvolvimento · Supabase Auth, JWT, MFA AAL2 e RLS. O painel não utiliza chave administrativa no navegador.</footer>
+  </main>
+</body>
+</html>

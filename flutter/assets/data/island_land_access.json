@@ -1,0 +1,26 @@
+{
+  "osm:relation:9632514": [
+    {
+      "id": "island-access:coqueiro",
+      "name": "Porto do Coqueiro",
+      "city": "São Luís",
+      "lat": -2.7252595,
+      "lng": -44.361824,
+      "note": "A rota de carro termina no acesso mapeado da Rua do Porto. Combine o ponto exato, o horário e o retorno da travessia com a comunidade.",
+      "accessSource": "https://www.openstreetmap.org/node/7687970501",
+      "crossingSource": "https://www.saoluis.ma.gov.br/portal/noticias/0/3/2370/prefeitura-de-sao-luis-promove-acao-de-campo-com-entrega-de-cestas-basicas-nas-ilhas-de-jacamim-e-taua-mirim"
+    }
+  ],
+  "geonames:3403422": [
+    {
+      "id": "island-access:tatus",
+      "name": "Porto dos Tatus",
+      "city": "Ilha Grande (PI)",
+      "lat": -2.8321836,
+      "lng": -41.8294997,
+      "note": "A rota de carro termina no acesso ao porto pela PI-210. Confirme o embarque para Canárias, o horário e o retorno com o prestador.",
+      "accessSource": "https://www.openstreetmap.org/node/419736305",
+      "crossingSource": "https://sophia.antaq.gov.br/Terminal/Acervo/Detalhe/36910"
+    }
+  ]
+}

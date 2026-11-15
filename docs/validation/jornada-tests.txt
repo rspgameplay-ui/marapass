@@ -1,0 +1,79 @@
+00:00 +0: loading /workspace/sites/journey/.sites-checkout/flutter/test/travel_safety_test.dart
+00:00 +0: /workspace/sites/journey/.sites-checkout/flutter/test/travel_safety_test.dart: abre dicas locais e permite consultar cada etapa
+00:00 +1: /workspace/sites/journey/.sites-checkout/flutter/test/travel_safety_test.dart: abre dicas locais e permite consultar cada etapa
+00:00 +2: /workspace/sites/journey/.sites-checkout/flutter/test/travel_safety_test.dart: abre dicas locais e permite consultar cada etapa
+00:00 +3: /workspace/sites/journey/.sites-checkout/flutter/test/travel_safety_test.dart: abre dicas locais e permite consultar cada etapa
+00:00 +4: /workspace/sites/journey/.sites-checkout/flutter/test/travel_safety_test.dart: abre dicas locais e permite consultar cada etapa
+00:00 +5: /workspace/sites/journey/.sites-checkout/flutter/test/travel_safety_test.dart: abre dicas locais e permite consultar cada etapa
+00:00 +6: /workspace/sites/journey/.sites-checkout/flutter/test/travel_safety_test.dart: abre dicas locais e permite consultar cada etapa
+00:00 +7: /workspace/sites/journey/.sites-checkout/flutter/test/travel_safety_test.dart: abre dicas locais e permite consultar cada etapa
+00:00 +8: /workspace/sites/journey/.sites-checkout/flutter/test/travel_safety_test.dart: abre dicas locais e permite consultar cada etapa
+00:00 +9: /workspace/sites/journey/.sites-checkout/flutter/test/map_layout_test.dart: map starts collapsed and list expands without losing search
+00:00 +10: /workspace/sites/journey/.sites-checkout/flutter/test/map_layout_test.dart: map starts collapsed and list expands without losing search
+00:00 +11: /workspace/sites/journey/.sites-checkout/flutter/test/map_layout_test.dart: map starts collapsed and list expands without losing search
+00:00 +12: /workspace/sites/journey/.sites-checkout/flutter/test/map_layout_test.dart: map starts collapsed and list expands without losing search
+00:00 +13: /workspace/sites/journey/.sites-checkout/flutter/test/map_layout_test.dart: map starts collapsed and list expands without losing search
+00:00 +14: /workspace/sites/journey/.sites-checkout/flutter/test/map_layout_test.dart: map starts collapsed and list expands without losing search
+00:00 +15: /workspace/sites/journey/.sites-checkout/flutter/test/map_layout_test.dart: map starts collapsed and list expands without losing search
+00:00 +16: /workspace/sites/journey/.sites-checkout/flutter/test/map_layout_test.dart: map starts collapsed and list expands without losing search
+00:00 +17: /workspace/sites/journey/.sites-checkout/flutter/test/map_layout_test.dart: map starts collapsed and list expands without losing search
+00:00 +18: /workspace/sites/journey/.sites-checkout/flutter/test/map_layout_test.dart: map starts collapsed and list expands without losing search
+00:00 +19: /workspace/sites/journey/.sites-checkout/flutter/test/map_layout_test.dart: map starts collapsed and list expands without losing search
+00:01 +20: /workspace/sites/journey/.sites-checkout/flutter/test/map_layout_test.dart: map starts collapsed and list expands without losing search
+00:01 +21: /workspace/sites/journey/.sites-checkout/flutter/test/map_layout_test.dart: map starts collapsed and list expands without losing search
+00:01 +22: /workspace/sites/journey/.sites-checkout/flutter/test/map_layout_test.dart: map starts collapsed and list expands without losing search
+00:01 +23: /workspace/sites/journey/.sites-checkout/flutter/test/map_layout_test.dart: map starts collapsed and list expands without losing search
+00:01 +24: /workspace/sites/journey/.sites-checkout/flutter/test/map_layout_test.dart: map starts collapsed and list expands without losing search
+00:01 +25: /workspace/sites/journey/.sites-checkout/flutter/test/map_layout_test.dart: map starts collapsed and list expands without losing search
+INITIAL_MAP_FREE_AREA=75.7% viewport=390.0x774.0
+00:01 +26: /workspace/sites/journey/.sites-checkout/flutter/test/map_layout_test.dart: map starts collapsed and list expands without losing search
+00:01 +27: /workspace/sites/journey/.sites-checkout/flutter/test/barreirinhas_test.dart: piloto filtra catálogo real e preserva orientação de acesso em tela pequena
+00:02 +28: /workspace/sites/journey/.sites-checkout/flutter/test/barreirinhas_test.dart: piloto filtra catálogo real e preserva orientação de acesso em tela pequena
+00:02 +29: /workspace/sites/journey/.sites-checkout/flutter/test/barreirinhas_test.dart: piloto filtra catálogo real e preserva orientação de acesso em tela pequena
+00:02 +30: /workspace/sites/journey/.sites-checkout/flutter/test/barreirinhas_test.dart: piloto filtra catálogo real e preserva orientação de acesso em tela pequena
+00:02 +31: /workspace/sites/journey/.sites-checkout/flutter/test/barreirinhas_test.dart: piloto filtra catálogo real e preserva orientação de acesso em tela pequena
+00:02 +32: /workspace/sites/journey/.sites-checkout/flutter/test/barreirinhas_test.dart: piloto filtra catálogo real e preserva orientação de acesso em tela pequena
+00:02 +33: /workspace/sites/journey/.sites-checkout/flutter/test/barreirinhas_test.dart: piloto filtra catálogo real e preserva orientação de acesso em tela pequena
+00:02 +34: /workspace/sites/journey/.sites-checkout/flutter/test/barreirinhas_test.dart: piloto filtra catálogo real e preserva orientação de acesso em tela pequena
+00:02 +35: /workspace/sites/journey/.sites-checkout/flutter/test/barreirinhas_test.dart: piloto filtra catálogo real e preserva orientação de acesso em tela pequena
+00:02 +36: /workspace/sites/journey/.sites-checkout/flutter/test/journey_details_test.dart: detalhe usa a oferta do parceiro, salva o lugar e aponta sem alterar o percurso
+00:02 +37: /workspace/sites/journey/.sites-checkout/flutter/test/journey_details_test.dart: detalhe usa a oferta do parceiro, salva o lugar e aponta sem alterar o percurso
+00:02 +38: /workspace/sites/journey/.sites-checkout/flutter/test/municipal_review_test.dart: guia de Primeira Cruz filtra o mapa e cabe em celular
+00:02 +39: /workspace/sites/journey/.sites-checkout/flutter/test/nautical_connections_test.dart: Carrapatal mostra pendência sem oferecer início de navegação
+00:02 +40: /workspace/sites/journey/.sites-checkout/flutter/test/nautical_connections_test.dart: Carrapatal mostra pendência sem oferecer início de navegação
+00:02 +41: /workspace/sites/journey/.sites-checkout/flutter/test/nautical_connections_test.dart: Carrapatal mostra pendência sem oferecer início de navegação
+00:03 +42: /workspace/sites/journey/.sites-checkout/flutter/test/municipal_review_test.dart: ficha natural mantém planejamento e não oferece Waze direto
+00:03 +43: /workspace/sites/journey/.sites-checkout/flutter/test/navigation_screen_test.dart: lagoa de referência não dispara rota de carro com autoPlan
+00:03 +44: /workspace/sites/journey/.sites-checkout/flutter/test/navigation_screen_test.dart: lagoa de referência não dispara rota de carro com autoPlan
+00:03 +45: /workspace/sites/journey/.sites-checkout/flutter/test/municipal_review_test.dart: gravador apresenta controles com texto ampliado no celular
+00:03 +46: /workspace/sites/journey/.sites-checkout/flutter/test/municipal_review_test.dart: gravador apresenta controles com texto ampliado no celular
+00:03 +47: /workspace/sites/journey/.sites-checkout/flutter/test/municipal_review_test.dart: gravador apresenta controles com texto ampliado no celular
+00:03 +48: /workspace/sites/journey/.sites-checkout/flutter/test/simulation_test.dart: simulação inicia sem GPS e parar cancela o avanço
+00:03 +49: /workspace/sites/journey/.sites-checkout/flutter/test/simulation_test.dart: simulação inicia sem GPS e parar cancela o avanço
+00:03 +50: /workspace/sites/journey/.sites-checkout/flutter/test/simulation_test.dart: simulação inicia sem GPS e parar cancela o avanço
+00:04 +51: /workspace/sites/journey/.sites-checkout/flutter/test/simulation_test.dart: simulação inicia sem GPS e parar cancela o avanço
+00:05 +52: /workspace/sites/journey/.sites-checkout/flutter/test/simulation_test.dart: simulação inicia sem GPS e parar cancela o avanço
+00:05 +53: /workspace/sites/journey/.sites-checkout/flutter/test/simulation_test.dart: simulação inicia sem GPS e parar cancela o avanço
+00:05 +54: /workspace/sites/journey/.sites-checkout/flutter/test/map_screen_test.dart: mapa sem internet permite buscar e salvar um destino
+00:05 +55: /workspace/sites/journey/.sites-checkout/flutter/test/map_screen_test.dart: mapa sem internet permite buscar e salvar um destino
+00:05 +56: /workspace/sites/journey/.sites-checkout/flutter/test/map_screen_test.dart: mapa sem internet permite buscar e salvar um destino
+00:05 +57: /workspace/sites/journey/.sites-checkout/flutter/test/map_screen_test.dart: mapa sem internet permite buscar e salvar um destino
+00:05 +58: /workspace/sites/journey/.sites-checkout/flutter/test/map_screen_test.dart: mapa sem internet permite buscar e salvar um destino
+00:05 +59: /workspace/sites/journey/.sites-checkout/flutter/test/map_screen_test.dart: mapa sem internet permite buscar e salvar um destino
+00:05 +60: /workspace/sites/journey/.sites-checkout/flutter/test/map_screen_test.dart: mapa sem internet permite buscar e salvar um destino
+00:06 +61: /workspace/sites/journey/.sites-checkout/flutter/test/map_screen_test.dart: mapa sem internet permite buscar e salvar um destino
+00:06 +62: /workspace/sites/journey/.sites-checkout/flutter/test/map_screen_test.dart: mapa sem internet permite buscar e salvar um destino
+00:06 +63: /workspace/sites/journey/.sites-checkout/flutter/test/map_screen_test.dart: mapa sem internet permite buscar e salvar um destino
+00:06 +64: /workspace/sites/journey/.sites-checkout/flutter/test/map_screen_test.dart: mapa sem internet permite buscar e salvar um destino
+00:06 +65: /workspace/sites/journey/.sites-checkout/flutter/test/map_screen_test.dart: mapa sem internet permite buscar e salvar um destino
+00:06 +66: /workspace/sites/journey/.sites-checkout/flutter/test/map_screen_test.dart: mapa sem internet permite buscar e salvar um destino
+00:06 +67: /workspace/sites/journey/.sites-checkout/flutter/test/map_screen_test.dart: mapa sem internet permite buscar e salvar um destino
+00:06 +68: /workspace/sites/journey/.sites-checkout/flutter/test/map_screen_test.dart: mapa sem internet permite buscar e salvar um destino
+00:06 +69: /workspace/sites/journey/.sites-checkout/flutter/test/catalog_center_test.dart: central cadastra um ponto, mantém rascunho e apresenta no mapa após ativar
+00:06 +70: /workspace/sites/journey/.sites-checkout/flutter/test/catalog_center_test.dart: central cadastra um ponto, mantém rascunho e apresenta no mapa após ativar
+00:06 +71: /workspace/sites/journey/.sites-checkout/flutter/test/catalog_center_test.dart: central cadastra um ponto, mantém rascunho e apresenta no mapa após ativar
+00:07 +72: /workspace/sites/journey/.sites-checkout/flutter/test/catalog_center_test.dart: central cadastra um ponto, mantém rascunho e apresenta no mapa após ativar
+00:07 +73: /workspace/sites/journey/.sites-checkout/flutter/test/catalog_center_test.dart: central cadastra um ponto, mantém rascunho e apresenta no mapa após ativar
+00:08 +74: /workspace/sites/journey/.sites-checkout/flutter/test/coastal_islands_test.dart: entrada Ilhas ativa mapa e permite remover filtro
+00:08 +75: /workspace/sites/journey/.sites-checkout/flutter/test/coastal_islands_test.dart: ilha não dispara rota de carro com autoPlan
+00:09 +76: All tests passed!

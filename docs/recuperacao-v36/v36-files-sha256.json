@@ -1,0 +1,1912 @@
+[
+  {
+    "path": ".openai/hosting.json",
+    "bytes": 106,
+    "sha256": "290e48a9ffc5a1a7370b362b80a76f9d154e450369809943b753a7dcb23c815f"
+  },
+  {
+    "path": "dist/.last_build_id",
+    "bytes": 32,
+    "sha256": "fb554a113b768443ae2f5a2a603accadd7748b6515c82c4b0728b7fea1763c06"
+  },
+  {
+    "path": "dist/_headers",
+    "bytes": 624,
+    "sha256": "fd7f15d526f52c203879359b1f6b96bc687441006eeae874779557e647726842"
+  },
+  {
+    "path": "dist/admin/LEIA-ME.md",
+    "bytes": 1222,
+    "sha256": "d3aa58ea5561a7b983e0f693d9ad6ffe455173a0afa1bf13a64362bf92812208"
+  },
+  {
+    "path": "dist/admin/_headers",
+    "bytes": 618,
+    "sha256": "e63bf3591b6b7bcd3768cbc51a4bfadfb1d66349d3523a0c67639f627c96cf25"
+  },
+  {
+    "path": "dist/admin/app.js",
+    "bytes": 39548,
+    "sha256": "2d0b508955d721683ba50ddaad4cc203114fca84ec9b2cfa7c2a4d3c69e9849a"
+  },
+  {
+    "path": "dist/admin/data/condominiums.json",
+    "bytes": 399410,
+    "sha256": "b626a30d18cfbabb138843290367c011e1c6bb6eeb99142dd4d33aa912689dff"
+  },
+  {
+    "path": "dist/admin/data/municipalities.json",
+    "bytes": 80301,
+    "sha256": "6b14af163dbaeae986ca345977a1e0a517afd86a8d6b8f3326144126a4136791"
+  },
+  {
+    "path": "dist/admin/data/places.json",
+    "bytes": 2868228,
+    "sha256": "c304e48d96fa49ce683e7f7cc36d33a7b0cf26d7fc5369bc8fb78825d081ce3e"
+  },
+  {
+    "path": "dist/admin/index.html",
+    "bytes": 17467,
+    "sha256": "e59b5a7c1f1d2a5739e7def28af4f1c5cd228d2a8d61718ff3a7e27dccfffff6"
+  },
+  {
+    "path": "dist/admin/map-content.css",
+    "bytes": 3546,
+    "sha256": "8364a87b0eee6b47ddbc0cceb55912065e28a6464affc0d00dd4af587d449413"
+  },
+  {
+    "path": "dist/admin/map-content.js",
+    "bytes": 28386,
+    "sha256": "12963c52c5d919e75e2863bcbec614945c7021a5a230a72e27682eaf8edbadfb"
+  },
+  {
+    "path": "dist/admin/parceiro.css",
+    "bytes": 814,
+    "sha256": "1378b9eed3fa1cc2c024ab4f77922ff6205c522fef6b0baa9fbc0c5659843c96"
+  },
+  {
+    "path": "dist/admin/parceiro.html",
+    "bytes": 3141,
+    "sha256": "177e86037fb88831bf1bb7866e3033aa95bd359f898817e579b41d55797b95cf"
+  },
+  {
+    "path": "dist/admin/parceiro.js",
+    "bytes": 6667,
+    "sha256": "f1a4a6dee601d504087d250196ac0282cf98c0f1a9b392037c461c5cb2807fc7"
+  },
+  {
+    "path": "dist/admin/style.css",
+    "bytes": 13197,
+    "sha256": "c75fe551f2fb8c4e1943efaf221653035b3875085c8710abbed902893b305424"
+  },
+  {
+    "path": "dist/assets/AssetManifest.bin",
+    "bytes": 2004,
+    "sha256": "ea7845cb7416d82e87f46168a45fa8bc145bdc101caf1257200fc7181bd08c2d"
+  },
+  {
+    "path": "dist/assets/AssetManifest.bin.json",
+    "bytes": 2674,
+    "sha256": "09e1bcc7624676812edeaa87c1943f6bb745574e0bf59e5ff81d28e89c818f46"
+  },
+  {
+    "path": "dist/assets/FontManifest.json",
+    "bytes": 403,
+    "sha256": "ed939b0b94003321c31b8e67d1e713fdbe1da9297200dc61f0c6659d8e13fc5d"
+  },
+  {
+    "path": "dist/assets/NOTICES",
+    "bytes": 1407675,
+    "sha256": "cf11e33a857a25288bca73eeab8c56a09ba3c6a6237621aa6d06cecd81ff2fee"
+  },
+  {
+    "path": "dist/assets/assets/data/.places.json.zDgv9E",
+    "bytes": 1310720,
+    "sha256": "962688b7d70f312e94fcc3ae64caa3d5bd6f9e7e5508c8ca1d14ab4137a76232"
+  },
+  {
+    "path": "dist/assets/assets/data/coastal_islands.json",
+    "bytes": 221320,
+    "sha256": "fb9c6b9a05cf6122be269c0d13a5c9d2951571ef3e4657995bbe4886838ad5dc"
+  },
+  {
+    "path": "dist/assets/assets/data/condominiums.json",
+    "bytes": 399410,
+    "sha256": "b626a30d18cfbabb138843290367c011e1c6bb6eeb99142dd4d33aa912689dff"
+  },
+  {
+    "path": "dist/assets/assets/data/elevations.json",
+    "bytes": 305614,
+    "sha256": "5a3bbf351059f6d747561fcc59ced1b9fdd2d73df722550ddbcd11ad65f36cc8"
+  },
+  {
+    "path": "dist/assets/assets/data/island_land_access.json",
+    "bytes": 1110,
+    "sha256": "96aaeab68c10f6027fcf05d7ee912709df8d8059c7c09dd6dad2df0e170bed37"
+  },
+  {
+    "path": "dist/assets/assets/data/municipalities.json",
+    "bytes": 80301,
+    "sha256": "6b14af163dbaeae986ca345977a1e0a517afd86a8d6b8f3326144126a4136791"
+  },
+  {
+    "path": "dist/assets/assets/data/nautical_connections.json",
+    "bytes": 2912,
+    "sha256": "47cbc76e464898897ce7326788cbcfd633bc6e4fbf07603aebbe77045d220e12"
+  },
+  {
+    "path": "dist/assets/assets/data/places.json",
+    "bytes": 2868228,
+    "sha256": "c304e48d96fa49ce683e7f7cc36d33a7b0cf26d7fc5369bc8fb78825d081ce3e"
+  },
+  {
+    "path": "dist/assets/assets/data/simulation_route.json",
+    "bytes": 366812,
+    "sha256": "c1b128a765c51c2f9d26bbd3fe073f3862f0cc5f02efd6435d0c39f233472a8e"
+  },
+  {
+    "path": "dist/assets/assets/data/source_manifest.json",
+    "bytes": 1767,
+    "sha256": "773a582cc75af0d06e7ea915feb1bd5f78f50eef97168e9d2333f1babedc202e"
+  },
+  {
+    "path": "dist/assets/assets/data/terrain_manifest.json",
+    "bytes": 654,
+    "sha256": "4c67ab5cd8b782b35af3fc606b0b7ba64b94c7997f3a5ae9f0b41c26cfe61456"
+  },
+  {
+    "path": "dist/assets/assets/fonts/Manrope.ttf",
+    "bytes": 164700,
+    "sha256": "3ae11c49db0455a3cc33e37d380f20fdb8c7f8b41dc07625c177e3d87a9d6ae6"
+  },
+  {
+    "path": "dist/assets/assets/fonts/Manrope_OFL.txt",
+    "bytes": 4387,
+    "sha256": "58172e0c0fac2cda8a37b348164bb55e44b0e69051e557e92b1d3f6910141f7b"
+  },
+  {
+    "path": "dist/assets/assets/fonts/Roboto-Bold.ttf",
+    "bytes": 170760,
+    "sha256": "7d0b991ee3e0be7af01ad7ea8cd2beea6c00a25e679a0226b6737f079aafff86"
+  },
+  {
+    "path": "dist/assets/assets/fonts/Roboto-Regular.ttf",
+    "bytes": 171676,
+    "sha256": "79e851404657dac2106b3d22ad256d47824a9a5765458edb72c9102a45816d95"
+  },
+  {
+    "path": "dist/assets/assets/fonts/Roboto_LICENSE.txt",
+    "bytes": 11358,
+    "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+  },
+  {
+    "path": "dist/assets/assets/map/OpenFreeMap_STYLE_LICENSE.md",
+    "bytes": 3223,
+    "sha256": "932694202d771c52089e87f13105e02f2b68341f584b0f3d8adc557c9d7cefa3"
+  },
+  {
+    "path": "dist/assets/assets/map/maranhao.geojson",
+    "bytes": 115051,
+    "sha256": "cc70dd35b30cc716e34b4bd9597c254bafc4f7ab346d6f14b88e69427122a740"
+  },
+  {
+    "path": "dist/assets/assets/map/municipalities.geojson",
+    "bytes": 839778,
+    "sha256": "fe63392cb77a2a6f156b5af2497bd7869ca117e0f006f06ce541226a25e93b40"
+  },
+  {
+    "path": "dist/assets/assets/map/roads_reference.json",
+    "bytes": 9882205,
+    "sha256": "eb91dd2d4380fa5af66bf996a3e8ade1653eb98c62271fd8b717d3c2f8434d28"
+  },
+  {
+    "path": "dist/assets/assets/map/style_day.json",
+    "bytes": 37840,
+    "sha256": "9d138a388ce908725345d0e6fa66e6a1bb9c35c6ed9af4439536da14453c3bda"
+  },
+  {
+    "path": "dist/assets/assets/map/style_night.json",
+    "bytes": 37842,
+    "sha256": "8687b8ee2c9fe00342639ccca0abebf9ffa36cfc85a65723a57aefe822483480"
+  },
+  {
+    "path": "dist/assets/assets/map/terrain_ma.png",
+    "bytes": 3034722,
+    "sha256": "fff78f8e1ed8380306008322552c86ee972cace38d3f0b14fe9b989eb2764a60"
+  },
+  {
+    "path": "dist/assets/fonts/MaterialIcons-Regular.otf",
+    "bytes": 18976,
+    "sha256": "44e41e49715731a864c21627dff8bfbb36722f455df0b8690c0ef7b7d4260bac"
+  },
+  {
+    "path": "dist/assets/fonts/fallback/Roboto-Regular.ttf",
+    "bytes": 171676,
+    "sha256": "79e851404657dac2106b3d22ad256d47824a9a5765458edb72c9102a45816d95"
+  },
+  {
+    "path": "dist/assets/packages/cupertino_icons/assets/CupertinoIcons.ttf",
+    "bytes": 1472,
+    "sha256": "3d90c370aa4cf00dc57ee2b902f6652147c0f81e03e483df584a9c08b1687c9d"
+  },
+  {
+    "path": "dist/assets/packages/flutter_map/lib/assets/flutter_map_logo.png",
+    "bytes": 2424,
+    "sha256": "6051ae42fb505931a833e58f9209a9f96669a4d0e4b3f06f6d82cde12a0e0401"
+  },
+  {
+    "path": "dist/assets/packages/google_maps_flutter_web/assets/blue-dot.png",
+    "bytes": 1754,
+    "sha256": "31e556d6952d869bf353ff14b01f5a36722bdf2d17b2eae411bc6c9dfea21fc6"
+  },
+  {
+    "path": "dist/assets/packages/google_maps_flutter_web/assets/my_location-sprite-2x.png",
+    "bytes": 1582,
+    "sha256": "15810e5a3da6005042be8268d3defd4bb7f4c4d2c39fbd784d4548a872d346c8"
+  },
+  {
+    "path": "dist/assets/shaders/ink_sparkle.frag",
+    "bytes": 8890,
+    "sha256": "2dca5ab93d4ec29e963f996f3916320ba60825e9537dfb149a68008c7a16b026"
+  },
+  {
+    "path": "dist/assets/shaders/stretch_effect.frag",
+    "bytes": 6737,
+    "sha256": "ab412f07a5b9b50b67a885b24dbe16929738ae28630407d6490c924caf0a3220"
+  },
+  {
+    "path": "dist/canvaskit/canvaskit.js",
+    "bytes": 86987,
+    "sha256": "bb559f6080c7d312ac2a912b4abec9f68ff3d3022d4a603c7796b9b31460642b"
+  },
+  {
+    "path": "dist/canvaskit/canvaskit.js.symbols",
+    "bytes": 1356926,
+    "sha256": "384f80b392972c83fd4f262527e3d06215a297d33ed59732c726721e9d9311bd"
+  },
+  {
+    "path": "dist/canvaskit/canvaskit.wasm",
+    "bytes": 7284602,
+    "sha256": "fbed517a43e82452404446683f00f2e876d835aed84410695759e67b6bb01cd3"
+  },
+  {
+    "path": "dist/canvaskit/chromium/canvaskit.js",
+    "bytes": 86226,
+    "sha256": "6018b12bd8ed37e6952eee72d59c1cf7ad707ccdb74a0a45190010f77edd9068"
+  },
+  {
+    "path": "dist/canvaskit/chromium/canvaskit.js.symbols",
+    "bytes": 1235870,
+    "sha256": "31c86fac6042dd8b756150832c1d15495d0d07742e2718f75dbdde5a5a91455e"
+  },
+  {
+    "path": "dist/canvaskit/chromium/canvaskit.wasm",
+    "bytes": 5428806,
+    "sha256": "ae8ff1d858140f7b1300ced3fa89fb8c9dce0a400a0f4f1e11f6dcfb3315fdcf"
+  },
+  {
+    "path": "dist/canvaskit/skwasm.js",
+    "bytes": 63537,
+    "sha256": "71d7d3e34bf71b52bdba3b588b103bba8148ba28de5754083e01b3398e7a6e1c"
+  },
+  {
+    "path": "dist/canvaskit/skwasm.js.symbols",
+    "bytes": 1540006,
+    "sha256": "9137f1a3ae744dea575043abfc6e063a047e910e6dab1ee53e496c975d1c033e"
+  },
+  {
+    "path": "dist/canvaskit/skwasm.wasm",
+    "bytes": 3593715,
+    "sha256": "e540fd5e8303b7b68ec2718cb49e9c421f8ade3075b15e02a7059a62654df9a1"
+  },
+  {
+    "path": "dist/canvaskit/skwasm_heavy.js",
+    "bytes": 63650,
+    "sha256": "cec554b46ddcf4c0e63d799e0556d546f42d2c3f69316fb4f67ed776f6104558"
+  },
+  {
+    "path": "dist/canvaskit/skwasm_heavy.js.symbols",
+    "bytes": 1672152,
+    "sha256": "b6b79ed497e11d4cd13cc46724f9e289eacc744d2d185e31c72d595cdf62772b"
+  },
+  {
+    "path": "dist/canvaskit/skwasm_heavy.wasm",
+    "bytes": 5216217,
+    "sha256": "565f5cc1cca6ab120f11934b105f01fec4b58b480c82e0889dca93af8e6f8635"
+  },
+  {
+    "path": "dist/canvaskit/webparagraph/canvaskit.js",
+    "bytes": 76114,
+    "sha256": "3110e3e4d9b7b5657d336f253aaca8acca5777cde9319fb69ac302d6ff5a8b23"
+  },
+  {
+    "path": "dist/canvaskit/webparagraph/canvaskit.js.symbols",
+    "bytes": 963641,
+    "sha256": "44d6c47919106235cf32252252490cdf798d907ee874ba343ab53dc94bc2a9dc"
+  },
+  {
+    "path": "dist/canvaskit/webparagraph/canvaskit.wasm",
+    "bytes": 3729129,
+    "sha256": "0ce1b05082efdc8529550e8a01f6ff0593972d55525035010e26f5600aa9f254"
+  },
+  {
+    "path": "dist/canvaskit/wimp.js",
+    "bytes": 59127,
+    "sha256": "8fd8a47480c6eb0a374d159912d0b3fb15661b41f5c113ecdd39c2f01f2bee46"
+  },
+  {
+    "path": "dist/canvaskit/wimp.js.symbols",
+    "bytes": 1813030,
+    "sha256": "b4907ebd33131302a8cd99f7c55f52357bdfde04f421b605a616ba8764ae1de4"
+  },
+  {
+    "path": "dist/canvaskit/wimp.wasm",
+    "bytes": 3581677,
+    "sha256": "e924eaafd801d41e017d178f3fd5cf8a417f641fe35c9ed34a4e1d7582283e0c"
+  },
+  {
+    "path": "dist/favicon.png",
+    "bytes": 452,
+    "sha256": "3ea971e956280566bb1a5d71e1411bce536e5f8e57701440360ffe1b75042198"
+  },
+  {
+    "path": "dist/flutter.js",
+    "bytes": 12136,
+    "sha256": "2beb1ce6b159c71540aa66030af1d7964b6a92377cc78473745e02f97b74effe"
+  },
+  {
+    "path": "dist/flutter_bootstrap.js",
+    "bytes": 13116,
+    "sha256": "84c9bcf724064804be31f69f5034e9ee65e20d69a6b26b455fcb146f19ceab8f"
+  },
+  {
+    "path": "dist/flutter_service_worker.js",
+    "bytes": 784,
+    "sha256": "a131df5ca46154cc4eb79044f7f5a14029c2f8bfccf8cef34e3ec3b5a9f5a88c"
+  },
+  {
+    "path": "dist/google_places/index.html",
+    "bytes": 6995,
+    "sha256": "d6481fb4aecc3c29b16f46bb22305ce114cbe65d9d4f63f9120e05ff266e4bba"
+  },
+  {
+    "path": "dist/google_places/panel.css",
+    "bytes": 1018,
+    "sha256": "49b6995e4a3ab051dce5c17fcccbc0106d09da6d2870a258b3e2258503a7b130"
+  },
+  {
+    "path": "dist/google_places/panel.js",
+    "bytes": 4483,
+    "sha256": "e805bb1672c844916654b7755b2d38af6b5d9ddb0bca15a7fabc0121f1fb433a"
+  },
+  {
+    "path": "dist/icons/Icon-192.png",
+    "bytes": 2430,
+    "sha256": "1cf496453a6d3a5a554af93efe854244fa286ff0d1429fd495f646cf199d1842"
+  },
+  {
+    "path": "dist/icons/Icon-512.png",
+    "bytes": 6966,
+    "sha256": "29d58d0f2c099914c03f6ff483d8ff1e6358f7be0d6a98b1c94e40b512f20404"
+  },
+  {
+    "path": "dist/icons/Icon-maskable-192.png",
+    "bytes": 2430,
+    "sha256": "1cf496453a6d3a5a554af93efe854244fa286ff0d1429fd495f646cf199d1842"
+  },
+  {
+    "path": "dist/icons/Icon-maskable-512.png",
+    "bytes": 6966,
+    "sha256": "29d58d0f2c099914c03f6ff483d8ff1e6358f7be0d6a98b1c94e40b512f20404"
+  },
+  {
+    "path": "dist/index.html",
+    "bytes": 1828,
+    "sha256": "b5ecdfcfa7076cb02867a5e1dc40ff369ccf2328d529866f991d120ea4b747c5"
+  },
+  {
+    "path": "dist/main.dart.js",
+    "bytes": 4999006,
+    "sha256": "50daf1af8971b9e6a1d59cd0df2393941391f91da5f402a3747badebd4f4867c"
+  },
+  {
+    "path": "dist/manifest.json",
+    "bytes": 859,
+    "sha256": "9b05fcff8c2b9eaf5c1b0d486f8c9f608eb10277dd63615e11a829656252ef67"
+  },
+  {
+    "path": "dist/navigation-3d/assets/index-DSFgF5x4.js",
+    "bytes": 1872676,
+    "sha256": "52abd18c2156a30990f5493dc7b39305527b89b94123165ebc521fc0d327f4a1"
+  },
+  {
+    "path": "dist/navigation-3d/assets/index-S-HJ2tGl.css",
+    "bytes": 77917,
+    "sha256": "138d603193a18b05e0ceda160d45eb0c773afbd22992dff20ed673fb386aa73e"
+  },
+  {
+    "path": "dist/navigation-3d/index.html",
+    "bytes": 380,
+    "sha256": "9ff8e350d5bf2ce2954d2e4e7902093e38f127a59ec34179414d220f99f9ae1c"
+  },
+  {
+    "path": "dist/seguranca/index.html",
+    "bytes": 9710,
+    "sha256": "2ca498528117daf5fdd83752737328ab22fbbdd40dbcec2493dbe06ade121184"
+  },
+  {
+    "path": "dist/version.json",
+    "bytes": 96,
+    "sha256": "73825e2f52c4c20f93263bcca25fa46f598eb194a45574819319dda7b8008e26"
+  },
+  {
+    "path": "dist/voice/recognition_adapter.js",
+    "bytes": 5537,
+    "sha256": "b1a903a68d8e21a10fa171c6d6da6fac4e80e83d9f9380d5e252a5e466adaa7f"
+  },
+  {
+    "path": "docs/altitude-relevo-2026-11-05.md",
+    "bytes": 4759,
+    "sha256": "ad192989b1a5c1969178f8797004074ed1c19e7ea002ecdfdc9034b958ae33cf"
+  },
+  {
+    "path": "docs/condominios/LEIA-ME.md",
+    "bytes": 2075,
+    "sha256": "669aa65611c8c4decf9bbc9d20f5e9bb26a8357a426bf65ff9c1667d75047ba9"
+  },
+  {
+    "path": "docs/condominios/exclusoes.json",
+    "bytes": 2131,
+    "sha256": "87fe45b698f71dff3650b4ff0a2582435794682434a702d7a8ae2f9e6f1ed5fd"
+  },
+  {
+    "path": "docs/condominios/osm-source.json",
+    "bytes": 100350,
+    "sha256": "b0b73838755d7c256f038b3d52af784d95269df82688c35901b6b58632c1f89b"
+  },
+  {
+    "path": "docs/entrega-design-ambiente-v17.md",
+    "bytes": 7498,
+    "sha256": "b696363165089f8005141f936de2d0d3aaa76490e5e6c6bbeeccf9ebb1c8a5b6"
+  },
+  {
+    "path": "docs/ilhas-litoral-2026-11-05.md",
+    "bytes": 5709,
+    "sha256": "963a08e788700cea341136268b57890c59ba293aff7103a28f8e87fead1c66fc"
+  },
+  {
+    "path": "docs/jornada-marcadores-entrega.md",
+    "bytes": 7700,
+    "sha256": "0b46de2004e74d1398364054a24b578979fab601806d87196f2a13aab3c0bdb7"
+  },
+  {
+    "path": "docs/layout-mapa-v18.jpg",
+    "bytes": 125802,
+    "sha256": "3282b29dac2e87f906317cda4e618bd7ff124ff34f71f064d43114e77caa70cf"
+  },
+  {
+    "path": "docs/layout-mapa-v18.md",
+    "bytes": 2106,
+    "sha256": "6cb2e15ce852a9fb96890b9295d6e3029f46165e22bc7cea77947379ac30f446"
+  },
+  {
+    "path": "docs/praias/alteracoes.json",
+    "bytes": 581,
+    "sha256": "930dc3e38053c19a687345e0b796ceffc3bcfe25744036303b9135212234563b"
+  },
+  {
+    "path": "docs/praias/catalogo-revisado.json",
+    "bytes": 123665,
+    "sha256": "8e286e9987b153856fd01fa9b756533651f5079092437e91cc5d8e8e79445f7d"
+  },
+  {
+    "path": "docs/praias/revisao-2026-11-09.md",
+    "bytes": 3907,
+    "sha256": "98877bda5df9118b71eb6764551c0deb062a736c4d3b2755464d30107dcd3e54"
+  },
+  {
+    "path": "docs/primeira-cruz-preview.jpg",
+    "bytes": 81828,
+    "sha256": "d9107943873330b184e83ac00d2399c212cb12059df5eed21961047af91c2988"
+  },
+  {
+    "path": "docs/relevo-preview-20261105.jpg",
+    "bytes": 57834,
+    "sha256": "428e52a571abb080fa7d5a61e01d9a752fbe608f2c63d4e538dfdc67559bb091"
+  },
+  {
+    "path": "docs/religioso/publicacao.md",
+    "bytes": 1623,
+    "sha256": "e9b4fb6a75254a5e81e5f5f9c94d5808d632db8b5341f709721394e8b3450f4e"
+  },
+  {
+    "path": "docs/revisao-municipal-2026-11-05.md",
+    "bytes": 4418,
+    "sha256": "796431162ae294960012f2f19942c1ab7a9f5df3cd207f12c97a575ddff24c21"
+  },
+  {
+    "path": "docs/travessias-nauticas-2026-11-05.md",
+    "bytes": 7549,
+    "sha256": "d838301c0d02a55acd079f6fb06c55d45bb186c8fcdae706508d6093c08f928e"
+  },
+  {
+    "path": "docs/validation/jornada-analysis.txt",
+    "bytes": 5759,
+    "sha256": "6c741acb239243f36e8ca785bcf70a162fa74db85a85a6193f789fec64609b30"
+  },
+  {
+    "path": "docs/validation/jornada-tests.txt",
+    "bytes": 11530,
+    "sha256": "cb2cbfc06e4a378f37ac68ca8b17c855813960ba4c2428a48307b374e6895283"
+  },
+  {
+    "path": "docs/validation/jornada-web-build.txt",
+    "bytes": 573,
+    "sha256": "485ef6c1fcd27ec34db874673b13ab7dbd88363dcb15eb9cb45665f3589203a3"
+  },
+  {
+    "path": "docs/validation/simulacao-marcador-nautico.jpg",
+    "bytes": 101873,
+    "sha256": "84f6e917cc12bb630dd1e8b460ae7f6798ca04cfccb36728d4c2af7bf5095924"
+  },
+  {
+    "path": "docs/voz/LEIA-ME.md",
+    "bytes": 6790,
+    "sha256": "5d0348cfd6903c98489f4a6c0ea017cc562a5a7353c4a6e4b608a0b62d19ce89"
+  },
+  {
+    "path": "docs/voz/analysis.txt",
+    "bytes": 3865,
+    "sha256": "2d3e809f83ab690856d97a6187a295a06ee45f42db4c553d824272114911d7b8"
+  },
+  {
+    "path": "docs/voz/build.txt",
+    "bytes": 573,
+    "sha256": "417fc1ae36b8a51283eb52b8706e7996f26b338899a49ecd1da21b46aedf7be7"
+  },
+  {
+    "path": "docs/voz/consulta-publicada.jpg",
+    "bytes": 99356,
+    "sha256": "a9d32855e66fe9890fe595ab4f855ee1c9df001277d1418d7bd71c3fedd72606"
+  },
+  {
+    "path": "docs/voz/melhoria-web-2026-11-09.md",
+    "bytes": 2719,
+    "sha256": "22410fd2e33c60e2b0e3319400647da6c188912f6026575e4d6d82bb588c7d2d"
+  },
+  {
+    "path": "docs/voz/tests.txt",
+    "bytes": 12782,
+    "sha256": "81c93f5a3ae4e97552e19a47f53282bfbc1915407e43a635917656697ae56084"
+  },
+  {
+    "path": "flutter/.gitignore",
+    "bytes": 771,
+    "sha256": "d2a13757225c9e692df276cd6ce08a2b73d3a5394cdddca8fc2b338df20843b8"
+  },
+  {
+    "path": "flutter/.metadata",
+    "bytes": 1260,
+    "sha256": "a166a37cae492322e28168145a6e340f85277f56f22a1a7f42f01f9bee37c2d5"
+  },
+  {
+    "path": "flutter/.vscode/extensions.json",
+    "bytes": 82,
+    "sha256": "66af51a6dd74aaa5273c014540bb6d2644e97bb27cb2c55a51147b4b29c69cbd"
+  },
+  {
+    "path": "flutter/.vscode/launch.json",
+    "bytes": 598,
+    "sha256": "78431fc9a813ca585e6814ad1ebafa82b136d76015bba87392740839f3d14a70"
+  },
+  {
+    "path": "flutter/README.md",
+    "bytes": 16685,
+    "sha256": "5c7c1112275dbbfdbb097a4791aebf95681c616fb17e4b6d0da147ec6471caf2"
+  },
+  {
+    "path": "flutter/admin/LEIA-ME.md",
+    "bytes": 1222,
+    "sha256": "d3aa58ea5561a7b983e0f693d9ad6ffe455173a0afa1bf13a64362bf92812208"
+  },
+  {
+    "path": "flutter/admin/_headers",
+    "bytes": 618,
+    "sha256": "e63bf3591b6b7bcd3768cbc51a4bfadfb1d66349d3523a0c67639f627c96cf25"
+  },
+  {
+    "path": "flutter/admin/app.js",
+    "bytes": 39548,
+    "sha256": "2d0b508955d721683ba50ddaad4cc203114fca84ec9b2cfa7c2a4d3c69e9849a"
+  },
+  {
+    "path": "flutter/admin/data/condominiums.json",
+    "bytes": 399410,
+    "sha256": "b626a30d18cfbabb138843290367c011e1c6bb6eeb99142dd4d33aa912689dff"
+  },
+  {
+    "path": "flutter/admin/data/municipalities.json",
+    "bytes": 80301,
+    "sha256": "6b14af163dbaeae986ca345977a1e0a517afd86a8d6b8f3326144126a4136791"
+  },
+  {
+    "path": "flutter/admin/data/places.json",
+    "bytes": 2868228,
+    "sha256": "c304e48d96fa49ce683e7f7cc36d33a7b0cf26d7fc5369bc8fb78825d081ce3e"
+  },
+  {
+    "path": "flutter/admin/index.html",
+    "bytes": 17467,
+    "sha256": "e59b5a7c1f1d2a5739e7def28af4f1c5cd228d2a8d61718ff3a7e27dccfffff6"
+  },
+  {
+    "path": "flutter/admin/map-content.css",
+    "bytes": 3546,
+    "sha256": "8364a87b0eee6b47ddbc0cceb55912065e28a6464affc0d00dd4af587d449413"
+  },
+  {
+    "path": "flutter/admin/map-content.js",
+    "bytes": 28386,
+    "sha256": "12963c52c5d919e75e2863bcbec614945c7021a5a230a72e27682eaf8edbadfb"
+  },
+  {
+    "path": "flutter/admin/parceiro.css",
+    "bytes": 814,
+    "sha256": "1378b9eed3fa1cc2c024ab4f77922ff6205c522fef6b0baa9fbc0c5659843c96"
+  },
+  {
+    "path": "flutter/admin/parceiro.html",
+    "bytes": 3141,
+    "sha256": "177e86037fb88831bf1bb7866e3033aa95bd359f898817e579b41d55797b95cf"
+  },
+  {
+    "path": "flutter/admin/parceiro.js",
+    "bytes": 6667,
+    "sha256": "f1a4a6dee601d504087d250196ac0282cf98c0f1a9b392037c461c5cb2807fc7"
+  },
+  {
+    "path": "flutter/admin/style.css",
+    "bytes": 13197,
+    "sha256": "c75fe551f2fb8c4e1943efaf221653035b3875085c8710abbed902893b305424"
+  },
+  {
+    "path": "flutter/analysis_options.yaml",
+    "bytes": 1500,
+    "sha256": "2965e15dbd3bf9fb18ad236b84975481c4adbbd629c4af97ebdbd5ac630782e8"
+  },
+  {
+    "path": "flutter/android/.gitignore",
+    "bytes": 253,
+    "sha256": "b027c9de1011765c015e5819bf857c0d75bfcd0886fb01721c091159012e50f1"
+  },
+  {
+    "path": "flutter/android/app/build.gradle.kts",
+    "bytes": 1891,
+    "sha256": "7db21df0353a40653e5a149267e7c4b911d034714dea2ffe22c0b9db0b5c3381"
+  },
+  {
+    "path": "flutter/android/app/src/debug/AndroidManifest.xml",
+    "bytes": 378,
+    "sha256": "30b0832ed8b92dfbd6ae2abfa939ccf26333d37600056b1572bd4a397a18a74b"
+  },
+  {
+    "path": "flutter/android/app/src/main/AndroidManifest.xml",
+    "bytes": 2993,
+    "sha256": "49f7f0c088d1f7c17b2ca39f51a7d17e3406ba05bdc77beddf4275169d39c4f9"
+  },
+  {
+    "path": "flutter/android/app/src/main/kotlin/com/marapass/marapass_mapa/MainActivity.kt",
+    "bytes": 2426,
+    "sha256": "bf410d5af3da450b7e0c14ebac63e02cfaacc60044a8f49a8830674f95ff9008"
+  },
+  {
+    "path": "flutter/android/app/src/main/res/drawable-v21/launch_background.xml",
+    "bytes": 438,
+    "sha256": "7ca6d5cec2169c5a98661a119db23a6f3399c8fef2256ff04f3a642831282478"
+  },
+  {
+    "path": "flutter/android/app/src/main/res/drawable/launch_background.xml",
+    "bytes": 434,
+    "sha256": "94433756fe10005ddd6fc55cc5c0b1e9f3c10b66a08ceac795ece6713d34e28a"
+  },
+  {
+    "path": "flutter/android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
+    "bytes": 939,
+    "sha256": "43ee9231c019436fa609453b7686f706e13bb6601e7925202a973512f8bf6d29"
+  },
+  {
+    "path": "flutter/android/app/src/main/res/mipmap-mdpi/ic_launcher.png",
+    "bytes": 664,
+    "sha256": "2c82c8d0404a1847a8bb01aaab29e89986697b9157a518ab7121d1c4b52eca11"
+  },
+  {
+    "path": "flutter/android/app/src/main/res/mipmap-xhdpi/ic_launcher.png",
+    "bytes": 1241,
+    "sha256": "70f171d9ad4ec3a2ed9de8e908b0663f9bc5e1515ff89bb0acc607a1c099feaf"
+  },
+  {
+    "path": "flutter/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png",
+    "bytes": 1781,
+    "sha256": "25692cf5d55c4b457fd9951d4675d8ba125bd2e52aa5076ae8a849f4c3fd9c96"
+  },
+  {
+    "path": "flutter/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png",
+    "bytes": 2430,
+    "sha256": "1cf496453a6d3a5a554af93efe854244fa286ff0d1429fd495f646cf199d1842"
+  },
+  {
+    "path": "flutter/android/app/src/main/res/values-night/styles.xml",
+    "bytes": 995,
+    "sha256": "8c5bad5152f217e837519f9c15211d19f39bd45f5f67faf6dd81cb4b299e518f"
+  },
+  {
+    "path": "flutter/android/app/src/main/res/values/styles.xml",
+    "bytes": 996,
+    "sha256": "937d7c82f539c72eb94fd3a3773f29b3d3fef1997213c92cb632298cedf4bda9"
+  },
+  {
+    "path": "flutter/android/app/src/profile/AndroidManifest.xml",
+    "bytes": 378,
+    "sha256": "30b0832ed8b92dfbd6ae2abfa939ccf26333d37600056b1572bd4a397a18a74b"
+  },
+  {
+    "path": "flutter/android/build.gradle.kts",
+    "bytes": 537,
+    "sha256": "6a26dba2cb8dfba1e74f540b0d17a89d96c1301d3c3bfda14348bed257fddcba"
+  },
+  {
+    "path": "flutter/android/gradle.properties",
+    "bytes": 300,
+    "sha256": "0f82b18017fba6bb5ce3aa4b2d1a00c9382fc8aae7b1d9326e44b18abd66d80b"
+  },
+  {
+    "path": "flutter/android/gradle/wrapper/gradle-wrapper.properties",
+    "bytes": 202,
+    "sha256": "b690d26223576fe4e63889fad9a00df81945cb870b9476cc5a563152a1a88a74"
+  },
+  {
+    "path": "flutter/android/settings.gradle.kts",
+    "bytes": 770,
+    "sha256": "016759283e88ade6eba92910583feeef88b962839b957aa414296afd2952d122"
+  },
+  {
+    "path": "flutter/assets/data/.places.json.zDgv9E",
+    "bytes": 1310720,
+    "sha256": "962688b7d70f312e94fcc3ae64caa3d5bd6f9e7e5508c8ca1d14ab4137a76232"
+  },
+  {
+    "path": "flutter/assets/data/coastal_islands.json",
+    "bytes": 221320,
+    "sha256": "fb9c6b9a05cf6122be269c0d13a5c9d2951571ef3e4657995bbe4886838ad5dc"
+  },
+  {
+    "path": "flutter/assets/data/condominiums.json",
+    "bytes": 399410,
+    "sha256": "b626a30d18cfbabb138843290367c011e1c6bb6eeb99142dd4d33aa912689dff"
+  },
+  {
+    "path": "flutter/assets/data/elevations.json",
+    "bytes": 305614,
+    "sha256": "5a3bbf351059f6d747561fcc59ced1b9fdd2d73df722550ddbcd11ad65f36cc8"
+  },
+  {
+    "path": "flutter/assets/data/island_land_access.json",
+    "bytes": 1110,
+    "sha256": "96aaeab68c10f6027fcf05d7ee912709df8d8059c7c09dd6dad2df0e170bed37"
+  },
+  {
+    "path": "flutter/assets/data/municipalities.json",
+    "bytes": 80301,
+    "sha256": "6b14af163dbaeae986ca345977a1e0a517afd86a8d6b8f3326144126a4136791"
+  },
+  {
+    "path": "flutter/assets/data/nautical_connections.json",
+    "bytes": 2912,
+    "sha256": "47cbc76e464898897ce7326788cbcfd633bc6e4fbf07603aebbe77045d220e12"
+  },
+  {
+    "path": "flutter/assets/data/places.json",
+    "bytes": 2868228,
+    "sha256": "c304e48d96fa49ce683e7f7cc36d33a7b0cf26d7fc5369bc8fb78825d081ce3e"
+  },
+  {
+    "path": "flutter/assets/data/simulation_route.json",
+    "bytes": 366812,
+    "sha256": "c1b128a765c51c2f9d26bbd3fe073f3862f0cc5f02efd6435d0c39f233472a8e"
+  },
+  {
+    "path": "flutter/assets/data/source_manifest.json",
+    "bytes": 1767,
+    "sha256": "773a582cc75af0d06e7ea915feb1bd5f78f50eef97168e9d2333f1babedc202e"
+  },
+  {
+    "path": "flutter/assets/data/terrain_manifest.json",
+    "bytes": 654,
+    "sha256": "4c67ab5cd8b782b35af3fc606b0b7ba64b94c7997f3a5ae9f0b41c26cfe61456"
+  },
+  {
+    "path": "flutter/assets/fonts/Manrope.ttf",
+    "bytes": 164700,
+    "sha256": "3ae11c49db0455a3cc33e37d380f20fdb8c7f8b41dc07625c177e3d87a9d6ae6"
+  },
+  {
+    "path": "flutter/assets/fonts/Manrope_OFL.txt",
+    "bytes": 4387,
+    "sha256": "58172e0c0fac2cda8a37b348164bb55e44b0e69051e557e92b1d3f6910141f7b"
+  },
+  {
+    "path": "flutter/assets/fonts/Roboto-Bold.ttf",
+    "bytes": 170760,
+    "sha256": "7d0b991ee3e0be7af01ad7ea8cd2beea6c00a25e679a0226b6737f079aafff86"
+  },
+  {
+    "path": "flutter/assets/fonts/Roboto-Regular.ttf",
+    "bytes": 171676,
+    "sha256": "79e851404657dac2106b3d22ad256d47824a9a5765458edb72c9102a45816d95"
+  },
+  {
+    "path": "flutter/assets/fonts/Roboto_LICENSE.txt",
+    "bytes": 11358,
+    "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+  },
+  {
+    "path": "flutter/assets/map/OpenFreeMap_STYLE_LICENSE.md",
+    "bytes": 3223,
+    "sha256": "932694202d771c52089e87f13105e02f2b68341f584b0f3d8adc557c9d7cefa3"
+  },
+  {
+    "path": "flutter/assets/map/maranhao.geojson",
+    "bytes": 115051,
+    "sha256": "cc70dd35b30cc716e34b4bd9597c254bafc4f7ab346d6f14b88e69427122a740"
+  },
+  {
+    "path": "flutter/assets/map/municipalities.geojson",
+    "bytes": 839778,
+    "sha256": "fe63392cb77a2a6f156b5af2497bd7869ca117e0f006f06ce541226a25e93b40"
+  },
+  {
+    "path": "flutter/assets/map/roads_reference.json",
+    "bytes": 9882205,
+    "sha256": "eb91dd2d4380fa5af66bf996a3e8ade1653eb98c62271fd8b717d3c2f8434d28"
+  },
+  {
+    "path": "flutter/assets/map/style_day.json",
+    "bytes": 37840,
+    "sha256": "9d138a388ce908725345d0e6fa66e6a1bb9c35c6ed9af4439536da14453c3bda"
+  },
+  {
+    "path": "flutter/assets/map/style_night.json",
+    "bytes": 37842,
+    "sha256": "8687b8ee2c9fe00342639ccca0abebf9ffa36cfc85a65723a57aefe822483480"
+  },
+  {
+    "path": "flutter/assets/map/terrain_ma.png",
+    "bytes": 3034722,
+    "sha256": "fff78f8e1ed8380306008322552c86ee972cace38d3f0b14fe9b989eb2764a60"
+  },
+  {
+    "path": "flutter/config/catalogo.json",
+    "bytes": 305,
+    "sha256": "e0a0dc07f4279ae951f9349aa52e78e561f93d04152f9495070f88c930922e7e"
+  },
+  {
+    "path": "flutter/config/local.example.json",
+    "bytes": 287,
+    "sha256": "c689a18e1c4dc4997ff4789564e62da2e3791da3bee69a47b7f756eb0fdbfae9"
+  },
+  {
+    "path": "flutter/database/map_content.sql",
+    "bytes": 28248,
+    "sha256": "1a2224b03e98697d1e343a1bd35ec190d33eeb85427688cdaffc718955706ab3"
+  },
+  {
+    "path": "flutter/database/offer_calendar.sql",
+    "bytes": 2597,
+    "sha256": "f929767ebce43e8107dcd3811dd6f839c32dbe57039ee8dd114320bd720d9671"
+  },
+  {
+    "path": "flutter/database/test_map_content.sql",
+    "bytes": 9811,
+    "sha256": "5fd760b649fd428c3bdbc450f01a893d88043cf09aa9a9c5874df7b19dc1527b"
+  },
+  {
+    "path": "flutter/docs/BARREIRINHAS_060.md",
+    "bytes": 7977,
+    "sha256": "976dc28b181b42de9309fcbfb37f4e0e2b3aa96748cbb1d1bedcafd7ec31f023"
+  },
+  {
+    "path": "flutter/docs/CENTRAL_COMPARTILHADA.md",
+    "bytes": 8296,
+    "sha256": "c296c47a8f7abac8b47804a50ac71effda7b08061491d56d8bd3d7ce8ccadb7a"
+  },
+  {
+    "path": "flutter/docs/CURADORIA_BARREIRINHAS.md",
+    "bytes": 2220,
+    "sha256": "9ae970f9c8b3e7d21388c9cb0ab4adb552c744aa77d3c7c9e0cad5f9ed4324e8"
+  },
+  {
+    "path": "flutter/docs/DADOS_E_FONTES.md",
+    "bytes": 5873,
+    "sha256": "ab9e57d38c6e662357faaf0af6980397e0e78cd026201e8f318a1638dd8b6c54"
+  },
+  {
+    "path": "flutter/docs/GPS_041.md",
+    "bytes": 4260,
+    "sha256": "0d3f31f8c945fcf616e6cb1ae204dfb5c7c9b3bf45f1625db801d1de0280acbf"
+  },
+  {
+    "path": "flutter/docs/JORNADA_050.md",
+    "bytes": 6613,
+    "sha256": "48c4a663dfc1c3fa7fa45b0ee687174de02bd6348ac58be904cdcf0f210d6efb"
+  },
+  {
+    "path": "flutter/docs/NAVEGACAO_CLARA.md",
+    "bytes": 1335,
+    "sha256": "11f9440a9fe00ea98388a06eb3bdcf6ac7fdb3bed24244131e626e6be10d3763"
+  },
+  {
+    "path": "flutter/docs/SIMULAR_FLUTTER.md",
+    "bytes": 4215,
+    "sha256": "b4d665113a1fb3b0b36faa919394d574203ea7a369af5d67be5e53b70909623d"
+  },
+  {
+    "path": "flutter/docs/VALIDACAO.md",
+    "bytes": 7308,
+    "sha256": "25b9aa88c36e4a129015acabd3787759ae1ca72e8ca2ece59a9e2578458775aa"
+  },
+  {
+    "path": "flutter/docs/VALIDACAO_NAVEGACAO_040.md",
+    "bytes": 1007,
+    "sha256": "587ad658557832a5d9629254758a7bfac0362181533766a9660edf720c3b3797"
+  },
+  {
+    "path": "flutter/docs/barreirinhas-060.jpg",
+    "bytes": 71187,
+    "sha256": "1375da8643c4abf440bacdcbb14cccd7287cbac9c4691fd04e1769c7102310df"
+  },
+  {
+    "path": "flutter/docs/cobertura_municipal.csv",
+    "bytes": 18325,
+    "sha256": "5c11c0862217d67a252067bf5d0f38dc1e057f4945fdb9b19728b31cf4521439"
+  },
+  {
+    "path": "flutter/docs/descobertas-050.jpg",
+    "bytes": 84210,
+    "sha256": "4a3a4b67fd4e9fe10b9cccc87fbb35350c3a4a64e8becbe2903074acf9a54a50"
+  },
+  {
+    "path": "flutter/docs/mapa-clean.jpg",
+    "bytes": 122169,
+    "sha256": "b3d13da1bff39a6320ad1bf2fa8054a60811b7f1baa8f82be2e5e75f5c9cd9f3"
+  },
+  {
+    "path": "flutter/docs/navegacao-041.jpg",
+    "bytes": 60300,
+    "sha256": "2ccbc94647b9f6404de9cdb7f455ff20dc54585198a6af86537c6e29e91f6b8e"
+  },
+  {
+    "path": "flutter/ios/.gitignore",
+    "bytes": 569,
+    "sha256": "37380775aeb2499662b7aca80f4ac4c95ae827c3ba2bfa179aa3e9af4812c623"
+  },
+  {
+    "path": "flutter/ios/Flutter/AppFrameworkInfo.plist",
+    "bytes": 720,
+    "sha256": "da12038f9b2688a8a26160fea2609fa8fcb11421448c109f09c0f573efe7698d"
+  },
+  {
+    "path": "flutter/ios/Flutter/Debug.xcconfig",
+    "bytes": 30,
+    "sha256": "a82d7765b37116ee4821d2cd1d65942febf8032353757ffb0826eabde785b4a6"
+  },
+  {
+    "path": "flutter/ios/Flutter/Release.xcconfig",
+    "bytes": 30,
+    "sha256": "a82d7765b37116ee4821d2cd1d65942febf8032353757ffb0826eabde785b4a6"
+  },
+  {
+    "path": "flutter/ios/Runner.xcodeproj/project.pbxproj",
+    "bytes": 25767,
+    "sha256": "84fc7cd92ade01021e44099d15f2a917b516b2206f8f5c574c61559ae7eadfe2"
+  },
+  {
+    "path": "flutter/ios/Runner.xcodeproj/project.xcworkspace/contents.xcworkspacedata",
+    "bytes": 135,
+    "sha256": "7f3b00b5c3fdb45242d7b87e1e5c4e25d1fa8129a16c94295ecc4e8ea2235c5f"
+  },
+  {
+    "path": "flutter/ios/Runner.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist",
+    "bytes": 238,
+    "sha256": "dfa0f9bb85b95ccba9c6811adadf8cb407fb5d52088e89db83ebc308ec448542"
+  },
+  {
+    "path": "flutter/ios/Runner.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings",
+    "bytes": 226,
+    "sha256": "11b247bc6796892d67c9a821d18604db4dd6a880981b34f38460b9866e6b247f"
+  },
+  {
+    "path": "flutter/ios/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme",
+    "bytes": 4717,
+    "sha256": "9fbce429f56243561dd437a527136c9f9ed77165e3b271b923faf236cfcd0484"
+  },
+  {
+    "path": "flutter/ios/Runner.xcworkspace/contents.xcworkspacedata",
+    "bytes": 152,
+    "sha256": "46c3c9702ff7c5584e11c954d943cfb6e07fb26e3fbd072ddbc0f388aa352de1"
+  },
+  {
+    "path": "flutter/ios/Runner.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist",
+    "bytes": 238,
+    "sha256": "dfa0f9bb85b95ccba9c6811adadf8cb407fb5d52088e89db83ebc308ec448542"
+  },
+  {
+    "path": "flutter/ios/Runner.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings",
+    "bytes": 226,
+    "sha256": "11b247bc6796892d67c9a821d18604db4dd6a880981b34f38460b9866e6b247f"
+  },
+  {
+    "path": "flutter/ios/Runner/AppDelegate.swift",
+    "bytes": 2107,
+    "sha256": "b721e1eac59945fb9f16b3a25a51b06e52ff8deedfe831fdf71c32815e4493cc"
+  },
+  {
+    "path": "flutter/ios/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json",
+    "bytes": 2519,
+    "sha256": "3b1e214f466ffedff74baa5598ad5c4421130eea6bc8d57b8fe23435e8280ae4"
+  },
+  {
+    "path": "flutter/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png",
+    "bytes": 17228,
+    "sha256": "2ea6fa4269c950d26e1beca782f14c70e9a0087ca27991a7bddcfa06b313759a"
+  },
+  {
+    "path": "flutter/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@1x.png",
+    "bytes": 285,
+    "sha256": "a170ab382601f84e57fd1aa51c1cb2cd8ed786e2d9d90db78a5336bd8226b3bc"
+  },
+  {
+    "path": "flutter/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@2x.png",
+    "bytes": 541,
+    "sha256": "39315ce9272ad7a07d3864f79b415e4646de229d2e4d4f2c4929d3b4bee51d49"
+  },
+  {
+    "path": "flutter/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@3x.png",
+    "bytes": 779,
+    "sha256": "11eaf3a3198e3d9879df4276583774e3ab7203b6cec385de07f6de1b85fb13f8"
+  },
+  {
+    "path": "flutter/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@1x.png",
+    "bytes": 416,
+    "sha256": "9f57693312ffea3e69edb8af583240f5be643e77922013d352057bf5d5140e61"
+  },
+  {
+    "path": "flutter/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@2x.png",
+    "bytes": 768,
+    "sha256": "18cf784a800018368080bc874253d878905b670a0f8b4ccc03d608cc54b91720"
+  },
+  {
+    "path": "flutter/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@3x.png",
+    "bytes": 1133,
+    "sha256": "ee9c6c242b7683e707a9f15fdbcb5b22f3227a615ec24ded2b43898687bf0693"
+  },
+  {
+    "path": "flutter/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@1x.png",
+    "bytes": 541,
+    "sha256": "39315ce9272ad7a07d3864f79b415e4646de229d2e4d4f2c4929d3b4bee51d49"
+  },
+  {
+    "path": "flutter/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@2x.png",
+    "bytes": 1033,
+    "sha256": "c0674350e87381f452af920e0bd669412440a644f7058830a147d7050ae9a99e"
+  },
+  {
+    "path": "flutter/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@3x.png",
+    "bytes": 1558,
+    "sha256": "ceb65e095af829fd3d20067c248160a90ec5e2b0822bbdcc51577b87450df769"
+  },
+  {
+    "path": "flutter/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@2x.png",
+    "bytes": 1558,
+    "sha256": "ceb65e095af829fd3d20067c248160a90ec5e2b0822bbdcc51577b87450df769"
+  },
+  {
+    "path": "flutter/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@3x.png",
+    "bytes": 2293,
+    "sha256": "46fa0f1ee56d28d4b807fffd2953c238f73c1d2877815bdd6659e04994a21877"
+  },
+  {
+    "path": "flutter/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@1x.png",
+    "bytes": 923,
+    "sha256": "9a9fb49484d209c087bdd777dd6ea693cfa3fce37c0eadb29120eb4d29c0a514"
+  },
+  {
+    "path": "flutter/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@2x.png",
+    "bytes": 1968,
+    "sha256": "82b17b060306cec4679456da24f8cde512faf3e94d8af66ec488834113760b0f"
+  },
+  {
+    "path": "flutter/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-83.5x83.5@2x.png",
+    "bytes": 2055,
+    "sha256": "0f86a6e34db75578265568a8fa44907cdedf95597eb91bc4bc42453bb561cbe8"
+  },
+  {
+    "path": "flutter/ios/Runner/Assets.xcassets/LaunchImage.imageset/Contents.json",
+    "bytes": 391,
+    "sha256": "ccc7950fd5f5b82067c85f667940a9d59189151460761ece8098ca78daa19469"
+  },
+  {
+    "path": "flutter/ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage.png",
+    "bytes": 68,
+    "sha256": "93ae7d494fad0fb30cbf3ae746a39c4bc7a0f8bbf87fbb587a3f3c01f3c5ce20"
+  },
+  {
+    "path": "flutter/ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage@2x.png",
+    "bytes": 68,
+    "sha256": "93ae7d494fad0fb30cbf3ae746a39c4bc7a0f8bbf87fbb587a3f3c01f3c5ce20"
+  },
+  {
+    "path": "flutter/ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage@3x.png",
+    "bytes": 68,
+    "sha256": "93ae7d494fad0fb30cbf3ae746a39c4bc7a0f8bbf87fbb587a3f3c01f3c5ce20"
+  },
+  {
+    "path": "flutter/ios/Runner/Assets.xcassets/LaunchImage.imageset/README.md",
+    "bytes": 336,
+    "sha256": "a985b626c4f7546a8ba392d135e9226c3547c8e2b46895f5f2bdf40d7b14ef9f"
+  },
+  {
+    "path": "flutter/ios/Runner/Base.lproj/LaunchScreen.storyboard",
+    "bytes": 2377,
+    "sha256": "857e61203b3deafb05766d8fcda898b86a7cb6f3d5e385ecc9926c4d698215e9"
+  },
+  {
+    "path": "flutter/ios/Runner/Base.lproj/Main.storyboard",
+    "bytes": 1605,
+    "sha256": "fd367b6c43006d61b730f674970dd48b9f662c8f2264e52ffc1558102a2c9f2d"
+  },
+  {
+    "path": "flutter/ios/Runner/Info.plist",
+    "bytes": 2817,
+    "sha256": "0cf3b2315f7dcc8ea5f8251f8b9de216d1741cd6af9476b35181ac9371b025ac"
+  },
+  {
+    "path": "flutter/ios/Runner/Runner-Bridging-Header.h",
+    "bytes": 38,
+    "sha256": "1a8d11d01d1cc92c650c9c9ed35299240052d4683a15a719a2315ef44185e074"
+  },
+  {
+    "path": "flutter/ios/Runner/SceneDelegate.swift",
+    "bytes": 76,
+    "sha256": "add68b905971dedfcc0d0b5b7118030de5925ba8c081ad9815463699e3a444ad"
+  },
+  {
+    "path": "flutter/ios/RunnerTests/RunnerTests.swift",
+    "bytes": 285,
+    "sha256": "5e8f4908dacea6f29b2a790e4d38bf5fded69096063f9a27a2f21584d62b30c0"
+  },
+  {
+    "path": "flutter/lib/application/map_state.dart",
+    "bytes": 11625,
+    "sha256": "e396a066c38b93c92913e057a69f64ab01345491def891ebe631d68179b62748"
+  },
+  {
+    "path": "flutter/lib/application/navigation_session.dart",
+    "bytes": 20040,
+    "sha256": "8903bc71451b2537c812dc400f14dcbe160c6f0e1e6be93f1b5f01949cd7971f"
+  },
+  {
+    "path": "flutter/lib/core/catalog_download.dart",
+    "bytes": 98,
+    "sha256": "50d0e3cabc9d1e831343d6decf08a101079be491eca67363a88de00ee3a085d2"
+  },
+  {
+    "path": "flutter/lib/core/catalog_download_stub.dart",
+    "bytes": 44,
+    "sha256": "bfa822b531b1be184ecb79d2bb5102722872fd268cedcc16ff0ae48d71f96e20"
+  },
+  {
+    "path": "flutter/lib/core/catalog_download_web.dart",
+    "bytes": 322,
+    "sha256": "0741bc2a81d37dd80f7e4a9e1ddf1727dc06e49df76ff5e0c5e371a12189fe51"
+  },
+  {
+    "path": "flutter/lib/core/config.dart",
+    "bytes": 1674,
+    "sha256": "28938b9ca22de6d7bbf8492b2df72707fb55861a40665ba95a06d0f3d25b2e5c"
+  },
+  {
+    "path": "flutter/lib/core/preview_bridge.dart",
+    "bytes": 94,
+    "sha256": "02498f6498839620d7a52ca41736714c5818acd5fd0dfc609039e83d27c17a38"
+  },
+  {
+    "path": "flutter/lib/core/preview_bridge_stub.dart",
+    "bytes": 142,
+    "sha256": "f97378543306f780149eb56b1e042b1a255951933b850503ab67edc80fbe06ed"
+  },
+  {
+    "path": "flutter/lib/core/preview_bridge_web.dart",
+    "bytes": 1208,
+    "sha256": "84fa4d9164db1e7afb2981fba56cc13b9b93b1565b18a1f56022662642b9d66d"
+  },
+  {
+    "path": "flutter/lib/core/vector_support_stub.dart",
+    "bytes": 35,
+    "sha256": "a68b1130756596b34c8e911b088bd2f7c9ff0a13bf9ee26fe15825e8bf5571bc"
+  },
+  {
+    "path": "flutter/lib/core/vector_support_web.dart",
+    "bytes": 180,
+    "sha256": "dfba5ab89b4ad2f11c7c17874d869a97270c3a74012d053deb16c863240e9b93"
+  },
+  {
+    "path": "flutter/lib/data/catalog_workspace.dart",
+    "bytes": 5129,
+    "sha256": "6910be1fc614d90bb35fe8fd8df5aa71e3ffd8dd408ceba5727dbdd28a61efd6"
+  },
+  {
+    "path": "flutter/lib/data/published_catalog.dart",
+    "bytes": 3383,
+    "sha256": "582d7123340cdade7b87da37e489c6e66553751f446aa61fd0226d2e1d8fbe5c"
+  },
+  {
+    "path": "flutter/lib/data/routing_repository.dart",
+    "bytes": 2748,
+    "sha256": "251bfbef1158d00af2b7c28cf730c78ca05470eb363b8783601b78fdf760c94a"
+  },
+  {
+    "path": "flutter/lib/data/tourism_repository.dart",
+    "bytes": 8605,
+    "sha256": "5c6ec281a1ac412d94613a5c51be01f4e052806349c9169f257087e182bdca9f"
+  },
+  {
+    "path": "flutter/lib/domain/municipality.dart",
+    "bytes": 1111,
+    "sha256": "8c31ae6bc3a710ad5c6787dbc573a46287d4520f910f1a3876a94eb802987008"
+  },
+  {
+    "path": "flutter/lib/domain/navigation.dart",
+    "bytes": 7047,
+    "sha256": "f43fa344e5bd28d057c710e6686bc9ad1f62995e4da6dcbac97b1a789e33e57f"
+  },
+  {
+    "path": "flutter/lib/domain/tourism.dart",
+    "bytes": 9430,
+    "sha256": "7ca0424fe1047c2fcb6605da0fdede07c3cc9c2c3466620616fabd85546a393a"
+  },
+  {
+    "path": "flutter/lib/environment/environment_control.dart",
+    "bytes": 15597,
+    "sha256": "a0c809a8c683362610c5a5a46caa02bcc8fc74c408c0709c29863b92876e9479"
+  },
+  {
+    "path": "flutter/lib/environment/environment_data.dart",
+    "bytes": 2447,
+    "sha256": "f8b0dd7dbbc26608852ae914af2eb6d007dbe3c5e6f9fd82b2b292da01ad83a2"
+  },
+  {
+    "path": "flutter/lib/environment/map_appearance.dart",
+    "bytes": 477,
+    "sha256": "ea85beee1fef35145d378a744ac3df2ba027c45f57c81a7c727fd9eeb781f10b"
+  },
+  {
+    "path": "flutter/lib/islands/coastal_island.dart",
+    "bytes": 882,
+    "sha256": "b5797651ff9bdb3a2f282256cf0d6221c79cd43c88ffa04b9fa0f042d23b629d"
+  },
+  {
+    "path": "flutter/lib/islands/island_directory.dart",
+    "bytes": 10589,
+    "sha256": "2cb20e706d9ace0aeabd8e2bcca476c6e2874e158141801737326c76cda15fbd"
+  },
+  {
+    "path": "flutter/lib/islands/island_land_access.dart",
+    "bytes": 1137,
+    "sha256": "0398a6be25a32c9050857c41d7845c1db9f211cc4acbe386ca87231c06faaf9d"
+  },
+  {
+    "path": "flutter/lib/islands/nautical_connections.dart",
+    "bytes": 1867,
+    "sha256": "3f60610e0833300b4ffce3afbc8692af23d51e0e0e3b801436935ff2913b2fb7"
+  },
+  {
+    "path": "flutter/lib/islands/nautical_screen.dart",
+    "bytes": 12082,
+    "sha256": "1382b2fe45c89bd3aab31d38f221dab946ef069059e23041b83810344fc2c256"
+  },
+  {
+    "path": "flutter/lib/journey/journey.dart",
+    "bytes": 6579,
+    "sha256": "6b0964d0f3ac3c393ded1fc1b2031039465abae251240db55d194ba46102ba80"
+  },
+  {
+    "path": "flutter/lib/journey/journey_controller.dart",
+    "bytes": 3579,
+    "sha256": "f70eefd8b53ab9069b869c9082c5ff3c9e2cefecd6a14b16b20d71ced55d529f"
+  },
+  {
+    "path": "flutter/lib/journey/journey_widgets.dart",
+    "bytes": 30748,
+    "sha256": "0dd5a7847ef88cb8510f04e97c533cfd9e53807267a48069811f92e430e8c8a0"
+  },
+  {
+    "path": "flutter/lib/location/ahead_filter.dart",
+    "bytes": 1894,
+    "sha256": "61079a3dd892d9baf31829e1db3475a9328e83feb6850afe3078db516441f05d"
+  },
+  {
+    "path": "flutter/lib/location/location_native.dart",
+    "bytes": 3994,
+    "sha256": "0f9edf4beef2c5f606f62cdeaf9979ce84fa362c54c60e640e12b6d5a020819c"
+  },
+  {
+    "path": "flutter/lib/location/location_service.dart",
+    "bytes": 4949,
+    "sha256": "73ecdd9bf0efedd9fe233fd5df5a719c97e2bca3ac719e75b918f255006a7d3e"
+  },
+  {
+    "path": "flutter/lib/location/location_web.dart",
+    "bytes": 3541,
+    "sha256": "2faa5e3ce4d740f0f33fc89839c3f3005e63f382d4779859f33d8f17211f83a5"
+  },
+  {
+    "path": "flutter/lib/main.dart",
+    "bytes": 1989,
+    "sha256": "94e2f89ab709a5a69077364381fc9511cc55027d7b15d4fd3a8fd9e3440906a6"
+  },
+  {
+    "path": "flutter/lib/maps/essential_map.dart",
+    "bytes": 7685,
+    "sha256": "dbf18c2e124a70d1f812de799676c0a5a1e68cf1422e4c065bcfb569e96c71e3"
+  },
+  {
+    "path": "flutter/lib/maps/native_maps.dart",
+    "bytes": 23170,
+    "sha256": "b39255b492b8d1bcc26e11fb107c57d8256a4eb5974c5fb608d4f59059d9f7b4"
+  },
+  {
+    "path": "flutter/lib/maps/navigation_3d_stub.dart",
+    "bytes": 499,
+    "sha256": "98687f68dabfce2213e9f2127ea13b448b741ed1d4db327b160714efd88a5b75"
+  },
+  {
+    "path": "flutter/lib/maps/navigation_3d_web.dart",
+    "bytes": 3077,
+    "sha256": "b1029cebb6a0a086e1ec69cd941ccf1d901fff72f98ec7c6d0c763e12e1df3e1"
+  },
+  {
+    "path": "flutter/lib/maps/place_marker.dart",
+    "bytes": 5689,
+    "sha256": "a5ddf380b9bdc368fa8b4dbce87da6d3dfd650c3aa048d3bae26da6a7a4d230b"
+  },
+  {
+    "path": "flutter/lib/maps/reference_roads.dart",
+    "bytes": 5152,
+    "sha256": "45947dfdcbcd31efceb8686eff393b873164565677f56434ee677d31568f3258"
+  },
+  {
+    "path": "flutter/lib/maps/road_map.dart",
+    "bytes": 23053,
+    "sha256": "62d0a5cc3356eb795910c14f1e0030e7b530f648152302301daa31336aca6494"
+  },
+  {
+    "path": "flutter/lib/navigation/compass_service.dart",
+    "bytes": 542,
+    "sha256": "1baaf527f8274e18006cf791c25568511aaa279291300b4a23478500febb1d3a"
+  },
+  {
+    "path": "flutter/lib/navigation/google_traveler_icons.dart",
+    "bytes": 1722,
+    "sha256": "cc4b5b79ef71235b17ae343874d37145939eadaac79f085b10988653948b3a17"
+  },
+  {
+    "path": "flutter/lib/navigation/traveler_marker.dart",
+    "bytes": 6129,
+    "sha256": "e7f8dd68b53ee45939ae63f7cb95850dab9a795a8c489ca9e0b49f35ad510482"
+  },
+  {
+    "path": "flutter/lib/pilot/barreirinhas.dart",
+    "bytes": 20398,
+    "sha256": "27167151224ad5897b2ebc71a0feea741261ef04cba049bd79e4567842526603"
+  },
+  {
+    "path": "flutter/lib/pilot/barreirinhas_sources.dart",
+    "bytes": 6906,
+    "sha256": "a5024e7163077395f8cbb6def813e2f6d35f2318def0ab70516a291d57fb823c"
+  },
+  {
+    "path": "flutter/lib/pilot/google_place_panel.dart",
+    "bytes": 589,
+    "sha256": "904b6fbf8c1ac5b9a50ffa6fb33772e9dc50c83254be71aec87c91088f17f8fa"
+  },
+  {
+    "path": "flutter/lib/pilot/google_place_stub.dart",
+    "bytes": 295,
+    "sha256": "1a23c4d041bf87372fd71507efdab6845b718a5c4b3a28cb20c2f6053335041d"
+  },
+  {
+    "path": "flutter/lib/pilot/google_place_web.dart",
+    "bytes": 920,
+    "sha256": "48cd6dac4ad7c6b94d1827ce1638d609001883557ae80cd9b9845ed29563581d"
+  },
+  {
+    "path": "flutter/lib/presentation/brand.dart",
+    "bytes": 2495,
+    "sha256": "d01997d144fe926cad553c802da195fd57b3cbbebeb5a664f98c9280901e0b70"
+  },
+  {
+    "path": "flutter/lib/presentation/catalog_center.dart",
+    "bytes": 38925,
+    "sha256": "ffe3aa87e44a78a5011e292033e4fd81cab072ca647acdff0df07ed428d02bdd"
+  },
+  {
+    "path": "flutter/lib/presentation/city_directory.dart",
+    "bytes": 4945,
+    "sha256": "b44333652500171788d0a745eaebec046b8182d9b35f260b2d67bce341a60d5a"
+  },
+  {
+    "path": "flutter/lib/presentation/control_center.dart",
+    "bytes": 4541,
+    "sha256": "ad956e4d643ce42812b0f4b85166cf2070a66b935473c6e359c83fbdec29f60c"
+  },
+  {
+    "path": "flutter/lib/presentation/editorial_preview.dart",
+    "bytes": 1493,
+    "sha256": "f5bafeb9b9d992879c917f152b85fe5d30765d87c81fd0d625f3cf31b8293109"
+  },
+  {
+    "path": "flutter/lib/presentation/location_help.dart",
+    "bytes": 2645,
+    "sha256": "0ad6df86d32e2bf97f9eff0f15c1d6e68592334b2573e7d63993e4bb7dcef306"
+  },
+  {
+    "path": "flutter/lib/presentation/map_screen.dart",
+    "bytes": 78743,
+    "sha256": "bea7f96d58e3ec2464f2e7e86c7297c76a1ba92c074960aaa1a71a393d985e7b"
+  },
+  {
+    "path": "flutter/lib/presentation/municipal_visit_guide.dart",
+    "bytes": 5573,
+    "sha256": "ccc506215308f686c7f6159af61bd5a53671e945d8a0bbfc452098203354c186"
+  },
+  {
+    "path": "flutter/lib/presentation/navigation_screen.dart",
+    "bytes": 49845,
+    "sha256": "759d879d73fe375024f784309cea6d875fd787de7ad82d7866e7a29134bd632a"
+  },
+  {
+    "path": "flutter/lib/presentation/origin_voice_sheet.dart",
+    "bytes": 5023,
+    "sha256": "c063b1cc8f83841ff64365fe92ece1ec762c4f0cf745554a34bc4ded0e868c68"
+  },
+  {
+    "path": "flutter/lib/presentation/travel_safety.dart",
+    "bytes": 8145,
+    "sha256": "b85ddb10cfac07a870d7221b3c98ef381b2103e806edda199ba0da1015bd4a51"
+  },
+  {
+    "path": "flutter/lib/recording/recording_screen.dart",
+    "bytes": 10490,
+    "sha256": "e6508fd9bc5b5d164d6c295510b23ca030ac66581c0f0cf2f0d799fac82a33e9"
+  },
+  {
+    "path": "flutter/lib/recording/track_recorder.dart",
+    "bytes": 8920,
+    "sha256": "84f362e866fdb57e9d095448728a5bd6cfc00b13f3f591c3059f3681bd1d5336"
+  },
+  {
+    "path": "flutter/lib/terrain/elevation_data.dart",
+    "bytes": 806,
+    "sha256": "8da86e4cb607331718bd84175256dc2c212bf816c33cc770b7bd607265d34099"
+  },
+  {
+    "path": "flutter/lib/terrain/terrain_widgets.dart",
+    "bytes": 7364,
+    "sha256": "5c3d0cfb1f201ccc94c68cc39f459eab39d119982f741432cf2860e00c7afa2b"
+  },
+  {
+    "path": "flutter/lib/voice/command.dart",
+    "bytes": 6682,
+    "sha256": "c9fb7b972e20a8f74dcdb3b0d51b415298ebb1b72be8ba893d3f1c091878d8c9"
+  },
+  {
+    "path": "flutter/lib/voice/conversation.dart",
+    "bytes": 6026,
+    "sha256": "5f21e7773bab5fc46e3e7f3546b5a4213f925c8c070de80341c80a2ebf516d60"
+  },
+  {
+    "path": "flutter/lib/voice/offer_calendar.dart",
+    "bytes": 2745,
+    "sha256": "15668d50e087924532bcb1e571c08eb35f97aaf12b1d73b6dbcf853e6fe0d106"
+  },
+  {
+    "path": "flutter/lib/voice/place_resolver.dart",
+    "bytes": 4275,
+    "sha256": "2b48574cb4a4e768a6f7376a8dceecb41891081c7849f82176684d139582e8d3"
+  },
+  {
+    "path": "flutter/lib/voice/speech_engine.dart",
+    "bytes": 591,
+    "sha256": "08af18961333d72b3e39f0cfa7972781a42e3dbfe54c1087a8891c0dac53f2ea"
+  },
+  {
+    "path": "flutter/lib/voice/voice_search_sheet.dart",
+    "bytes": 16539,
+    "sha256": "847892ed8a0769a94b022d2685fdf05e466c8bda0ffc6f3ea01bda4fc4505473"
+  },
+  {
+    "path": "flutter/pubspec.lock",
+    "bytes": 29898,
+    "sha256": "3b32d9953b2f434a0690227292eaf2beb1d00d2beea529090ed6cc31007b7569"
+  },
+  {
+    "path": "flutter/pubspec.yaml",
+    "bytes": 1000,
+    "sha256": "7bbbd1c19fee888fd6c2e3949558960a9f6627bb69ed9ebd29751e7fd4d35df8"
+  },
+  {
+    "path": "flutter/scripts/build_coastal_islands.py",
+    "bytes": 8603,
+    "sha256": "9ad6945ef762238255f120c7eaa976022d7462548c9996b2b32d1ce252313234"
+  },
+  {
+    "path": "flutter/scripts/build_terrain_overlay.py",
+    "bytes": 3153,
+    "sha256": "9fa6b66dd643a463804310aa9a8a3711a12bcafd75540cd6d883fbaa10accf6b"
+  },
+  {
+    "path": "flutter/scripts/import_condominiums.py",
+    "bytes": 3743,
+    "sha256": "6ac7854b6f96e296b2a3a64ee00decb10d389fc86267ead74ee38eb39bca0809"
+  },
+  {
+    "path": "flutter/scripts/import_elevations.py",
+    "bytes": 2073,
+    "sha256": "0eb557cec3f162adc6e9d4886e4451ac46fbad8ab3a6def1f07548746f5e6d24"
+  },
+  {
+    "path": "flutter/scripts/import_maranhao.py",
+    "bytes": 9018,
+    "sha256": "b072da5417cbae59ce278729d4ca256b688385a907fc6de3c88225a27563c251"
+  },
+  {
+    "path": "flutter/scripts/maranhao_pois.overpass",
+    "bytes": 648,
+    "sha256": "8a970ca6f0300d7cbc39d556d53dc13dffd4daba0dac7fa96817e43eff7c4845"
+  },
+  {
+    "path": "flutter/scripts/prepare_map_styles.py",
+    "bytes": 2627,
+    "sha256": "173fdf0da0217616e9b2d9e65b45d794bfd5c603c614333754ce574ba82a4f59"
+  },
+  {
+    "path": "flutter/scripts/prepare_sources.py",
+    "bytes": 1811,
+    "sha256": "c2d71509c8d4a9a2289a9b76428201408645062e443f11e3043765c8ad947d4c"
+  },
+  {
+    "path": "flutter/scripts/prepare_web_output.py",
+    "bytes": 1990,
+    "sha256": "78209a0972828c4604fd7a096688c5fa40a64d3fc7e51713731a4838648f4bb6"
+  },
+  {
+    "path": "flutter/server/cities.json",
+    "bytes": 15666,
+    "sha256": "af4f52eacfc05fd2e06cca6c45b1b5c2e6f7d58b843f09cf8e166ee559aee763"
+  },
+  {
+    "path": "flutter/server/environment.ts",
+    "bytes": 4921,
+    "sha256": "f03d2233b8361d76bf126f59159196adc1cbfee5b26219cc4086712d5059edb0"
+  },
+  {
+    "path": "flutter/server/environment_cache.sql",
+    "bytes": 1325,
+    "sha256": "a79faf8fe1a0b0aa6cd3943296de04fae27d328c6d194058aae69471341079d7"
+  },
+  {
+    "path": "flutter/test/ahead_filter_test.dart",
+    "bytes": 1490,
+    "sha256": "b6e200f6abf50130007e0181e615fa034a04f6f9ef36942c6af97b5ca6978ddf"
+  },
+  {
+    "path": "flutter/test/barreirinhas_test.dart",
+    "bytes": 3416,
+    "sha256": "6b560731dada1ff1c4a61a5776181c1a62a87270aff18fe018134df072293b07"
+  },
+  {
+    "path": "flutter/test/beach_search_test.dart",
+    "bytes": 2177,
+    "sha256": "6c5513d2a7d1f4900aa6de40b8dd6b42cfc07b35aa9c6759b816e78375cd6ff4"
+  },
+  {
+    "path": "flutter/test/catalog_center_test.dart",
+    "bytes": 6547,
+    "sha256": "d22fc97a0b8f9736f22b9cd667b7ed93169ed12e7fd0b38e7b742cf8dfd3c00a"
+  },
+  {
+    "path": "flutter/test/catalog_test.dart",
+    "bytes": 2941,
+    "sha256": "8f8b357132d2dcab02ec40d08e1de3516e27e260b0bf485728783a1fcf90d2a7"
+  },
+  {
+    "path": "flutter/test/catalog_workspace_test.dart",
+    "bytes": 3765,
+    "sha256": "eaa1daf53468f7340e50bcc1241ecf29cd6b4a479f226c8cceaed43ae50861fe"
+  },
+  {
+    "path": "flutter/test/coastal_islands_test.dart",
+    "bytes": 12170,
+    "sha256": "726933a6855052b6fb82db4c5eb0a3c9859762d7d2966cd423b2cc7c4f70f08b"
+  },
+  {
+    "path": "flutter/test/condominiums_test.dart",
+    "bytes": 2453,
+    "sha256": "bad73d1b201930e40a4ff124cb75c2985aaea8bc319d14714b883510000b78ea"
+  },
+  {
+    "path": "flutter/test/data/beach_catalog_test.py",
+    "bytes": 2850,
+    "sha256": "e46058fa91cceac63a215a9ca7bf50f9896e013fd654c3715eb35a4930d11005"
+  },
+  {
+    "path": "flutter/test/environment_test.dart",
+    "bytes": 3964,
+    "sha256": "868ee3c42dc5fd713c3f7cb294b0dbe0c78c80d5bfc8f49a51f2230cc18402c0"
+  },
+  {
+    "path": "flutter/test/fixtures/route_sao_luis_barreirinhas.json",
+    "bytes": 366812,
+    "sha256": "c1b128a765c51c2f9d26bbd3fe073f3862f0cc5f02efd6435d0c39f233472a8e"
+  },
+  {
+    "path": "flutter/test/journey_details_test.dart",
+    "bytes": 3163,
+    "sha256": "f08a535b5496961e6ef1329e2f3c195db69ac6ad235ac00fb54d0b429d823700"
+  },
+  {
+    "path": "flutter/test/journey_reliability_test.dart",
+    "bytes": 6598,
+    "sha256": "e8bd3a4afc39438314cd985a469a976a641a58e92e72f13284b6a6c5468a0f9d"
+  },
+  {
+    "path": "flutter/test/journey_test.dart",
+    "bytes": 7861,
+    "sha256": "6b15fb9e75d1e9d4a631dfa1c7c1be5a72f5f86854cbc9c271c19f76dfb7fae6"
+  },
+  {
+    "path": "flutter/test/location_service_test.dart",
+    "bytes": 5163,
+    "sha256": "32e06f78cf85feca9cba0a2f0f5b299d500e468af620d7e130ca01b1057bcf95"
+  },
+  {
+    "path": "flutter/test/map_layout_test.dart",
+    "bytes": 2684,
+    "sha256": "04101ee0a989d9959241cbc434cc1ee82741db5f9c661ba52d62654924717484"
+  },
+  {
+    "path": "flutter/test/map_race_test.dart",
+    "bytes": 1536,
+    "sha256": "a65185c9c82ec31944fe05bb7e82b092cad7bb54a84dbd6201b68c68b076dba8"
+  },
+  {
+    "path": "flutter/test/map_screen_test.dart",
+    "bytes": 3323,
+    "sha256": "1f2ac63cc00d0635c8fd7c7b3fbf103b4071ccc52de74004569832617d0504d7"
+  },
+  {
+    "path": "flutter/test/municipal_review_test.dart",
+    "bytes": 5653,
+    "sha256": "4ccaeb1415921204dbe7a8f05aec6ad4f82c2ebd057616475834dbe489df7841"
+  },
+  {
+    "path": "flutter/test/municipalities_test.dart",
+    "bytes": 1290,
+    "sha256": "d4a6fdd5698646f737152f032047d0cb1d27f93739a6f4b102500c9eb2019145"
+  },
+  {
+    "path": "flutter/test/nautical_connections_test.dart",
+    "bytes": 3874,
+    "sha256": "eb995648dc36ec995f35bbd424e0ec22ba78199a547582f34ea0290bf6a14830"
+  },
+  {
+    "path": "flutter/test/navigation_screen_test.dart",
+    "bytes": 7827,
+    "sha256": "4dc6651cd86e34c430eef104c93ba66a4da8000f22d3c39b929aeb3b00306548"
+  },
+  {
+    "path": "flutter/test/navigation_test.dart",
+    "bytes": 7748,
+    "sha256": "2a82a1e709118433a831dc3d8c6a3a4e9dd1b56f3cf81f530f27c648bcd94232"
+  },
+  {
+    "path": "flutter/test/navigation_voice_test.dart",
+    "bytes": 3087,
+    "sha256": "88d0ee12afb7b34d6ff454ce2da7ad8908f1a140a969f983ab0a06acb660abab"
+  },
+  {
+    "path": "flutter/test/published_catalog_test.dart",
+    "bytes": 3500,
+    "sha256": "9aa76bdb494dae1b3cf9822480a39ab2d012948ee283945cc500e049a5163adb"
+  },
+  {
+    "path": "flutter/test/search_relevance_test.dart",
+    "bytes": 1368,
+    "sha256": "5841823becd83d41519ffe93f6ae39a332af6853f8936a74b46e640c4b390650"
+  },
+  {
+    "path": "flutter/test/simulation_test.dart",
+    "bytes": 790,
+    "sha256": "627cc7f8f876efe5dcf81cfa9b6c48971db532bf08c1189bbff42abab28be8a7"
+  },
+  {
+    "path": "flutter/test/terrain_test.dart",
+    "bytes": 5967,
+    "sha256": "4747fdd623a31aa45f83e6c6ee5df9eca0bd3e5e0bd714c2b3f2e99dd03ed1b8"
+  },
+  {
+    "path": "flutter/test/tourism_test.dart",
+    "bytes": 3197,
+    "sha256": "e24632a5fda1f59c5fde1bdcf7076639d8c2eb3d646137ca99c62fb995461a75"
+  },
+  {
+    "path": "flutter/test/track_recorder_test.dart",
+    "bytes": 3929,
+    "sha256": "ebc30ee1ba88cbfda48350771af491ba5b7f2083755e55d32812810faba2a071"
+  },
+  {
+    "path": "flutter/test/travel_safety_test.dart",
+    "bytes": 1952,
+    "sha256": "ca813160e10db2b94094b0f94acc8dabbfb3c2ba7abdba9f20c7506405bda9ae"
+  },
+  {
+    "path": "flutter/test/traveler_marker_test.dart",
+    "bytes": 410,
+    "sha256": "0016d66ed2b272b78c4ff5245521b9691aa2e10ebe0c200eaef8dd2ff35a324b"
+  },
+  {
+    "path": "flutter/test/voice_command_test.dart",
+    "bytes": 4740,
+    "sha256": "23eaec02b0d73a27117c0f1e3312f088c37da535f1233ae6be9fe095ceff3f1d"
+  },
+  {
+    "path": "flutter/test/voice_conversation_test.dart",
+    "bytes": 6712,
+    "sha256": "4c7ffe451cfe076cca24f8d8ad4f1f2de5be9b41b2180589a57ef9f0426b30ea"
+  },
+  {
+    "path": "flutter/test/web/recognition_adapter.test.cjs",
+    "bytes": 3924,
+    "sha256": "34a3f97d8dd12626c341cd777fd891099c881534a7c904fcea6be31db1299d18"
+  },
+  {
+    "path": "flutter/tests_node/environment.test.mjs",
+    "bytes": 3169,
+    "sha256": "0e607ead5f6b6cfa6bf7427932ba5562f25f36b1a5403cb3aa27ba10fde3968e"
+  },
+  {
+    "path": "flutter/web/favicon.png",
+    "bytes": 452,
+    "sha256": "3ea971e956280566bb1a5d71e1411bce536e5f8e57701440360ffe1b75042198"
+  },
+  {
+    "path": "flutter/web/google_places/index.html",
+    "bytes": 1456,
+    "sha256": "7ecbd245f57ad02b63dc3f12656d23ae7702a85745d7496acbbc56a6132dee1d"
+  },
+  {
+    "path": "flutter/web/google_places/panel.css",
+    "bytes": 1018,
+    "sha256": "49b6995e4a3ab051dce5c17fcccbc0106d09da6d2870a258b3e2258503a7b130"
+  },
+  {
+    "path": "flutter/web/google_places/panel.js",
+    "bytes": 4483,
+    "sha256": "e805bb1672c844916654b7755b2d38af6b5d9ddb0bca15a7fabc0121f1fb433a"
+  },
+  {
+    "path": "flutter/web/icons/Icon-192.png",
+    "bytes": 2430,
+    "sha256": "1cf496453a6d3a5a554af93efe854244fa286ff0d1429fd495f646cf199d1842"
+  },
+  {
+    "path": "flutter/web/icons/Icon-512.png",
+    "bytes": 6966,
+    "sha256": "29d58d0f2c099914c03f6ff483d8ff1e6358f7be0d6a98b1c94e40b512f20404"
+  },
+  {
+    "path": "flutter/web/icons/Icon-maskable-192.png",
+    "bytes": 2430,
+    "sha256": "1cf496453a6d3a5a554af93efe854244fa286ff0d1429fd495f646cf199d1842"
+  },
+  {
+    "path": "flutter/web/icons/Icon-maskable-512.png",
+    "bytes": 6966,
+    "sha256": "29d58d0f2c099914c03f6ff483d8ff1e6358f7be0d6a98b1c94e40b512f20404"
+  },
+  {
+    "path": "flutter/web/index.html",
+    "bytes": 1845,
+    "sha256": "b8b0bde6640f6071bb50ad2547ace7c3d6ace7ce5f514c532dc12ec429df48f4"
+  },
+  {
+    "path": "flutter/web/manifest.json",
+    "bytes": 859,
+    "sha256": "9b05fcff8c2b9eaf5c1b0d486f8c9f608eb10277dd63615e11a829656252ef67"
+  },
+  {
+    "path": "flutter/web/navigation-3d/assets/index-DSFgF5x4.js",
+    "bytes": 1872676,
+    "sha256": "52abd18c2156a30990f5493dc7b39305527b89b94123165ebc521fc0d327f4a1"
+  },
+  {
+    "path": "flutter/web/navigation-3d/assets/index-S-HJ2tGl.css",
+    "bytes": 77917,
+    "sha256": "138d603193a18b05e0ceda160d45eb0c773afbd22992dff20ed673fb386aa73e"
+  },
+  {
+    "path": "flutter/web/navigation-3d/index.html",
+    "bytes": 380,
+    "sha256": "9ff8e350d5bf2ce2954d2e4e7902093e38f127a59ec34179414d220f99f9ae1c"
+  },
+  {
+    "path": "flutter/web/seguranca/index.html",
+    "bytes": 9710,
+    "sha256": "2ca498528117daf5fdd83752737328ab22fbbdd40dbcec2493dbe06ade121184"
+  },
+  {
+    "path": "flutter/web/voice/recognition_adapter.js",
+    "bytes": 5537,
+    "sha256": "b1a903a68d8e21a10fa171c6d6da6fac4e80e83d9f9380d5e252a5e466adaa7f"
+  },
+  {
+    "path": "navigation3d/.gitignore",
+    "bytes": 20,
+    "sha256": "790e3169bc19b046fe55ba1da6d13b976c28363c8c00462a2195fe5faf260910"
+  },
+  {
+    "path": "navigation3d/README.md",
+    "bytes": 2175,
+    "sha256": "57f14501e5df0be51b106fbe58d793e0ca8ab27ac37fb8c527a265360948a096"
+  },
+  {
+    "path": "navigation3d/index.html",
+    "bytes": 279,
+    "sha256": "5e328526eb9344de757a7a2eebad7fdb6f36cbcf11809c97510aa58f859563f8"
+  },
+  {
+    "path": "navigation3d/package-lock.json",
+    "bytes": 71520,
+    "sha256": "284bbb8a5db57e2d1a28e0518c8811ab8fb4d3f3e8afcf7e4f70d862c3ea0cf3"
+  },
+  {
+    "path": "navigation3d/package.json",
+    "bytes": 744,
+    "sha256": "4db8dbdb3c56fd34621eb6d02f285f52133429bb957c980b445fcf7fd5f08dd9"
+  },
+  {
+    "path": "navigation3d/src/main.tsx",
+    "bytes": 9595,
+    "sha256": "3b4d31dafbfbb3cc44c1f7fcf4352a8d4a032f801df43d73b19ced55b1428269"
+  },
+  {
+    "path": "navigation3d/src/marapass-style.json",
+    "bytes": 107434,
+    "sha256": "18f2fa2c12bb79c00b4eed45df5a99053f9ffd9d655e6cf72cbecad2e5abd480"
+  },
+  {
+    "path": "navigation3d/src/screen.css",
+    "bytes": 1024,
+    "sha256": "55d06548c66661686e90303aca14e43d0e9f418cf706c6aacc4e16113e330d95"
+  },
+  {
+    "path": "navigation3d/tsconfig.json",
+    "bytes": 258,
+    "sha256": "312b56d547e451ee9f117f248876e67e73e7f476350b443a50c23e7a6d21f4fb"
+  },
+  {
+    "path": "navigation3d/vite.config.ts",
+    "bytes": 149,
+    "sha256": "3931fb8b02988f22000eb013b2528207d8989afa1950db16c69eeb7bb584b1c5"
+  }
+]

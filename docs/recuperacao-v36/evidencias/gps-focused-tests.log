@@ -1,0 +1,27 @@
+00:00 +0: loading /workspace/marapass-sites-original/flutter/test/gps_startup_test.dart
+00:00 +0: /workspace/marapass-sites-original/flutter/test/gps_startup_test.dart: initial acquisition uses one-shot gateway without opening a watch
+00:00 +1: /workspace/marapass-sites-original/flutter/test/gps_startup_test.dart: ten starts, duplicate clicks, stable camera and complete watch cleanup
+00:10 +2: /workspace/marapass-sites-original/flutter/test/gps_startup_test.dart: burst keeps newest fix; pause discards pending callback
+00:11 +3: /workspace/marapass-sites-original/flutter/test/gps_startup_test.dart: startup failure preserves route: PermissionDeniedException
+00:11 +4: /workspace/marapass-sites-original/flutter/test/gps_startup_test.dart: startup failure preserves route: PositionUpdateException
+00:11 +5: /workspace/marapass-sites-original/flutter/test/gps_startup_test.dart: startup failure preserves route: TimeoutException
+00:11 +6: /workspace/marapass-sites-original/flutter/test/gps_startup_test.dart: closed watch releases camera and returns to preserved preview
+00:11 +7: /workspace/marapass-sites-original/flutter/test/gps_startup_test.dart: watch recovers after timeout and camera waits for fresh stable fixes
+00:12 +8: /workspace/marapass-sites-original/flutter/test/gps_startup_test.dart: route revision never invalidates the ongoing GPS session
+00:12 +9: /workspace/marapass-sites-original/flutter/test/gps_startup_test.dart: long route accepts initial GPS while camera remains gated
+00:12 +10: loading /workspace/marapass-sites-original/flutter/test/location_service_test.dart
+00:13 +10: /workspace/marapass-sites-original/flutter/test/location_service_test.dart: aquisição aguarda precisão e cancela a leitura temporária
+00:13 +11: /workspace/marapass-sites-original/flutter/test/location_service_test.dart: recusa é específica e não inicia observação
+00:13 +12: /workspace/marapass-sites-original/flutter/test/location_service_test.dart: timeout e imprecisão encerram leitura sem fingir GPS válido
+00:13 +13: /workspace/marapass-sites-original/flutter/test/location_service_test.dart: encerrar aquisição impede iniciar navegação posteriormente
+00:13 +14: /workspace/marapass-sites-original/flutter/test/location_service_test.dart: inicia com posição precisa e encerra se a permissão for revogada
+00:13 +15: /workspace/marapass-sites-original/flutter/test/location_service_test.dart: posição antiga ou inválida não é utilizável
+00:13 +16: loading /workspace/marapass-sites-original/flutter/test/navigation_test.dart
+00:13 +16: /workspace/marapass-sites-original/flutter/test/navigation_test.dart: geometria real São Luís–Barreirinhas tem manobras ordenadas e alternativas rodoviárias
+00:13 +17: /workspace/marapass-sites-original/flutter/test/navigation_test.dart: projeção acompanha segmentos e mede desvio sem avançar em cruzamento distante
+00:13 +18: /workspace/marapass-sites-original/flutter/test/navigation_test.dart: GPS impreciso ou antigo não avança; chegada exige posição precisa e duas leituras
+00:13 +19: /workspace/marapass-sites-original/flutter/test/navigation_test.dart: API pede passos e geometria, limita encaixe em via e não inventa rota quando indisponível
+00:13 +20: /workspace/marapass-sites-original/flutter/test/navigation_test.dart: desvio exige três leituras e falha de recálculo respeita intervalo sem inventar geometria
+00:13 +21: /workspace/marapass-sites-original/flutter/test/navigation_test.dart: encerrar durante cálculo descarta resposta tardia
+00:13 +22: /workspace/marapass-sites-original/flutter/test/navigation_test.dart: instruções em português distinguem retorno, rotatória e balsa
+00:13 +23: All tests passed!

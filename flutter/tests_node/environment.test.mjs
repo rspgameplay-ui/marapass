@@ -1,0 +1,17 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+let src=fs.readFileSync(new URL('../server/environment.ts',import.meta.url),'utf8').replace("import cities from './cities.json' with {type:'json'};","const cities={'2111300':{name:'São Luís',lat:-2.5274,lng:-44.3061}};");
+const {normalizeForecast,handle}=await import('data:text/javascript;base64,'+Buffer.from(src).toString('base64'));
+const now=Date.now();
+const fixture=()=>({properties:{meta:{updated_at:new Date(now).toISOString()},timeseries:[{time:new Date(now).toISOString(),data:{instant:{details:{air_temperature:29,relative_humidity:70,wind_speed:10,wind_from_direction:45}},next_1_hours:{summary:{symbol_code:'partlycloudy_day'},details:{precipitation_amount:0}}}}]}});
+const key='TEST_PUBLIC_KEY';
+const env={get:k=>({SUPABASE_URL:'https://test.invalid',SUPABASE_PUBLISHABLE_KEY:key,SUPABASE_SERVICE_ROLE_KEY:'SERVER_ONLY'})[k]};
+const request=(city,headers={})=>new Request('https://test.invalid/?city='+city,{headers:{apikey:key,...headers}});
+test('m/s to km/h, meteorological bearing and missing gust',()=>{const p=normalizeForecast(fixture(),now).points[0];assert.equal(p.windKmh,36);assert.equal(p.windFrom,45);assert.equal(p.gustKmh,null);});
+test('stale model is rejected',()=>{const f=fixture();f.properties.meta.updated_at=new Date(now-37*3600000).toISOString();assert.throws(()=>normalizeForecast(f,now));});
+test('unknown municipality makes no privileged or external calls',async()=>{const r=await handle(request('999'),env,()=>{throw Error('unexpected');},now);assert.equal(r.status,400);});
+test('missing key rejected before privileged calls',async()=>{const r=await handle(new Request('https://test.invalid/?city=2111300'),env,()=>{throw Error('unexpected');},now);assert.equal(r.status,401);});
+test('fresh cache avoids provider calls',async()=>{let count=0;const r=await handle(request('2111300'),env,async url=>{count++;assert.ok(url.includes('/rest/v1/map_environment_cache'));return Response.json([{payload:normalizeForecast(fixture(),now),expires_at:new Date(now+3600000).toISOString(),fetched_at:new Date(now).toISOString()}]);},now);assert.equal(r.status,200);assert.equal(count,1);});
+test('cold cache sends fixed city coordinates and no service key to weather provider',async()=>{const r=await handle(request('2111300'),env,async(url,options)=>{if(url.includes('api.met.no')){assert.ok(url.includes('lat=-2.5274&lon=-44.3061'));assert.ok(options.headers['User-Agent'].startsWith('MaraPass'));assert.equal(JSON.stringify(options.headers).includes('SERVER_ONLY'),false);return Response.json(fixture());}if(url.includes('/rpc/'))return Response.json(true);if(options.method==='PATCH')return new Response(null,{status:204});return Response.json([]);},now);assert.equal(r.status,200);});
+test('CORS denies another origin and allows preflight',async()=>{assert.equal((await handle(request('2111300',{Origin:'https://evil.invalid'}),env)).status,403);assert.equal((await handle(new Request('https://test.invalid',{method:'OPTIONS',headers:{Origin:'https://marapass-mapa-flutter-preview.dfamorim-10.chatgpt.site'}}),env)).status,204);});

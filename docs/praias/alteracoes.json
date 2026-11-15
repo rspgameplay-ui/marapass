@@ -1,0 +1,30 @@
+[
+  {
+    "file": "flutter/assets/data/places.json",
+    "oldCount": 4218,
+    "newCount": 4223,
+    "beachReferences": 38,
+    "updated": 38
+  },
+  {
+    "file": "dist/assets/assets/data/places.json",
+    "oldCount": 4218,
+    "newCount": 4223,
+    "beachReferences": 38,
+    "updated": 38
+  },
+  {
+    "file": "flutter/admin/data/places.json",
+    "oldCount": 4218,
+    "newCount": 4223,
+    "beachReferences": 38,
+    "updated": 38
+  },
+  {
+    "file": "dist/admin/data/places.json",
+    "oldCount": 4218,
+    "newCount": 4223,
+    "beachReferences": 38,
+    "updated": 38
+  }
+]

@@ -1,0 +1,11 @@
+
+.partner-page{max-width:850px}.partner-page h1{font-size:clamp(27px,4vw,41px)}
+.partner-lead{font-size:15px;line-height:1.7;max-width:680px}
+.partner-card{padding:30px;max-width:710px;margin:18px 0 24px}
+.partner-card h2{font-size:23px}.partner-card label{margin-top:13px}
+.partner-card .action-row{margin-top:19px;align-items:center;flex-wrap:wrap}
+.partner-card hr{border:none;border-top:1px solid #dce9e4;margin:25px 0}
+.partner-invite-card{border:1px solid #dceae5;padding:20px;border-radius:16px;margin:14px 0;background:#f8fbf9}
+.partner-invite-card h3{margin:0;font-size:19px}.partner-invite-card p{font-size:13px;line-height:1.6}
+.partner-card h3{margin:10px 0}.partner-card input{width:100%;max-width:100%}
+@media(max-width:650px){.partner-card{padding:20px}.partner-card .action-row button{width:100%}}
