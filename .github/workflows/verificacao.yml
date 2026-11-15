@@ -1,0 +1,59 @@
+name: Verificação (format, analyze, test, build 3D)
+
+on:
+  push:
+    branches: [integracao/v10-gps-3d, export-v10]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.8'
+          channel: stable
+          cache: true
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Executa as verificações e guarda os registros
+        shell: bash
+        run: |
+          set +e
+          mkdir -p /tmp/ci
+          cd flutter
+          flutter --version > /tmp/ci/00-versao.log 2>&1
+          flutter pub get > /tmp/ci/01-pub-get.log 2>&1; echo "pub_get=$?" >> /tmp/ci/resumo.txt
+          dart format --output=none --set-exit-if-changed lib test > /tmp/ci/02-format.log 2>&1; echo "format=$?" >> /tmp/ci/resumo.txt
+          flutter analyze > /tmp/ci/03-analyze.log 2>&1; echo "analyze=$?" >> /tmp/ci/resumo.txt
+          flutter test --reporter expanded > /tmp/ci/04-test.log 2>&1; echo "test=$?" >> /tmp/ci/resumo.txt
+          flutter build web --release --no-web-resources-cdn > /tmp/ci/05-build-web.log 2>&1; echo "build_web=$?" >> /tmp/ci/resumo.txt
+          cd ../navigation3d
+          (npm ci && npm run build) > /tmp/ci/06-navigation3d.log 2>&1; echo "navigation3d=$?" >> /tmp/ci/resumo.txt
+          if [ -d dist ]; then cp -r dist /tmp/ci/navigation3d-dist; fi
+          exit 0
+
+      - name: Publica os registros na branch ci-resultados
+        shell: bash
+        run: |
+          SHA=$(git rev-parse --short HEAD)
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git fetch origin ci-resultados || true
+          if git rev-parse --verify origin/ci-resultados >/dev/null 2>&1; then
+            git checkout -B ci-resultados origin/ci-resultados
+          else
+            git checkout --orphan ci-resultados && git rm -rf . >/dev/null
+          fi
+          rm -rf "$SHA" && mkdir -p "$SHA" && cp -r /tmp/ci/* "$SHA"/
+          echo "$GITHUB_REF_NAME $SHA" > "$SHA/branch.txt"
+          git add "$SHA" && git commit -m "Resultados da verificação de $GITHUB_REF_NAME@$SHA" && git push origin ci-resultados
