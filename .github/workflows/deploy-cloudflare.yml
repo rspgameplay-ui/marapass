@@ -1,0 +1,89 @@
+name: Publicação no Cloudflare Pages
+
+# A cada merge na main, compila o MaraPass web e publica no Cloudflare Pages.
+# Segredos necessários (Settings > Secrets and variables > Actions > Secrets):
+#   CLOUDFLARE_API_TOKEN      token com permissão "Cloudflare Pages: Edit"
+#   CLOUDFLARE_ACCOUNT_ID     ID da conta Cloudflare
+#   SUPABASE_PUBLISHABLE_KEY  chave publicável do Supabase (nunca a service_role)
+# Variável opcional (aba Variables):
+#   SITE_URL                  endereço público, padrão https://teste.marapass.com
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-cloudflare
+  cancel-in-progress: true
+
+env:
+  PAGES_PROJECT: marapass
+  SITE_URL: ${{ vars.SITE_URL || 'https://teste.marapass.com' }}
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Confere os segredos
+        id: segredos
+        env:
+          CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          SB_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+        run: |
+          if [ -z "$CF_TOKEN" ] || [ -z "$CF_ACCOUNT" ] || [ -z "$SB_KEY" ]; then
+            echo "::warning::Segredos do Cloudflare/Supabase ainda não configurados; publicação ignorada."
+            echo "pronto=false" >> "$GITHUB_OUTPUT"
+          else
+            case "$SB_KEY" in
+              sb_secret_*|*service_role*) echo "::error::SUPABASE_PUBLISHABLE_KEY parece uma chave secreta. Use a chave publicável."; exit 1;;
+            esac
+            echo "pronto=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.segredos.outputs.pronto == 'true'
+
+      - uses: subosito/flutter-action@v2
+        if: steps.segredos.outputs.pronto == 'true'
+        with:
+          flutter-version: '3.47.8'
+          channel: stable
+          cache: true
+
+      - name: Compila o app web e monta o painel
+        if: steps.segredos.outputs.pronto == 'true'
+        env:
+          SB_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+        working-directory: flutter
+        run: |
+          set -euo pipefail
+          # Configuração de build fora do repositório, com a chave real.
+          python3 - <<'PY'
+          import json, os
+          cfg = json.load(open('config/catalogo.json'))
+          cfg['SUPABASE_PUBLISHABLE_KEY'] = os.environ['SB_KEY']
+          cfg['CONTROL_CENTER_URL'] = os.environ['SITE_URL'].rstrip('/') + '/admin/'
+          json.dump(cfg, open('/tmp/deploy-config.json', 'w'))
+          PY
+          flutter pub get
+          flutter build web --release --no-web-resources-cdn --dart-define-from-file=/tmp/deploy-config.json
+          python3 scripts/prepare_web_output.py
+          # Painel: troca o marcador da chave só na saída do build.
+          grep -rl '__SUPABASE_PUBLISHABLE_KEY__' build/web | xargs -r sed -i "s|__SUPABASE_PUBLISHABLE_KEY__|${SB_KEY}|g"
+          if grep -rq '__SUPABASE_PUBLISHABLE_KEY__' build/web; then echo "::error::Marcador da chave não substituído"; exit 1; fi
+          rm -f /tmp/deploy-config.json
+
+      - name: Publica no Cloudflare Pages
+        if: steps.segredos.outputs.pronto == 'true'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          preCommands: npx wrangler pages project create ${{ env.PAGES_PROJECT }} --production-branch=main || true
+          command: pages deploy flutter/build/web --project-name=${{ env.PAGES_PROJECT }} --branch=main --commit-hash=${{ github.sha }}
