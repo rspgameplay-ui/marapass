@@ -11,6 +11,7 @@ import '../data/beach_visit.dart';
 import '../data/routing_repository.dart';
 import 'beach_visit_screen.dart';
 import '../domain/tourism.dart';
+import '../maps/pointer_shield.dart';
 import '../maps/road_map.dart';
 import 'brand.dart';
 import '../location/location_service.dart';
@@ -462,7 +463,10 @@ class _NavigationScreenState extends ConsumerState<NavigationScreen>
     final in3d =
         _visitProfile != RoutingProfile.walking &&
         active &&
-        n.cameraReady &&
+        // A estabilidade do GPS libera só a primeira montagem do 3D (cameraArmed,
+        // mantido pela sessão). Oscilações de sinal não desmontam o iframe:
+        // recriar MapLibre/Three.js gera novos contextos WebGL no Safari/iOS.
+        n.cameraArmed &&
         perspective &&
         !perspectiveFailed &&
         (n.follow || _showingPerspective) &&
@@ -665,9 +669,16 @@ class _NavigationScreenState extends ConsumerState<NavigationScreen>
                                 'vehicle': n.location == null
                                     ? null
                                     : coordinates(n.location!),
-                                'bearing': n.cameraBearing,
-                                'follow':
-                                    n.follow && n.cameraReady && !n.lowSignal,
+                                // Sem sinal, cameraBearing é nulo: mantém a última
+                                // direção conhecida em vez de virar o carro ao norte.
+                                'bearing': n.lowSignal && n.headingKnown
+                                    ? n.heading
+                                    : n.cameraBearing,
+                                // Sem posição nova a câmera fica parada na última
+                                // posição; não desligar follow evita saltos de foco.
+                                'follow': n.follow && n.cameraArmed,
+                                // Posição desatualizada: o 3D mostra o carro em cinza.
+                                'stale': n.lowSignal,
                                 'satellite': satellite,
                                 'nautical': n.travelMode.name == 'nautical',
                                 'focus': {
@@ -718,11 +729,7 @@ class _NavigationScreenState extends ConsumerState<NavigationScreen>
                               followBearing: n.cameraBearing,
                               gpsAccuracy: n.accuracy,
                               imprecise: n.lowSignal,
-                              follow:
-                                  active &&
-                                  n.follow &&
-                                  n.cameraReady &&
-                                  !n.lowSignal,
+                              follow: active && n.follow && n.cameraArmed,
                               navigationView: active,
                               creditTop: 8,
                               followOffset: active
@@ -765,7 +772,9 @@ class _NavigationScreenState extends ConsumerState<NavigationScreen>
                         top: 8,
                         left: 8,
                         right: 8,
-                        child: Column(
+                        child: PointerShield(
+                          enabled: in3d,
+                          child: Column(
                           children: [
                             Container(
                               width: double.infinity,
@@ -911,12 +920,15 @@ class _NavigationScreenState extends ConsumerState<NavigationScreen>
                               ),
                           ],
                         ),
+                        ),
                       ),
                       Positioned(
                         left: 0,
                         right: 0,
                         bottom: 0,
-                        child: Material(
+                        child: PointerShield(
+                          enabled: in3d,
+                          child: Material(
                           color: Colors.white,
                           elevation: 5,
                           borderRadius: const BorderRadius.vertical(
@@ -968,6 +980,7 @@ class _NavigationScreenState extends ConsumerState<NavigationScreen>
                               ],
                             ),
                           ),
+                        ),
                         ),
                       ),
                       Positioned(
@@ -1024,7 +1037,9 @@ class _NavigationScreenState extends ConsumerState<NavigationScreen>
                       Positioned(
                         right: 16,
                         bottom: 76,
-                        child: Column(
+                        child: PointerShield(
+                          enabled: in3d,
+                          child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             _NavigationControl(
@@ -1094,6 +1109,7 @@ class _NavigationScreenState extends ConsumerState<NavigationScreen>
                                 onTap: () => n.setFollow(true),
                               ),
                           ],
+                        ),
                         ),
                       ),
                     ],

@@ -51,6 +51,11 @@ class NavigationSession extends ChangeNotifier {
   bool gpsStable = false;
   int _watchEpoch = 0;
   bool get cameraReady => simulating || gpsStable;
+  // Fica verdadeiro depois da primeira estabilização desta navegação e só é
+  // limpo ao iniciar/encerrar a navegação. Perdas de sinal não o revertem:
+  // a vista 3D permanece montada e a câmera continua na última posição.
+  bool _cameraArmed = false;
+  bool get cameraArmed => simulating || _cameraArmed;
   Timer? _positionTimer;
   Position? _pendingPosition;
   DateTime? _stableSince, _lastAcceptedAt, _stableTimestamp;
@@ -90,6 +95,7 @@ class NavigationSession extends ChangeNotifier {
             _stableFixes >= 2 &&
             DateTime.now().difference(_stableSince!).inMilliseconds >= 1000) {
           gpsStable = true;
+          _cameraArmed = true;
           gpsStage(GpsStage.cameraReady);
         }
       } else {
@@ -370,6 +376,7 @@ class NavigationSession extends ChangeNotifier {
     gpsStage(GpsStage.start);
     _clearPositionQueue();
     _previousDeviation = null;
+    _cameraArmed = false;
     locationIssue = null;
     message = null;
     var generation = _generation;
@@ -847,6 +854,7 @@ class NavigationSession extends ChangeNotifier {
     ++_generation;
     ++_watchEpoch;
     _clearPositionQueue();
+    _cameraArmed = false;
     gpsStage(GpsStage.stopped);
     final stoppingVoice = _stopVoice();
     locationService.cancelPending();
