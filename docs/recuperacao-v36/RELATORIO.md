@@ -126,3 +126,93 @@ Os logs versionados tiveram somente códigos de cor ANSI e espaços finais remov
 - Pacote de homologação: `marapass-gps-v36-homologacao.tar.gz`, 22.250.286 bytes / 89 arquivos. SHA-256: `fec341d9a07ed207bdd65c0ecb8506b17eced42a9d37b74047c0b65f98f7797e`.
 - Integridade do pacote conferida por leitura do TAR: `index.html` e `recovery-build.json` presentes; identidade de deploy Sites ausente. O manifesto dos arquivos exportados está em `artifacts.json`.
 - Original continua v36; causa exata ainda não comprovada; homologação real e publicação separada permanecem pendentes.
+
+## 9. Publicação de homologação após autorização explícita
+
+Após o relatório anterior, o proprietário autorizou expressamente a criação e publicação da prévia privada separada. A implantação foi concluída com status `succeeded` em 14/11/2026 às 18:18:22 UTC.
+
+- Endereço: https://marapass-gps-homologacao.dfamorim-10.chatgpt.site
+- Novo projeto: `appgprj_6af8a53c95dc8191b1d38ef000345fcc`, versão 1.
+- Commit do repositório Sites separado: `9112f75bfae4fbf09b25bad88badfe5dcc36cba4`.
+- Implantação: `appgdep_6af8a5ce40c08191a394c3fcf2624325`.
+- Acesso confirmado: somente o proprietário; nenhum visitante externo ou grupo adicionado.
+- Os 88 arquivos funcionais do build candidato foram conferidos e são idênticos; somente `recovery-build.json` ganhou metadados de homologação. O manifest de hosting aponta ao novo projeto. O repositório separado preserva também as fontes completas.
+- O catálogo/Supabase utiliza a configuração original. Não é uma cópia isolada do banco. Nenhuma migração ou operação de dados foi realizada; controles administrativos não devem ser usados para gravações de teste em produção.
+- Consulta posterior ao projeto original confirmou v36, URL original e data de atualização inalteradas (`2026-11-14T09:06:10.849807+00:00`).
+- Sem ferramenta de navegador/visualizador disponível nesta sessão, não houve inspeção visual do endereço publicado; a publicação foi confirmada pelo resultado nativo do Sites e pela consulta de estado/acesso. Safari/iPhone real continua pendente.
+
+`HOMOLOGACAO_PUBLICADA.json` registra os identificadores e o hash do TAR de implantação. Esta seção atualiza as referências anteriores à publicação separada ainda pendente. A causa real do encerramento do WebKit e os critérios de aceitação no aparelho ainda não foram confirmados.
+
+## 10. Ajuste: manter o 3D montado durante oscilações de sinal
+
+Branch: `claude/gps-3d-montagem-estavel`, derivada de `correcao/gps-v36-2026-11-14`.
+
+**Problema encontrado na revisão de código.** No candidato, a vista 3D só aparecia com `n.cameraReady`. O GPS perde esse estado quando fica 15 s sem posição (watchdog), quando dá timeout ou quando há outro erro do stream. A cada perda, o iframe 3D era desmontado (`src = about:blank`) e, ao recuperar o sinal, MapLibre e Three.js eram criados de novo, com um contexto WebGL novo. Em áreas de sinal intermitente, isso vira um ciclo de criar e destruir contextos WebGL, justamente a classe de pressão de memória investigada no Safari/iOS. O usuário também via a troca entre 3D e 2D.
+
+**Alteração** (`flutter/lib/presentation/navigation_screen.dart`) — *substituída na seção 11*:
+- nova função pura `perspectiveVisible(...)`: a estabilidade do GPS é exigida **só para a primeira montagem** do 3D;
+- depois de montado, o 3D continua montado enquanto a navegação estiver ativa, a vista 3D escolhida, sem falha e com rota. Na perda de estabilidade, só o seguimento da câmera pausa (`follow` já depende de `cameraReady && !lowSignal`);
+- sair da navegação, escolher a vista 2D, falha do 3D ou ausência de rota continuam desmontando. Uma nova montagem volta a exigir GPS estável.
+
+**Testes** (`flutter/test/perspective_mount_test.dart`, 4 testes): primeira montagem condicionada, sequência estável → perdido → perdido → estável sem desmontar, condições de desmontagem e nova exigência após desmontar.
+
+**Verificações** (Flutter 3.47.8, `flutter pub get --enforce-lockfile`):
+
+| Verificação | Resultado |
+| --- | --- |
+| `flutter analyze --no-pub` | 0 erros, mesmos 4 warnings; 105 issues, igual à base do candidato. |
+| Testes focados (`perspective_mount`, `gps_startup`, `navigation_screen`) | 16 aprovados. |
+| Suíte completa | **125 aprovados, 3 falhas** — as mesmas 3 preexistentes da v36 (`terrain`, `municipal_review`, `municipalities`). |
+
+**Não feito:** `dist/` e `flutter/web/` **não foram recompilados** nesta branch. Antes de qualquer homologação, é preciso gerar novo build e conferir a preservação dos arquivos protegidos. Não houve publicação nem teste em iPhone real. A pendência de teste "iniciar parado" (seção 6) continua valendo: se o Safari não emitir posições com o aparelho parado, a primeira montagem do 3D aguarda o movimento.
+
+## 11. Revisão de código, proteção de toque no 3D e pacote de homologação (15/11/2026)
+
+Branch `claude/gps-3d-montagem-estavel`. Candidato: `dist/recovery-build.json` → `gps-v36-3d-montagem-20261115`.
+
+### 11.1 Achados da revisão de código e correções
+A revisão (skill `code-review`) da seção 10 apontou 7 problemas, todos conferidos no código:
+
+| Achado | Correção |
+| --- | --- |
+| Trava de montagem gravada em campo do State dentro de `build()` | Trava movida para `NavigationSession.cameraArmed`: liga na primeira estabilização e só é limpa em `start()` e `pause()`. A função `perspectiveVisible` e seu teste foram removidos. |
+| Regra existia só na tela, sem teste pela sessão | Novo teste em `gps_startup_test.dart`: continua armado com erro passageiro e nova posição; `pause()` desarma; nova navegação volta a exigir GPS estável. |
+| Alternar 2D → 3D sem sinal deixava o 3D oculto | Resolvido pela trava na sessão. Validado na simulação. |
+| Carro virava para o norte sem sinal (`bearing: null` com `lowSignal`) | O frame envia `n.headingKnown ? n.heading : null`. Sem sinal, `heading` mantém a última direção. Simulação: bearing 105° preservado. |
+| 3D não indicava posição desatualizada | Novo campo `stale` no frame. O 3D pinta o carro de cinza (`navigation3d/src/main.tsx`), e o marcador náutico fica translúcido. |
+| `follow` desligado no 3D/2D sem sinal enquanto a UI dizia "Seguindo" | `follow` passa a depender de `n.follow && n.cameraArmed`. Sem posição nova, a câmera fica parada na última posição, sem salto de foco. |
+| Falta de teste da ligação na tela | Ligação simplificada para expressão direta da sessão. O teste de widget do 3D não roda em VM (`navigation3dSupported` é falso); coberto pela simulação headless. |
+
+### 11.2 Defeito encontrado na simulação: controles sobre o 3D não recebem toques (afeta a v36 publicada)
+No Flutter Web, o iframe da vista 3D captura os eventos da área dele. Os controles desenhados por cima (Encerrar, Reportar, Silenciar, Satélite, Vista 2D/3D, Seguir/Voltar à rota, botões do cartão de manobra) **não respondem** enquanto o 3D está na tela.
+
+Evidência (Chromium headless, toque emulado em celular, viewport 390×844):
+
+| Build | Elemento sob "Encerrar" | Navegação encerrou? |
+| --- | --- | --- |
+| v36 publicada (`91b1e7e`), 3D | IFRAME | **Não** |
+| Candidato da seção 10, 3D | IFRAME | **Não** |
+| v36 com WebGL desligado (2D, controle) | FLUTTER-VIEW | Sim |
+| Este candidato, 3D | DIV (proteção) | **Sim** |
+
+Correção: `flutter/lib/maps/pointer_shield*.dart`. É um elemento HTML transparente sob cada controle, com o mesmo princípio do pacote `pointer_interceptor`, implementado localmente para não alterar `pubspec.yaml`/`pubspec.lock`. Fica ativo só com o 3D na tela, e a chave estável preserva o estado dos controles ao alternar. Aplicado aos 4 grupos de controles da navegação; o indicador de velocidade, que não é interativo, ficou de fora. O centro do mapa continua entregando gestos ao 3D (elemento IFRAME). Teste: `flutter/test/pointer_shield_test.dart`.
+
+**Pendente:** confirmar no iPhone/Safari. O comportamento é documentado no Flutter Web, mas foi observado aqui só no Chromium.
+
+### 11.3 Módulo 3D recompilado
+- Reprodutibilidade conferida: o `main.tsx` do candidato anterior, recompilado aqui (`npm ci` + `npm run build`), gera exatamente o `index-G5-Tfjq6.js` já versionado (SHA-256 idêntico).
+- Novo bundle `index-DzSS28xD.js`. O CSS `index-S-HJ2tGl.css` não mudou.
+
+### 11.4 Verificações (Flutter 3.47.8, lockfile intacto)
+| Verificação | Resultado |
+| --- | --- |
+| `flutter analyze --no-pub` | 0 erros, mesmos 4 warnings, 105 issues, igual à base. |
+| Suíte completa | **123 aprovados, 3 falhas** — as mesmas 3 preexistentes da v36. |
+| Arquivos protegidos (`preservation-check.json`) | **111/111 idênticos** aos hashes da v36. |
+| `dist/` × build | Idênticos, exceto os 3 Roboto recolocados pelo candidato anterior e `recovery-build.json`. |
+| Simulação (`flutter/tools/simular_navegacao_3d.js`) | 3D montado 1 vez durante perda de sinal e erro passageiro; 2D/3D sem sinal funciona; bearing preservado; `stale` ativo; "Encerrar" funciona no 3D. |
+
+Observação: um `pageerror` genérico ("Error", sem mensagem) aparece de forma intermitente na simulação, inclusive na v36 original. Provável origem nos blocos de mapa vazios simulados; sem efeito funcional observado.
+
+### 11.5 Publicação
+**Não publicado.** Esta sessão não tem acesso ao conector Sites. O pacote `marapass-gps-v36-3d-montagem-homologacao.tar.gz` foi gerado a partir de `dist/` para publicação na prévia privada de homologação, com autorização do proprietário. A v36 de produção permanece inalterada.

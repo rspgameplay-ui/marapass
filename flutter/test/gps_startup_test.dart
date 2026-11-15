@@ -222,6 +222,56 @@ void main() {
     },
   );
 
+  test(
+    '3D/camera stays armed through signal loss and 2D toggles; pause disarms',
+    () async {
+      final g = FakeLocation();
+      final n = session(g);
+      try {
+        final starting = n.start();
+        await turn();
+        g.streams.last.add(fix());
+        await starting;
+        expect(n.cameraArmed, isFalse, reason: 'primeira montagem aguarda GPS');
+        final watch = g.streams.last;
+        watch.add(fix());
+        await turn();
+        await Future<void>.delayed(const Duration(milliseconds: 1050));
+        watch.add(fix());
+        await turn();
+        expect(n.cameraReady, isTrue);
+        expect(n.cameraArmed, isTrue);
+        // Erro passageiro: estabilidade perdida, 3D continua armado.
+        watch.addError(TimeoutException('signal lost'));
+        await turn();
+        expect(n.lowSignal, isTrue);
+        expect(n.cameraReady, isFalse);
+        expect(n.cameraArmed, isTrue);
+        // Nova posição única ainda não restabelece, mas não desarma.
+        watch.add(fix());
+        await turn();
+        expect(n.cameraReady, isFalse);
+        expect(n.cameraArmed, isTrue);
+        await n.pause();
+        expect(n.cameraArmed, isFalse, reason: 'encerrar desarma');
+        // Nova navegação volta a exigir GPS estável.
+        final restart = n.start();
+        await turn();
+        g.streams.last.add(fix());
+        await restart;
+        expect(n.active, isTrue);
+        expect(n.cameraArmed, isFalse);
+      } finally {
+        await n.pause();
+        n.dispose();
+        n.repository.client.close();
+        for (final c in g.streams) {
+          await c.close();
+        }
+      }
+    },
+  );
+
   test('route revision never invalidates the ongoing GPS session', () async {
     final g = FakeLocation();
     final repo = RoutingRepository(

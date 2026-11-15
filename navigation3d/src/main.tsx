@@ -10,7 +10,7 @@ import './screen.css';
 
 type Point = [number, number];
 type Place = {id:string; name:string; category:string; point:Point; coupon:boolean; ahead:string};
-type Frame = {type:'marapass.3d.frame'; vehicle:Point|null; bearing:number|null; follow:boolean;
+type Frame = {type:'marapass.3d.frame'; vehicle:Point|null; bearing:number|null; follow:boolean; stale?:boolean;
   route?:Point[]; places:Place[]; satellite:boolean;
   focus?:{point:Point; revision:number}; nautical:boolean};
 const baseStyle = style as StyleSpecification;
@@ -119,6 +119,7 @@ function Canvas() {
         traveler.setLngLat(frame.vehicle).setRotation(
           nautical || frame.follow ? 0 : bearing-map.getBearing(),
         );
+        traveler.getElement().style.opacity=frame.stale?'0.45':'1';
         if(frame.follow) {
           const cameraKey=JSON.stringify([frame.vehicle,bearing,map.getContainer().clientHeight]);
           if(!following || cameraKey!==lastCamera) {
