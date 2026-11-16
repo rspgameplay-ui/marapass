@@ -11,11 +11,17 @@ import '../../application/map_state.dart';
 import '../../application/navigation_session.dart';
 import '../../core/config.dart';
 import '../../domain/navigation.dart';
+import '../../islands/coastal_island.dart';
+import '../../islands/island_directory.dart';
+import '../../islands/nautical_connections.dart';
+import '../../islands/nautical_screen.dart';
 import '../../domain/tourism.dart';
 import '../../location/location_service.dart';
 import '../../presentation/legacy_theme.dart';
 import '../../presentation/map_screen.dart';
+import '../../presentation/municipal_visit_guide.dart';
 import '../../presentation/navigation_screen.dart';
+import '../../voice/voice_search_sheet.dart';
 import '../data/content.dart';
 import '../data/store.dart';
 import '../theme/tokens.dart';
@@ -26,6 +32,8 @@ import 'common.dart';
 enum PoiKind {
   cultura('Cultura', Icons.account_balance_rounded, Color(0xff8a5a2b)),
   natureza('Natureza', Icons.forest_rounded, Color(0xff14775a)),
+  praias('Praias', Icons.beach_access_rounded, Color(0xff0f8fa8)),
+  ilhas('Ilhas', Icons.landscape_rounded, Color(0xff2e7d6f)),
   passeios('Passeios', Icons.hiking_rounded, Color(0xff1f6fd1)),
   gastronomia('Comer', Icons.restaurant_rounded, Color(0xffc53b36)),
   hospedagem('Dormir', Icons.hotel_rounded, Color(0xff6a4fb3)),
@@ -92,7 +100,9 @@ class Poi {
         point: point,
         category: switch (kind) {
           PoiKind.cultura => PlaceCategory.culture,
-          PoiKind.natureza => PlaceCategory.nature,
+          PoiKind.natureza ||
+          PoiKind.praias ||
+          PoiKind.ilhas => PlaceCategory.nature,
           PoiKind.passeios => PlaceCategory.tours,
           PoiKind.gastronomia => PlaceCategory.gastronomy,
           PoiKind.hospedagem => PlaceCategory.lodging,
@@ -136,6 +146,10 @@ class _MapTabState extends ConsumerState<MapTab> {
   MapLibreMapController? _c;
   bool _ready = false;
   bool _threeD = false;
+  bool _showIslands = true;
+  bool _showFerries = true;
+  Map<String, CoastalIsland> _islands = const {};
+  NauticalCatalog? _ferries;
   final Set<PoiKind> _kinds = {...PoiKind.values};
   late final List<Poi> _pois = _buildPois();
   Poi? _selected;
@@ -169,6 +183,7 @@ class _MapTabState extends ConsumerState<MapTab> {
     }
     try {
       final repo = ref.read(repositoryProvider);
+      _islands = {for (final i in repo.coastalIslands) i.place.id: i};
       for (final p in repo.basePlaces) {
         if (p.category == PlaceCategory.residential) continue;
         out.add(
@@ -176,10 +191,14 @@ class _MapTabState extends ConsumerState<MapTab> {
             id: p.id,
             name: p.name,
             city: p.city,
-            kind: PoiKind.fromPlace(p.category),
+            kind: _islands.containsKey(p.id)
+                ? PoiKind.ilhas
+                : p.isBeach
+                ? PoiKind.praias
+                : PoiKind.fromPlace(p.category),
             point: p.point,
             place: p,
-            featured: p.category == PlaceCategory.culture,
+            featured: p.category == PlaceCategory.culture || p.isBeach,
           ),
         );
       }
@@ -294,6 +313,39 @@ class _MapTabState extends ConsumerState<MapTab> {
       await c.addImage('poi-${k.name}', await _markerPng(k, featured: false));
       await c.addImage('poi-${k.name}-f', await _markerPng(k, featured: true));
     }
+    await c.addSource(
+      'islands',
+      GeojsonSourceProperties(data: _islandShapes()),
+    );
+    await c.addFillLayer(
+      'islands',
+      'islands-fill',
+      const FillLayerProperties(fillColor: '#0f8fa8', fillOpacity: .12),
+    );
+    await c.addLineLayer(
+      'islands',
+      'islands-line',
+      const LineLayerProperties(
+        lineColor: '#0f8fa8',
+        lineWidth: 1.6,
+        lineOpacity: .8,
+      ),
+    );
+    await c.addSource(
+      'ferries',
+      GeojsonSourceProperties(data: _line(const [])),
+    );
+    await c.addLineLayer(
+      'ferries',
+      'ferries-line',
+      const LineLayerProperties(
+        lineColor: '#0b6e99',
+        lineWidth: 3.5,
+        lineDasharray: [2, 1.5],
+        lineCap: 'round',
+      ),
+    );
+    unawaited(_loadFerries());
     await c.addSource('route', GeojsonSourceProperties(data: _line(const [])));
     await c.addLineLayer(
       'route',
@@ -440,6 +492,259 @@ class _MapTabState extends ConsumerState<MapTab> {
     if (mounted) setState(() => _ready = true);
   }
 
+  Map<String, dynamic> _islandShapes() => {
+    'type': 'FeatureCollection',
+    'features': [
+      if (_showIslands)
+        for (final i in _islands.values)
+          if (i.rings.isNotEmpty)
+            {
+              'type': 'Feature',
+              'properties': {'id': i.place.id},
+              'geometry': {
+                'type': 'Polygon',
+                'coordinates': [
+                  for (final ring in i.rings)
+                    [
+                      for (final g in ring) [g.lng, g.lat],
+                    ],
+                ],
+              },
+            },
+    ],
+  };
+
+  Map<String, dynamic> _ferryLines() => {
+    'type': 'FeatureCollection',
+    'features': [
+      if (_showFerries)
+        for (final r in _ferries?.routes ?? const <NauticalConnection>[])
+          if (r.points.length > 1)
+            {
+              'type': 'Feature',
+              'properties': {
+                'ferry': r.id,
+                'island': r.islandIds.isEmpty ? '' : r.islandIds.first,
+              },
+              'geometry': {
+                'type': 'LineString',
+                'coordinates': [
+                  for (final g in r.points) [g.lng, g.lat],
+                ],
+              },
+            },
+    ],
+  };
+
+  Future<void> _loadFerries() async {
+    try {
+      _ferries = await NauticalCatalog.load();
+      await _c?.setGeoJsonSource('ferries', _ferryLines());
+    } catch (_) {
+      // sem o catálogo náutico: o mapa segue sem as travessias
+    }
+  }
+
+  void _openLayers() {
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (_) => StatefulBuilder(
+        builder: (context, setSheet) => SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(MP.pageH, 0, MP.pageH, MP.s5),
+            child: Column(
+              key: const Key('layers-sheet'),
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  'Camadas do mapa',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                const SizedBox(height: MP.s2),
+                SwitchListTile(
+                  key: const Key('layer-islands'),
+                  contentPadding: EdgeInsets.zero,
+                  secondary: const Icon(
+                    Icons.landscape_rounded,
+                    color: Color(0xff2e7d6f),
+                  ),
+                  title: const Text(
+                    'Ilhas do litoral',
+                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+                  ),
+                  subtitle: Text(
+                    '${_islands.length} ilhas com contorno e ficha de visita',
+                  ),
+                  value: _showIslands,
+                  onChanged: (v) {
+                    setSheet(() {});
+                    setState(() => _showIslands = v);
+                    _c?.setGeoJsonSource('islands', _islandShapes());
+                  },
+                ),
+                SwitchListTile(
+                  key: const Key('layer-ferries'),
+                  contentPadding: EdgeInsets.zero,
+                  secondary: const Icon(
+                    Icons.directions_boat_rounded,
+                    color: Color(0xff0b6e99),
+                  ),
+                  title: const Text(
+                    'Travessias de barco',
+                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+                  ),
+                  subtitle: Text(
+                    _ferries == null
+                        ? 'Carregando…'
+                        : '${_ferries!.routes.length} rotas náuticas documentadas',
+                  ),
+                  value: _showFerries,
+                  onChanged: (v) {
+                    setSheet(() {});
+                    setState(() => _showFerries = v);
+                    _c?.setGeoJsonSource('ferries', _ferryLines());
+                  },
+                ),
+                SwitchListTile(
+                  key: const Key('layer-beaches'),
+                  contentPadding: EdgeInsets.zero,
+                  secondary: const Icon(
+                    Icons.beach_access_rounded,
+                    color: Color(0xff0f8fa8),
+                  ),
+                  title: const Text(
+                    'Praias',
+                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+                  ),
+                  subtitle: const Text(
+                    'Com planejamento de visita, maré e acesso',
+                  ),
+                  value: _kinds.contains(PoiKind.praias),
+                  onChanged: (v) {
+                    setSheet(() {});
+                    setState(
+                      () => v
+                          ? _kinds.add(PoiKind.praias)
+                          : _kinds.remove(PoiKind.praias),
+                    );
+                    _refreshPois();
+                  },
+                ),
+                const Divider(height: MP.s5),
+                ListTile(
+                  key: const Key('layer-classic'),
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(
+                    Icons.tune_rounded,
+                    color: MP.textSecondary,
+                  ),
+                  title: const Text(
+                    'Ferramentas avançadas',
+                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+                  ),
+                  subtitle: const Text(
+                    'Gravação de trilha, relevo e simulação de rota',
+                  ),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    push<void>(
+                      this.context,
+                      Theme(data: legacyMapTheme(), child: const MapScreen()),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _openVoice() {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => Theme(
+        data: legacyMapTheme(),
+        child: VoiceSearchSheet(
+          onFocus: (place) {
+            Navigator.of(context).maybePop();
+            final hit = _pois.where((e) => e.id == place.id).firstOrNull;
+            _select(
+              hit ??
+                  Poi(
+                    id: place.id,
+                    name: place.name,
+                    city: place.city,
+                    kind: PoiKind.fromPlace(place.category),
+                    point: place.point,
+                    place: place,
+                  ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  /// Recursos que vinham do mapa antigo, agora na prévia do ponto.
+  List<(IconData, String, VoidCallback)> _extrasFor(Poi p) {
+    final island = _islands[p.id];
+    return [
+      if (p.kind == PoiKind.praias)
+        (
+          Icons.beach_access_rounded,
+          'Planejar visita à praia',
+          () => push<void>(
+            context,
+            Theme(
+              data: legacyMapTheme(),
+              child: NavigationScreen(destination: p.asPlace),
+            ),
+          ),
+        ),
+      if (island != null) ...[
+        (
+          Icons.info_outline_rounded,
+          'Sobre a ilha',
+          () => push<void>(
+            context,
+            _LegacyPage(
+              title: p.name,
+              child: IslandVisitInfo(island: island),
+            ),
+          ),
+        ),
+        (
+          Icons.directions_boat_rounded,
+          'Travessias de barco',
+          () => push<void>(
+            context,
+            Theme(
+              data: legacyMapTheme(),
+              child: NauticalScreen(islandId: island.place.id),
+            ),
+          ),
+        ),
+      ],
+      if (hasMunicipalGuide(p.city))
+        (
+          Icons.menu_book_rounded,
+          'Guia de ${p.city}',
+          () => push<void>(
+            context,
+            _LegacyPage(
+              title: 'Guia de ${p.city}',
+              child: MunicipalVisitGuide(city: p.city),
+            ),
+          ),
+        ),
+    ];
+  }
+
   Future<void> _refreshPois() async {
     if (!_ready) return;
     await _c?.setGeoJsonSource('pois', _poiCollection());
@@ -472,6 +777,7 @@ class _MapTabState extends ConsumerState<MapTab> {
       hits = await c.queryRenderedFeaturesInRect(rect, [
         'clusters',
         'poi-icons',
+        'ferries-line',
       ], null);
       if (hits.isNotEmpty) break;
       await Future<void>.delayed(const Duration(milliseconds: 150));
@@ -493,6 +799,17 @@ class _MapTabState extends ConsumerState<MapTab> {
         CameraUpdate.newLatLngZoom(
           LatLng(coords[1].toDouble(), coords[0].toDouble()),
           (c.cameraPosition?.zoom ?? 8) + 2,
+        ),
+      );
+      return;
+    }
+    if (props.containsKey('ferry')) {
+      final island = '${props['island'] ?? ''}';
+      await push<void>(
+        context,
+        Theme(
+          data: legacyMapTheme(),
+          child: NauticalScreen(islandId: island.isEmpty ? null : island),
         ),
       );
       return;
@@ -744,18 +1061,18 @@ class _MapTabState extends ConsumerState<MapTab> {
                   key: const Key('map-search'),
                   borderRadius: BorderRadius.circular(MP.rMedium),
                   onTap: _openSearch,
-                  child: const SizedBox(
+                  child: SizedBox(
                     height: 54,
                     child: Row(
                       children: [
-                        SizedBox(width: MP.s4),
-                        Icon(
+                        const SizedBox(width: MP.s4),
+                        const Icon(
                           Icons.search_rounded,
                           color: MP.textSecondary,
                           size: 24,
                         ),
-                        SizedBox(width: MP.s3),
-                        Expanded(
+                        const SizedBox(width: MP.s3),
+                        const Expanded(
                           child: Text(
                             'Buscar no mapa',
                             style: TextStyle(
@@ -764,6 +1081,13 @@ class _MapTabState extends ConsumerState<MapTab> {
                             ),
                           ),
                         ),
+                        IconButton(
+                          key: const Key('map-voice'),
+                          tooltip: 'Buscar falando',
+                          onPressed: _openVoice,
+                          icon: const Icon(Icons.mic_rounded, color: MP.navy),
+                        ),
+                        const SizedBox(width: MP.s1),
                       ],
                     ),
                   ),
@@ -840,12 +1164,10 @@ class _MapTabState extends ConsumerState<MapTab> {
               ),
               const SizedBox(height: MP.s2),
               _MapButton(
+                key: const Key('map-layers'),
                 icon: Icons.layers_rounded,
-                tooltip: 'Mapa completo: praias, ilhas, guia municipal e voz',
-                onTap: () => push<void>(
-                  context,
-                  Theme(data: legacyMapTheme(), child: const MapScreen()),
-                ),
+                tooltip: 'Camadas: ilhas, travessias e praias',
+                onTap: _openLayers,
               ),
             ],
           ),
@@ -907,6 +1229,7 @@ class _MapTabState extends ConsumerState<MapTab> {
               onDetails: _selected!.item == null
                   ? null
                   : () => openItem(context, _selected!.item!),
+              extras: _extrasFor(_selected!),
             ),
           ),
       ],
@@ -980,6 +1303,7 @@ class _PoiCard extends StatelessWidget {
     required this.onFollow3d,
     required this.onNavigate,
     required this.onDetails,
+    this.extras = const [],
   });
   final Poi poi;
   final RoadRoute? route;
@@ -989,6 +1313,7 @@ class _PoiCard extends StatelessWidget {
   final VoidCallback onChangeOrigin;
   final VoidCallback onClose, onRoute, onClearRoute, onFollow3d, onNavigate;
   final VoidCallback? onDetails;
+  final List<(IconData, String, VoidCallback)> extras;
 
   static String _km(double m) => m >= 1000
       ? '${(m / 1000).toStringAsFixed(m >= 10000 ? 0 : 1).replaceAll('.', ',')} km'
@@ -1063,6 +1388,22 @@ class _PoiCard extends StatelessWidget {
                 ),
               ],
             ),
+            if (extras.isNotEmpty) ...[
+              const SizedBox(height: MP.s3),
+              Wrap(
+                spacing: MP.s2,
+                runSpacing: MP.s2,
+                children: [
+                  for (final e in extras)
+                    ActionChip(
+                      key: Key('poi-extra-${e.$2}'),
+                      avatar: Icon(e.$1, size: 18, color: MP.navy),
+                      label: Text(e.$2),
+                      onPressed: e.$3,
+                    ),
+                ],
+              ),
+            ],
             const SizedBox(height: MP.s3),
             if (r != null) ...[
               Container(
@@ -1386,4 +1727,26 @@ class _OriginSheet extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Página no padrão do app para fichas reaproveitadas do mapa antigo.
+class _LegacyPage extends StatelessWidget {
+  const _LegacyPage({required this.title, required this.child});
+  final String title;
+  final Widget child;
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    body: SafeArea(
+      child: ListView(
+        padding: const EdgeInsets.only(bottom: MP.s8),
+        children: [
+          MpHeader(title),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
+            child: Theme(data: legacyMapTheme(), child: child),
+          ),
+        ],
+      ),
+    ),
+  );
 }
