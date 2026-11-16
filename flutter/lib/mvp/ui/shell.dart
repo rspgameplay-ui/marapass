@@ -2,23 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers.dart';
-import 'checkin_screen.dart';
-import 'coupons_screen.dart';
-import 'explore_screen.dart';
-import 'home_screen.dart';
-import 'passport_screen.dart';
+import 'checkin.dart';
+import 'coupons.dart';
+import 'explore.dart';
+import 'home.dart';
+import 'passport.dart';
 
-/// Navegação inferior oficial: Início · Explorar · Check-in · Cupons · Passaporte.
-/// O perfil abre pelo avatar da Home.
+/// Navegação inferior oficial do Design Master:
+/// Início · Explorar · Check-in · Cupons · Passaporte (perfil pelo avatar).
 class MvpShell extends ConsumerWidget {
   const MvpShell({super.key});
 
   static const _tabs = <(IconData, IconData, String)>[
     (Icons.home_outlined, Icons.home_rounded, 'Início'),
-    (Icons.search_outlined, Icons.search_rounded, 'Explorar'),
-    (Icons.qr_code_scanner_outlined, Icons.qr_code_scanner_rounded, 'Check-in'),
+    (Icons.explore_outlined, Icons.explore_rounded, 'Explorar'),
+    (Icons.qr_code_scanner_rounded, Icons.qr_code_scanner_rounded, 'Check-in'),
     (Icons.local_activity_outlined, Icons.local_activity_rounded, 'Cupons'),
-    (Icons.verified_outlined, Icons.verified_rounded, 'Passaporte'),
+    (Icons.badge_outlined, Icons.badge_rounded, 'Passaporte'),
   ];
 
   @override
@@ -35,16 +35,33 @@ class MvpShell extends ConsumerWidget {
           PassportScreen(),
         ],
       ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: i,
-        onDestinationSelected: ref.read(shellTabProvider.notifier).go,
-        destinations: [
-          for (final t in _tabs)
-            NavigationDestination(
-              icon: Icon(t.$1),
-              selectedIcon: Icon(t.$2),
-              label: t.$3,
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          NavigationBar(
+            selectedIndex: i,
+            onDestinationSelected: ref.read(shellTabProvider.notifier).go,
+            destinations: [
+              for (final t in _tabs)
+                NavigationDestination(
+                  icon: Icon(t.$1),
+                  selectedIcon: Icon(t.$2),
+                  label: t.$3,
+                ),
+            ],
+          ),
+          // Faixa com as cores da marca (protótipo aprovado).
+          const SizedBox(
+            height: 5,
+            child: Row(
+              children: [
+                Expanded(child: ColoredBox(color: Color(0xff176b54))),
+                Expanded(child: ColoredBox(color: Color(0xfffac61d))),
+                Expanded(child: ColoredBox(color: Color(0xffc53b36))),
+                Expanded(child: ColoredBox(color: Color(0xff1a3a5c))),
+              ],
             ),
+          ),
         ],
       ),
     );

@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -10,6 +12,7 @@ import 'core/config.dart';
 import 'mvp/auth/auth.dart';
 import 'mvp/data/demo_repository.dart';
 import 'mvp/data/repository.dart';
+import 'mvp/data/store.dart';
 import 'mvp/data/supabase_repository.dart';
 import 'mvp/providers.dart';
 import 'mvp/ui/app.dart';
@@ -24,6 +27,9 @@ const _forceDemo = bool.fromEnvironment('MVP_DEMO');
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Na web, liga a árvore de acessibilidade desde o início: leitores de tela
+  // e ampliadores funcionam sem o usuário precisar ativar nada.
+  if (kIsWeb) SemanticsBinding.instance.ensureSemantics();
   final repo = TourismRepository(await SharedPreferences.getInstance());
   await repo.initialize();
 
@@ -41,7 +47,9 @@ Future<void> main() async {
     app = const MaraPassApp();
   } else {
     final backend = await _initBackend();
+    final store = await AppStore.load();
     overrides.addAll([
+      appStoreProvider.overrideWith((ref) => store),
       mvpRepositoryProvider.overrideWithValue(backend.$1),
       authGatewayProvider.overrideWithValue(backend.$2),
     ]);

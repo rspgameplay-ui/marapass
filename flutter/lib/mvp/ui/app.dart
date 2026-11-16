@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../presentation/brand.dart';
+import '../data/store.dart';
 import '../theme/tokens.dart';
 import '../theme/widgets.dart';
 import 'login_screen.dart';
@@ -11,22 +12,44 @@ import 'shell.dart';
 
 const _onboardedKey = 'mvp_onboarded_v1';
 
-/// Raiz do app do turista: Splash → Onboarding → (Login opcional) → Início.
-class MvpApp extends StatelessWidget {
-  const MvpApp({super.key, this.splash = const Duration(milliseconds: 1100)});
+/// Raiz do app: Abertura → Apresentação → (Login opcional) → Início.
+/// A opção "Letra grande" do perfil amplia o texto do app inteiro.
+class MvpApp extends ConsumerWidget {
+  const MvpApp({super.key, this.splash = const Duration(milliseconds: 1400)});
   final Duration splash;
 
   @override
-  Widget build(BuildContext context) => MaterialApp(
-    title: 'MaraPass',
-    debugShowCheckedModeBanner: false,
-    locale: const Locale('pt', 'BR'),
-    supportedLocales: const [Locale('pt', 'BR')],
-    localizationsDelegates: GlobalMaterialLocalizations.delegates,
-    theme: mvpTheme(),
-    themeMode: ThemeMode.light,
-    home: _Gate(splash: splash),
-  );
+  Widget build(BuildContext context, WidgetRef ref) {
+    final big = ref.watch(appStoreProvider.select((s) => s.bigText));
+    return MaterialApp(
+      title: 'MaraPass',
+      debugShowCheckedModeBanner: false,
+      locale: const Locale('pt', 'BR'),
+      supportedLocales: const [Locale('pt', 'BR')],
+      localizationsDelegates: GlobalMaterialLocalizations.delegates,
+      theme: mvpTheme(),
+      themeMode: ThemeMode.light,
+      builder: (context, child) {
+        final mq = MediaQuery.of(context);
+        final base = mq.textScaler.scale(1);
+        final scale = (big ? base * 1.22 : base).clamp(1.0, 1.6);
+        return MediaQuery(
+          data: mq.copyWith(textScaler: TextScaler.linear(scale)),
+          child: ColoredBox(
+            color: MP.soft,
+            child: Center(
+              // No computador, o app fica com largura de celular.
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 520),
+                child: child,
+              ),
+            ),
+          ),
+        );
+      },
+      home: _Gate(splash: splash),
+    );
+  }
 }
 
 class _Gate extends StatefulWidget {
@@ -48,19 +71,21 @@ class _GateState extends State<_Gate> {
   Future<void> _boot() async {
     var seen = false;
     try {
-      final p = await SharedPreferences.getInstance();
-      seen = p.getBool(_onboardedKey) ?? false;
+      seen =
+          (await SharedPreferences.getInstance()).getBool(_onboardedKey) ??
+          false;
     } catch (_) {}
-    if (widget.splash > Duration.zero) {
+    if (widget.splash > Duration.zero)
       await Future<void>.delayed(widget.splash);
-    }
     if (mounted) setState(() => _onboarded = seen);
   }
 
-  Future<void> _finishOnboarding() async {
+  Future<void> _done() async {
     try {
-      final p = await SharedPreferences.getInstance();
-      await p.setBool(_onboardedKey, true);
+      await (await SharedPreferences.getInstance()).setBool(
+        _onboardedKey,
+        true,
+      );
     } catch (_) {}
     if (mounted) setState(() => _onboarded = true);
   }
@@ -69,7 +94,7 @@ class _GateState extends State<_Gate> {
   Widget build(BuildContext context) {
     final o = _onboarded;
     if (o == null) return const _Splash();
-    if (!o) return _Onboarding(onDone: _finishOnboarding);
+    if (!o) return _Welcome(onDone: _done);
     return const MvpShell();
   }
 }
@@ -78,31 +103,33 @@ class _Splash extends StatelessWidget {
   const _Splash();
   @override
   Widget build(BuildContext context) => const Scaffold(
-    backgroundColor: MP.page,
+    backgroundColor: MP.navy,
     body: Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           SizedBox(
-            width: 88,
-            height: 88,
+            width: 96,
+            height: 96,
             child: CustomPaint(painter: PinwheelPainter()),
           ),
           SizedBox(height: MP.s4),
           Text(
             'MaraPass',
             style: TextStyle(
-              fontSize: 32,
+              fontSize: 38,
               fontWeight: FontWeight.w800,
-              color: MP.navy,
+              color: Colors.white,
             ),
           ),
           SizedBox(height: MP.s1),
           Text(
-            'Maranhão infinito.',
+            'DESCUBRA · VIVA · VALORIZE',
             style: TextStyle(
-              color: MP.textSecondary,
-              fontWeight: FontWeight.w600,
+              color: Colors.white70,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 2.4,
+              fontSize: 13,
             ),
           ),
         ],
@@ -111,32 +138,34 @@ class _Splash extends StatelessWidget {
   );
 }
 
-class _Onboarding extends ConsumerStatefulWidget {
-  const _Onboarding({required this.onDone});
+/// Apresentação com foto em tela cheia (protótipo aprovado) e os três
+/// pilares do Design Master: descobrir, benefícios e passaporte.
+class _Welcome extends ConsumerStatefulWidget {
+  const _Welcome({required this.onDone});
   final Future<void> Function() onDone;
   @override
-  ConsumerState<_Onboarding> createState() => _OnboardingState();
+  ConsumerState<_Welcome> createState() => _WelcomeState();
 }
 
-class _OnboardingState extends ConsumerState<_Onboarding> {
+class _WelcomeState extends ConsumerState<_Welcome> {
   final _page = PageController();
   int _i = 0;
 
   static const _slides = [
     (
-      Icons.landscape_rounded,
-      'Descubra o Maranhão',
-      'Lençóis, Delta e muito mais: passeios, sabores e histórias reunidos em um só lugar.',
+      'splash_bg',
+      'Mais que destinos, boas histórias.',
+      'Seu passaporte turístico do Maranhão.',
     ),
     (
-      Icons.local_activity_rounded,
+      'lagoa_boat',
       'Benefícios de verdade',
-      'Ative cupons em parceiros aprovados e apresente o QR na hora de usar.',
+      'Ative cupons em parceiros e mostre o QR na hora de usar.',
     ),
     (
-      Icons.verified_rounded,
+      'cultura',
       'Seu passaporte digital',
-      'Acompanhe seus benefícios e suas reservas sem papel e sem complicação.',
+      'Faça check-in, ganhe selos e acompanhe suas reservas.',
     ),
   ];
 
@@ -155,102 +184,139 @@ class _OnboardingState extends ConsumerState<_Onboarding> {
   Widget build(BuildContext context) {
     final last = _i == _slides.length - 1;
     return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(
-                onPressed: widget.onDone,
-                child: const Text(
-                  'Pular',
-                  style: TextStyle(
-                    color: MP.textSecondary,
-                    fontWeight: FontWeight.w700,
+      backgroundColor: Colors.black,
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          PageView.builder(
+            controller: _page,
+            itemCount: _slides.length,
+            onPageChanged: (v) => setState(() => _i = v),
+            itemBuilder: (_, i) => MpPhoto(
+              photo: _slides[i].$1,
+              height: null,
+              radius: 0,
+              darken: true,
+            ),
+          ),
+          SafeArea(
+            child: LayoutBuilder(
+              builder: (context, c) => SingleChildScrollView(
+                padding: const EdgeInsets.all(MP.pageH),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight: c.maxHeight - MP.pageH * 2,
+                  ),
+                  child: IntrinsicHeight(
+                    child: Column(
+                      children: [
+                        const SizedBox(height: MP.s4),
+                        const SizedBox(
+                          width: 72,
+                          height: 72,
+                          child: CustomPaint(painter: PinwheelPainter()),
+                        ),
+                        const SizedBox(height: MP.s2),
+                        const Text(
+                          'MaraPass',
+                          style: TextStyle(
+                            fontSize: 34,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const Text(
+                          'DESCUBRA · VIVA · VALORIZE',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 2.2,
+                            fontSize: 13,
+                          ),
+                        ),
+                        const Spacer(),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            _slides[_i].$2,
+                            style: const TextStyle(
+                              fontSize: 32,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
+                              height: 1.15,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: MP.s2),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            _slides[_i].$3,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              color: Colors.white,
+                              height: 1.4,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: MP.s5),
+                        Row(
+                          children: [
+                            for (var k = 0; k < _slides.length; k++)
+                              AnimatedContainer(
+                                duration: const Duration(milliseconds: 200),
+                                margin: const EdgeInsets.only(right: 6),
+                                width: k == _i ? 28 : 10,
+                                height: 10,
+                                decoration: BoxDecoration(
+                                  color: k == _i ? MP.yellow : Colors.white54,
+                                  borderRadius: BorderRadius.circular(MP.rPill),
+                                ),
+                              ),
+                          ],
+                        ),
+                        const SizedBox(height: MP.s5),
+                        if (!last)
+                          MpCtaButton(
+                            key: const Key('onb-next'),
+                            label: _i == 0 ? 'Começar' : 'Continuar',
+                            onPressed: () => _page.nextPage(
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeOut,
+                            ),
+                          )
+                        else ...[
+                          MpCtaButton(
+                            key: const Key('onb-login'),
+                            label: 'Entrar com e-mail',
+                            onPressed: _login,
+                          ),
+                          const SizedBox(height: MP.s3),
+                          FilledButton(
+                            key: const Key('onb-visitor'),
+                            onPressed: widget.onDone,
+                            style: FilledButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: MP.ink,
+                            ),
+                            child: const Text('Entrar sem cadastro'),
+                          ),
+                        ],
+                        TextButton(
+                          onPressed: widget.onDone,
+                          child: const Text(
+                            'Pular apresentação',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-            Expanded(
-              child: PageView.builder(
-                controller: _page,
-                itemCount: _slides.length,
-                onPageChanged: (v) => setState(() => _i = v),
-                itemBuilder: (_, i) {
-                  final s = _slides[i];
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: MP.s6),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        MpPhoto(height: 220, icon: s.$1, seed: i),
-                        const SizedBox(height: MP.s8),
-                        Text(
-                          s.$2,
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.displaySmall
-                              ?.copyWith(fontSize: 30),
-                        ),
-                        const SizedBox(height: MP.s3),
-                        Text(
-                          s.$3,
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(color: MP.textSecondary),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                for (var i = 0; i < _slides.length; i++)
-                  AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    margin: const EdgeInsets.symmetric(horizontal: 3),
-                    width: i == _i ? 22 : 8,
-                    height: 8,
-                    decoration: BoxDecoration(
-                      color: i == _i ? MP.green : MP.border,
-                      borderRadius: BorderRadius.circular(MP.rPill),
-                    ),
-                  ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.all(MP.pageH),
-              child: Column(
-                children: [
-                  if (!last)
-                    FilledButton(
-                      key: const Key('onb-next'),
-                      onPressed: () => _page.nextPage(
-                        duration: const Duration(milliseconds: 250),
-                        curve: Curves.easeOut,
-                      ),
-                      child: const Text('Continuar'),
-                    )
-                  else ...[
-                    FilledButton(
-                      key: const Key('onb-login'),
-                      onPressed: _login,
-                      child: const Text('Entrar com e-mail'),
-                    ),
-                    const SizedBox(height: MP.s3),
-                    OutlinedButton(
-                      key: const Key('onb-visitor'),
-                      onPressed: widget.onDone,
-                      child: const Text('Explorar sem cadastro'),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
