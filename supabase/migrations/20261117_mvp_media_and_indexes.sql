@@ -1,0 +1,5 @@
+-- Aplicada em 2026-11-17 (nome: mvp_media_and_indexes).
+-- image_url/banner_url em mvp_partner_offers e mvp_places (só https);
+-- bucket público marapass-assets (5 MB, jpeg/png/webp), parceiro aprovado
+-- escreve só em <user_id>/...; índices por usuário, status, dia e item.
+-- O SQL completo está em supabase_migrations.schema_migrations.

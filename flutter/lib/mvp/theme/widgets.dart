@@ -40,7 +40,19 @@ class MpPhoto extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            if (photo != null)
+            if (photo != null && photo!.startsWith('https://'))
+              // Foto dinâmica (Supabase Storage): aparece em fade sobre o degradê.
+              Image.network(
+                photo!,
+                fit: BoxFit.cover,
+                semanticLabel: '',
+                frameBuilder: (_, child, frame, sync) => sync || frame != null
+                    ? child
+                    : _Gradient(p: p, icon: icon, h: height),
+                errorBuilder: (_, __, ___) =>
+                    _Gradient(p: p, icon: icon, h: height),
+              )
+            else if (photo != null)
               Image.asset(
                 'assets/photos/$photo.jpg',
                 fit: BoxFit.cover,

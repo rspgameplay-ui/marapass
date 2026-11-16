@@ -578,6 +578,7 @@ class AppStore extends ChangeNotifier {
             cat: _cats[o['category']] ?? Cat.passeio,
             beneficio: '${o['benefit']}',
             detalhe: '${o['rules'] ?? ''}',
+            foto: o['image_url'] as String?,
             validade: DateTime.parse('${o['valid_until']}')
                 .add(const Duration(hours: 23, minutes: 59)),
           ),
