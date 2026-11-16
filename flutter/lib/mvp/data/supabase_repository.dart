@@ -267,6 +267,9 @@ MvpException translateError(Object e) {
       'Esse horário não tem mais vagas. Escolha outro.',
     );
   }
+  if (raw.contains('issue limit')) {
+    return const MvpException('Os cupons desta oferta esgotaram.');
+  }
   if (raw.contains('limit') || raw.contains('already')) {
     return const MvpException('Você já atingiu o limite desta oferta.');
   }

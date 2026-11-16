@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../data/repository.dart';
 import '../data/store.dart';
 import '../theme/tokens.dart';
 import '../theme/widgets.dart';
@@ -190,12 +191,17 @@ class _ComposeState extends ConsumerState<ComposeScreen> {
     super.dispose();
   }
 
-  void _send() {
+  Future<void> _send() async {
     final body = '${_stars > 0 ? '${'★' * _stars} ' : ''}${_ctrl.text.trim()}';
-    final t = ref
+    final t = await ref
         .read(appStoreProvider)
-        .openTicket(kind: widget.kind, subject: widget.subject, body: body);
-    Navigator.of(context).pushReplacement(
+        .openTicketAsync(
+          kind: widget.kind,
+          subject: widget.subject,
+          body: body,
+        );
+    if (!mounted) return;
+    await Navigator.of(context).pushReplacement(
       MaterialPageRoute<void>(
         builder: (_) => MpStatusScreen(
           title: widget.kind == 'Sugestão'
@@ -348,10 +354,15 @@ class _TicketState extends ConsumerState<TicketScreen> {
                       backgroundColor: MP.green,
                       minimumSize: const Size(56, 56),
                     ),
-                    onPressed: () {
-                      if (_ctrl.text.trim().isEmpty) return;
-                      store.reply(t.id, _ctrl.text.trim());
+                    onPressed: () async {
+                      final text = _ctrl.text.trim();
+                      if (text.isEmpty) return;
                       _ctrl.clear();
+                      try {
+                        await store.replyAsync(t.id, text);
+                      } on MvpException catch (e) {
+                        if (context.mounted) showMpSnack(context, e.message);
+                      }
                     },
                     icon: const Icon(Icons.send_rounded),
                   ),

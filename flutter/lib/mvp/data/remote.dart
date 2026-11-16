@@ -152,6 +152,103 @@ class MvpRemote {
   Future<bool> isPartner() =>
       _g(() async => (await _c.rpc('mvp_is_partner')) == true);
 
+  // ---------- Ofertas do parceiro
+  Future<List<Map<String, dynamic>>> offers() => _g(
+    () async => List<Map<String, dynamic>>.from(
+      await _c
+          .from('mvp_partner_offers')
+          .select()
+          .order('created_at', ascending: false),
+    ),
+  );
+
+  Future<List<Map<String, dynamic>>> offerStats() => _g(
+    () async => List<Map<String, dynamic>>.from(
+      await _c.rpc('mvp_offer_stats') as List,
+    ),
+  );
+
+  Future<Map<String, dynamic>> createOffer({
+    required String title,
+    required String benefit,
+    required String rules,
+    required int limit,
+    required DateTime until,
+    String category = 'passeio',
+  }) => _g(
+    () async => _row(
+      await _c.rpc(
+        'mvp_create_offer',
+        params: {
+          'p_title': title,
+          'p_benefit': benefit,
+          'p_rules': rules,
+          'p_limit': limit,
+          'p_until': _date(until),
+          'p_category': category,
+        },
+      ),
+    ),
+  );
+
+  Future<Map<String, dynamic>> setOfferStatus(
+    String id,
+    String status, {
+    String? reason,
+  }) => _g(
+    () async => _row(
+      await _c.rpc(
+        'mvp_set_offer_status',
+        params: {'p_id': id, 'p_status': status, 'p_reason': reason},
+      ),
+    ),
+  );
+
+  Future<Map<String, dynamic>> activateOfferCoupon(String offerId) => _g(
+    () async => _row(
+      await _c.rpc(
+        'mvp_activate_offer_coupon',
+        params: {'p_offer_id': offerId},
+      ),
+    ),
+  );
+
+  // ---------- Atendimento
+  Future<List<Map<String, dynamic>>> myTickets() => _g(
+    () async => List<Map<String, dynamic>>.from(
+      await _c
+          .from('mvp_tickets')
+          .select()
+          .eq('user_id', userId!)
+          .order('created_at', ascending: false),
+    ),
+  );
+
+  Future<Map<String, dynamic>> openTicket(
+    String kind,
+    String subject,
+    String body,
+  ) => _g(
+    () async => _row(
+      await _c.rpc(
+        'mvp_open_ticket',
+        params: {'p_kind': kind, 'p_subject': subject, 'p_body': body},
+      ),
+    ),
+  );
+
+  Future<Map<String, dynamic>> replyTicket(String id, String text) => _g(
+    () async => _row(
+      await _c.rpc('mvp_reply_ticket', params: {'p_id': id, 'p_text': text}),
+    ),
+  );
+
+  /// Nome do perfil (tabela profiles, policy de atualização do próprio usuário).
+  Future<void> updateName(String name) => _g(
+    () async =>
+        _c.from('profiles').update({'display_name': name}).eq('id', userId!),
+  );
+
   static String _date(DateTime d) =>
       '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
 }

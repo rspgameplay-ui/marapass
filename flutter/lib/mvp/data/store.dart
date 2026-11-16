@@ -146,8 +146,10 @@ class Ticket {
     required this.at,
     this.status = 'Aberta',
     List<String>? replies,
+    this.remoteId,
   }) : replies = replies ?? [];
   final String id;
+  final String? remoteId;
   final String kind; // Suporte | Sugestão | Avaliação | Reserva | Artesanato | Fotografia | Transfer
   final String subject;
   final String body;
@@ -366,6 +368,7 @@ class AppStore extends ChangeNotifier {
             ),
           ),
         );
+      await _syncExtras(r);
     } catch (_) {
       // sem rede: mantém o que está no aparelho
     } finally {
@@ -376,7 +379,11 @@ class AppStore extends ChangeNotifier {
 
   Future<LocalCoupon> activateCouponAsync(String cupomId) async {
     if (!online) return activateCoupon(cupomId);
-    final c = _couponFrom(await remote!.activateCoupon(cupomId));
+    final c = _couponFrom(
+      cupomId.startsWith('po:')
+          ? await remote!.activateOfferCoupon(cupomId.substring(3))
+          : await remote!.activateCoupon(cupomId),
+    );
     coupons
       ..removeWhere((e) => e.id == c.id)
       ..insert(0, c);
@@ -491,6 +498,164 @@ class AppStore extends ChangeNotifier {
       reservations.removeWhere((r) => r.id == 'pr1' || r.id == 'pr2');
       await syncFromServer();
     } catch (_) {}
+  }
+
+  // ---------- Ofertas, atendimento e perfil no banco
+  static const _cats = {
+    'passeio': Cat.passeio,
+    'gastronomia': Cat.gastronomia,
+    'hospedagem': Cat.hospedagem,
+    'cultura': Cat.cultura,
+    'natureza': Cat.natureza,
+    'evento': Cat.evento,
+    'artesanato': Cat.artesanato,
+    'fotografia': Cat.fotografia,
+    'transporte': Cat.transporte,
+  };
+
+  PartnerOffer _offerFrom(
+    Map<String, dynamic> o,
+    Map<String, (int, int)> stats,
+  ) {
+    final st = stats['${o['id']}'] ?? (0, 0);
+    return PartnerOffer(
+      id: '${o['id']}',
+      title: '${o['title']}',
+      benefit: '${o['benefit']}',
+      rules: '${o['rules'] ?? ''}',
+      limit: (o['issue_limit'] as num).toInt(),
+      until: DateTime.parse('${o['valid_until']}'),
+      status: '${o['status']}',
+      issued: st.$1,
+      used: st.$2,
+      pauseReason: o['pause_reason'] as String?,
+    );
+  }
+
+  Ticket _ticketFrom(Map<String, dynamic> t) => Ticket(
+    id: '${t['protocol']}',
+    remoteId: '${t['id']}',
+    kind: '${t['kind']}',
+    subject: '${t['subject']}',
+    body: '${t['body']}',
+    at: _dt(t['created_at']),
+    status: '${t['status']}',
+    replies: [for (final x in (t['replies'] as List? ?? const [])) '$x'],
+  );
+
+  Future<void> _syncExtras(MvpRemote r) async {
+    final offers = await r.offers();
+    // Ofertas aprovadas aparecem para os turistas como cupons.
+    Content.extraCupons
+      ..clear()
+      ..addAll([
+        for (final o in offers.where((o) => o['status'] == 'Ativa'))
+          Cupom(
+            id: 'po:${o['id']}',
+            itemId: '',
+            parceiro: '${o['title']}',
+            cat: _cats[o['category']] ?? Cat.passeio,
+            beneficio: '${o['benefit']}',
+            detalhe: '${o['rules'] ?? ''}',
+            validade: DateTime.parse('${o['valid_until']}')
+                .add(const Duration(hours: 23, minutes: 59)),
+          ),
+      ]);
+    if (isPartnerMember) {
+      final stats = {
+        for (final s in await r.offerStats())
+          '${s['offer_id']}': (
+            (s['issued'] as num).toInt(),
+            (s['used'] as num).toInt(),
+          ),
+      };
+      partnerOffers
+        ..clear()
+        ..addAll(offers.map((o) => _offerFrom(o, stats)));
+    }
+    tickets
+      ..clear()
+      ..addAll((await r.myTickets()).map(_ticketFrom));
+  }
+
+  Future<PartnerOffer> createOfferAsync({
+    required String title,
+    required String benefit,
+    required String rules,
+    required int limit,
+    required DateTime until,
+    String category = 'passeio',
+  }) async {
+    if (!online)
+      return createOffer(
+        title: title,
+        benefit: benefit,
+        rules: rules,
+        limit: limit,
+        until: until,
+      );
+    await remote!.joinDemoPartner();
+    isPartnerMember = true;
+    final o = _offerFrom(
+      await remote!.createOffer(
+        title: title,
+        benefit: benefit,
+        rules: rules,
+        limit: limit,
+        until: until,
+        category: category,
+      ),
+      const {},
+    );
+    partnerOffers.insert(0, o);
+    await _save();
+    return o;
+  }
+
+  /// Ativa (aprova), pausa com motivo ou encerra uma oferta.
+  Future<void> setOfferStatusAsync(
+    String id,
+    String status, {
+    String? reason,
+  }) async {
+    if (!online) {
+      status == 'Pausada' ? pauseOffer(id, reason ?? '') : resumeOffer(id);
+      return;
+    }
+    final row = await remote!.setOfferStatus(id, status, reason: reason);
+    final i = partnerOffers.indexWhere((e) => e.id == id);
+    final old = i >= 0 ? partnerOffers[i] : null;
+    final o = _offerFrom(row, {id: (old?.issued ?? 0, old?.used ?? 0)});
+    if (i >= 0) partnerOffers[i] = o;
+    await _syncExtras(remote!);
+    await _save();
+  }
+
+  Future<Ticket> openTicketAsync({
+    required String kind,
+    required String subject,
+    required String body,
+  }) async {
+    if (!online) return openTicket(kind: kind, subject: subject, body: body);
+    final Ticket t;
+    try {
+      t = _ticketFrom(await remote!.openTicket(kind, subject, body));
+    } catch (_) {
+      // sem rede: guarda no aparelho para não perder a mensagem
+      return openTicket(kind: kind, subject: subject, body: body);
+    }
+    tickets.insert(0, t);
+    await _save();
+    return t;
+  }
+
+  Future<void> replyAsync(String ticketId, String text) async {
+    final t = tickets.firstWhere((e) => e.id == ticketId);
+    if (!online || t.remoteId == null) return reply(ticketId, text);
+    final row = await remote!.replyTicket(t.remoteId!, text);
+    final i = tickets.indexWhere((e) => e.id == ticketId);
+    tickets[i] = _ticketFrom(row);
+    await _save();
   }
 
   Future<(bool, String)> validateCodeAsync(String raw, int amountCents) async {
@@ -697,6 +862,8 @@ class AppStore extends ChangeNotifier {
   void setName(String v) {
     name = v.trim().isEmpty ? null : v.trim();
     _save();
+    if (online && name != null)
+      unawaited(remote!.updateName(name!).catchError((_) {}));
   }
 
   // ---------- Favoritos

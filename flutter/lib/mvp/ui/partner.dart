@@ -496,12 +496,22 @@ class OfferManageScreen extends ConsumerWidget {
                           ),
                         );
                         if (r != null) {
-                          s.pauseOffer(o.id, r);
-                          if (context.mounted)
-                            showMpSnack(
-                              context,
-                              'Oferta pausada. Turistas não veem mais o cupom.',
+                          try {
+                            await s.setOfferStatusAsync(
+                              o.id,
+                              'Pausada',
+                              reason: r,
                             );
+                            if (context.mounted) {
+                              showMpSnack(
+                                context,
+                                'Oferta pausada. Turistas não veem mais o cupom.',
+                              );
+                            }
+                          } on MvpException catch (e) {
+                            if (context.mounted)
+                              showMpSnack(context, e.message);
+                          }
                         }
                       },
                       icon: const Icon(Icons.pause_rounded),
@@ -510,17 +520,47 @@ class OfferManageScreen extends ConsumerWidget {
                   if (o.status == 'Pausada')
                     FilledButton.icon(
                       key: const Key('offer-resume'),
-                      onPressed: () {
-                        s.resumeOffer(o.id);
-                        showMpSnack(context, 'Oferta ativa de novo.');
+                      onPressed: () async {
+                        try {
+                          await s.setOfferStatusAsync(o.id, 'Ativa');
+                          if (context.mounted)
+                            showMpSnack(context, 'Oferta ativa de novo.');
+                        } on MvpException catch (e) {
+                          if (context.mounted) showMpSnack(context, e.message);
+                        }
                       },
                       icon: const Icon(Icons.play_arrow_rounded),
                       label: const Text('Retomar oferta'),
                     ),
-                  if (o.status == 'Em análise')
+                  if (o.status == 'Em análise') ...[
                     const MpNotice(
                       'A equipe MaraPass confere a oferta antes de publicar. Você recebe um aviso.',
                     ),
+                    if (s.online) ...[
+                      const SizedBox(height: MP.s3),
+                      FilledButton.icon(
+                        key: const Key('offer-approve'),
+                        style: FilledButton.styleFrom(
+                          backgroundColor: MP.green,
+                        ),
+                        onPressed: () async {
+                          try {
+                            await s.setOfferStatusAsync(o.id, 'Ativa');
+                            if (context.mounted)
+                              showMpSnack(
+                                context,
+                                'Oferta publicada. Os turistas já podem ativar.',
+                              );
+                          } on MvpException catch (e) {
+                            if (context.mounted)
+                              showMpSnack(context, e.message);
+                          }
+                        },
+                        icon: const Icon(Icons.verified_rounded),
+                        label: const Text('Aprovar (demonstração)'),
+                      ),
+                    ],
+                  ],
                 ],
               ),
             ),
@@ -588,15 +628,21 @@ class _CreateOfferState extends ConsumerState<CreateOfferScreen> {
       ),
     );
     if (sure != true || !mounted) return;
-    ref
-        .read(appStoreProvider)
-        .createOffer(
-          title: _title.text.trim(),
-          benefit: _benefit,
-          rules: _rules.text.trim(),
-          limit: _limit,
-          until: _until,
-        );
+    try {
+      await ref
+          .read(appStoreProvider)
+          .createOfferAsync(
+            title: _title.text.trim(),
+            benefit: _benefit,
+            rules: _rules.text.trim(),
+            limit: _limit,
+            until: _until,
+          );
+    } on MvpException catch (e) {
+      if (mounted) showMpSnack(context, e.message);
+      return;
+    }
+    if (!mounted) return;
     await Navigator.of(context).pushReplacement(
       MaterialPageRoute<void>(
         builder: (_) => MpStatusScreen(

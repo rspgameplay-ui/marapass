@@ -31,7 +31,7 @@ class _CouponsScreenState extends ConsumerState<CouponsScreen> {
     final mine = store.coupons;
     final activeIds = {for (final c in mine.where((c) => !c.used)) c.cupomId};
     final offers =
-        Content.cupons
+        Content.allCupons
             .where(
               (c) =>
                   !activeIds.contains(c.id) &&
@@ -45,7 +45,7 @@ class _CouponsScreenState extends ConsumerState<CouponsScreen> {
       2 => mine.where((c) => c.used),
       _ => mine.where((c) => c.expired),
     }.where((c) => _cat == null || c.cupom?.cat == _cat).toList();
-    final cats = {for (final c in Content.cupons) c.cat}.toList();
+    final cats = {for (final c in Content.allCupons) c.cat}.toList();
 
     return SafeArea(
       bottom: false,

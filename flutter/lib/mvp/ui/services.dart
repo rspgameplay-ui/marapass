@@ -30,9 +30,9 @@ class _CraftState extends ConsumerState<CraftPurchaseScreen> {
     );
     if (!ok || !mounted) return;
     final i = widget.item;
-    final t = ref
+    final t = await ref
         .read(appStoreProvider)
-        .openTicket(
+        .openTicketAsync(
           kind: 'Artesanato',
           subject: i.titulo,
           body: 'Quero $_qty ${_qty == 1 ? 'peça' : 'peças'} de ${i.titulo}.',
@@ -174,9 +174,9 @@ class _PhotoHireState extends ConsumerState<PhotoHireScreen> {
       reason: 'Entre para contratar o fotógrafo.',
     );
     if (!ok || !mounted || _day == null) return;
-    final t = ref
+    final t = await ref
         .read(appStoreProvider)
-        .openTicket(
+        .openTicketAsync(
           kind: 'Fotografia',
           subject: widget.item.titulo,
           body: '${fmtLong(_day!)}, $_period, $_people pessoas.',
@@ -430,9 +430,9 @@ class _TransferState extends ConsumerState<TransferQuoteScreen> {
     );
     if (!ok || !mounted) return;
     final where = _from == 'Endereço' ? _addr.text.trim() : _from;
-    final t = ref
+    final t = await ref
         .read(appStoreProvider)
-        .openTicket(
+        .openTicketAsync(
           kind: 'Transfer',
           subject: widget.item.titulo,
           body: 'Embarque: $where · ${fmtLong(_day!)} · $_pax passageiros',

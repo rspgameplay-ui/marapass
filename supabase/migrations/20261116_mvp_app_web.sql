@@ -1,5 +1,8 @@
 -- APLICADA no projeto Marapass (nwwxobiqynawxxnbvubz) em 16/11/2026 via MCP:
---   mvp_app_web_demo, mvp_hide_internal_helper, mvp_fix_coupon_code_random.
+--   mvp_app_web_demo, mvp_hide_internal_helper, mvp_fix_coupon_code_random, mvp_offers_and_tickets.
+-- Inclui ofertas do parceiro (mvp_partner_offers) e atendimento com protocolo (mvp_tickets).
+-- Para remover também: drop table public.mvp_partner_offers, public.mvp_tickets e as funções
+--   mvp_create_offer, mvp_set_offer_status, mvp_offer_stats, mvp_activate_offer_coupon, mvp_open_ticket, mvp_reply_ticket.
 -- Tabelas e funções isoladas (prefixo mvp_) do app web de homologação.
 -- Não alteram nenhum objeto existente nem o catálogo público do app de mapa.
 -- Remoção completa:
