@@ -30,9 +30,9 @@ const _forceDemo = bool.fromEnvironment('MVP_DEMO');
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Na web, liga a árvore de acessibilidade desde o início: leitores de tela
-  // e ampliadores funcionam sem o usuário precisar ativar nada.
-  if (kIsWeb) SemanticsBinding.instance.ensureSemantics();
+  // Acessibilidade na web: o Flutter liga a árvore sob demanda, quando um
+  // leitor de tela é usado. Ligar sempre deixava o iPhone lento e travava
+  // a digitação nos campos de texto do Safari.
   final repo = TourismRepository(await SharedPreferences.getInstance());
 
   // O mapa original continua acessível por parâmetros de URL (prévia

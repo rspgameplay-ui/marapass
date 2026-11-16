@@ -5,7 +5,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../theme/brand.dart';
 import '../data/store.dart';
+import '../theme/mara_logo.dart';
 import '../theme/tokens.dart';
+import 'animated_splash.dart';
 import '../theme/widgets.dart';
 import 'login_screen.dart';
 import 'shell.dart';
@@ -61,6 +63,7 @@ class _Gate extends StatefulWidget {
 
 class _GateState extends State<_Gate> {
   bool? _onboarded;
+  late bool _splashDone = widget.splash == Duration.zero;
 
   @override
   void initState() {
@@ -75,8 +78,6 @@ class _GateState extends State<_Gate> {
           (await SharedPreferences.getInstance()).getBool(_onboardedKey) ??
           false;
     } catch (_) {}
-    if (widget.splash > Duration.zero)
-      await Future<void>.delayed(widget.splash);
     if (mounted) setState(() => _onboarded = seen);
   }
 
@@ -93,9 +94,20 @@ class _GateState extends State<_Gate> {
   @override
   Widget build(BuildContext context) {
     final o = _onboarded;
-    if (o == null) return const _Splash();
-    if (!o) return _Welcome(onDone: _done);
-    return const MvpShell();
+    final Widget child;
+    if (!_splashDone) {
+      child = AnimatedSplash(
+        key: const ValueKey('splash'),
+        onDone: () => setState(() => _splashDone = true),
+      );
+    } else if (o == null) {
+      child = const _Splash();
+    } else if (!o) {
+      child = _Welcome(key: const ValueKey('welcome'), onDone: _done);
+    } else {
+      child = const MvpShell(key: ValueKey('shell'));
+    }
+    return AnimatedSwitcher(duration: const Duration(milliseconds: 400), child: child);
   }
 }
 
@@ -103,7 +115,7 @@ class _Splash extends StatelessWidget {
   const _Splash();
   @override
   Widget build(BuildContext context) => const Scaffold(
-    backgroundColor: MP.navy,
+    backgroundColor: maraNight,
     body: Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -128,7 +140,7 @@ class _Splash extends StatelessWidget {
 /// Apresentação com foto em tela cheia (protótipo aprovado) e os três
 /// pilares do Design Master: descobrir, benefícios e passaporte.
 class _Welcome extends ConsumerStatefulWidget {
-  const _Welcome({required this.onDone});
+  const _Welcome({super.key, required this.onDone});
   final Future<void> Function() onDone;
   @override
   ConsumerState<_Welcome> createState() => _WelcomeState();
