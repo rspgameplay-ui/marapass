@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/content.dart';
@@ -11,6 +10,7 @@ import '../providers.dart';
 import '../theme/tokens.dart';
 import '../theme/widgets.dart';
 import 'common.dart';
+import 'scan.dart';
 import 'shell.dart' show Tabs;
 
 /// Código impresso na placa MaraPass do local (demonstração).
@@ -66,7 +66,7 @@ class CheckinScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: MP.s3),
                       const Text(
-                        'Ler placa MaraPass',
+                        'Escanear QR Code',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 24,
@@ -75,17 +75,17 @@ class CheckinScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: MP.s1),
                       const Text(
-                        'Procure a placa no balcão ou na entrada do local.',
+                        'Aponte a câmera para a placa MaraPass no balcão ou na entrada do local.',
                         textAlign: TextAlign.center,
                         style: TextStyle(color: Colors.white, fontSize: 16),
                       ),
                       const SizedBox(height: MP.s4),
                       MpCtaButton(
                         key: const Key('checkin-plate'),
-                        label: 'Ler placa',
-                        icon: Icons.photo_camera_rounded,
+                        label: 'Abrir leitor',
+                        icon: Icons.qr_code_scanner_rounded,
                         onPressed: () =>
-                            push<void>(context, const PlateScreen()),
+                            push<void>(context, const ScanScreen()),
                       ),
                     ],
                   ),
@@ -141,133 +141,6 @@ class CheckinScreen extends ConsumerWidget {
       ),
     );
   }
-}
-
-/// Leitura da placa. Na web de teste, o turista digita o código impresso
-/// abaixo do QR (a câmera entra na versão instalada).
-class PlateScreen extends ConsumerStatefulWidget {
-  const PlateScreen({super.key});
-  @override
-  ConsumerState<PlateScreen> createState() => _PlateScreenState();
-}
-
-class _PlateScreenState extends ConsumerState<PlateScreen> {
-  final _ctrl = TextEditingController();
-  String? _error;
-
-  @override
-  void dispose() {
-    _ctrl.dispose();
-    super.dispose();
-  }
-
-  void _go() {
-    final it = itemByPlate(_ctrl.text);
-    if (it == null) {
-      setState(
-        () => _error = 'Não reconhecemos este código. Confira as letras impressas embaixo do QR da placa.',
-      );
-      return;
-    }
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute<void>(
-        builder: (_) => CheckinFlowScreen(item: it, viaPlate: true),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) => Scaffold(
-    body: SafeArea(
-      child: ListView(
-        padding: const EdgeInsets.only(bottom: MP.s8),
-        children: [
-          const MpHeader(
-            'Ler placa MaraPass',
-            subtitle: 'Digite o código impresso embaixo do QR da placa.',
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Container(
-                  height: 200,
-                  decoration: BoxDecoration(
-                    color: MP.ink,
-                    borderRadius: BorderRadius.circular(MP.rXl),
-                  ),
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Container(
-                        width: 150,
-                        height: 150,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: MP.yellow, width: 4),
-                          borderRadius: BorderRadius.circular(MP.rLarge),
-                        ),
-                      ),
-                      const Positioned(
-                        bottom: 14,
-                        child: Text(
-                          'A câmera abre na versão instalada do app',
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: MP.s5),
-                TextField(
-                  key: const Key('plate-code'),
-                  controller: _ctrl,
-                  textCapitalization: TextCapitalization.characters,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z0-9-]')),
-                    LengthLimitingTextInputFormatter(12),
-                  ],
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 3,
-                  ),
-                  decoration: const InputDecoration(
-                    labelText: 'Código da placa',
-                    hintText: 'MP-XXXXXX',
-                  ),
-                  onSubmitted: (_) => _go(),
-                ),
-                if (_error != null) ...[
-                  const SizedBox(height: MP.s3),
-                  MpNotice(
-                    _error!,
-                    icon: Icons.error_outline_rounded,
-                    fg: MP.error,
-                    bg: MP.errorBg,
-                  ),
-                ],
-                const SizedBox(height: MP.s4),
-                FilledButton(
-                  key: const Key('plate-submit'),
-                  onPressed: _go,
-                  child: const Text('Confirmar código'),
-                ),
-                const SizedBox(height: MP.s4),
-                MpNotice.demo(
-                  'Demonstração: experimente o código ${plateCode(Content.items.first)} (${Content.items.first.titulo}).',
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
 }
 
 /// "Estou no local": escolher o lugar.

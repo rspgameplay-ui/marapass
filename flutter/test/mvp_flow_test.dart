@@ -10,6 +10,7 @@ import 'package:marapass_mapa/mvp/data/supabase_repository.dart';
 import 'package:marapass_mapa/mvp/providers.dart';
 import 'package:marapass_mapa/mvp/ui/app.dart';
 import 'package:marapass_mapa/mvp/ui/checkin.dart';
+import 'package:marapass_mapa/mvp/ui/scan.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<(AppStore, DemoAuthGateway)> boot(
@@ -22,6 +23,7 @@ Future<(AppStore, DemoAuthGateway)> boot(
   tester.view.physicalSize = const Size(393 * 3, 852 * 3);
   tester.view.devicePixelRatio = 3;
   addTearDown(tester.view.reset);
+  ScanScreen.useCamera = false;
   final store = AppStore.memory();
   final auth = DemoAuthGateway();
   await tester.pumpWidget(
@@ -202,7 +204,7 @@ void main() {
         await tester.pump(const Duration(milliseconds: 400));
         await tester.pumpAndSettle();
         expect(find.text('Seu cupom'), findsOneWidget);
-        expect(find.text('Ativo'), findsOneWidget);
+        expect(find.text('Ativado'), findsOneWidget);
         expect(store.coupons.single.cupomId, 'c3');
         await tester.tap(find.byKey(const Key('coupon-reveal')));
         await tester.pump();
@@ -262,6 +264,9 @@ void main() {
       await tester.tap(find.byKey(const Key('qa-checkin')));
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(const Key('checkin-plate')));
+      await tester.pumpAndSettle();
+      expect(find.text('Escanear QR Code do Local'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('scan-manual')));
       await tester.pumpAndSettle();
       await tester.enterText(
         find.byKey(const Key('plate-code')),

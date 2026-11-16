@@ -356,11 +356,19 @@ class TicketCard extends StatelessWidget {
     required this.onTap,
     this.status,
     this.statusColor = MP.green,
+    this.code,
+    this.onQr,
   });
   final Cupom cupom;
   final VoidCallback onTap;
   final String? status;
   final Color statusColor;
+
+  /// Código de verificação do cupom ativado (exibido parcialmente).
+  final String? code;
+
+  /// Atalho para abrir o QR de resgate.
+  final VoidCallback? onQr;
   @override
   Widget build(BuildContext context) {
     final days = cupom.validade.difference(DateTime.now()).inDays;
@@ -448,6 +456,40 @@ class TicketCard extends StatelessWidget {
                               MpBadge(status!, fg: statusColor),
                           ],
                         ),
+                        if (code != null || onQr != null) ...[
+                          const SizedBox(height: MP.s2),
+                          Row(
+                            children: [
+                              if (code != null)
+                                Expanded(
+                                  child: Text(
+                                    'Cód. ••••${code!.length > 4 ? code!.substring(code!.length - 4) : code}',
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w700,
+                                      letterSpacing: 1,
+                                      color: MP.textSecondary,
+                                    ),
+                                  ),
+                                )
+                              else
+                                const Spacer(),
+                              if (onQr != null)
+                                FilledButton.tonalIcon(
+                                  key: Key('ticket-qr-${cupom.id}'),
+                                  onPressed: onQr,
+                                  style: FilledButton.styleFrom(
+                                    minimumSize: const Size(48, 40),
+                                    padding: const EdgeInsets.symmetric(horizontal: MP.s3),
+                                    backgroundColor: MP.tintGreen,
+                                    foregroundColor: MP.green,
+                                  ),
+                                  icon: const Icon(Icons.qr_code_2_rounded, size: 20),
+                                  label: const Text('Resgatar'),
+                                ),
+                            ],
+                          ),
+                        ],
                       ],
                     ),
                   ),

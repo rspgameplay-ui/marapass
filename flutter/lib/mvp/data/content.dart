@@ -89,6 +89,11 @@ class Item {
     this.data,
     this.artesao,
     this.remoteId,
+    this.nota,
+    this.avaliacoes,
+    this.comodidades = const [],
+    this.cafeIncluso = false,
+    this.cancelamentoGratis = false,
   });
   final String id;
   final Cat cat;
@@ -116,6 +121,17 @@ class Item {
 
   /// Id da experiência no Supabase, quando o item vem do banco real.
   final String? remoteId;
+
+  /// Nota média (0 a 5) e número de avaliações (demonstração).
+  final double? nota;
+  final int? avaliacoes;
+
+  /// Comodidades principais (Wi-Fi, piscina, perto da praia...).
+  final List<String> comodidades;
+
+  /// Políticas da diária, no padrão das tarifas de hotel.
+  final bool cafeIncluso;
+  final bool cancelamentoGratis;
 
   String get faixaLabel => r'$' * faixa;
   String get mapsQuery => '$titulo $cidade Maranhão';
@@ -558,6 +574,9 @@ abstract final class Content {
     // Gastronomia
     const Item(
       id: 'mangue',
+      nota: 4.7,
+      avaliacoes: 342,
+      comodidades: ['Aceita cartão', 'Área kids', 'Acessível'],
       cat: Cat.gastronomia,
       titulo: 'Casa do Mangue',
       resumo: 'Comida típica com vista para o rio.',
@@ -577,6 +596,9 @@ abstract final class Content {
     ),
     const Item(
       id: 'buriti',
+      nota: 4.6,
+      avaliacoes: 198,
+      comodidades: ['Aceita cartão', 'Vista para o rio'],
       cat: Cat.gastronomia,
       titulo: 'Restaurante o Buriti',
       resumo: 'Peixes e frutos do mar.',
@@ -593,6 +615,9 @@ abstract final class Content {
     ),
     const Item(
       id: 'cozinha',
+      nota: 4.8,
+      avaliacoes: 511,
+      comodidades: ['Comida regional', 'Aceita Pix'],
       cat: Cat.gastronomia,
       titulo: 'Cozinha da Praia Grande',
       resumo: 'Arroz de cuxá e pratos da casa.',
@@ -610,6 +635,9 @@ abstract final class Content {
     ),
     const Item(
       id: 'juja',
+      nota: 4.9,
+      avaliacoes: 77,
+      comodidades: ['Comida caseira', 'Aceita Pix'],
       cat: Cat.gastronomia,
       titulo: 'Casa de Juja',
       resumo: 'Galinha caipira e comida de quintal.',
@@ -626,6 +654,9 @@ abstract final class Content {
     ),
     const Item(
       id: 'conchas',
+      nota: 4.5,
+      avaliacoes: 260,
+      comodidades: ['Vista para o mar', 'Música ao vivo', 'Aceita cartão'],
       cat: Cat.gastronomia,
       titulo: 'Conchas Bar',
       resumo: 'Petiscos e drinks na beira-mar.',
@@ -643,6 +674,13 @@ abstract final class Content {
     // Hospedagem
     const Item(
       id: 'vila',
+      precoCents: 32000,
+      nota: 4.8,
+      avaliacoes: 126,
+      comodidades: ['Wi-Fi', 'Café da manhã', 'Redes na varanda', 'Estacionamento'],
+      cafeIncluso: true,
+      cancelamentoGratis: true,
+      horario: 'Check-in 14h · Check-out 12h',
       cat: Cat.hospedagem,
       titulo: 'Pousada Vila Lençóis',
       resumo: 'Quartos com varanda e café da manhã.',
@@ -660,6 +698,12 @@ abstract final class Content {
     ),
     const Item(
       id: 'atins-hotel',
+      precoCents: 54000,
+      nota: 4.9,
+      avaliacoes: 88,
+      comodidades: ['Piscina', 'Perto da praia', 'Bicicletas', 'Wi-Fi'],
+      cafeIncluso: true,
+      horario: 'Check-in 15h · Check-out 11h',
       cat: Cat.hospedagem,
       titulo: 'Refúgio de Atins',
       resumo: 'Chalés perto da praia.',
@@ -674,6 +718,13 @@ abstract final class Content {
     ),
     const Item(
       id: 'slz-hotel',
+      precoCents: 41000,
+      nota: 4.6,
+      avaliacoes: 214,
+      comodidades: ['Wi-Fi', 'Café da manhã', 'Ar-condicionado', 'Centro histórico'],
+      cafeIncluso: true,
+      cancelamentoGratis: true,
+      horario: 'Check-in 14h · Check-out 12h',
       cat: Cat.hospedagem,
       titulo: 'Hotel Casarão Colonial',
       resumo: 'Casarão restaurado no centro.',

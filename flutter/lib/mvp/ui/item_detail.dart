@@ -12,6 +12,7 @@ import 'checkin.dart';
 import 'common.dart';
 import 'coupons.dart';
 import 'services.dart';
+import 'stay.dart';
 
 /// Ficha única para todas as categorias. A ação principal muda conforme o tipo:
 /// reservar (passeio, natureza, cultura), cupom e contato (gastronomia,
@@ -156,6 +157,10 @@ class ItemDetailScreen extends ConsumerWidget {
                   style: Theme.of(context).textTheme.bodyLarge
                       ?.copyWith(color: MP.textSecondary),
                 ),
+                if (i.cat == Cat.hospedagem || i.cat == Cat.gastronomia) ...[
+                  const SizedBox(height: MP.s3),
+                  StayFacts(item: i),
+                ],
                 const SizedBox(height: MP.s3),
                 Wrap(
                   spacing: MP.s2,
@@ -202,7 +207,9 @@ class ItemDetailScreen extends ConsumerWidget {
                           ),
                         ),
                         TextSpan(
-                          text: i.cat.reservavel ? ' por pessoa' : '',
+                          text: i.cat.reservavel
+                              ? ' por pessoa'
+                              : (i.cat == Cat.hospedagem ? ' por noite' : ''),
                           style: const TextStyle(
                             fontSize: 16,
                             color: MP.textSecondary,
@@ -294,7 +301,41 @@ class ItemDetailScreen extends ConsumerWidget {
             onPressed: () => push<void>(context, BookingScreen(item: i)),
           ),
         ];
-      case Cat.gastronomia || Cat.hospedagem:
+      case Cat.hospedagem:
+        return [
+          MpCtaButton(
+            key: const Key('item-availability'),
+            label: 'Ver disponibilidade',
+            icon: Icons.calendar_month_rounded,
+            onPressed: () =>
+                push<void>(context, StayAvailabilityScreen(item: i)),
+          ),
+          if (cupom != null) ...[
+            const SizedBox(height: MP.s3),
+            OutlinedButton.icon(
+              key: const Key('item-coupon'),
+              onPressed: () =>
+                  push<void>(context, CouponDetailScreen(cupom: cupom)),
+              icon: const Icon(Icons.local_activity_rounded),
+              label: const Text('Ativar cupom'),
+            ),
+          ],
+          const SizedBox(height: MP.s3),
+          OutlinedButton.icon(
+            onPressed: () => openMaps(context, i.mapsQuery),
+            icon: const Icon(Icons.directions_rounded),
+            label: const Text('Como chegar'),
+          ),
+          if (i.telefone != null) ...[
+            const SizedBox(height: MP.s3),
+            OutlinedButton.icon(
+              onPressed: () => callPhone(context, i.telefone!),
+              icon: const Icon(Icons.call_rounded),
+              label: const Text('Ligar'),
+            ),
+          ],
+        ];
+      case Cat.gastronomia:
         return [
           if (cupom != null) ...[
             MpCtaButton(
@@ -306,11 +347,18 @@ class ItemDetailScreen extends ConsumerWidget {
             ),
             const SizedBox(height: MP.s3),
           ],
-          FilledButton.icon(
-            onPressed: () => openMaps(context, i.mapsQuery),
-            icon: const Icon(Icons.directions_rounded),
-            label: const Text('Como chegar'),
-          ),
+          if (cupom == null)
+            FilledButton.icon(
+              onPressed: () => openMaps(context, i.mapsQuery),
+              icon: const Icon(Icons.directions_rounded),
+              label: const Text('Como chegar'),
+            )
+          else
+            OutlinedButton.icon(
+              onPressed: () => openMaps(context, i.mapsQuery),
+              icon: const Icon(Icons.directions_rounded),
+              label: const Text('Como chegar'),
+            ),
           if (i.telefone != null) ...[
             const SizedBox(height: MP.s3),
             OutlinedButton.icon(
@@ -338,7 +386,7 @@ class ItemDetailScreen extends ConsumerWidget {
             },
           ),
           const SizedBox(height: MP.s3),
-          FilledButton.icon(
+          OutlinedButton.icon(
             onPressed: () =>
                 openMaps(context, '${i.endereco ?? i.titulo} ${i.cidade}'),
             icon: const Icon(Icons.directions_rounded),

@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 import '../data/content.dart';
+import '../data/models.dart' show formatBrl;
 import '../data/repository.dart';
 import '../data/store.dart';
 import '../theme/tokens.dart';
@@ -54,10 +55,14 @@ class _CouponsScreenState extends ConsumerState<CouponsScreen> {
       padding: const EdgeInsets.fromLTRB(MP.pageH, 0, MP.pageH, MP.s3),
       child: TicketCard(
         cupom: c.cupom!,
-        status: c.used ? 'Usado' : (c.expired ? 'Expirado' : 'Ativo'),
+        status: c.used ? 'Utilizado' : (c.expired ? 'Expirado' : 'Ativado'),
         statusColor: c.used
             ? MP.textSecondary
             : (c.expired ? MP.warning : MP.success),
+        code: c.active ? c.code : null,
+        onQr: c.active
+            ? () => push<void>(context, CouponActiveScreen(couponId: c.id))
+            : null,
         onTap: () => push<void>(context, CouponActiveScreen(couponId: c.id)),
       ),
     );
@@ -103,6 +108,10 @@ class _CouponsScreenState extends ConsumerState<CouponsScreen> {
                   ),
               ],
             ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(MP.pageH, 0, MP.pageH, MP.s4),
+            child: WalletSummary(store: store),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
@@ -199,6 +208,8 @@ class _CouponsScreenState extends ConsumerState<CouponsScreen> {
                 ),
                 child: TicketCard(
                   cupom: c,
+                  status: 'Disponível',
+                  statusColor: MP.info,
                   onTap: () =>
                       push<void>(context, CouponDetailScreen(cupom: c)),
                 ),
@@ -466,10 +477,10 @@ class _ActiveState extends ConsumerState<CouponActiveScreen> {
     final c = store.coupons.firstWhere((e) => e.id == widget.couponId);
     final cupom = c.cupom!;
     final (label, fg, bg) = c.used
-        ? ('Usado', MP.textSecondary, MP.soft)
+        ? ('Utilizado', MP.textSecondary, MP.soft)
         : c.expired
         ? ('Expirado', MP.warning, MP.warningBg)
-        : ('Ativo', MP.success, MP.successBg);
+        : ('Ativado', MP.success, MP.successBg);
     return Scaffold(
       body: SafeArea(
         child: ListView(
@@ -626,4 +637,120 @@ class _ActiveState extends ConsumerState<CouponActiveScreen> {
       ),
     );
   }
+}
+
+/// Valor estimado de um cupom: valor fixo, ou percentual sobre o preço do
+/// item, ou um valor médio de referência quando não há preço.
+int couponValueCents(Cupom c) {
+  if (c.valorCents != null) return c.valorCents!;
+  final pct = RegExp(r'(\d+)\s*%').firstMatch(c.beneficio);
+  final price = Content.item(c.itemId)?.precoCents;
+  if (pct != null && price != null) {
+    return price * int.parse(pct.group(1)!) ~/ 100;
+  }
+  final brl = RegExp(r'R\$\s*(\d+)').firstMatch(c.beneficio);
+  if (brl != null) return int.parse(brl.group(1)!) * 100;
+  return 1500;
+}
+
+/// Resumo da carteira de benefícios: economia acumulada, cupons ativos e
+/// pontos do Passaporte, no formato de saldo de carteira digital.
+class WalletSummary extends StatelessWidget {
+  const WalletSummary({super.key, required this.store});
+  final AppStore store;
+  @override
+  Widget build(BuildContext context) {
+    final used = store.coupons.where((c) => c.used && c.cupom != null).toList();
+    final active = store.coupons.where((c) => c.active && c.cupom != null).toList();
+    final saved = used.fold<int>(0, (a, c) => a + couponValueCents(c.cupom!));
+    final potential = active.fold<int>(0, (a, c) => a + couponValueCents(c.cupom!));
+    return Container(
+      key: const Key('wallet-summary'),
+      padding: const EdgeInsets.all(MP.s5),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [MP.navy, Color(0xff0f5a6e)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(MP.rXl),
+        boxShadow: MP.shadowFloat,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Icon(Icons.account_balance_wallet_rounded, color: MP.yellow, size: 22),
+              SizedBox(width: MP.s2),
+              Flexible(
+                child: Text(
+                  'Benefícios MaraPass',
+                  style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w700),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: MP.s3),
+          Text(
+            formatBrl(saved),
+            key: const Key('wallet-saved'),
+            style: const TextStyle(color: Colors.white, fontSize: 34, fontWeight: FontWeight.w800, height: 1.1),
+          ),
+          const Text(
+            'economia estimada com cupons usados',
+            style: TextStyle(color: Color(0xffc9d6e3), fontSize: 14),
+          ),
+          const SizedBox(height: MP.s4),
+          Row(
+            children: [
+              _WalletMetric(value: '${active.length}', label: 'cupons ativos'),
+              _WalletMetric(value: '${used.length}', label: 'usados'),
+              _WalletMetric(
+                value: '${store.points}',
+                label: 'pontos · ${store.stampedPolos.length} carimbos',
+              ),
+            ],
+          ),
+          if (potential > 0) ...[
+            const SizedBox(height: MP.s3),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: MP.s3, vertical: MP.s2),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: .12),
+                borderRadius: BorderRadius.circular(MP.rMedium),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.savings_rounded, color: MP.yellow, size: 18),
+                  const SizedBox(width: MP.s2),
+                  Expanded(
+                    child: Text(
+                      'Ainda pode economizar ${formatBrl(potential)} com os cupons ativos',
+                      style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _WalletMetric extends StatelessWidget {
+  const _WalletMetric({required this.value, required this.label});
+  final String value, label;
+  @override
+  Widget build(BuildContext context) => Expanded(
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(value, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w800)),
+        Text(label, maxLines: 2, style: const TextStyle(color: Color(0xffc9d6e3), fontSize: 12.5)),
+      ],
+    ),
+  );
 }

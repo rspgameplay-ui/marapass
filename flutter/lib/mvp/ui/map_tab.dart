@@ -27,6 +27,9 @@ import '../data/store.dart';
 import '../theme/tokens.dart';
 import '../theme/widgets.dart';
 import 'common.dart';
+import 'itinerary.dart';
+import 'nav_screen.dart';
+import 'stay.dart';
 
 /// Tipos de ponto no mapa, com cor e ícone próprios.
 enum PoiKind {
@@ -132,6 +135,34 @@ const _cityCenters = <String, GeoPoint>{
 
 const _maranhao = LatLng(-3.9, -44.8);
 
+/// Capa em alta resolução por categoria, para nenhum card ficar sem foto.
+const _covers = <PoiKind, String>{
+  PoiKind.cultura: 'p2',
+  PoiKind.natureza: 'lagoa_boat',
+  PoiKind.praias: 'p1',
+  PoiKind.ilhas: 'p3',
+  PoiKind.passeios: 'sunset',
+  PoiKind.gastronomia: 'rest',
+  PoiKind.hospedagem: 'p4',
+  PoiKind.eventos: 'p2',
+  PoiKind.artesanato: 'ceramica',
+  PoiKind.destinos: 'lagoa_boat',
+  PoiKind.outros: 'p3',
+};
+
+/// Posição de demonstração de um item do catálogo: perto da sede da cidade,
+/// sempre no mesmo lugar (calculada a partir do id).
+GeoPoint itemPoint(Item i) {
+  final c = _cityCenters[i.cidade] ?? const GeoPoint(-2.5297, -44.3028);
+  var h = 2166136261;
+  for (final u in i.id.codeUnits) {
+    h = ((h ^ u) * 16777619) % 4294967296;
+  }
+  final a = (h % 65536) / 65536 * math.pi * 2;
+  final r = .004 + ((h ~/ 65536) % 65536) / 65536 * .012;
+  return GeoPoint(c.lat + math.sin(a) * r, c.lng + math.cos(a) * r);
+}
+
 /// Mapa turístico com MapLibre: visão 2D e 3D (inclinação e rotação), prédios
 /// em 3D, pontos agrupados por categoria, prévia ao tocar e rota real (OSRM)
 /// com distância e tempo. A navegação por voz e os recursos do mapa completo
@@ -159,23 +190,22 @@ class _MapTabState extends ConsumerState<MapTab> {
   bool _pickingOrigin = false;
   bool _routing = false;
   String? _routeError;
+  DayPlan? _plan;
+  RoadRoute? _planRoute;
+  bool _planBusy = false;
+  String? _planError;
 
   List<Poi> _buildPois() {
     final out = <Poi>[];
-    final rnd = math.Random(7);
     for (final i in Content.items) {
-      final c = _cityCenters[i.cidade];
-      if (c == null) continue;
-      // Espalha os pontos da mesma cidade para não ficarem sobrepostos.
-      final a = rnd.nextDouble() * math.pi * 2,
-          r = .004 + rnd.nextDouble() * .012;
+      if (!_cityCenters.containsKey(i.cidade)) continue;
       out.add(
         Poi(
           id: i.id,
           name: i.titulo,
           city: i.cidade,
           kind: PoiKind.fromCat(i.cat),
-          point: GeoPoint(c.lat + math.sin(a) * r, c.lng + math.cos(a) * r),
+          point: itemPoint(i),
           item: i,
           featured: true,
         ),
@@ -367,6 +397,39 @@ class _MapTabState extends ConsumerState<MapTab> {
         lineJoin: 'round',
       ),
     );
+    await c.addSource('stops', GeojsonSourceProperties(data: _stops(null)));
+    await c.addCircleLayer(
+      'stops',
+      'stops-dot',
+      const CircleLayerProperties(
+        circleColor: [
+          'case',
+          ['==', ['get', 'a'], 1],
+          '#fac61d',
+          '#0b3a66',
+        ],
+        circleRadius: 15,
+        circleStrokeColor: '#ffffff',
+        circleStrokeWidth: 3,
+      ),
+    );
+    await c.addSymbolLayer(
+      'stops',
+      'stops-num',
+      const SymbolLayerProperties(
+        textField: ['get', 'n'],
+        textFont: ['Noto Sans Bold'],
+        textSize: 14,
+        textColor: [
+          'case',
+          ['==', ['get', 'a'], 1],
+          '#13263d',
+          '#ffffff',
+        ],
+        textAllowOverlap: true,
+        textIgnorePlacement: true,
+      ),
+    );
     await c.addSource('origin', GeojsonSourceProperties(data: _point(null)));
     await c.addCircleLayer(
       'origin',
@@ -490,6 +553,96 @@ class _MapTabState extends ConsumerState<MapTab> {
       ],
     );
     if (mounted) setState(() => _ready = true);
+    _consumePlan();
+  }
+
+  Map<String, dynamic> _stops(DayPlan? plan) => {
+    'type': 'FeatureCollection',
+    'features': [
+      if (plan != null)
+        for (var k = 0; k < plan.stops.length; k++)
+          {
+            'type': 'Feature',
+            'properties': {'n': '${k + 1}', 'a': plan.stops[k].anchor ? 1 : 0},
+            'geometry': {
+              'type': 'Point',
+              'coordinates': [
+                itemPoint(plan.stops[k].item).lng,
+                itemPoint(plan.stops[k].item).lat,
+              ],
+            },
+          },
+    ],
+  };
+
+  /// Roteiro pedido pela tela "Roteiro do dia".
+  void _consumePlan() {
+    if (!_ready) return;
+    final plan = ref.read(itineraryRequestProvider);
+    if (plan == null) return;
+    Future.microtask(() => ref.read(itineraryRequestProvider.notifier).state = null);
+    _tracePlan(plan);
+  }
+
+  Future<void> _tracePlan(DayPlan plan) async {
+    final pts = [for (final s in plan.stops) itemPoint(s.item)];
+    setState(() {
+      _selected = null;
+      _route = null;
+      _plan = plan;
+      _planRoute = null;
+      _planBusy = true;
+      _planError = null;
+    });
+    await _c?.setGeoJsonSource('stops', _stops(plan));
+    await _c?.setGeoJsonSource('route', _line(const []));
+    await _fitPoints(pts);
+    try {
+      final r = await ref.read(routingRepositoryProvider).routeThrough(pts);
+      if (!mounted || _plan != plan) return;
+      setState(() => _planRoute = r);
+      await _c?.setGeoJsonSource('route', _line(r.points));
+      await _fitPoints(r.points);
+    } catch (_) {
+      if (mounted) setState(() => _planError = 'Não foi possível traçar o percurso agora. As paradas estão marcadas no mapa.');
+    } finally {
+      if (mounted) setState(() => _planBusy = false);
+    }
+  }
+
+  Future<void> _fitPoints(List<GeoPoint> pts) async {
+    if (pts.isEmpty) return;
+    final lats = pts.map((e) => e.lat), lngs = pts.map((e) => e.lng);
+    await _c?.animateCamera(
+      CameraUpdate.newLatLngBounds(
+        LatLngBounds(
+          southwest: LatLng(lats.reduce(math.min), lngs.reduce(math.min)),
+          northeast: LatLng(lats.reduce(math.max), lngs.reduce(math.max)),
+        ),
+        left: 56,
+        right: 72,
+        top: 190,
+        bottom: 330,
+      ),
+      duration: const Duration(milliseconds: 900),
+    );
+  }
+
+  Future<void> _closePlan() async {
+    setState(() {
+      _plan = null;
+      _planRoute = null;
+      _planError = null;
+    });
+    await _c?.setGeoJsonSource('stops', _stops(null));
+    await _c?.setGeoJsonSource('route', _line(const []));
+  }
+
+  void _navigate({required String name, required GeoPoint dest, required GeoPoint origin, required RoadRoute route, required String originLabel}) {
+    push<void>(
+      context,
+      RouteNavScreen(destinationName: name, destination: dest, origin: origin, route: route, originLabel: originLabel),
+    );
   }
 
   Map<String, dynamic> _islandShapes() => {
@@ -831,6 +984,7 @@ class _MapTabState extends ConsumerState<MapTab> {
   }
 
   Future<void> _select(Poi p, {bool fly = true}) async {
+    if (_plan != null) await _closePlan();
     setState(() {
       _selected = p;
       _route = null;
@@ -1025,6 +1179,9 @@ class _MapTabState extends ConsumerState<MapTab> {
       return Theme(data: legacyMapTheme(), child: const MapScreen());
     }
     final pad = MediaQuery.paddingOf(context);
+    ref.listen<DayPlan?>(itineraryRequestProvider, (_, next) {
+      if (next != null) _consumePlan();
+    });
     return Stack(
       children: [
         MapLibreMap(
@@ -1046,13 +1203,15 @@ class _MapTabState extends ConsumerState<MapTab> {
         ),
         // Busca e filtros
         Positioned(
-          left: MP.pageH,
-          right: MP.pageH,
+          left: 0,
+          right: 0,
           top: pad.top + MP.s3,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Material(
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
+                child: Material(
                 elevation: 3,
                 shadowColor: Colors.black26,
                 borderRadius: BorderRadius.circular(MP.rMedium),
@@ -1093,11 +1252,20 @@ class _MapTabState extends ConsumerState<MapTab> {
                   ),
                 ),
               ),
+              ),
               const SizedBox(height: MP.s2),
               SizedBox(
-                height: 44,
-                child: ListView.separated(
+                height: 48,
+                child: ShaderMask(
+                  blendMode: BlendMode.dstIn,
+                  shaderCallback: (r) => const LinearGradient(
+                    colors: [Colors.transparent, Colors.black, Colors.black, Colors.transparent],
+                    stops: [0, .05, .93, 1],
+                  ).createShader(r),
+                  child: ListView.separated(
+                  key: const Key('map-kinds'),
                   scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: MP.pageH, vertical: 2),
                   itemCount: PoiKind.values.length - 1,
                   separatorBuilder: (_, __) => const SizedBox(width: MP.s2),
                   itemBuilder: (_, i) {
@@ -1123,12 +1291,14 @@ class _MapTabState extends ConsumerState<MapTab> {
                       backgroundColor: MP.card,
                       elevation: 2,
                       shadowColor: Colors.black26,
+                      side: BorderSide(color: on ? k.color : MP.border),
                       onSelected: (v) {
                         setState(() => v ? _kinds.add(k) : _kinds.remove(k));
                         _refreshPois();
                       },
                     );
                   },
+                ),
                 ),
               ),
             ],
@@ -1142,7 +1312,7 @@ class _MapTabState extends ConsumerState<MapTab> {
             children: [
               _MapButton(
                 key: const Key('map-3d'),
-                label: _threeD ? '2D' : '3D',
+                label: '3D',
                 tooltip: _threeD
                     ? 'Ver de cima (2D)'
                     : 'Ver em perspectiva (3D)',
@@ -1196,12 +1366,12 @@ class _MapTabState extends ConsumerState<MapTab> {
               child: ColoredBox(color: Color(0x66ffffff), child: MpLoading()),
             ),
           ),
-        // Prévia do ponto / rota
-        if (_selected != null)
+        // Prévia do ponto / rota (16 px acima da barra inferior)
+        if (_selected != null && _plan == null)
           Positioned(
             left: MP.s3,
             right: MP.s3,
-            bottom: MP.s6,
+            bottom: MP.s4,
             child: _PoiCard(
               poi: _selected!,
               route: _route,
@@ -1216,20 +1386,57 @@ class _MapTabState extends ConsumerState<MapTab> {
               onRoute: _traceRoute,
               onClearRoute: _clearRoute,
               onFollow3d: _followRoute3d,
-              onNavigate: () => push<void>(
-                context,
-                Theme(
-                  data: legacyMapTheme(),
-                  child: NavigationScreen(
-                    destination: _selected!.asPlace,
-                    autoPlan: true,
-                  ),
-                ),
+              onNavigate: () => _navigate(
+                name: _selected!.name,
+                dest: _selected!.point,
+                origin: _origin!,
+                route: _route!,
+                originLabel: _originLabel,
               ),
               onDetails: _selected!.item == null
                   ? null
                   : () => openItem(context, _selected!.item!),
               extras: _extrasFor(_selected!),
+            ),
+          ),
+        if (_plan != null)
+          Positioned(
+            left: MP.s3,
+            right: MP.s3,
+            bottom: MP.s4,
+            child: _PlanCard(
+              plan: _plan!,
+              route: _planRoute,
+              busy: _planBusy,
+              error: _planError,
+              onClose: _closePlan,
+              onStop: (k) => _c?.animateCamera(
+                CameraUpdate.newLatLngZoom(
+                  LatLng(itemPoint(_plan!.stops[k].item).lat, itemPoint(_plan!.stops[k].item).lng),
+                  15,
+                ),
+                duration: const Duration(milliseconds: 800),
+              ),
+              onFollow3d: () async {
+                final r = _planRoute;
+                if (r == null) return;
+                final keep = _route;
+                _route = r;
+                await _followRoute3d();
+                _route = keep;
+              },
+              onNavigate: () {
+                final r = _planRoute;
+                if (r == null) return;
+                final first = _plan!.stops.first.item, last = _plan!.stops.last.item;
+                _navigate(
+                  name: last.titulo,
+                  dest: itemPoint(last),
+                  origin: itemPoint(first),
+                  route: r,
+                  originLabel: first.titulo,
+                );
+              },
             ),
           ),
       ],
@@ -1255,10 +1462,13 @@ class _MapButton extends StatelessWidget {
   Widget build(BuildContext context) => Tooltip(
     message: tooltip,
     child: Material(
-      elevation: 3,
-      shadowColor: Colors.black26,
+      elevation: 6,
+      shadowColor: Colors.black54,
       color: active ? MP.navy : MP.card,
-      borderRadius: BorderRadius.circular(MP.rMedium),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(MP.rMedium),
+        side: BorderSide(color: active ? MP.navy : MP.border, width: 1.2),
+      ),
       child: InkWell(
         borderRadius: BorderRadius.circular(MP.rMedium),
         onTap: onTap,
@@ -1289,6 +1499,107 @@ class _MapButton extends StatelessWidget {
   );
 }
 
+String _km(double m) => m >= 1000
+    ? '${(m / 1000).toStringAsFixed(m >= 10000 ? 0 : 1).replaceAll('.', ',')} km'
+    : '${m.round()} m';
+String _time(double s) {
+  final min = (s / 60).round();
+  if (min < 60) return '$min min';
+  return '${min ~/ 60} h ${(min % 60).toString().padLeft(2, '0')} min';
+}
+
+/// Botão compacto quadrado (ações secundárias como 3D).
+class _SquareAction extends StatelessWidget {
+  const _SquareAction({super.key, required this.label, required this.tooltip, required this.onTap});
+  final String label, tooltip;
+  final VoidCallback onTap;
+  @override
+  Widget build(BuildContext context) => Tooltip(
+    message: tooltip,
+    child: OutlinedButton(
+      onPressed: onTap,
+      style: OutlinedButton.styleFrom(
+        minimumSize: const Size(MP.buttonHeight, MP.buttonHeight),
+        maximumSize: const Size(72, MP.buttonHeight),
+        padding: const EdgeInsets.symmetric(horizontal: MP.s3),
+        side: const BorderSide(color: MP.border, width: 1.5),
+        foregroundColor: MP.navy,
+      ),
+      child: Text(label, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 17)),
+    ),
+  );
+}
+
+/// Cabeçalho comum dos cards do mapa: foto (ou capa da categoria), título e X.
+class _CardHeader extends StatelessWidget {
+  const _CardHeader({required this.poi, required this.onX, required this.xTooltip, this.xKey});
+  final Poi poi;
+  final VoidCallback onX;
+  final String xTooltip;
+  final Key? xKey;
+  @override
+  Widget build(BuildContext context) {
+    final it = poi.item;
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 72,
+          height: 72,
+          child: MpPhoto(
+            key: const Key('poi-photo'),
+            photo: it?.foto ?? _covers[poi.kind],
+            height: 72,
+            radius: MP.rMedium,
+            icon: poi.kind.icon,
+          ),
+        ),
+        const SizedBox(width: MP.s3),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(poi.name, maxLines: 2, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: 2),
+              Row(
+                children: [
+                  Icon(poi.kind.icon, size: 16, color: poi.kind.color),
+                  const SizedBox(width: 4),
+                  Flexible(
+                    child: Text(
+                      '${poi.kind.label} · ${poi.city}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ),
+                ],
+              ),
+              if (it?.nota != null) ...[
+                const SizedBox(height: 2),
+                Row(
+                  children: [
+                    RatingLine(item: it!, size: 14),
+                    const SizedBox(width: MP.s2),
+                    Text(it.faixaLabel, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: MP.green)),
+                  ],
+                ),
+              ],
+            ],
+          ),
+        ),
+        IconButton(
+          key: xKey,
+          tooltip: xTooltip,
+          onPressed: onX,
+          style: IconButton.styleFrom(backgroundColor: MP.soft, minimumSize: const Size(44, 44)),
+          icon: const Icon(Icons.close_rounded, color: MP.ink),
+        ),
+      ],
+    );
+  }
+}
+
 class _PoiCard extends StatelessWidget {
   const _PoiCard({
     required this.poi,
@@ -1315,22 +1626,15 @@ class _PoiCard extends StatelessWidget {
   final VoidCallback? onDetails;
   final List<(IconData, String, VoidCallback)> extras;
 
-  static String _km(double m) => m >= 1000
-      ? '${(m / 1000).toStringAsFixed(m >= 10000 ? 0 : 1).replaceAll('.', ',')} km'
-      : '${m.round()} m';
-  static String _time(double s) {
-    final min = (s / 60).round();
-    if (min < 60) return '$min min';
-    return '${min ~/ 60} h ${(min % 60).toString().padLeft(2, '0')} min';
-  }
-
   @override
   Widget build(BuildContext context) {
     final r = route;
+    final it = poi.item;
+    final stay = it != null && (it.cat == Cat.hospedagem || it.cat == Cat.gastronomia);
     return Material(
       key: const Key('map-poi-card'),
-      elevation: 8,
-      shadowColor: Colors.black38,
+      elevation: 10,
+      shadowColor: Colors.black45,
       color: MP.card,
       borderRadius: BorderRadius.circular(MP.rXl),
       child: Padding(
@@ -1339,176 +1643,117 @@ class _PoiCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Row(
-              children: [
-                SizedBox(
-                  width: 64,
-                  height: 64,
-                  child: poi.item?.foto != null
-                      ? MpPhoto(
-                          photo: poi.item!.foto,
-                          height: 64,
-                          radius: MP.rMedium,
-                        )
-                      : DecoratedBox(
-                          decoration: BoxDecoration(
-                            color: poi.kind.color.withValues(alpha: .12),
-                            borderRadius: BorderRadius.circular(MP.rMedium),
-                          ),
-                          child: Icon(
-                            poi.kind.icon,
-                            color: poi.kind.color,
-                            size: 32,
-                          ),
-                        ),
-                ),
-                const SizedBox(width: MP.s3),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        poi.name,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        '${poi.kind.label} · ${poi.city}',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                    ],
-                  ),
-                ),
-                IconButton(
-                  tooltip: 'Fechar',
-                  onPressed: onClose,
-                  icon: const Icon(Icons.close_rounded),
-                ),
-              ],
+            _CardHeader(
+              poi: poi,
+              onX: r != null ? onClearRoute : onClose,
+              xTooltip: r != null ? 'Limpar rota' : 'Fechar',
+              xKey: Key(r != null ? 'route-clear' : 'poi-close'),
             ),
-            if (extras.isNotEmpty) ...[
-              const SizedBox(height: MP.s3),
-              Wrap(
-                spacing: MP.s2,
-                runSpacing: MP.s2,
-                children: [
-                  for (final e in extras)
-                    ActionChip(
-                      key: Key('poi-extra-${e.$2}'),
-                      avatar: Icon(e.$1, size: 18, color: MP.navy),
-                      label: Text(e.$2),
-                      onPressed: e.$3,
-                    ),
-                ],
-              ),
-            ],
-            const SizedBox(height: MP.s3),
             if (r != null) ...[
+              const SizedBox(height: MP.s3),
+              // Linha de informações da rota
               Container(
-                padding: const EdgeInsets.all(MP.s3),
-                decoration: BoxDecoration(
-                  color: const Color(0xffe8f0fe),
-                  borderRadius: BorderRadius.circular(MP.rMedium),
-                ),
-                child: Row(
+                key: const Key('route-info'),
+                padding: const EdgeInsets.fromLTRB(MP.s3, MP.s3, MP.s1, MP.s2),
+                decoration: BoxDecoration(color: const Color(0xffeef4fd), borderRadius: BorderRadius.circular(MP.rMedium)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(
-                      Icons.directions_car_rounded,
-                      color: Color(0xff1a73e8),
-                      size: 28,
-                    ),
-                    const SizedBox(width: MP.s3),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            _time(r.duration),
-                            key: const Key('route-time'),
-                            style: const TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.w800,
-                              color: Color(0xff0b57d0),
-                            ),
-                          ),
-                          Text(
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.baseline,
+                      textBaseline: TextBaseline.alphabetic,
+                      children: [
+                        Text(
+                          _time(r.duration),
+                          key: const Key('route-time'),
+                          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800, color: Color(0xff0b57d0)),
+                        ),
+                        const SizedBox(width: MP.s2),
+                        Expanded(
+                          child: Text(
                             '${_km(r.distance)}${r.summary.isEmpty ? '' : ' · via ${r.summary}'}',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: MP.text,
-                            ),
+                            style: const TextStyle(fontSize: 15, color: MP.text, fontWeight: FontWeight.w600),
                           ),
-                          Text(
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        const Icon(Icons.trip_origin_rounded, size: 16, color: Color(0xff1a73e8)),
+                        const SizedBox(width: MP.s1),
+                        Expanded(
+                          child: Text(
                             'Partida: $originLabel',
-                            style: const TextStyle(
-                              fontSize: 13,
-                              color: MP.textSecondary,
-                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(fontSize: 14, color: MP.textSecondary),
                           ),
-                        ],
-                      ),
+                        ),
+                        IconButton(
+                          key: const Key('route-origin'),
+                          tooltip: 'Alterar partida',
+                          onPressed: onChangeOrigin,
+                          icon: const Icon(Icons.edit_location_alt_rounded, color: MP.navy),
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ),
               const SizedBox(height: MP.s3),
+              // Linha de ações: 1 primária + 1 compacta
               Row(
                 children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      key: const Key('route-3d'),
-                      onPressed: onFollow3d,
-                      icon: const Icon(Icons.view_in_ar_rounded),
-                      label: const Text('Ver em 3D'),
-                    ),
-                  ),
-                  const SizedBox(width: MP.s2),
                   Expanded(
                     child: FilledButton.icon(
                       key: const Key('route-go'),
                       onPressed: onNavigate,
+                      style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(MP.buttonHeight)),
                       icon: const Icon(Icons.navigation_rounded),
-                      label: const Text('Iniciar'),
+                      label: const Text('Iniciar navegação'),
                     ),
                   ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  TextButton.icon(
-                    key: const Key('route-origin'),
-                    onPressed: onChangeOrigin,
-                    icon: const Icon(Icons.edit_location_alt_rounded),
-                    label: const Text('Alterar partida'),
-                  ),
-                  TextButton(
-                    onPressed: onClearRoute,
-                    child: const Text('Limpar rota'),
-                  ),
+                  const SizedBox(width: MP.s2),
+                  _SquareAction(key: const Key('route-3d'), label: '3D', tooltip: 'Ver a partida em 3D', onTap: onFollow3d),
                 ],
               ),
             ] else ...[
-              if (error != null) ...[
-                MpNotice(
-                  error!,
-                  icon: Icons.wifi_off_rounded,
-                  fg: MP.error,
-                  bg: MP.errorBg,
-                ),
+              if (stay) ...[
                 const SizedBox(height: MP.s3),
+                StayFacts(item: it, compact: true),
               ],
+              if (extras.isNotEmpty) ...[
+                const SizedBox(height: MP.s3),
+                Wrap(
+                  spacing: MP.s2,
+                  runSpacing: MP.s2,
+                  children: [
+                    for (final e in extras)
+                      ActionChip(
+                        key: Key('poi-extra-${e.$2}'),
+                        avatar: Icon(e.$1, size: 18, color: MP.navy),
+                        label: Text(e.$2),
+                        onPressed: e.$3,
+                      ),
+                  ],
+                ),
+              ],
+              if (error != null) ...[
+                const SizedBox(height: MP.s3),
+                MpNotice(error!, icon: Icons.wifi_off_rounded, fg: MP.error, bg: MP.errorBg),
+              ],
+              const SizedBox(height: MP.s3),
               Row(
                 children: [
                   if (onDetails != null) ...[
                     Expanded(
                       child: OutlinedButton(
+                        key: const Key('poi-details'),
                         onPressed: onDetails,
-                        child: const Text('Ver detalhes'),
+                        style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(MP.buttonHeight)),
+                        child: Text(it?.cat == Cat.hospedagem ? 'Disponibilidade' : 'Ver detalhes'),
                       ),
                     ),
                     const SizedBox(width: MP.s2),
@@ -1525,6 +1770,123 @@ class _PoiCard extends StatelessWidget {
                 ],
               ),
             ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Card do roteiro do dia no mapa: paradas numeradas, tempo total e navegação.
+class _PlanCard extends StatelessWidget {
+  const _PlanCard({
+    required this.plan,
+    required this.route,
+    required this.busy,
+    required this.error,
+    required this.onClose,
+    required this.onStop,
+    required this.onFollow3d,
+    required this.onNavigate,
+  });
+  final DayPlan plan;
+  final RoadRoute? route;
+  final bool busy;
+  final String? error;
+  final VoidCallback onClose, onFollow3d, onNavigate;
+  final ValueChanged<int> onStop;
+
+  @override
+  Widget build(BuildContext context) {
+    final r = route;
+    return Material(
+      key: const Key('map-plan-card'),
+      elevation: 10,
+      shadowColor: Colors.black45,
+      color: MP.card,
+      borderRadius: BorderRadius.circular(MP.rXl),
+      child: Padding(
+        padding: const EdgeInsets.all(MP.s4),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(color: MP.tintGreen, borderRadius: BorderRadius.circular(MP.rMedium)),
+                  child: const Icon(Icons.route_rounded, color: MP.green),
+                ),
+                const SizedBox(width: MP.s3),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Roteiro do dia · ${plan.city}', maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleMedium),
+                      Text(
+                        busy
+                            ? 'Traçando o percurso…'
+                            : r == null
+                            ? '${plan.stops.length} paradas'
+                            : '${_time(r.duration)} de carro · ${_km(r.distance)} · ${plan.stops.length} paradas',
+                        key: const Key('plan-summary'),
+                        style: const TextStyle(fontSize: 14, color: MP.textSecondary, fontWeight: FontWeight.w600),
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  key: const Key('plan-close'),
+                  tooltip: 'Fechar roteiro',
+                  onPressed: onClose,
+                  style: IconButton.styleFrom(backgroundColor: MP.soft, minimumSize: const Size(44, 44)),
+                  icon: const Icon(Icons.close_rounded, color: MP.ink),
+                ),
+              ],
+            ),
+            const SizedBox(height: MP.s3),
+            SizedBox(
+              height: 44,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: plan.stops.length,
+                separatorBuilder: (_, __) => const SizedBox(width: MP.s2),
+                itemBuilder: (_, k) {
+                  final st = plan.stops[k];
+                  return ActionChip(
+                    key: Key('plan-stop-$k'),
+                    avatar: CircleAvatar(
+                      backgroundColor: st.anchor ? MP.yellow : MP.navy,
+                      child: Text('${k + 1}', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: st.anchor ? MP.ink : Colors.white)),
+                    ),
+                    label: Text('${st.time} · ${st.item.titulo}'),
+                    onPressed: () => onStop(k),
+                  );
+                },
+              ),
+            ),
+            if (error != null) ...[
+              const SizedBox(height: MP.s3),
+              MpNotice(error!, icon: Icons.wifi_off_rounded, fg: MP.warning, bg: MP.warningBg),
+            ],
+            const SizedBox(height: MP.s3),
+            Row(
+              children: [
+                Expanded(
+                  child: FilledButton.icon(
+                    key: const Key('plan-go'),
+                    onPressed: r == null ? null : onNavigate,
+                    style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(MP.buttonHeight)),
+                    icon: const Icon(Icons.navigation_rounded),
+                    label: const Text('Iniciar navegação'),
+                  ),
+                ),
+                const SizedBox(width: MP.s2),
+                _SquareAction(key: const Key('plan-3d'), label: '3D', tooltip: 'Ver a partida em 3D', onTap: onFollow3d),
+              ],
+            ),
           ],
         ),
       ),

@@ -14,6 +14,7 @@ import 'booking.dart';
 import 'catalog.dart';
 import 'checkin.dart';
 import 'common.dart';
+import 'itinerary.dart';
 import 'explore.dart';
 import 'profile.dart';
 import 'shell.dart' show Tabs;
@@ -320,6 +321,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                   ),
                 ),
+                const SizedBox(height: MP.s3),
+                const ItineraryShortcut(),
               ],
             ),
           ),

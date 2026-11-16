@@ -82,7 +82,7 @@ class _PassportScreenState extends ConsumerState<PassportScreen> {
             options: const [0, 1, 2, 3],
             selected: _tab,
             label: (v) =>
-                const ['Conquistas', 'Carimbos', 'Cidades', 'Histórico'][v],
+                const ['Conquistas', 'Carimbos', 'Cidades', 'Extrato'][v],
             onSelect: (v) => setState(() => _tab = v),
           ),
           const SizedBox(height: MP.s4),
@@ -654,53 +654,167 @@ class _Achievements extends StatelessWidget {
   }
 }
 
-class _History extends StatelessWidget {
+/// Lançamento do extrato do Passaporte.
+class _Entry {
+  const _Entry(this.at, this.icon, this.color, this.title, this.detail, this.points, this.ref, {this.status});
+  final DateTime at;
+  final IconData icon;
+  final Color color;
+  final String title, detail, ref;
+  final int points;
+  final String? status;
+}
+
+/// Extrato do Passaporte: visitas, carimbos e cupons usados com data, hora,
+/// polo, pontos e saldo após cada lançamento (fecha com o saldo atual).
+class _History extends StatefulWidget {
   const _History({required this.store});
   final AppStore store;
   @override
-  Widget build(BuildContext context) {
-    final rows = <(DateTime, IconData, String, String)>[
-      for (final c in store.checkins)
-        (
-          c.at,
-          Icons.verified_rounded,
-          'Check-in: ${Content.item(c.itemId)?.titulo ?? ''}',
-          '+50 pontos',
-        ),
-      for (final c in store.coupons.where((c) => c.used))
-        (
-          c.usedAt!,
-          Icons.local_activity_rounded,
-          'Cupom usado: ${c.cupom?.parceiro ?? ''}',
-          '+20 pontos',
-        ),
-      for (final r in store.myReservations)
-        (
-          r.date,
-          Icons.event_rounded,
-          'Reserva: ${r.item?.titulo ?? ''}',
-          r.status.label,
-        ),
-    ]..sort((a, b) => b.$1.compareTo(a.$1));
-    if (rows.isEmpty) {
-      return const MpEmpty(
-        icon: Icons.history_rounded,
-        title: 'Nada por aqui ainda',
-        message: 'Seu histórico aparece quando você fizer check-in, usar cupons ou reservar.',
-      );
+  State<_History> createState() => _HistoryState();
+}
+
+class _HistoryState extends State<_History> {
+  int _days = 30; // 7, 30 ou 0 (tudo)
+
+  List<(_Entry, int)> _ledger() {
+    final store = widget.store;
+    final out = <_Entry>[];
+    final seenPolos = <String>{};
+    final checkins = [...store.checkins]..sort((a, b) => a.at.compareTo(b.at));
+    var n = 0;
+    for (final c in checkins) {
+      n++;
+      final polo = Content.polo(c.polo).nome;
+      out.add(_Entry(c.at, Icons.verified_rounded, MP.success, 'Visita: ${Content.item(c.itemId)?.titulo ?? 'Local'}', '${c.cidade} · $polo', 50, 'CK-${n.toString().padLeft(4, '0')}'));
+      if (seenPolos.add(c.polo)) {
+        out.add(_Entry(c.at.add(const Duration(seconds: 1)), Icons.workspace_premium_rounded, const Color(0xffa87b00), 'Carimbo novo: $polo', 'Primeira visita no polo', 100, 'ST-${c.polo.toUpperCase()}'));
+      }
     }
+    for (final c in store.coupons.where((c) => c.used)) {
+      out.add(_Entry(c.usedAt!, Icons.local_activity_rounded, MP.navy, 'Cupom usado: ${c.cupom?.parceiro ?? ''}', c.cupom?.beneficio ?? '', 20, 'CP-${c.code}'));
+    }
+    for (final r in store.myReservations) {
+      out.add(_Entry(r.date, Icons.event_rounded, MP.textSecondary, 'Reserva: ${r.item?.titulo ?? ''}', r.period, 0, 'RS-${r.id.length > 6 ? r.id.substring(0, 6).toUpperCase() : r.id.toUpperCase()}', status: r.status.label));
+    }
+    out.sort((a, b) => a.at.compareTo(b.at));
+    var bal = 0;
+    final withBal = [
+      for (final e in out) (e, bal += e.points),
+    ];
+    return withBal.reversed.toList();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final all = _ledger();
+    final from = _days == 0 ? null : DateTime.now().subtract(Duration(days: _days));
+    final rows = from == null ? all : all.where((r) => r.$1.at.isAfter(from) || r.$1.at.isAfter(DateTime.now())).toList();
+    final earned = rows.fold<int>(0, (a, r) => a + r.$1.points);
     return Column(
+      key: const Key('passport-ledger'),
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        for (final r in rows)
-          Padding(
-            padding: const EdgeInsets.only(bottom: MP.s2),
-            child: MpListTile(
-              icon: r.$2,
-              title: r.$3,
-              subtitle: '${fmtDate(r.$1)} · ${r.$4}',
+        Row(
+          children: [
+            for (final d in const [7, 30, 0]) ...[
+              ChoiceChip(
+                key: Key('ledger-$d'),
+                label: Text(d == 0 ? 'Tudo' : '$d dias'),
+                selected: _days == d,
+                showCheckmark: false,
+                selectedColor: MP.navy,
+                labelStyle: TextStyle(fontFamily: mpFont, fontWeight: FontWeight.w700, color: _days == d ? Colors.white : MP.ink),
+                onSelected: (_) => setState(() => _days = d),
+              ),
+              const SizedBox(width: MP.s2),
+            ],
+          ],
+        ),
+        const SizedBox(height: MP.s3),
+        MpCard(
+          color: MP.soft,
+          border: false,
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(_days == 0 ? 'Ganhos no total' : 'Ganhos em $_days dias', style: const TextStyle(fontSize: 13, color: MP.textSecondary)),
+                    Text('+$earned pts', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: MP.success)),
+                  ],
+                ),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  const Text('Saldo atual', style: TextStyle(fontSize: 13, color: MP.textSecondary)),
+                  Text('${widget.store.points} pts', key: const Key('ledger-balance'), style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: MP.ink)),
+                ],
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: MP.s3),
+        if (rows.isEmpty)
+          const MpEmpty(
+            icon: Icons.receipt_long_rounded,
+            title: 'Nenhum lançamento no período',
+            message: 'Seu extrato mostra visitas, carimbos e cupons usados.',
+          ),
+        for (var k = 0; k < rows.length; k++) ...[
+          if (k == 0 || !_sameDay(rows[k - 1].$1.at, rows[k].$1.at))
+            Padding(
+              padding: const EdgeInsets.only(top: MP.s3, bottom: MP.s2),
+              child: Text(fmtDate(rows[k].$1.at), style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800, letterSpacing: .6, color: MP.textSecondary)),
+            ),
+          _LedgerRow(entry: rows[k].$1, balance: rows[k].$2),
+        ],
+      ],
+    );
+  }
+
+  static bool _sameDay(DateTime a, DateTime b) => a.year == b.year && a.month == b.month && a.day == b.day;
+}
+
+class _LedgerRow extends StatelessWidget {
+  const _LedgerRow({required this.entry, required this.balance});
+  final _Entry entry;
+  final int balance;
+  @override
+  Widget build(BuildContext context) {
+    final e = entry;
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: MP.s3),
+      decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: MP.borderSubtle))),
+      child: Row(
+        children: [
+          CircleAvatar(radius: 20, backgroundColor: e.color.withValues(alpha: .12), child: Icon(e.icon, color: e.color, size: 22)),
+          const SizedBox(width: MP.s3),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(e.title, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: MP.ink)),
+                Text('${fmtTime(e.at)} · ${e.detail}', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 14, color: MP.textSecondary)),
+                Text('Ref. ${e.ref}', style: const TextStyle(fontSize: 12, color: MP.textMuted, letterSpacing: .4)),
+              ],
             ),
           ),
-      ],
+          const SizedBox(width: MP.s2),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              if (e.status != null)
+                MpBadge(e.status!, fg: MP.textSecondary)
+              else
+                Text('+${e.points}', style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: MP.success)),
+              Text('Saldo $balance', style: const TextStyle(fontSize: 12, color: MP.textSecondary)),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
