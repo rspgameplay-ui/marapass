@@ -7,12 +7,12 @@ import '../auth/auth.dart';
 import '../data/content.dart';
 import '../data/store.dart';
 import '../providers.dart';
-import '../theme/brand.dart';
 import '../theme/tokens.dart';
 import '../theme/widgets.dart';
 import 'booking.dart';
 import 'catalog.dart';
 import 'checkin.dart';
+import '../theme/mara_logo.dart';
 import 'common.dart';
 import 'itinerary.dart';
 import 'explore.dart';
@@ -90,7 +90,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             padding: EdgeInsets.fromLTRB(MP.pageH, top + MP.s3, MP.s3, 0),
             child: Row(
               children: [
-                const MpLogo(width: 84, white: true),
+                // Logo horizontal: símbolo e nome lado a lado (ocupa menos altura).
+                const MaraPassLogo(
+                  size: 46,
+                  variant: MaraLogoVariant.horizontal,
+                  onDark: true,
+                ),
                 const Spacer(),
                 Badge(
                   isLabelVisible: store.unreadAvisos > 0,

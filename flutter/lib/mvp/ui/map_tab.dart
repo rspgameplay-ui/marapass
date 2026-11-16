@@ -1031,37 +1031,47 @@ class _MapTabState extends ConsumerState<MapTab> {
       );
   }
 
+  /// Véu em fade durante a troca 2D/3D (a câmera também anima, sem corte).
+  bool _veil = false;
+
   Future<void> _toggle3d() async {
     final c = _c;
     if (c == null) return;
-    final cam = c.cameraPosition;
+    // Na web, a posição acompanhada pode vir vazia: pergunta ao mapa.
+    final cam = await c.queryCameraPosition() ?? c.cameraPosition;
     final next = !_threeD;
-    setState(() => _threeD = next);
+    final target = next && _selected != null
+        ? LatLng(_selected!.point.lat, _selected!.point.lng)
+        : (cam?.target ?? _maranhao);
+    final zoom = cam?.zoom ?? 6;
+    setState(() {
+      _threeD = next;
+      _veil = true;
+    });
     await c.animateCamera(
       CameraUpdate.newCameraPosition(
         CameraPosition(
-          target: next && _selected != null
-              ? LatLng(_selected!.point.lat, _selected!.point.lng)
-              : (cam?.target ?? _maranhao),
-          zoom: next && _selected != null
-              ? math.max(cam?.zoom ?? 6, 15)
-              : (cam?.zoom ?? 6),
+          target: target,
+          // Prédios em volume só aparecem de perto: o 3D aproxima até a rua.
+          zoom: next ? math.max(zoom, 15.5) : math.min(zoom, 14),
           tilt: next ? 60 : 0,
-          bearing: next ? (cam?.bearing ?? 0) + 25 : 0,
+          bearing: next ? (cam?.bearing ?? 0) - 20 : 0,
         ),
       ),
-      duration: const Duration(milliseconds: 900),
+      duration: const Duration(milliseconds: 1400),
     );
+    await Future<void>.delayed(const Duration(milliseconds: 500));
+    if (mounted) setState(() => _veil = false);
   }
 
   Future<void> _resetNorth() async {
-    final cam = _c?.cameraPosition;
+    final cam = await _c?.queryCameraPosition() ?? _c?.cameraPosition;
     setState(() => _threeD = false);
     await _c?.animateCamera(
       CameraUpdate.newCameraPosition(
         CameraPosition(target: cam?.target ?? _maranhao, zoom: cam?.zoom ?? 6),
       ),
-      duration: const Duration(milliseconds: 600),
+      duration: const Duration(milliseconds: 1000),
     );
   }
 
@@ -1390,6 +1400,17 @@ class _MapTabState extends ConsumerState<MapTab> {
                 '© OpenStreetMap · OpenFreeMap',
                 style: TextStyle(fontSize: 11, color: MP.textSecondary),
               ),
+            ),
+          ),
+        ),
+        // Fade suave por cima do mapa enquanto a câmera troca 2D/3D.
+        Positioned.fill(
+          child: IgnorePointer(
+            child: AnimatedOpacity(
+              opacity: _veil ? .22 : 0,
+              duration: const Duration(milliseconds: 450),
+              curve: Curves.easeInOut,
+              child: const ColoredBox(color: Colors.white),
             ),
           ),
         ),

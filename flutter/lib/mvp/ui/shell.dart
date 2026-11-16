@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../theme/mara_logo.dart';
 import '../theme/tokens.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -48,6 +49,7 @@ class _MvpShellState extends ConsumerState<MvpShell> {
         ref.read(appStoreProvider).syncFromServer();
     });
     return Scaffold(
+      backgroundColor: MP.soft,
       body: IndexedStack(
         index: i,
         children: [
@@ -58,41 +60,44 @@ class _MvpShellState extends ConsumerState<MvpShell> {
           const PassportScreen(),
         ],
       ),
-      bottomNavigationBar: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Barra flutuando sobre o conteúdo, com sombra suave (estilo app).
-          DecoratedBox(
-            decoration: const BoxDecoration(
-              color: MP.page,
-              boxShadow: [BoxShadow(color: Color(0x1a13263d), blurRadius: 16, offset: Offset(0, -2))],
-            ),
-            child: NavigationBar(
-            selectedIndex: i,
-            onDestinationSelected: ref.read(shellTabProvider.notifier).go,
-            destinations: [
-              for (final t in _tabs)
-                NavigationDestination(
-                  icon: Icon(t.$1),
-                  selectedIcon: Icon(t.$2),
-                  label: t.$3,
-                ),
-            ],
-          ),
-          ),
-          // Faixa com as cores da marca (protótipo aprovado).
-          const SizedBox(
-            height: 3,
-            child: Row(
+      // Barra inferior arredondada no alto, com a faixa das cores do
+      // Maranhão (as 6 cores do símbolo) na borda superior.
+      bottomNavigationBar: DecoratedBox(
+        decoration: const BoxDecoration(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
+          boxShadow: [BoxShadow(color: Color(0x2213263d), blurRadius: 20, offset: Offset(0, -4))],
+        ),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(26)),
+          child: ColoredBox(
+            color: MP.page,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Expanded(child: ColoredBox(color: Color(0xff14775a))),
-                Expanded(child: ColoredBox(color: Color(0xfffac61d))),
-                Expanded(child: ColoredBox(color: Color(0xffc53b36))),
-                Expanded(child: ColoredBox(color: Color(0xff0b3a66))),
+                SizedBox(
+                  height: 6,
+                  child: Row(
+                    children: [
+                      for (final b in maraBlades) Expanded(child: ColoredBox(color: b.face)),
+                    ],
+                  ),
+                ),
+                NavigationBar(
+                  selectedIndex: i,
+                  onDestinationSelected: ref.read(shellTabProvider.notifier).go,
+                  destinations: [
+                    for (final t in _tabs)
+                      NavigationDestination(
+                        icon: Icon(t.$1),
+                        selectedIcon: Icon(t.$2),
+                        label: t.$3,
+                      ),
+                  ],
+                ),
               ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
