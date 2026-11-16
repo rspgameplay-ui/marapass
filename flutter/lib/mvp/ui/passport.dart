@@ -44,14 +44,14 @@ class _PassportScreenState extends ConsumerState<PassportScreen> {
     final progress = lv.$4 == null
         ? 1.0
         : ((store.points - lv.$2) / (lv.$4! - lv.$2)).clamp(0.0, 1.0);
-    return SafeArea(
-      bottom: false,
+    return ColoredBox(
+      color: MP.soft,
       child: ListView(
         padding: const EdgeInsets.only(bottom: MP.s10),
         children: [
-          const MpHeader('Meu passaporte', back: false),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
+          MpHero(
+            title: 'Meu passaporte',
+            subtitle: 'Seus carimbos, pontos e visitas.',
             child: _Cover(store: store, progress: progress),
           ),
           const SizedBox(height: MP.s4),

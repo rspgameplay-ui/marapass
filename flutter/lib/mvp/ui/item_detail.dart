@@ -101,7 +101,7 @@ class ItemDetailScreen extends ConsumerWidget {
         children: [
           MpPhoto(
             photo: i.hero ?? i.foto,
-            height: 300,
+            height: 340,
             radius: 0,
             icon: i.cat.icon,
             seed: i.id.hashCode,
@@ -135,8 +135,13 @@ class ItemDetailScreen extends ConsumerWidget {
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(MP.pageH),
+          Transform.translate(
+            offset: const Offset(0, -26),
+            child: Material(
+            color: MP.page,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+            child: Padding(
+            padding: const EdgeInsets.fromLTRB(MP.pageH, MP.s5, MP.pageH, 0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -283,6 +288,8 @@ class ItemDetailScreen extends ConsumerWidget {
                 const SizedBox(height: MP.s6),
               ],
             ),
+          ),
+          ),
           ),
         ],
       ),

@@ -927,3 +927,49 @@ void showMpSnack(BuildContext context, String message) {
 /// Rota padrão.
 Future<T?> push<T>(BuildContext context, Widget page) =>
     Navigator.of(context).push<T>(MaterialPageRoute<T>(builder: (_) => page));
+
+/// Topo das abas principais no estilo do Início: faixa azul em degradê com
+/// cantos arredondados, título branco e conteúdo opcional (resumo, busca).
+class MpHero extends StatelessWidget {
+  const MpHero({super.key, required this.title, this.subtitle, this.trailing, this.child});
+  final String title;
+  final String? subtitle;
+  final Widget? trailing;
+  final Widget? child;
+  @override
+  Widget build(BuildContext context) => Container(
+    decoration: const BoxDecoration(
+      gradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [Color(0xff0b3a66), Color(0xff0e4f80), Color(0xff14775a)],
+      ),
+      borderRadius: BorderRadius.vertical(bottom: Radius.circular(28)),
+    ),
+    padding: EdgeInsets.fromLTRB(MP.pageH, MediaQuery.paddingOf(context).top + MP.s4, MP.pageH, MP.s5),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: Colors.white),
+                  ),
+                  if (subtitle != null)
+                    Text(subtitle!, style: const TextStyle(color: Color(0xd9ffffff), fontSize: 16)),
+                ],
+              ),
+            ),
+            ?trailing,
+          ],
+        ),
+        if (child != null) ...[const SizedBox(height: MP.s4), child!],
+      ],
+    ),
+  );
+}

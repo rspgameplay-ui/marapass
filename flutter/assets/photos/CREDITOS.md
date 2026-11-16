@@ -19,3 +19,15 @@ Licença Unsplash: uso gratuito, inclusive comercial, sem atribuição obrigató
 
 As demais fotos vêm do protótipo aprovado; para produção, substituir por
 originais do cliente ou de parceiros com autorização de uso.
+
+## Fotos dos Lençóis Maranhenses adicionadas em 17/11/2026 (Unsplash, 1200 px)
+
+| Arquivo | Foto (unsplash.com/photos/...) |
+|---|---|
+| lagoas.jpg | OM3CfzQVIVI |
+| hero_passeio.jpg | 3XXxhOMkOMY (Anderson W Rangel) |
+| w_lencois.jpg | Hp7b3dmiunU |
+| hero_dunas.jpg | ZfTyzRFRYIA (Seiji Seiji) |
+| dunas_card.jpg | Y5Jg5VKGJ04 |
+| jeep.jpg | OSBSHAAKUa4 (Birger Strahl) |
+| splash_bg.jpg | clfmyDISFcQ (Léo Castro) |

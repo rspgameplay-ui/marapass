@@ -4,6 +4,8 @@
 <dict>
 <key>NSMicrophoneUsageDescription</key><string>Use o microfone ao solicitar busca por voz no MaraPass.</string>
 <key>NSSpeechRecognitionUsageDescription</key><string>Transforme seu comando de voz em pesquisa de lugares, rotas e ofertas.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>As fotos são usadas para o parceiro ilustrar as ofertas publicadas no MaraPass.</string>
     <key>NSCameraUsageDescription</key>
     <string>A câmera é usada para ler o QR Code das placas MaraPass e registrar sua visita no Passaporte.</string>
     <key>NSLocationWhenInUseUsageDescription</key>

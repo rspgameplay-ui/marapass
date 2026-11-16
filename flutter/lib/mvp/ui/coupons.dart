@@ -67,19 +67,19 @@ class _CouponsScreenState extends ConsumerState<CouponsScreen> {
       ),
     );
 
-    return SafeArea(
-      bottom: false,
+    return ColoredBox(
+      color: MP.soft,
       child: ListView(
         padding: const EdgeInsets.only(bottom: MP.s10),
         children: [
-          MpHeader(
-            'Cupons',
-            back: false,
+          MpHero(
+            title: 'Cupons',
             subtitle: 'Descontos em parceiros MaraPass.',
+            child: WalletSummary(store: store, flat: true),
             trailing: PopupMenuButton<Object>(
               key: const Key('coupon-menu'),
               tooltip: 'Mais opções',
-              icon: const Icon(Icons.tune_rounded, color: MP.ink, size: 28),
+              icon: const Icon(Icons.tune_rounded, color: Colors.white, size: 28),
               onSelected: (v) => setState(() {
                 if (v == 'expired') {
                   _tab = 2;
@@ -110,11 +110,7 @@ class _CouponsScreenState extends ConsumerState<CouponsScreen> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(MP.pageH, 0, MP.pageH, MP.s4),
-            child: WalletSummary(store: store),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
+            padding: const EdgeInsets.fromLTRB(MP.pageH, MP.s4, MP.pageH, 0),
             child: SegmentedButton<int>(
               key: const Key('coupon-segments'),
               showSelectedIcon: false,
@@ -656,8 +652,11 @@ int couponValueCents(Cupom c) {
 /// Resumo da carteira de benefícios: economia acumulada, cupons ativos e
 /// pontos do Passaporte, no formato de saldo de carteira digital.
 class WalletSummary extends StatelessWidget {
-  const WalletSummary({super.key, required this.store});
+  const WalletSummary({super.key, required this.store, this.flat = false});
   final AppStore store;
+
+  /// Sem cartão próprio: para ficar dentro do topo colorido da tela.
+  final bool flat;
   @override
   Widget build(BuildContext context) {
     final used = store.coupons.where((c) => c.used && c.cupom != null).toList();
@@ -666,16 +665,22 @@ class WalletSummary extends StatelessWidget {
     final potential = active.fold<int>(0, (a, c) => a + couponValueCents(c.cupom!));
     return Container(
       key: const Key('wallet-summary'),
-      padding: const EdgeInsets.all(MP.s5),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [MP.navy, Color(0xff0f5a6e)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(MP.rXl),
-        boxShadow: MP.shadowFloat,
-      ),
+      padding: EdgeInsets.all(flat ? MP.s4 : MP.s5),
+      decoration: flat
+          ? BoxDecoration(
+              color: const Color(0x1fffffff),
+              borderRadius: BorderRadius.circular(MP.rXl),
+              border: Border.all(color: const Color(0x33ffffff)),
+            )
+          : BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [MP.navy, Color(0xff0f5a6e)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(MP.rXl),
+              boxShadow: MP.shadowFloat,
+            ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

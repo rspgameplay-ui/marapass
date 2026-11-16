@@ -1,0 +1,3 @@
+-- Aplicada em 2026-11-17 (nome: mvp_set_offer_image).
+-- mvp_set_offer_image(p_id, p_url): o dono da oferta grava a foto, e só aceita
+-- endereço do bucket marapass-assets dentro da pasta do próprio usuário.

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -8,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'content.dart';
 import 'remote.dart';
+import 'repository.dart' show MvpException;
 
 /// Estado local do aparelho para a versão de demonstração: favoritos,
 /// preferências, cupons, reservas, check-ins, pedidos e a área do parceiro.
@@ -189,6 +191,7 @@ class PartnerOffer {
     this.used = 0,
     this.issued = 0,
     this.pauseReason,
+    this.imageUrl,
   });
   final String id;
   String title;
@@ -200,6 +203,7 @@ class PartnerOffer {
   int used;
   int issued;
   String? pauseReason;
+  String? imageUrl;
   Map<String, dynamic> toJson() => {
     'id': id,
     't': title,
@@ -550,6 +554,7 @@ class AppStore extends ChangeNotifier {
       issued: st.$1,
       used: st.$2,
       pauseReason: o['pause_reason'] as String?,
+      imageUrl: o['image_url'] as String?,
     );
   }
 
@@ -633,6 +638,16 @@ class AppStore extends ChangeNotifier {
   }
 
   /// Ativa (aprova), pausa com motivo ou encerra uma oferta.
+  /// Foto da oferta (só com conta de parceiro, pelo servidor).
+  Future<void> setOfferImageAsync(String id, Uint8List bytes, String mime) async {
+    if (!online) throw const MvpException('Entre na conta de parceiro para enviar fotos.');
+    final row = await remote!.uploadOfferImage(id, bytes, mime);
+    final i = partnerOffers.indexWhere((e) => e.id == id);
+    if (i >= 0) partnerOffers[i].imageUrl = row['image_url'] as String?;
+    await _syncExtras(remote!);
+    notifyListeners();
+  }
+
   Future<void> setOfferStatusAsync(
     String id,
     String status, {

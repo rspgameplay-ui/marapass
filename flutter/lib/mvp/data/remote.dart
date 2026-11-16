@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'repository.dart';
@@ -226,6 +228,20 @@ class MvpRemote {
       ),
     ),
   );
+
+  /// Envia a foto da oferta para o bucket (pasta do próprio usuário) e grava
+  /// o endereço na oferta. Devolve a oferta atualizada.
+  Future<Map<String, dynamic>> uploadOfferImage(String offerId, Uint8List bytes, String mime) => _g(() async {
+    final ext = mime == 'image/png' ? 'png' : (mime == 'image/webp' ? 'webp' : 'jpg');
+    final path = '$userId/oferta-$offerId-${DateTime.now().millisecondsSinceEpoch}.$ext';
+    await _c.storage.from('marapass-assets').uploadBinary(
+      path,
+      bytes,
+      fileOptions: FileOptions(contentType: mime, upsert: true),
+    );
+    final url = _c.storage.from('marapass-assets').getPublicUrl(path);
+    return _row(await _c.rpc('mvp_set_offer_image', params: {'p_id': offerId, 'p_url': url}));
+  });
 
   Future<Map<String, dynamic>> activateOfferCoupon(String offerId) => _g(
     () async => _row(

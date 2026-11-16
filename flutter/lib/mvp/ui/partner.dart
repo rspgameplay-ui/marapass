@@ -8,6 +8,8 @@ import '../data/repository.dart';
 import '../data/store.dart';
 import '../theme/tokens.dart';
 import '../theme/widgets.dart';
+import 'package:image_picker/image_picker.dart';
+
 import 'common.dart';
 import 'plates.dart';
 import 'support.dart';
@@ -439,6 +441,8 @@ class OfferManageScreen extends ConsumerWidget {
                       Icons.pause_circle_rounded,
                       'Pausada: ${o.pauseReason}',
                     ),
+                  const SizedBox(height: MP.s4),
+                  _OfferPhoto(offerId: o.id, imageUrl: o.imageUrl),
                   if (o.status == 'Ativa') ...[
                     const SizedBox(height: MP.s4),
                     OfferQrCard(cupomId: 'po:${o.id}', title: o.title),
@@ -1349,6 +1353,68 @@ class _AccountTab extends StatelessWidget {
         ),
       ],
     ),
+  );
+}
+
+/// Foto da oferta: mostra a atual e envia uma nova da galeria (até 5 MB).
+class _OfferPhoto extends ConsumerStatefulWidget {
+  const _OfferPhoto({required this.offerId, required this.imageUrl});
+  final String offerId;
+  final String? imageUrl;
+  @override
+  ConsumerState<_OfferPhoto> createState() => _OfferPhotoState();
+}
+
+class _OfferPhotoState extends ConsumerState<_OfferPhoto> {
+  bool _busy = false;
+
+  Future<void> _pick() async {
+    final file = await ImagePicker().pickImage(source: ImageSource.gallery, maxWidth: 1600, imageQuality: 82);
+    if (file == null || !mounted) return;
+    final bytes = await file.readAsBytes();
+    if (bytes.length > 5 * 1024 * 1024) {
+      if (mounted) showMpSnack(context, 'A foto passa de 5 MB. Escolha uma menor.');
+      return;
+    }
+    final name = file.name.toLowerCase();
+    final mime = file.mimeType ??
+        (name.endsWith('.png') ? 'image/png' : (name.endsWith('.webp') ? 'image/webp' : 'image/jpeg'));
+    if (!const {'image/jpeg', 'image/png', 'image/webp'}.contains(mime)) {
+      if (mounted) showMpSnack(context, 'Use uma foto em JPG, PNG ou WebP.');
+      return;
+    }
+    setState(() => _busy = true);
+    try {
+      await ref.read(appStoreProvider).setOfferImageAsync(widget.offerId, bytes, mime);
+      if (mounted) showMpSnack(context, 'Foto atualizada. Ela já aparece no cupom.');
+    } on MvpException catch (e) {
+      if (mounted) showMpSnack(context, e.message);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      MpPhoto(
+        key: const Key('offer-photo'),
+        photo: widget.imageUrl,
+        height: 170,
+        radius: MP.rLarge,
+        icon: Icons.add_photo_alternate_rounded,
+      ),
+      const SizedBox(height: MP.s2),
+      OutlinedButton.icon(
+        key: const Key('offer-photo-pick'),
+        onPressed: _busy ? null : _pick,
+        icon: _busy
+            ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
+            : const Icon(Icons.photo_library_rounded),
+        label: Text(widget.imageUrl == null ? 'Adicionar foto da oferta' : 'Trocar foto'),
+      ),
+    ],
   );
 }
 
