@@ -19,7 +19,8 @@ void main() {
     final places = (jsonDecode(asset) as List)
         .map((p) => TourismPlace.fromJson(p))
         .toList();
-    expect(places.where((p) => p.city == 'Santo Amaro do Maranhão').length, 50);
+    // 51 desde 09/11: inclui a Praia de Travosa.
+    expect(places.where((p) => p.city == 'Santo Amaro do Maranhão').length, 51);
     expect(places.where((p) => p.city == 'Primeira Cruz').length, 6);
     for (final id in ['osm:node:5201075226', 'osm:node:5176384366']) {
       final place = places.firstWhere((p) => p.id == id);

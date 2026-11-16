@@ -121,7 +121,6 @@ const _cityCenters = <String, GeoPoint>{
 };
 
 const _maranhao = LatLng(-3.9, -44.8);
-const _barreirinhas = GeoPoint(-2.7547, -42.8269);
 
 /// Mapa turístico com MapLibre: visão 2D e 3D (inclinação e rotação), prédios
 /// em 3D, pontos agrupados por categoria, prévia ao tocar e rota real (OSRM)
@@ -142,7 +141,8 @@ class _MapTabState extends ConsumerState<MapTab> {
   Poi? _selected;
   RoadRoute? _route;
   GeoPoint? _origin;
-  bool _originIsGps = false;
+  String _originLabel = '';
+  bool _pickingOrigin = false;
   bool _routing = false;
   String? _routeError;
 
@@ -448,10 +448,36 @@ class _MapTabState extends ConsumerState<MapTab> {
   Future<void> _onMapClick(math.Point<double> pt, LatLng latLng) async {
     final c = _c;
     if (c == null || !_ready) return;
-    final hits = await c.queryRenderedFeatures(pt, [
-      'poi-icons',
-      'clusters',
-    ], null);
+    if (_pickingOrigin) {
+      final o = GeoPoint(latLng.latitude, latLng.longitude);
+      setState(() {
+        _pickingOrigin = false;
+        _origin = o;
+        _originLabel = 'Ponto escolhido no mapa';
+      });
+      await c.setGeoJsonSource('origin', _point(o));
+      if (_selected != null) await _traceRoute();
+      return;
+    }
+    // Área de toque de 48x48 px ao redor do dedo. Na web, a consulta volta
+    // vazia enquanto o mapa ainda carrega blocos (logo após um zoom): tenta de
+    // novo por alguns instantes antes de concluir que o toque foi no vazio.
+    final rect = Rect.fromCenter(
+      center: Offset(pt.x, pt.y),
+      width: 48,
+      height: 48,
+    );
+    var hits = <dynamic>[];
+    for (var attempt = 0; attempt < 6; attempt++) {
+      hits = await c.queryRenderedFeaturesInRect(rect, [
+        'clusters',
+        'poi-icons',
+      ], null);
+      if (hits.isNotEmpty) break;
+      await Future<void>.delayed(const Duration(milliseconds: 150));
+    }
+    // Prefere o agrupamento ou o ponto mais próximo do centro do toque.
+    hits.sort((x, y) => _distTo(x, latLng).compareTo(_distTo(y, latLng)));
     if (hits.isEmpty) {
       if (_selected != null && _route == null) setState(() => _selected = null);
       return;
@@ -474,6 +500,17 @@ class _MapTabState extends ConsumerState<MapTab> {
     final id = props['id'] as String?;
     final p = _pois.where((e) => e.id == id).firstOrNull;
     if (p != null) _select(p, fly: false);
+  }
+
+  static double _distTo(Object? f, LatLng t) {
+    try {
+      final c = (((f as Map)['geometry'] as Map)['coordinates'] as List)
+          .cast<num>();
+      final dx = c[0] - t.longitude, dy = c[1] - t.latitude;
+      return (dx * dx + dy * dy).toDouble();
+    } catch (_) {
+      return double.infinity;
+    }
   }
 
   Future<void> _select(Poi p, {bool fly = true}) async {
@@ -524,32 +561,55 @@ class _MapTabState extends ConsumerState<MapTab> {
     );
   }
 
-  Future<GeoPoint> _findOrigin() async {
+  /// GPS primeiro; se for negado ou falhar, pergunta de onde a pessoa sai.
+  Future<GeoPoint?> _findOrigin() async {
     try {
       final pos = await LocationService().acquire().timeout(
         const Duration(seconds: 8),
       );
-      _originIsGps = true;
+      _originLabel = 'Sua localização';
       return GeoPoint(pos.latitude, pos.longitude);
     } catch (_) {
-      _originIsGps = false;
-      return _barreirinhas;
+      if (!mounted) return null;
+      return _pickOrigin(gpsFailed: true);
     }
+  }
+
+  Future<GeoPoint?> _pickOrigin({bool gpsFailed = false}) async {
+    final choice = await showModalBottomSheet<Object>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => _OriginSheet(gpsFailed: gpsFailed),
+    );
+    if (choice == 'gps') return _findOrigin();
+    if (choice == 'map') {
+      setState(() => _pickingOrigin = true);
+      if (mounted) showMpSnack(context, 'Toque no mapa no ponto de partida.');
+      return null;
+    }
+    if (choice is MapEntry<String, GeoPoint>) {
+      _originLabel = choice.key;
+      return choice.value;
+    }
+    return null;
   }
 
   Future<void> _locate() async {
     final o = await _findOrigin();
+    if (o == null) return;
     setState(() => _origin = o);
     await _c?.setGeoJsonSource('origin', _point(o));
     await _c?.animateCamera(
       CameraUpdate.newLatLngZoom(LatLng(o.lat, o.lng), 13),
       duration: const Duration(milliseconds: 800),
     );
-    if (!_originIsGps && mounted)
-      showMpSnack(
-        context,
-        'Sem acesso ao GPS: usando Barreirinhas como ponto de partida.',
-      );
+  }
+
+  Future<void> _changeOrigin() async {
+    final o = await _pickOrigin();
+    if (o == null) return;
+    setState(() => _origin = o);
+    await _traceRoute();
   }
 
   Future<void> _traceRoute() async {
@@ -561,6 +621,7 @@ class _MapTabState extends ConsumerState<MapTab> {
     });
     try {
       final o = _origin ?? await _findOrigin();
+      if (o == null) return;
       final routes = await ref
           .read(routingRepositoryProvider)
           .routes(o, dest.point);
@@ -824,7 +885,8 @@ class _MapTabState extends ConsumerState<MapTab> {
               route: _route,
               routing: _routing,
               error: _routeError,
-              originIsGps: _originIsGps,
+              originLabel: _originLabel,
+              onChangeOrigin: _changeOrigin,
               onClose: () {
                 _clearRoute();
                 setState(() => _selected = null);
@@ -910,7 +972,8 @@ class _PoiCard extends StatelessWidget {
     required this.route,
     required this.routing,
     required this.error,
-    required this.originIsGps,
+    required this.originLabel,
+    required this.onChangeOrigin,
     required this.onClose,
     required this.onRoute,
     required this.onClearRoute,
@@ -922,7 +985,8 @@ class _PoiCard extends StatelessWidget {
   final RoadRoute? route;
   final bool routing;
   final String? error;
-  final bool originIsGps;
+  final String originLabel;
+  final VoidCallback onChangeOrigin;
   final VoidCallback onClose, onRoute, onClearRoute, onFollow3d, onNavigate;
   final VoidCallback? onDetails;
 
@@ -1037,14 +1101,13 @@ class _PoiCard extends StatelessWidget {
                               color: MP.text,
                             ),
                           ),
-                          if (!originIsGps)
-                            const Text(
-                              'Partida: Barreirinhas (sem GPS)',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: MP.textSecondary,
-                              ),
+                          Text(
+                            'Partida: $originLabel',
+                            style: const TextStyle(
+                              fontSize: 13,
+                              color: MP.textSecondary,
                             ),
+                          ),
                         ],
                       ),
                     ),
@@ -1073,9 +1136,20 @@ class _PoiCard extends StatelessWidget {
                   ),
                 ],
               ),
-              TextButton(
-                onPressed: onClearRoute,
-                child: const Text('Limpar rota'),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton.icon(
+                    key: const Key('route-origin'),
+                    onPressed: onChangeOrigin,
+                    icon: const Icon(Icons.edit_location_alt_rounded),
+                    label: const Text('Alterar partida'),
+                  ),
+                  TextButton(
+                    onPressed: onClearRoute,
+                    child: const Text('Limpar rota'),
+                  ),
+                ],
               ),
             ] else ...[
               if (error != null) ...[
@@ -1211,6 +1285,102 @@ class _PoiSearchSheetState extends State<_PoiSearchSheet> {
                       },
                     ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Folha de ponto de partida: GPS de novo, uma cidade ou um toque no mapa.
+class _OriginSheet extends StatelessWidget {
+  const _OriginSheet({required this.gpsFailed});
+  final bool gpsFailed;
+  @override
+  Widget build(BuildContext context) {
+    final cities = _cityCenters.entries.toList()
+      ..sort((a, b) => a.key.compareTo(b.key));
+    return SafeArea(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.sizeOf(context).height * .8,
+        ),
+        child: ListView(
+          key: const Key('origin-sheet'),
+          shrinkWrap: true,
+          padding: const EdgeInsets.fromLTRB(MP.pageH, 0, MP.pageH, MP.s5),
+          children: [
+            Text(
+              'De onde você sai?',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            if (gpsFailed) ...[
+              const SizedBox(height: MP.s2),
+              const MpNotice(
+                'Não conseguimos sua localização. Verifique se o navegador tem permissão de localização, ou escolha o ponto de partida.',
+                icon: Icons.location_off_rounded,
+                fg: MP.warning,
+                bg: MP.warningBg,
+              ),
+            ],
+            const SizedBox(height: MP.s3),
+            ListTile(
+              key: const Key('origin-gps'),
+              minTileHeight: 60,
+              leading: const CircleAvatar(
+                backgroundColor: Color(0xffe8f0fe),
+                child: Icon(
+                  Icons.my_location_rounded,
+                  color: Color(0xff1a73e8),
+                ),
+              ),
+              title: const Text(
+                'Usar minha localização',
+                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+              ),
+              subtitle: const Text('Tentar o GPS de novo'),
+              onTap: () => Navigator.of(context).pop('gps'),
+            ),
+            ListTile(
+              key: const Key('origin-map'),
+              minTileHeight: 60,
+              leading: const CircleAvatar(
+                backgroundColor: MP.soft,
+                child: Icon(Icons.touch_app_rounded, color: MP.navy),
+              ),
+              title: const Text(
+                'Tocar no mapa',
+                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+              ),
+              subtitle: const Text('Escolha o ponto exato'),
+              onTap: () => Navigator.of(context).pop('map'),
+            ),
+            const Divider(height: MP.s5),
+            const Text(
+              'Ou saia de uma cidade',
+              style: TextStyle(
+                fontWeight: FontWeight.w800,
+                fontSize: 15,
+                color: MP.textSecondary,
+              ),
+            ),
+            for (final c in cities)
+              ListTile(
+                key: Key('origin-city-${c.key}'),
+                minTileHeight: 56,
+                leading: const Icon(
+                  Icons.location_city_rounded,
+                  color: MP.navy,
+                ),
+                title: Text(
+                  c.key,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                onTap: () => Navigator.of(context).pop(c),
+              ),
           ],
         ),
       ),

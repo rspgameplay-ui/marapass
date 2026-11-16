@@ -29,7 +29,7 @@ void main() {
       for (final p in osm) {
         expect(p['isPartner'], isFalse);
         expect(p['dataSource'], contains('OpenStreetMap'));
-        expect(p['checkedAt'], isIn(['2026-10-30', '2026-11-05']));
+        expect(p['checkedAt'], isIn(['2026-10-30', '2026-11-05', '2026-11-08', '2026-11-09']));
       }
       expect(osm.map((p) => p['municipalityId']).toSet().length, 146);
     },
