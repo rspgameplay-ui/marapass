@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -14,6 +15,15 @@ void openItem(BuildContext context, Item item) =>
     push<void>(context, ItemDetailScreen(item: item));
 void openPolo(BuildContext context, Polo polo) =>
     push<void>(context, PoloScreen(polo: polo));
+
+/// Política de privacidade e termos (páginas públicas exigidas pelas lojas).
+Future<void> openLegal(BuildContext context, String page) async {
+  final base = kIsWeb ? Uri.base.origin : 'https://marapass-teste.pages.dev';
+  final uri = Uri.parse('$base/legal/$page.html');
+  if (!await launchUrl(uri) && context.mounted) {
+    showMpSnack(context, 'Não foi possível abrir a página agora.');
+  }
+}
 
 Future<void> openMaps(BuildContext context, String query) async {
   final uri = Uri.parse(

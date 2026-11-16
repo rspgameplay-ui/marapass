@@ -34,7 +34,24 @@ class MvpRemote {
     ),
   );
 
-  Future<void> joinDemoPartner() => _g(() => _c.rpc('mvp_join_demo_partner'));
+  /// Pedido para virar parceiro (aprovado pela equipe MaraPass).
+  Future<Map<String, dynamic>> requestPartner({
+    required String business,
+    required String cadastur,
+    required String city,
+    required String phone,
+  }) => _g(
+    () async => _row(
+      await _c.rpc(
+        'mvp_request_partner',
+        params: {'p_business': business, 'p_cadastur': cadastur, 'p_city': city, 'p_phone': phone},
+      ),
+    ),
+  );
+
+  Future<Map<String, dynamic>?> myPartnerRequest() => _g(
+    () async => await _c.from('mvp_partner_requests').select().eq('user_id', userId!).maybeSingle(),
+  );
 
   Future<Map<String, dynamic>> validateCoupon(String code, int? amountCents) =>
       _g(

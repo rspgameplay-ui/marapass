@@ -236,6 +236,10 @@ MvpException translateError(Object e) {
   final raw =
       (e is PostgrestException ? '${e.message} ${e.details ?? ''}' : '$e')
           .toLowerCase();
+  // Regras de negócio do banco já vêm com a mensagem em português.
+  if (e is PostgrestException && e.code == 'P0001' && e.message.isNotEmpty) {
+    return MvpException(e.message);
+  }
   if (e is AuthException) {
     if (raw.contains('expired') || raw.contains('invalid')) {
       return const MvpException(

@@ -13,6 +13,7 @@ import 'booking.dart';
 import 'common.dart';
 import 'login_screen.dart';
 import 'partner.dart';
+import 'partner_request.dart';
 import 'services.dart';
 import 'shell.dart' show Tabs;
 import 'support.dart';
@@ -366,6 +367,20 @@ class ProfileScreen extends ConsumerWidget {
                         title: 'Perguntas frequentes',
                         onTap: () => push<void>(context, const HelpScreen()),
                       ),
+                      _Row(
+                        key: const Key('privacy'),
+                        icon: Icons.privacy_tip_rounded,
+                        color: MP.navy,
+                        title: 'Política de privacidade',
+                        onTap: () => openLegal(context, 'privacidade'),
+                      ),
+                      _Row(
+                        key: const Key('terms'),
+                        icon: Icons.gavel_rounded,
+                        color: MP.navy,
+                        title: 'Termos de uso',
+                        onTap: () => openLegal(context, 'termos'),
+                      ),
                     ],
                   ),
                   const SizedBox(height: MP.s4),
@@ -378,11 +393,14 @@ class ProfileScreen extends ConsumerWidget {
                         color: MP.navy,
                         title: 'Área do parceiro',
                         subtitle: 'Cupons, validação e reservas',
-                        onTap: () {
-                          store.enterPartnerArea();
-                          Navigator.of(context).push(
+                        onTap: () async {
+                          final ok = await store.enterPartnerArea();
+                          if (!context.mounted) return;
+                          await Navigator.of(context).push(
                             MaterialPageRoute<void>(
-                              builder: (_) => const PartnerShell(),
+                              builder: (_) => ok
+                                  ? const PartnerShell()
+                                  : const PartnerRequestScreen(),
                             ),
                           );
                         },

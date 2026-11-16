@@ -459,7 +459,6 @@ class AppStore extends ChangeNotifier {
 
   Future<void> decideReservationAsync(String id, bool accept) async {
     if (!online) return decideReservation(id, accept);
-    await remote!.joinDemoPartner();
     await _applyRes(await remote!.decideReservation(id, accept));
   }
 
@@ -507,14 +506,19 @@ class AppStore extends ChangeNotifier {
   }
 
   /// Área do parceiro com dados reais: entra como parceiro de demonstração.
-  Future<void> enterPartnerArea() async {
-    if (!online) return;
+  /// Confere no servidor se a conta é de parceiro aprovado. Sem conta, a
+  /// área do parceiro abre em modo de demonstração (dados do aparelho).
+  Future<bool> enterPartnerArea() async {
+    if (!online) return true;
     try {
-      await remote!.joinDemoPartner();
-      isPartnerMember = true;
-      reservations.removeWhere((r) => r.id == 'pr1' || r.id == 'pr2');
-      await syncFromServer();
+      isPartnerMember = await remote!.isPartner();
+      if (isPartnerMember) {
+        reservations.removeWhere((r) => r.id == 'pr1' || r.id == 'pr2');
+        await syncFromServer();
+      }
     } catch (_) {}
+    notifyListeners();
+    return isPartnerMember;
   }
 
   // ---------- Ofertas, atendimento e perfil no banco
@@ -611,8 +615,6 @@ class AppStore extends ChangeNotifier {
         limit: limit,
         until: until,
       );
-    await remote!.joinDemoPartner();
-    isPartnerMember = true;
     final o = _offerFrom(
       await remote!.createOffer(
         title: title,
@@ -678,7 +680,6 @@ class AppStore extends ChangeNotifier {
   Future<(bool, String)> validateCodeAsync(String raw, int amountCents) async {
     if (!online) return validateCode(raw, amountCents);
     final code = raw.trim().toUpperCase();
-    await remote!.joinDemoPartner();
     final res = await remote!.validateCoupon(
       code,
       amountCents > 0 ? amountCents : null,

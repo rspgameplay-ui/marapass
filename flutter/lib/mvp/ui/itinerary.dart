@@ -125,6 +125,64 @@ const dayPlans = <DayPlan>[
       ),
     ],
   ),
+  DayPlan(
+    city: 'Atins',
+    title: 'Atins entre o vento e as dunas',
+    lens: 'Aventura com calma, na vila mais tranquila dos Lençóis',
+    rest: 'Pausa de 1h depois do almoço: a vila é de areia, ande com calma no calor.',
+    tip: 'Atins não tem estrada asfaltada: chegue de barco pelo Preguiças ou de 4x4 e leve dinheiro, porque nem todo lugar aceita cartão.',
+    stops: [
+      DayStop(
+        time: '9h00',
+        slot: 'Manhã',
+        itemId: 'kite',
+        why: 'Aula com o vento ainda moderado da manhã, ideal para quem está começando.',
+        backupNote: 'Sem vento? Faça uma caminhada até a praia de Atins.',
+      ),
+      DayStop(
+        time: '12h30',
+        slot: 'Almoço',
+        itemId: 'juja',
+        why: 'A galinha caipira mais famosa de Atins, servida em casa de família.',
+        backupNote: 'A Casa de Juja abre de sexta a domingo; nos outros dias, almoce num restaurante da vila.',
+      ),
+      DayStop(
+        time: '14h30',
+        slot: 'Tarde',
+        itemId: '4x4',
+        why: 'A experiência principal: dunas, lagoas e o Canto do Atins até o pôr do sol.',
+        anchor: true,
+      ),
+    ],
+  ),
+  DayPlan(
+    city: 'Carolina',
+    title: 'Chapada das Mesas',
+    lens: 'Cachoeiras, mirantes e artesanato do cerrado',
+    rest: 'Pausa no meio da tarde: o sol do cerrado é forte entre 13h e 15h.',
+    tip: 'As cachoeiras ficam longe da cidade: saia cedo, abasteça o carro e leve água e lanche.',
+    stops: [
+      DayStop(
+        time: '7h30',
+        slot: 'Manhã',
+        itemId: 'cach',
+        why: 'A experiência principal: banho nas cachoeiras antes do calor e da chegada dos grupos.',
+        anchor: true,
+      ),
+      DayStop(
+        time: '16h30',
+        slot: 'Pôr do sol',
+        itemId: 'mirante',
+        why: 'O Portal da Chapada ganha tons de laranja no fim da tarde.',
+      ),
+      DayStop(
+        time: '19h00',
+        slot: 'Noite',
+        itemId: 'biojoia',
+        why: 'Fechar o dia conhecendo as biojoias de sementes e capim dourado da região.',
+      ),
+    ],
+  ),
 ];
 
 /// Pedido para o mapa traçar um roteiro (lido pela aba Mapa).

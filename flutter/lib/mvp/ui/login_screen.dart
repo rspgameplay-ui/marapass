@@ -7,6 +7,7 @@ import '../auth/auth.dart';
 import '../data/repository.dart';
 import '../theme/tokens.dart';
 import '../theme/widgets.dart';
+import 'common.dart';
 
 /// Pede login só quando a ação exige conta e devolve `true` se o turista entrou.
 /// Visitante explora livremente; a oferta escolhida é retomada pelo chamador.
@@ -203,6 +204,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               'Ao entrar, você concorda com os termos de uso e a política de privacidade do MaraPass.',
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodySmall,
+            ),
+            Wrap(
+              alignment: WrapAlignment.center,
+              children: [
+                TextButton(onPressed: () => openLegal(context, 'termos'), child: const Text('Termos de uso')),
+                TextButton(onPressed: () => openLegal(context, 'privacidade'), child: const Text('Privacidade')),
+              ],
             ),
           ],
         ),

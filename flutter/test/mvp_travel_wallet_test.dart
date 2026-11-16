@@ -29,13 +29,13 @@ void main() {
     expect(parseScan('MP-XXXXXX'), isNull);
   });
 
-  test('roteiros usam itens reais, na mesma cidade, com um destaque', () {
+  test('roteiros usam itens reais, no mesmo polo, com um destaque', () {
     for (final p in dayPlans) {
       expect(p.stops.length, greaterThanOrEqualTo(3));
       expect(p.stops.where((s) => s.anchor).length, 1);
       for (final s in p.stops) {
         expect(Content.item(s.itemId), isNotNull, reason: s.itemId);
-        expect(s.item.cidade, p.city);
+        expect(s.item.polo, p.stops.first.item.polo);
         if (s.backupId != null) expect(Content.item(s.backupId!), isNotNull);
       }
     }
