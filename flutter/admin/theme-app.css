@@ -1,0 +1,40 @@
+/* Design atual do app MaraPass aplicado à Central (tokens do protótipo). */
+@font-face{font-family:'Jakarta';src:url('./fonts/PlusJakartaSans.ttf') format('truetype');font-weight:200 800;font-display:swap}
+:root{--navy:#0b3a66;--ink:#13263d;--text:#2c3e52;--muted:#556677;--green:#14775a;--green-bg:#e7f4ee;--yellow:#fac61d;
+  --red:#c53b36;--soft:#f3f5f7;--border:#dce2e8;--border-subtle:#eef1f4;--card:#ffffff;
+  font-family:'Jakarta',system-ui,-apple-system,'Segoe UI',sans-serif;color:var(--ink);background:var(--soft)}
+body{background:var(--soft);font-size:16px}
+.header{background:var(--navy);box-shadow:0 2px 0 var(--yellow)}
+.header-inner{padding:14px 22px}
+.map-brand{display:flex;align-items:center;gap:12px}.map-brand svg{display:none}
+.brand-logo{height:46px;width:auto;display:block}
+.logo{font-size:0}.logo small{font-size:12px;letter-spacing:.04em;opacity:.85;color:#fff}
+.env{color:#fff;opacity:.8}
+.heading h1{color:var(--navy);letter-spacing:-.8px;font-weight:800}
+.heading p,.muted,.hint{color:var(--muted)}
+.overline{color:var(--green);font-weight:800}
+h2{color:var(--ink);font-weight:800}
+.card,.metric,.mvp-metrics .metric{border:1px solid var(--border-subtle);border-radius:22px;box-shadow:0 4px 12px rgba(19,38,61,.06);background:var(--card)}
+.metric strong,.mvp-metrics .metric strong{color:var(--navy);font-weight:800}
+.status{border-radius:14px;background:#dbeafe;color:#1e40af}
+.status.success{background:var(--green-bg);color:var(--green)}.status.error{background:#fee2e2;color:var(--red)}
+label{font-weight:700;font-size:14px;color:var(--ink)}
+input,select{border:1px solid var(--border);border-radius:14px;min-height:52px;font-family:inherit;font-size:16px;color:var(--ink)}
+input:focus-visible,button:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid var(--yellow);outline-offset:2px}
+button,.primary,.secondary,a.primary,a.secondary{font-family:inherit;border-radius:14px;min-height:48px;font-size:15px;font-weight:700}
+.primary,a.primary{background:var(--navy);color:#fff;text-decoration:none;padding:12px 18px;display:inline-flex;align-items:center;justify-content:center}
+.primary:hover:not(:disabled){background:#082c4e}
+.secondary,a.secondary{background:#fff;color:var(--navy);border:1.5px solid var(--border);text-decoration:none;padding:12px 18px;display:inline-flex;align-items:center;justify-content:center}
+.secondary:hover:not(:disabled){background:var(--soft)}
+#loginButton{background:var(--yellow);color:var(--ink);min-height:56px;font-size:16px}
+#loginButton:hover:not(:disabled){background:#efb90f}
+.tab{background:#fff;color:var(--ink);border:1.5px solid var(--border);border-radius:999px;font-weight:700}
+.tab.selected{background:var(--navy);color:#fff;border-color:var(--navy)}
+.workspace-nav{gap:8px}
+.workspace-link{font-family:inherit;border-radius:999px;font-weight:700}
+.workspace-link.active{background:var(--navy)!important;color:#fff!important}
+th{color:var(--muted);font-weight:800}
+td{color:var(--text)}
+.small{min-height:40px}
+.pill{border-radius:999px}
+.qr-dialog{border-radius:22px;font-family:inherit}

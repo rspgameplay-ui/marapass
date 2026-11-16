@@ -10,6 +10,7 @@ import 'package:maplibre_gl/maplibre_gl.dart';
 import '../../application/map_state.dart';
 import '../../application/navigation_session.dart';
 import '../../core/config.dart';
+import '../../data/tourism_repository.dart';
 import '../../domain/navigation.dart';
 import '../../islands/coastal_island.dart';
 import '../../islands/island_directory.dart';
@@ -189,7 +190,30 @@ class _MapTabState extends ConsumerState<MapTab> {
   Map<String, CoastalIsland> _islands = const {};
   NauticalCatalog? _ferries;
   final Set<PoiKind> _kinds = {...PoiKind.values};
-  late final List<Poi> _pois = _buildPois();
+  List<Poi> _pois = const [];
+
+  @override
+  void initState() {
+    super.initState();
+    _pois = _buildPois();
+    // Lugares e ilhas do catálogo chegam em segundo plano.
+    TourismRepository? repo;
+    try {
+      repo = ref.read(repositoryProvider);
+    } catch (_) {
+      // sem catálogo do mapa (testes): só os pontos do app
+    }
+    if (repo != null && !repo.loaded) {
+      repo.ensureLoaded().then((_) async {
+        if (!mounted) return;
+        setState(() => _pois = _buildPois());
+        if (_ready) {
+          await _c?.setGeoJsonSource('pois', _poiCollection());
+          await _c?.setGeoJsonSource('islands', _islandShapes());
+        }
+      });
+    }
+  }
   Poi? _selected;
   RoadRoute? _route;
   GeoPoint? _origin;
@@ -220,6 +244,7 @@ class _MapTabState extends ConsumerState<MapTab> {
     }
     try {
       final repo = ref.read(repositoryProvider);
+      if (!repo.loaded) return out;
       _islands = {for (final i in repo.coastalIslands) i.place.id: i};
       for (final p in repo.basePlaces) {
         if (p.category == PlaceCategory.residential) continue;
@@ -809,6 +834,7 @@ class _MapTabState extends ConsumerState<MapTab> {
                   trailing: const Icon(Icons.chevron_right_rounded),
                   onTap: () {
                     Navigator.of(context).pop();
+                    unawaited(ref.read(repositoryProvider).loadRoads());
                     push<void>(
                       this.context,
                       Theme(data: legacyMapTheme(), child: const MapScreen()),

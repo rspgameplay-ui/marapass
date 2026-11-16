@@ -34,7 +34,6 @@ Future<void> main() async {
   // e ampliadores funcionam sem o usuário precisar ativar nada.
   if (kIsWeb) SemanticsBinding.instance.ensureSemantics();
   final repo = TourismRepository(await SharedPreferences.getInstance());
-  await repo.initialize();
 
   // O mapa original continua acessível por parâmetros de URL (prévia
   // editorial, piloto de Barreirinhas e ?legacy=1). O padrão é o app novo.
@@ -43,6 +42,13 @@ Future<void> main() async {
       q['cms-preview'] == '1' ||
       q['pilot'] == 'barreirinhas' ||
       q['legacy'] == '1';
+  // O app novo abre na hora; o catálogo pesado do mapa (lugares, relevo,
+  // estradas de referência) carrega em segundo plano.
+  if (legacy) {
+    await repo.ensureLoaded();
+  } else {
+    unawaited(repo.ensureLoaded(withRoads: false));
+  }
 
   final overrides = <Override>[repositoryProvider.overrideWithValue(repo)];
   final Widget app;
