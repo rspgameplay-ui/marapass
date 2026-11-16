@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/content.dart';
 import '../data/models.dart' show formatBrl;
+import '../data/repository.dart';
 import '../data/store.dart';
 import '../providers.dart';
 import '../theme/tokens.dart';
@@ -28,6 +29,10 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
   bool _useCoupon = false;
   bool _busy = false;
 
+  /// Mesma chave em toda nova tentativa: o banco não duplica o pedido.
+  final String _requestKey =
+      '${DateTime.now().microsecondsSinceEpoch}-${identityHashCode(Object())}';
+
   List<DateTime> get _days {
     final n = DateTime.now();
     return [for (var d = 1; d <= 14; d++) DateTime(n.year, n.month, n.day + d)];
@@ -44,14 +49,23 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
     setState(() => _busy = true);
     final store = ref.read(appStoreProvider);
     final cupom = Content.cupom(widget.item.cupom);
-    final r = store.requestReservation(
-      itemId: widget.item.id,
-      date: _day!,
-      period: _period!,
-      people: _people,
-      cupomId: _useCoupon ? cupom?.id : null,
-    );
-    await Future<void>.delayed(const Duration(milliseconds: 300));
+    final LocalReservation r;
+    try {
+      r = await store.requestReservationAsync(
+        itemId: widget.item.id,
+        date: _day!,
+        period: _period!,
+        people: _people,
+        requestKey: _requestKey,
+        cupomId: _useCoupon ? cupom?.id : null,
+      );
+    } on MvpException catch (e) {
+      if (mounted) {
+        setState(() => _busy = false);
+        showMpSnack(context, e.message);
+      }
+      return;
+    }
     if (!mounted) return;
     setState(() => _busy = false);
     await Navigator.of(context).pushReplacement(
@@ -684,8 +698,13 @@ class ReservationDetailScreen extends ConsumerWidget {
       ),
     );
     if (p == null || !context.mounted) return;
-    store.reschedule(r.id, d, p);
-    showMpSnack(context, 'Pedido de novo dia enviado ao parceiro.');
+    try {
+      await store.rescheduleAsync(r.id, d, p);
+      if (context.mounted)
+        showMpSnack(context, 'Pedido de novo dia enviado ao parceiro.');
+    } on MvpException catch (e) {
+      if (context.mounted) showMpSnack(context, e.message);
+    }
   }
 
   Future<void> _people(
@@ -721,7 +740,13 @@ class ReservationDetailScreen extends ConsumerWidget {
         ),
       ),
     );
-    if (ok == true && n != r.people) store.changePeople(r.id, n);
+    if (ok == true && n != r.people) {
+      try {
+        await store.changePeopleAsync(r.id, n);
+      } on MvpException catch (e) {
+        if (context.mounted) showMpSnack(context, e.message);
+      }
+    }
   }
 
   Future<void> _cancel(
@@ -786,8 +811,12 @@ class ReservationDetailScreen extends ConsumerWidget {
       ),
     );
     if (sure == true) {
-      store.cancelReservation(r.id, reason);
-      if (context.mounted) showMpSnack(context, 'Reserva cancelada.');
+      try {
+        await store.cancelReservationAsync(r.id, reason);
+        if (context.mounted) showMpSnack(context, 'Reserva cancelada.');
+      } on MvpException catch (e) {
+        if (context.mounted) showMpSnack(context, e.message);
+      }
     }
   }
 }

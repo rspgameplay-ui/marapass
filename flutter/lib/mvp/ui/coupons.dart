@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 import '../data/content.dart';
+import '../data/repository.dart';
 import '../data/store.dart';
 import '../theme/tokens.dart';
 import '../theme/widgets.dart';
@@ -327,9 +328,17 @@ class _ReviewState extends ConsumerState<CouponReviewScreen> {
 
   Future<void> _confirm() async {
     setState(() => _busy = true);
-    await Future<void>.delayed(const Duration(milliseconds: 350));
-    // Ativação idempotente: tocar duas vezes devolve o mesmo cupom.
-    final c = ref.read(appStoreProvider).activateCoupon(widget.cupom.id);
+    // Ativação idempotente: tocar de novo devolve o mesmo cupom (garantido no banco).
+    final LocalCoupon c;
+    try {
+      c = await ref.read(appStoreProvider).activateCouponAsync(widget.cupom.id);
+    } on MvpException catch (e) {
+      if (mounted) {
+        setState(() => _busy = false);
+        showMpSnack(context, e.message);
+      }
+      return;
+    }
     if (!mounted) return;
     await Navigator.of(context).pushReplacement(
       MaterialPageRoute<void>(

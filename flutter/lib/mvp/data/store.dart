@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
@@ -6,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'content.dart';
+import 'remote.dart';
 
 /// Estado local do aparelho para a versão de demonstração: favoritos,
 /// preferências, cupons, reservas, check-ins, pedidos e a área do parceiro.
@@ -109,13 +111,16 @@ class Checkin {
     required this.cidade,
     required this.at,
     this.rating = 0,
+    this.remoteId,
   });
   final String itemId;
   final String polo;
   final String cidade;
   final DateTime at;
   int rating;
+  final String? remoteId;
   Map<String, dynamic> toJson() => {
+    'id': remoteId,
     'i': itemId,
     'p': polo,
     'c': cidade,
@@ -128,6 +133,7 @@ class Checkin {
     cidade: j['c'] as String,
     at: DateTime.parse(j['a'] as String),
     rating: j['r'] as int,
+    remoteId: j['id'] as String?,
   );
 }
 
@@ -279,14 +285,249 @@ class AppStore extends ChangeNotifier {
   final partnerOffers = <PartnerOffer>[];
   final validations = <Validation>[];
 
-  static Future<AppStore> load() async {
+  /// Supabase (funções mvp_*). Nulo nos testes e no modo demonstração.
+  MvpRemote? remote;
+  bool syncing = false;
+  bool isPartnerMember = false;
+
+  /// Com login real, cupons, reservas e check-ins vivem no banco.
+  bool get online => remote?.signedIn ?? false;
+
+  static Future<AppStore> load({MvpRemote? remote}) async {
     SharedPreferences? p;
     try {
       p = await SharedPreferences.getInstance();
     } catch (_) {}
-    final s = AppStore._(p);
+    final s = AppStore._(p)..remote = remote;
     s._restore();
     return s;
+  }
+
+  // ---------- Sincronização com o Supabase
+  static DateTime _dt(Object? v) => DateTime.parse('$v').toLocal();
+
+  LocalCoupon _couponFrom(Map<String, dynamic> r) => LocalCoupon(
+    id: '${r['id']}',
+    cupomId: '${r['cupom_key']}',
+    code: '${r['code']}',
+    issuedAt: _dt(r['issued_at']),
+    usedAt: r['used_at'] == null ? null : _dt(r['used_at']),
+  );
+
+  LocalReservation _resFrom(Map<String, dynamic> r) => LocalReservation(
+    id: '${r['id']}',
+    itemId: '${r['item_key']}',
+    date: DateTime.parse('${r['day']}'),
+    period: '${r['period']}',
+    people: (r['people'] as num).toInt(),
+    status: ResStatus.values.firstWhere(
+      (s) => s.name == r['status'],
+      orElse: () => ResStatus.solicitada,
+    ),
+    history: [for (final h in (r['history'] as List? ?? const [])) '$h'],
+    cupomId: r['cupom_key'] as String?,
+    customer: r['user_id'] == remote?.userId
+        ? 'Você'
+        : ((r['customer_name'] as String?)?.trim().isNotEmpty ?? false
+              ? r['customer_name'] as String
+              : 'Turista'),
+  );
+
+  /// Traz do banco os dados da conta. Chamado no login e ao abrir a área do parceiro.
+  Future<void> syncFromServer() async {
+    final r = remote;
+    if (r == null || !r.signedIn || syncing) return;
+    syncing = true;
+    try {
+      final results = await Future.wait([
+        r.myCoupons(),
+        r.reservations(),
+        r.myCheckins(),
+        r.isPartner(),
+      ]);
+      isPartnerMember = results[3] as bool;
+      coupons
+        ..clear()
+        ..addAll((results[0] as List<Map<String, dynamic>>).map(_couponFrom));
+      reservations
+        ..clear()
+        ..addAll((results[1] as List<Map<String, dynamic>>).map(_resFrom));
+      checkins
+        ..clear()
+        ..addAll(
+          (results[2] as List<Map<String, dynamic>>).map(
+            (c) => Checkin(
+              itemId: '${c['item_key']}',
+              polo: '${c['polo']}',
+              cidade: '${c['cidade']}',
+              at: _dt(c['created_at']),
+              rating: (c['rating'] as num?)?.toInt() ?? 0,
+              remoteId: '${c['id']}',
+            ),
+          ),
+        );
+    } catch (_) {
+      // sem rede: mantém o que está no aparelho
+    } finally {
+      syncing = false;
+      await _save();
+    }
+  }
+
+  Future<LocalCoupon> activateCouponAsync(String cupomId) async {
+    if (!online) return activateCoupon(cupomId);
+    final c = _couponFrom(await remote!.activateCoupon(cupomId));
+    coupons
+      ..removeWhere((e) => e.id == c.id)
+      ..insert(0, c);
+    await _save();
+    return c;
+  }
+
+  Future<LocalReservation> requestReservationAsync({
+    required String itemId,
+    required DateTime date,
+    required String period,
+    required int people,
+    required String requestKey,
+    String? cupomId,
+  }) async {
+    if (!online)
+      return requestReservation(
+        itemId: itemId,
+        date: date,
+        period: period,
+        people: people,
+        cupomId: cupomId,
+      );
+    final row = await remote!.requestReservation(
+      itemKey: itemId,
+      itemTitle: Content.item(itemId)?.titulo ?? itemId,
+      day: date,
+      period: period,
+      people: people,
+      requestKey: requestKey,
+      cupomKey: cupomId,
+      customerName: name,
+    );
+    final r = _resFrom(row);
+    reservations
+      ..removeWhere((e) => e.id == r.id)
+      ..add(r);
+    await _save();
+    return r;
+  }
+
+  Future<void> _applyRes(Map<String, dynamic> row) async {
+    final r = _resFrom(row);
+    final i = reservations.indexWhere((e) => e.id == r.id);
+    if (i >= 0) {
+      reservations[i] = r;
+    } else {
+      reservations.add(r);
+    }
+    await _save();
+  }
+
+  Future<void> rescheduleAsync(String id, DateTime date, String period) async =>
+      online
+      ? _applyRes(
+          await remote!.updateReservation(
+            id,
+            'reschedule',
+            day: date,
+            period: period,
+          ),
+        )
+      : reschedule(id, date, period);
+
+  Future<void> changePeopleAsync(String id, int people) async => online
+      ? _applyRes(await remote!.updateReservation(id, 'people', people: people))
+      : changePeople(id, people);
+
+  Future<void> cancelReservationAsync(String id, String reason) async => online
+      ? _applyRes(await remote!.updateReservation(id, 'cancel', reason: reason))
+      : cancelReservation(id, reason);
+
+  Future<void> decideReservationAsync(String id, bool accept) async {
+    if (!online) return decideReservation(id, accept);
+    await remote!.joinDemoPartner();
+    await _applyRes(await remote!.decideReservation(id, accept));
+  }
+
+  Future<Checkin> checkInAsync(Item item) async {
+    if (!online) return checkIn(item);
+    final row = await remote!.checkIn(item.id, item.polo, item.cidade);
+    final c = Checkin(
+      itemId: item.id,
+      polo: item.polo,
+      cidade: item.cidade,
+      at: _dt(row['created_at']),
+      rating: (row['rating'] as num?)?.toInt() ?? 0,
+      remoteId: '${row['id']}',
+    );
+    checkins
+      ..removeWhere((e) => e.remoteId == c.remoteId)
+      ..insert(0, c);
+    await _save();
+    return c;
+  }
+
+  Future<void> rateAsync(Checkin c, int stars) async {
+    rate(c, stars);
+    if (online && c.remoteId != null) {
+      try {
+        await remote!.rateCheckin(c.remoteId!, stars);
+      } catch (_) {}
+    }
+  }
+
+  /// Área do parceiro com dados reais: entra como parceiro de demonstração.
+  Future<void> enterPartnerArea() async {
+    if (!online) return;
+    try {
+      await remote!.joinDemoPartner();
+      isPartnerMember = true;
+      reservations.removeWhere((r) => r.id == 'pr1' || r.id == 'pr2');
+      await syncFromServer();
+    } catch (_) {}
+  }
+
+  Future<(bool, String)> validateCodeAsync(String raw, int amountCents) async {
+    if (!online) return validateCode(raw, amountCents);
+    final code = raw.trim().toUpperCase();
+    await remote!.joinDemoPartner();
+    final res = await remote!.validateCoupon(
+      code,
+      amountCents > 0 ? amountCents : null,
+    );
+    final ok = res['ok'] == true;
+    final cupom = Content.cupom(res['cupom_key'] as String?);
+    final reason = res['reason'] as String?;
+    validations.insert(
+      0,
+      Validation(
+        code: code,
+        title: cupom?.parceiro ?? (ok ? 'Cupom' : 'Código não encontrado'),
+        at: DateTime.now(),
+        amountCents: amountCents,
+        ok: ok,
+        reason: switch (reason) {
+          'used' => 'Já utilizado',
+          'not_found' => 'Código inválido',
+          _ => null,
+        },
+      ),
+    );
+    await _save();
+    unawaited(syncFromServer());
+    if (ok) return (true, '${cupom?.beneficio ?? 'Benefício'} aplicado.');
+    return (
+      false,
+      reason == 'used'
+          ? 'Este cupom já foi utilizado e não vale de novo.'
+          : 'Código não encontrado. Confira as letras com o turista.',
+    );
   }
 
   /// Para testes: estado vazio sem persistência.

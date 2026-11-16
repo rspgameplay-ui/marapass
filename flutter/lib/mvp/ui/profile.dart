@@ -221,11 +221,14 @@ class ProfileScreen extends ConsumerWidget {
                     subtitle: 'Para empresas: cupons, validação e reservas',
                     tint: MP.navy,
                     color: Colors.white,
-                    onTap: () => Navigator.of(context).push(
-                      MaterialPageRoute<void>(
-                        builder: (_) => const PartnerShell(),
-                      ),
-                    ),
+                    onTap: () {
+                      store.enterPartnerArea();
+                      Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => const PartnerShell(),
+                        ),
+                      );
+                    },
                   ),
                   const SizedBox(height: MP.s4),
                   const MpNotice.demo(

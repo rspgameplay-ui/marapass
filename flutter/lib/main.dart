@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
@@ -11,6 +13,7 @@ import 'application/map_state.dart';
 import 'core/config.dart';
 import 'mvp/auth/auth.dart';
 import 'mvp/data/demo_repository.dart';
+import 'mvp/data/remote.dart';
 import 'mvp/data/repository.dart';
 import 'mvp/data/store.dart';
 import 'mvp/data/supabase_repository.dart';
@@ -47,7 +50,12 @@ Future<void> main() async {
     app = const MaraPassApp();
   } else {
     final backend = await _initBackend();
-    final store = await AppStore.load();
+    final store = await AppStore.load(
+      remote: backend.$1 is SupabaseMvpRepository
+          ? MvpRemote(Supabase.instance.client)
+          : null,
+    );
+    unawaited(store.syncFromServer());
     overrides.addAll([
       appStoreProvider.overrideWith((ref) => store),
       mvpRepositoryProvider.overrideWithValue(backend.$1),

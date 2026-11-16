@@ -1,0 +1,14 @@
+-- APLICADA no projeto Marapass (nwwxobiqynawxxnbvubz) em 16/11/2026 via MCP:
+--   mvp_app_web_demo, mvp_hide_internal_helper, mvp_fix_coupon_code_random.
+-- Tabelas e funções isoladas (prefixo mvp_) do app web de homologação.
+-- Não alteram nenhum objeto existente nem o catálogo público do app de mapa.
+-- Remoção completa:
+--   drop function if exists public.mvp_activate_coupon(text), public.mvp_join_demo_partner(),
+--     public.mvp_validate_coupon(text,integer), public.mvp_request_reservation(text,text,date,text,integer,text,text,text),
+--     public.mvp_update_reservation(uuid,text,date,text,integer,text), public.mvp_decide_reservation(uuid,boolean),
+--     public.mvp_checkin(text,text,text), public.mvp_rate_checkin(uuid,smallint), public.mvp_require_user();
+--   drop table if exists public.mvp_checkins, public.mvp_reservations, public.mvp_coupons;
+--   drop policy if exists mvp_coupons_read on public.mvp_coupons; -- (já removida com a tabela)
+--   drop function if exists public.mvp_is_partner(); drop table if exists public.mvp_partner_members;
+--
+-- O SQL completo está no histórico de migrações do Supabase (supabase_migrations.schema_migrations).

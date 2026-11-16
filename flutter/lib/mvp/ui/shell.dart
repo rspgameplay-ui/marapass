@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../auth/auth.dart';
+import '../data/store.dart';
 import '../providers.dart';
 import 'checkin.dart';
 import 'coupons.dart';
@@ -24,6 +26,11 @@ class MvpShell extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final i = ref.watch(shellTabProvider);
+    // Ao entrar na conta, traz cupons, reservas e check-ins do banco.
+    ref.listen(authProvider, (prev, next) {
+      if (next != null && prev?.id != next.id)
+        ref.read(appStoreProvider).syncFromServer();
+    });
     return Scaffold(
       body: IndexedStack(
         index: i,

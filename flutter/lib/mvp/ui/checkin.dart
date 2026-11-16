@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/content.dart';
+import '../data/repository.dart';
 import '../data/store.dart';
 import '../providers.dart';
 import '../theme/tokens.dart';
@@ -356,7 +357,20 @@ class _FlowState extends ConsumerState<CheckinFlowScreen> {
     if (!mounted) return;
     final store = ref.read(appStoreProvider);
     _newStamp = !store.stampedPolos.contains(widget.item.polo);
-    _c = store.checkIn(widget.item);
+    try {
+      _c = await store.checkInAsync(widget.item);
+    } catch (e) {
+      if (!mounted) return;
+      showMpSnack(
+        context,
+        e is MvpException
+            ? e.message
+            : 'Não foi possível registrar agora. Tente de novo.',
+      );
+      Navigator.of(context).pop();
+      return;
+    }
+    if (!mounted) return;
     setState(() => _step = _Step.done);
   }
 
@@ -469,7 +483,8 @@ class _FlowState extends ConsumerState<CheckinFlowScreen> {
                   value: _stars,
                   onChanged: (v) {
                     setState(() => _stars = v);
-                    if (_c != null) ref.read(appStoreProvider).rate(_c!, v);
+                    if (_c != null)
+                      ref.read(appStoreProvider).rateAsync(_c!, v);
                   },
                 ),
                 if (_stars > 0)

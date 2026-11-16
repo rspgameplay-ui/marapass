@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/content.dart';
 import '../data/models.dart' show formatBrl;
+import '../data/repository.dart';
 import '../data/store.dart';
 import '../theme/tokens.dart';
 import '../theme/widgets.dart';
@@ -11,6 +12,26 @@ import 'common.dart';
 import 'support.dart';
 
 const _partnerName = 'Lençóis Experience';
+
+Future<void> _decide(
+  BuildContext context,
+  AppStore s,
+  String id,
+  bool accept,
+) async {
+  try {
+    await s.decideReservationAsync(id, accept);
+    if (context.mounted)
+      showMpSnack(
+        context,
+        accept
+            ? 'Reserva confirmada. O turista vê na hora.'
+            : 'Reserva recusada.',
+      );
+  } on MvpException catch (e) {
+    if (context.mounted) showMpSnack(context, e.message);
+  }
+}
 
 /// Área do parceiro (demonstração). Navegação oficial:
 /// Painel · Cupons · Validar · Relatórios · Conta — Validar fica no centro.
@@ -857,7 +878,14 @@ class _ValidateTabState extends ConsumerState<_ValidateTab> {
     final cents =
         ((double.tryParse(_amount.text.replaceAll(',', '.')) ?? 0) * 100)
             .round();
-    final (ok, msg) = s.validateCode(code, cents);
+    final bool ok;
+    final String msg;
+    try {
+      (ok, msg) = await s.validateCodeAsync(code, cents);
+    } on MvpException catch (e) {
+      if (mounted) showMpSnack(context, e.message);
+      return;
+    }
     if (!mounted) return;
     await push<void>(
       context,
@@ -1373,7 +1401,7 @@ class _PartnerResState extends ConsumerState<PartnerReservationsScreen> {
                                 child: OutlinedButton(
                                   key: Key('decline-${r.id}'),
                                   onPressed: () =>
-                                      s.decideReservation(r.id, false),
+                                      _decide(context, s, r.id, false),
                                   child: const Text('Recusar'),
                                 ),
                               ),
@@ -1385,7 +1413,7 @@ class _PartnerResState extends ConsumerState<PartnerReservationsScreen> {
                                     backgroundColor: MP.green,
                                   ),
                                   onPressed: () =>
-                                      s.decideReservation(r.id, true),
+                                      _decide(context, s, r.id, true),
                                   child: const Text('Confirmar'),
                                 ),
                               ),
