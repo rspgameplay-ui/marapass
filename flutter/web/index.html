@@ -34,9 +34,29 @@
 <style>
 .maplibregl-ctrl-bottom-left { bottom: 190px !important; left: 8px !important; }
 .maplibregl-ctrl-attrib { font-size: 10px !important; max-width: 260px; }
+/* Tela de carregamento: aparece enquanto o app baixa, some no primeiro quadro. */
+#mp-loading { position: fixed; inset: 0; z-index: 9999; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 14px; background: #1a3a5c; color: #fff;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; transition: opacity .35s; }
+#mp-loading b { font-size: 34px; font-weight: 800; letter-spacing: -.5px; }
+#mp-loading span { font-size: 18px; opacity: .85; }
+#mp-loading i { width: 46px; height: 46px; border-radius: 50%; border: 5px solid rgba(255,255,255,.25);
+  border-top-color: #fac61d; animation: mp-spin 1s linear infinite; }
+@keyframes mp-spin { to { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
+  <div id="mp-loading" role="status" aria-live="polite">
+    <i></i><b>MaraPass</b><span>Carregando, só um instante…</span>
+  </div>
+  <script>
+    window.addEventListener('flutter-first-frame', function () {
+      var el = document.getElementById('mp-loading');
+      if (!el) return;
+      el.style.opacity = '0';
+      setTimeout(function () { el.remove(); }, 400);
+    });
+  </script>
   <!--
     You can customize the "flutter_bootstrap.js" script.
     This is useful to provide a custom configuration to the Flutter loader
