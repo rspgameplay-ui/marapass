@@ -66,16 +66,31 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final dica = Content.dicas[DateTime.now().day % Content.dicas.length];
     void tab(int i) => ref.read(shellTabProvider.notifier).go(i);
 
-    return SafeArea(
-      bottom: false,
+    final top = MediaQuery.paddingOf(context).top;
+    return ColoredBox(
+      color: MP.soft,
       child: ListView(
         padding: const EdgeInsets.only(bottom: MP.s10),
         children: [
+          // Topo de app: bloco azul em degradê, saudação e busca flutuante.
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [Color(0xff0b3a66), Color(0xff0e4f80), Color(0xff14775a)],
+              ),
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(28)),
+            ),
+            padding: const EdgeInsets.only(bottom: MP.s5),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(MP.pageH, MP.s3, MP.s3, 0),
+            padding: EdgeInsets.fromLTRB(MP.pageH, top + MP.s3, MP.s3, 0),
             child: Row(
               children: [
-                const MpLogo(width: 84),
+                const MpLogo(width: 84, white: true),
                 const Spacer(),
                 Badge(
                   isLabelVisible: store.unreadAvisos > 0,
@@ -85,11 +100,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     key: const Key('home-bell'),
                     tooltip: 'Avisos',
                     iconSize: 26,
-                    style: IconButton.styleFrom(backgroundColor: MP.soft),
+                    style: IconButton.styleFrom(backgroundColor: const Color(0x26ffffff)),
                     onPressed: () => push<void>(context, const AvisosScreen()),
                     icon: const Icon(
                       Icons.notifications_none_rounded,
-                      color: MP.ink,
+                      color: Colors.white,
                     ),
                   ),
                 ),
@@ -127,12 +142,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   name == null
                       ? '${_greeting()}, viajante!'
                       : '${_greeting()}, ${name[0].toUpperCase()}${name.substring(1)}!',
-                  style: Theme.of(context).textTheme.headlineMedium,
+                  style: Theme.of(context).textTheme.headlineMedium
+                      ?.copyWith(color: Colors.white),
                 ),
                 Text(
                   'Para onde você quer ir?',
                   style: Theme.of(context).textTheme.bodyLarge
-                      ?.copyWith(color: MP.textSecondary),
+                      ?.copyWith(color: const Color(0xd9ffffff)),
                 ),
                 const SizedBox(height: MP.s4),
                 Semantics(
@@ -146,8 +162,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       height: 58,
                       padding: const EdgeInsets.symmetric(horizontal: MP.s4),
                       decoration: BoxDecoration(
-                        color: MP.soft,
-                        borderRadius: BorderRadius.circular(MP.rMedium),
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(MP.rLarge),
+                        boxShadow: const [BoxShadow(color: Color(0x33061a2e), blurRadius: 18, offset: Offset(0, 8))],
                       ),
                       child: const Row(
                         children: [
@@ -173,7 +190,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: MP.s4),
+              ],
+            ),
+          ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(MP.pageH, MP.s4, MP.pageH, 0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                 Row(
                   children: [
                     Expanded(

@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart' show CupertinoPageTransitionsBuilder;
 import 'package:flutter/material.dart';
 
 /// Design system MaraPass acessível.
@@ -109,6 +110,20 @@ ThemeData mvpTheme() {
     fontFamily: mpFont,
     scaffoldBackgroundColor: MP.page,
     visualDensity: VisualDensity.standard,
+    // Sensação de app: telas deslizam como no iPhone e o toque é discreto.
+    pageTransitionsTheme: const PageTransitionsTheme(
+      builders: {
+        TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.windows: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.linux: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.fuchsia: CupertinoPageTransitionsBuilder(),
+      },
+    ),
+    splashFactory: InkRipple.splashFactory,
+    highlightColor: const Color(0x0a13263d),
+    splashColor: const Color(0x1413263d),
     materialTapTargetSize: MaterialTapTargetSize.padded,
     appBarTheme: const AppBarTheme(
       backgroundColor: MP.page,
@@ -251,8 +266,10 @@ ThemeData mvpTheme() {
     ),
     navigationBarTheme: NavigationBarThemeData(
       backgroundColor: MP.page,
-      indicatorColor: MP.greenBg,
-      height: 72,
+      surfaceTintColor: Colors.transparent,
+      indicatorColor: const Color(0xffe3f1ff),
+      indicatorShape: const StadiumBorder(),
+      height: 70,
       elevation: 0,
       labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
       shadowColor: Colors.black26,
@@ -264,13 +281,13 @@ ThemeData mvpTheme() {
               ? FontWeight.w800
               : FontWeight.w600,
           letterSpacing: -.2,
-          color: s.contains(WidgetState.selected) ? MP.green : MP.textSecondary,
+          color: s.contains(WidgetState.selected) ? MP.navy : MP.textMuted,
         ),
       ),
       iconTheme: WidgetStateProperty.resolveWith(
         (s) => IconThemeData(
-          size: 27,
-          color: s.contains(WidgetState.selected) ? MP.green : MP.textSecondary,
+          size: 26,
+          color: s.contains(WidgetState.selected) ? MP.navy : MP.textMuted,
         ),
       ),
     ),

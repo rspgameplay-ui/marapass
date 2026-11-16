@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../theme/tokens.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../auth/auth.dart';
@@ -59,8 +61,13 @@ class _MvpShellState extends ConsumerState<MvpShell> {
       bottomNavigationBar: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Divider(height: 1, thickness: 1, color: Color(0xffe6eaee)),
-          NavigationBar(
+          // Barra flutuando sobre o conteúdo, com sombra suave (estilo app).
+          DecoratedBox(
+            decoration: const BoxDecoration(
+              color: MP.page,
+              boxShadow: [BoxShadow(color: Color(0x1a13263d), blurRadius: 16, offset: Offset(0, -2))],
+            ),
+            child: NavigationBar(
             selectedIndex: i,
             onDestinationSelected: ref.read(shellTabProvider.notifier).go,
             destinations: [
@@ -72,9 +79,10 @@ class _MvpShellState extends ConsumerState<MvpShell> {
                 ),
             ],
           ),
+          ),
           // Faixa com as cores da marca (protótipo aprovado).
           const SizedBox(
-            height: 5,
+            height: 3,
             child: Row(
               children: [
                 Expanded(child: ColoredBox(color: Color(0xff14775a))),

@@ -47,7 +47,12 @@ Future<void> main() async {
   if (legacy) {
     await repo.ensureLoaded();
   } else {
-    unawaited(repo.ensureLoaded(withRoads: false));
+    unawaited(
+      Future<void>.delayed(
+        const Duration(seconds: 4),
+        () => repo.ensureLoaded(withRoads: false),
+      ),
+    );
   }
 
   final overrides = <Override>[repositoryProvider.overrideWithValue(repo)];
@@ -67,7 +72,9 @@ Future<void> main() async {
       mvpRepositoryProvider.overrideWithValue(backend.$1),
       authGatewayProvider.overrideWithValue(backend.$2),
     ]);
-    app = const MvpApp();
+    // Na web, a abertura animada roda em HTML/CSS enquanto o Flutter carrega
+    // (fluida no Safari); no app instalado, a versão em Flutter.
+    app = kIsWeb ? const MvpApp(splash: Duration.zero) : const MvpApp();
   }
   runApp(ProviderScope(overrides: overrides, child: app));
 }

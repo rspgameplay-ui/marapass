@@ -496,8 +496,10 @@ class MpShortcut extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: MP.s3),
         decoration: BoxDecoration(
-          border: Border.all(color: MP.border),
+          color: MP.card,
+          border: Border.all(color: MP.borderSubtle),
           borderRadius: BorderRadius.circular(MP.rLarge),
+          boxShadow: MP.shadowCard,
         ),
         child: Column(
           children: [

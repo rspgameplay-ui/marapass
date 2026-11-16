@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,6 +32,7 @@ class MvpApp extends ConsumerWidget {
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
       theme: mvpTheme(),
       themeMode: ThemeMode.light,
+      scrollBehavior: const _AppScroll(),
       builder: (context, child) {
         final mq = MediaQuery.of(context);
         final base = mq.textScaler.scale(1);
@@ -52,6 +54,18 @@ class MvpApp extends ConsumerWidget {
       home: _Gate(splash: splash),
     );
   }
+}
+
+/// Rolagem de app: efeito elástico e sem barra de rolagem de site.
+class _AppScroll extends MaterialScrollBehavior {
+  const _AppScroll();
+  @override
+  ScrollPhysics getScrollPhysics(BuildContext context) =>
+      const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics());
+  @override
+  Widget buildScrollbar(BuildContext context, Widget child, ScrollableDetails details) => child;
+  @override
+  Set<PointerDeviceKind> get dragDevices => {...super.dragDevices, PointerDeviceKind.mouse};
 }
 
 class _Gate extends StatefulWidget {
@@ -101,7 +115,10 @@ class _GateState extends State<_Gate> {
         onDone: () => setState(() => _splashDone = true),
       );
     } else if (o == null) {
-      child = const _Splash();
+      // Na web a abertura em HTML cobre este instante; no app, a marca.
+      child = widget.splash == Duration.zero
+          ? const ColoredBox(key: ValueKey('blank'), color: MP.soft, child: SizedBox.expand())
+          : const _Splash();
     } else if (!o) {
       child = _Welcome(key: const ValueKey('welcome'), onDone: _done);
     } else {

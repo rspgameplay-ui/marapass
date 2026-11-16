@@ -60,10 +60,14 @@ class MaraSymbolPainter extends CustomPainter {
     if (glow > 0) {
       canvas.drawCircle(
         Offset.zero,
-        50,
+        62,
         Paint()
-          ..color = const Color(0xFFF5C428).withValues(alpha: .28 * glow)
-          ..maskFilter = MaskFilter.blur(BlurStyle.normal, 18 * glow + 1),
+          ..shader = RadialGradient(
+            colors: [
+              const Color(0xFFF5C428).withValues(alpha: .30 * glow),
+              const Color(0x00F5C428),
+            ],
+          ).createShader(Rect.fromCircle(center: Offset.zero, radius: 62)),
       );
     }
     for (var i = 0; i < 6; i++) {

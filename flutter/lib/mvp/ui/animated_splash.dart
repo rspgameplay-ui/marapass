@@ -86,15 +86,17 @@ class _AnimatedSplashState extends State<AnimatedSplash> with SingleTickerProvid
               return Stack(
                 fit: StackFit.expand,
                 children: [
-                  CustomPaint(painter: _TerritoryPainter(pulse: pulse, rings: rings, wave: t)),
+                  RepaintBoundary(child: CustomPaint(painter: _TerritoryPainter(pulse: pulse, rings: rings, wave: t))),
                   Center(
                     child: Transform.translate(
                       offset: Offset(0, -lift),
-                      child: SizedBox.square(
+                      child: RepaintBoundary(
+                        child: SizedBox.square(
                         dimension: logo,
                         child: CustomPaint(
                           painter: MaraSymbolPainter(progress: blades, spin: spin, glow: glow),
                         ),
+                      ),
                       ),
                     ),
                   ),
@@ -159,9 +161,10 @@ class _TerritoryPainter extends CustomPainter {
     // Ponto de luz dourado
     final dot = (1 - rings).clamp(0.0, 1.0) * pulse;
     if (dot > 0) {
-      canvas.drawCircle(c, 10 + 30 * pulse, Paint()
-        ..color = gold.withValues(alpha: .35 * dot)
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 14));
+      final rr = 12 + 30 * pulse;
+      canvas.drawCircle(c, rr, Paint()
+        ..shader = RadialGradient(colors: [gold.withValues(alpha: .4 * dot), gold.withValues(alpha: 0)])
+            .createShader(Rect.fromCircle(center: c, radius: rr)));
       canvas.drawCircle(c, 5, Paint()..color = gold.withValues(alpha: dot));
     }
 
@@ -189,7 +192,7 @@ class _TerritoryPainter extends CustomPainter {
     final h = size.height;
     final path = Path()..moveTo(0, h);
     final amp = 14.0 * pulse;
-    for (double x = 0; x <= size.width; x += 8) {
+    for (double x = 0; x <= size.width + 24; x += 24) {
       final y = h * .86 + math.sin(x / size.width * math.pi * 2 + wave * math.pi * 2) * amp;
       path.lineTo(x, y);
     }

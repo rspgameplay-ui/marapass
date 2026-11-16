@@ -41,28 +41,71 @@
 .maplibregl-ctrl-attrib { font-size: 10px !important; max-width: 260px; }
 /* Mapa novo: o crédito é desenhado pelo app (o HTML ficaria por cima das folhas). */
 .maplibregl-ctrl-bottom-right .maplibregl-ctrl-attrib { display: none !important; }
-/* Tela de carregamento: aparece enquanto o app baixa, some no primeiro quadro. */
-#mp-loading { position: fixed; inset: 0; z-index: 9999; display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 14px; background: #233347; color: #fff;
-  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; transition: opacity .35s; }
-#mp-loading b { font-size: 34px; font-weight: 800; letter-spacing: -.5px; }
-#mp-loading span { font-size: 18px; opacity: .85; }
-#mp-loading i { width: 46px; height: 46px; border-radius: 50%; border: 5px solid rgba(255,255,255,.25);
-  border-top-color: #fac61d; animation: mp-spin 1s linear infinite; }
-@keyframes mp-spin { to { transform: rotate(360deg); } }
+/* Abertura animada em HTML/CSS: roda na placa de vídeo (60 fps) enquanto o
+   Flutter carrega por trás, e some quando o app está pronto. */
+#mp-loading{position:fixed;inset:0;z-index:9999;background:#233347;overflow:hidden;display:flex;
+  flex-direction:column;align-items:center;justify-content:center;transition:opacity .4s ease;
+  font-family:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',sans-serif;-webkit-tap-highlight-color:transparent}
+#mp-loading.out{opacity:0;pointer-events:none}
+#mp-stage{position:relative;width:min(46vw,210px);aspect-ratio:1;transform:translateY(0);
+  animation:mp-lift .7s cubic-bezier(.22,1,.36,1) 1.9s both}
+#mp-stage svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.mp-ring{fill:none;stroke:rgba(255,255,255,.16);stroke-width:.6;transform-origin:0 0;transform:scale(0);
+  animation:mp-ring 1s cubic-bezier(.22,1,.36,1) both}
+.mp-ray{stroke:rgba(255,255,255,.10);stroke-width:.5;transform-origin:0 0;transform:scale(0);
+  animation:mp-ring 1s cubic-bezier(.22,1,.36,1) .15s both}
+.mp-dot{fill:#f5c428;transform-origin:0 0;animation:mp-dot .9s ease-out both}
+.mp-halo{fill:url(#mp-glow);transform-origin:0 0;animation:mp-halo 2.6s ease-out .2s both}
+#mp-spin{transform-origin:0 0;animation:mp-spin360 .9s cubic-bezier(.33,1,.68,1) 1.45s both}
+.mp-blade{transform-origin:0 0;opacity:0;animation:mp-blade .45s cubic-bezier(.34,1.56,.64,1) both}
+#mp-sign{margin-top:22px;text-align:center;color:#fff;opacity:0;transform:translateY(22px);
+  animation:mp-sign .7s cubic-bezier(.22,1,.36,1) 1.9s both}
+#mp-sign b{display:block;font-size:40px;font-weight:800;letter-spacing:-.8px;line-height:1}
+#mp-sign span{display:block;margin-top:10px;font-size:13px;font-weight:700;letter-spacing:6px;color:rgba(255,255,255,.8)}
+#mp-dunes{position:absolute;left:-10%;right:-10%;bottom:-2%;height:18%;opacity:0;animation:mp-dunes 1s ease-out both}
+#mp-dunes path{fill:rgba(223,195,157,.10)}
+@keyframes mp-ring{to{transform:scale(1)}}
+@keyframes mp-dot{0%{transform:scale(0);opacity:0}40%{transform:scale(1.4);opacity:1}100%{transform:scale(0);opacity:0}}
+@keyframes mp-halo{0%{transform:scale(.2);opacity:0}30%{opacity:1}70%{transform:scale(1.15);opacity:.9}100%{transform:scale(1);opacity:.35}}
+@keyframes mp-spin360{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+@keyframes mp-blade{from{opacity:0;transform:rotate(-92deg) translateY(-26px) scale(0)}to{opacity:1;transform:none}}
+@keyframes mp-lift{to{transform:translateY(-36px)}}
+@keyframes mp-sign{to{opacity:1;transform:translateY(-36px)}}
+@keyframes mp-dunes{to{opacity:1}}
+#mp-loading.skip *{animation-delay:0s!important;animation-duration:.01s!important}
+@media (prefers-reduced-motion:reduce){#mp-loading *{animation-duration:.01s!important;animation-delay:0s!important}}
 </style>
 </head>
 <body>
-  <div id="mp-loading" role="status" aria-live="polite">
-    <i></i><b>MaraPass</b><span>Carregando, só um instante…</span>
+  <div id="mp-loading" role="status" aria-label="MaraPass, carregando">
+    <div id="mp-stage">
+      <svg viewBox="-55 -55 110 110" aria-hidden="true">
+        <defs><radialGradient id="mp-glow"><stop offset="0" stop-color="#f5c428" stop-opacity=".35"/><stop offset="1" stop-color="#f5c428" stop-opacity="0"/></radialGradient></defs>
+        <circle class="mp-halo" r="64"/>
+        <circle class="mp-ring" r="28"/><circle class="mp-ring" r="48" style="animation-delay:.12s"/><circle class="mp-ring" r="68" style="animation-delay:.24s"/>
+        <line class="mp-ray" x1="0" y1="0" x2="80.0" y2="0.0"/><line class="mp-ray" x1="0" y1="0" x2="35.36" y2="35.36"/><line class="mp-ray" x1="0" y1="0" x2="0.0" y2="80.0"/><line class="mp-ray" x1="0" y1="0" x2="-35.36" y2="35.36"/><line class="mp-ray" x1="0" y1="0" x2="-80.0" y2="0.0"/><line class="mp-ray" x1="0" y1="0" x2="-35.36" y2="-35.36"/><line class="mp-ray" x1="0" y1="0" x2="-0.0" y2="-80.0"/><line class="mp-ray" x1="0" y1="0" x2="35.36" y2="-35.36"/>
+        <circle class="mp-dot" r="5"/>
+        <g id="mp-spin"><g transform="rotate(0)"><g class="mp-blade" style="animation-delay:0.80s"><path fill="#F5C428" d="M0 0 L-1 -46 C-1 -57 -43 -28 -23 -12 Q-10 -5 0 0Z"/><path fill="#C99B14" d="M0 0 L-23 -12 Q-34 -25 -26 -35Z"/></g></g><g transform="rotate(60)"><g class="mp-blade" style="animation-delay:0.88s"><path fill="#7C5D46" d="M0 0 L-1 -46 C-1 -57 -43 -28 -23 -12 Q-10 -5 0 0Z"/><path fill="#5A412F" d="M0 0 L-23 -12 Q-34 -25 -26 -35Z"/></g></g><g transform="rotate(120)"><g class="mp-blade" style="animation-delay:0.96s"><path fill="#2E7CF6" d="M0 0 L-1 -46 C-1 -57 -43 -28 -23 -12 Q-10 -5 0 0Z"/><path fill="#1D5AC0" d="M0 0 L-23 -12 Q-34 -25 -26 -35Z"/></g></g><g transform="rotate(180)"><g class="mp-blade" style="animation-delay:1.04s"><path fill="#DFC39D" d="M0 0 L-1 -46 C-1 -57 -43 -28 -23 -12 Q-10 -5 0 0Z"/><path fill="#B89B75" d="M0 0 L-23 -12 Q-34 -25 -26 -35Z"/></g></g><g transform="rotate(240)"><g class="mp-blade" style="animation-delay:1.12s"><path fill="#43A854" d="M0 0 L-1 -46 C-1 -57 -43 -28 -23 -12 Q-10 -5 0 0Z"/><path fill="#2E7D3B" d="M0 0 L-23 -12 Q-34 -25 -26 -35Z"/></g></g><g transform="rotate(300)"><g class="mp-blade" style="animation-delay:1.20s"><path fill="#E3524B" d="M0 0 L-1 -46 C-1 -57 -43 -28 -23 -12 Q-10 -5 0 0Z"/><path fill="#B53832" d="M0 0 L-23 -12 Q-34 -25 -26 -35Z"/></g></g></g>
+      </svg>
+    </div>
+    <div id="mp-sign"><b>MaraPass</b><span>MARANHÃO 2026</span></div>
+    <svg id="mp-dunes" viewBox="0 0 400 60" preserveAspectRatio="none" aria-hidden="true"><path d="M0 30 C70 5 130 5 200 28 S330 52 400 25 V60 H0Z"/></svg>
   </div>
   <script>
-    window.addEventListener('flutter-first-frame', function () {
+    (function () {
       var el = document.getElementById('mp-loading');
-      if (!el) return;
-      el.style.opacity = '0';
-      setTimeout(function () { el.remove(); }, 400);
-    });
+      var t0 = performance.now(), ready = false, gone = false;
+      function hide() {
+        if (gone || !el) return; gone = true;
+        el.classList.add('out'); setTimeout(function () { el.remove(); }, 420);
+      }
+      window.addEventListener('flutter-first-frame', function () {
+        ready = true;
+        setTimeout(hide, Math.max(0, 2900 - (performance.now() - t0)));
+      });
+      // Um toque pula a animação (o app entra assim que estiver pronto).
+      el.addEventListener('click', function () { el.classList.add('skip'); if (ready) hide(); });
+    })();
   </script>
   <!--
     You can customize the "flutter_bootstrap.js" script.
