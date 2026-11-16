@@ -257,6 +257,13 @@ void main() {
       },
     );
 
+    testWidgets('faixa de cores aparece na base da barra inferior', (tester) async {
+      await boot(tester);
+      final stripe = find.byKey(const Key('stripe-4294296616'));
+      expect(stripe, findsOneWidget);
+      expect(tester.getSize(stripe).height, 6);
+    });
+
     testWidgets('check-in pela placa: registra visita, dá pontos e selo', (
       tester,
     ) async {

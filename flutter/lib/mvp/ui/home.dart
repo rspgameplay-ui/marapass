@@ -12,7 +12,7 @@ import '../theme/widgets.dart';
 import 'booking.dart';
 import 'catalog.dart';
 import 'checkin.dart';
-import '../theme/mara_logo.dart';
+import '../theme/brand.dart';
 import 'common.dart';
 import 'itinerary.dart';
 import 'explore.dart';
@@ -91,11 +91,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             child: Row(
               children: [
                 // Logo horizontal: símbolo e nome lado a lado (ocupa menos altura).
-                const MaraPassLogo(
-                  size: 46,
-                  variant: MaraLogoVariant.horizontal,
-                  onDark: true,
-                ),
+                const MpLogoHorizontal(height: 46, white: true),
                 const Spacer(),
                 Badge(
                   isLabelVisible: store.unreadAvisos > 0,

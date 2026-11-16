@@ -60,8 +60,8 @@ class _MvpShellState extends ConsumerState<MvpShell> {
           const PassportScreen(),
         ],
       ),
-      // Barra inferior arredondada no alto, com a faixa das cores do
-      // Maranhão (as 6 cores do símbolo) na borda superior.
+      // Barra inferior arredondada no alto e reta embaixo, com a faixa das
+      // cores do Maranhão (as 6 cores do símbolo) na base.
       bottomNavigationBar: DecoratedBox(
         decoration: const BoxDecoration(
           borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
@@ -74,14 +74,6 @@ class _MvpShellState extends ConsumerState<MvpShell> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                SizedBox(
-                  height: 6,
-                  child: Row(
-                    children: [
-                      for (final b in maraBlades) Expanded(child: ColoredBox(color: b.face)),
-                    ],
-                  ),
-                ),
                 NavigationBar(
                   selectedIndex: i,
                   onDestinationSelected: ref.read(shellTabProvider.notifier).go,
@@ -93,6 +85,17 @@ class _MvpShellState extends ConsumerState<MvpShell> {
                         label: t.$3,
                       ),
                   ],
+                ),
+                // Faixa com as cores do Maranhão, na base da barra.
+                SizedBox(
+                  height: 6,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      for (final b in maraBlades)
+                        Expanded(child: ColoredBox(key: Key('stripe-${b.face.toARGB32()}'), color: b.face)),
+                    ],
+                  ),
                 ),
               ],
             ),
