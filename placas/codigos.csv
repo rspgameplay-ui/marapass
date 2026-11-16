@@ -1,31 +1,31 @@
 codigo,local,cidade,qr,latitude,longitude,precisao
-MP-LAGOBG,"Passeio às Lagoas","Barreirinhas",marapass:plate:MP-LAGOBG,-2.6630536,-42.8602811,atracao
-MP-RIOXCH,"Passeio pelo Rio Preguiças","Barreirinhas",marapass:plate:MP-RIOXCH,-2.7502,-42.8270988,saida
-MP-PORX9Y,"Pôr do sol nas dunas","Santo Amaro",marapass:plate:MP-PORX9Y,-2.5002,-43.2538986,saida
-MP-4X4XY7,"Passeio de 4x4 pelas dunas","Atins",marapass:plate:MP-4X4XY7,-2.57,-42.7445,saida
-MP-KITE0M,"Aula de kitesurf","Atins",marapass:plate:MP-KITE0M,-2.57,-42.7445,aproximado
-MP-CENTI0,"Caminhada no centro histórico","São Luís",marapass:plate:MP-CENTI0,-2.5299415,-44.3052847,atracao
-MP-BARCMK,"Passeio de barco no Munim","Axixá",marapass:plate:MP-BARCMK,-2.8381,-44.0519981,saida
-MP-DELTHZ,"Ilhas do Delta","Tutóia",marapass:plate:MP-DELTHZ,-2.7651338,-42.2746479,exato
-MP-CACH2A,"Trilha das cachoeiras","Carolina",marapass:plate:MP-CACH2A,-7.2256737,-46.4550109,atracao
-MP-GUARV1,"Revoada dos guarás","Cururupu",marapass:plate:MP-GUARV1,-1.8309433,-44.8708906,saida
-MP-MIRABN,"Mirante da Chapada","Carolina",marapass:plate:MP-MIRABN,-7.1892989,-47.4261869,atracao
-MP-BOIX11,"Noite de Bumba meu boi","São Luís",marapass:plate:MP-BOIX11,-2.5274,-44.3060989,aproximado
-MP-KANE5Z,"Vivência com a Comunidade Kanela","Fernando Falcão",marapass:plate:MP-KANE5Z,,,aproximado
-MP-QUILWL,"Quilombo Urbano de São Luís","São Luís",marapass:plate:MP-QUILWL,-2.5304938,-44.3054154,atracao
-MP-MARCFB,"Vivência em Marcelino","Barreirinhas",marapass:plate:MP-MARCFB,-2.7502,-42.8270988,aproximado
-MP-MANGME,"Casa do Mangue","Barreirinhas",marapass:plate:MP-MANGME,-2.7502,-42.8270988,aproximado
-MP-BURIVQ,"Restaurante o Buriti","Santo Amaro",marapass:plate:MP-BURIVQ,-2.5002,-43.2538986,aproximado
-MP-COZI87,"Cozinha da Praia Grande","São Luís",marapass:plate:MP-COZI87,-2.5294866,-44.3059187,aproximado
-MP-JUJA2T,"Casa de Juja","Barreirinhas",marapass:plate:MP-JUJA2T,-2.5695848,-42.7405062,exato
-MP-CONCG0,"Conchas Bar","São Luís",marapass:plate:MP-CONCG0,-2.4969085,-44.3086571,aproximado
-MP-VILAMN,"Pousada Vila Lençóis","Santo Amaro",marapass:plate:MP-VILAMN,-2.5002,-43.2538986,aproximado
-MP-ATINLF,"Refúgio de Atins","Atins",marapass:plate:MP-ATINLF,-2.57,-42.7445,aproximado
-MP-SLZHKV,"Hotel Casarão Colonial","São Luís",marapass:plate:MP-SLZHKV,-2.5299415,-44.3052847,aproximado
-MP-EVBO8T,"Festival de Bumba meu boi","São Luís",marapass:plate:MP-EVBO8T,-2.5240863,-44.2966019,exato
-MP-EVSA10,"Circuito de Sabores de Barreirinhas","Barreirinhas",marapass:plate:MP-EVSA10,-2.7502,-42.8270988,aproximado
-MP-EVREG3,"Regata de canoas no Preguiças","Barreirinhas",marapass:plate:MP-EVREG3,-2.7502,-42.8270988,aproximado
-MP-CERAJ6,"Cerâmica de Rosário","Rosário",marapass:plate:MP-CERAJ6,-2.9372001,-44.2450981,aproximado
-MP-BURI9A,"Bolsa de fibra de buriti","Barreirinhas",marapass:plate:MP-BURI9A,-2.7502,-42.8270988,aproximado
-MP-BIOJVS,"Colar de biojoias","Carolina",marapass:plate:MP-BIOJVS,-7.3347998,-47.4734001,aproximado
-MP-BABAT5,"Cesto de palha de babaçu","Codó",marapass:plate:MP-BABAT5,,,aproximado
+MP-LAGOBG,"Passeio às Lagoas","Barreirinhas",marapass:plate:MP-LAGOBG:<token>,-2.6630536,-42.8602811,atracao
+MP-RIOXCH,"Passeio pelo Rio Preguiças","Barreirinhas",marapass:plate:MP-RIOXCH:<token>,-2.7502,-42.8270988,saida
+MP-PORX9Y,"Pôr do sol nas dunas","Santo Amaro",marapass:plate:MP-PORX9Y:<token>,-2.5002,-43.2538986,saida
+MP-4X4XY7,"Passeio de 4x4 pelas dunas","Atins",marapass:plate:MP-4X4XY7:<token>,-2.57,-42.7445,saida
+MP-KITE0M,"Aula de kitesurf","Atins",marapass:plate:MP-KITE0M:<token>,-2.57,-42.7445,aproximado
+MP-CENTI0,"Caminhada no centro histórico","São Luís",marapass:plate:MP-CENTI0:<token>,-2.5299415,-44.3052847,atracao
+MP-BARCMK,"Passeio de barco no Munim","Axixá",marapass:plate:MP-BARCMK:<token>,-2.8381,-44.0519981,saida
+MP-DELTHZ,"Ilhas do Delta","Tutóia",marapass:plate:MP-DELTHZ:<token>,-2.7651338,-42.2746479,exato
+MP-CACH2A,"Trilha das cachoeiras","Carolina",marapass:plate:MP-CACH2A:<token>,-7.2256737,-46.4550109,atracao
+MP-GUARV1,"Revoada dos guarás","Cururupu",marapass:plate:MP-GUARV1:<token>,-1.8309433,-44.8708906,saida
+MP-MIRABN,"Mirante da Chapada","Carolina",marapass:plate:MP-MIRABN:<token>,-7.1892989,-47.4261869,atracao
+MP-BOIX11,"Noite de Bumba meu boi","São Luís",marapass:plate:MP-BOIX11:<token>,-2.5274,-44.3060989,aproximado
+MP-KANE5Z,"Vivência com a Comunidade Kanela","Fernando Falcão",marapass:plate:MP-KANE5Z:<token>,,,aproximado
+MP-QUILWL,"Quilombo Urbano de São Luís","São Luís",marapass:plate:MP-QUILWL:<token>,-2.5304938,-44.3054154,atracao
+MP-MARCFB,"Vivência em Marcelino","Barreirinhas",marapass:plate:MP-MARCFB:<token>,-2.7502,-42.8270988,aproximado
+MP-MANGME,"Casa do Mangue","Barreirinhas",marapass:plate:MP-MANGME:<token>,-2.7502,-42.8270988,aproximado
+MP-BURIVQ,"Restaurante o Buriti","Santo Amaro",marapass:plate:MP-BURIVQ:<token>,-2.5002,-43.2538986,aproximado
+MP-COZI87,"Cozinha da Praia Grande","São Luís",marapass:plate:MP-COZI87:<token>,-2.5294866,-44.3059187,aproximado
+MP-JUJA2T,"Casa de Juja","Barreirinhas",marapass:plate:MP-JUJA2T:<token>,-2.5695848,-42.7405062,exato
+MP-CONCG0,"Conchas Bar","São Luís",marapass:plate:MP-CONCG0:<token>,-2.4969085,-44.3086571,aproximado
+MP-VILAMN,"Pousada Vila Lençóis","Santo Amaro",marapass:plate:MP-VILAMN:<token>,-2.5002,-43.2538986,aproximado
+MP-ATINLF,"Refúgio de Atins","Atins",marapass:plate:MP-ATINLF:<token>,-2.57,-42.7445,aproximado
+MP-SLZHKV,"Hotel Casarão Colonial","São Luís",marapass:plate:MP-SLZHKV:<token>,-2.5299415,-44.3052847,aproximado
+MP-EVBO8T,"Festival de Bumba meu boi","São Luís",marapass:plate:MP-EVBO8T:<token>,-2.5240863,-44.2966019,exato
+MP-EVSA10,"Circuito de Sabores de Barreirinhas","Barreirinhas",marapass:plate:MP-EVSA10:<token>,-2.7502,-42.8270988,aproximado
+MP-EVREG3,"Regata de canoas no Preguiças","Barreirinhas",marapass:plate:MP-EVREG3:<token>,-2.7502,-42.8270988,aproximado
+MP-CERAJ6,"Cerâmica de Rosário","Rosário",marapass:plate:MP-CERAJ6:<token>,-2.9372001,-44.2450981,aproximado
+MP-BURI9A,"Bolsa de fibra de buriti","Barreirinhas",marapass:plate:MP-BURI9A:<token>,-2.7502,-42.8270988,aproximado
+MP-BIOJVS,"Colar de biojoias","Carolina",marapass:plate:MP-BIOJVS:<token>,-7.3347998,-47.4734001,aproximado
+MP-BABAT5,"Cesto de palha de babaçu","Codó",marapass:plate:MP-BABAT5:<token>,,,aproximado

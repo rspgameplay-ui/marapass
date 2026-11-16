@@ -4,8 +4,10 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:mobile_scanner/mobile_scanner.dart' hide GeoPoint;
 
+import '../../location/location_service.dart';
+import '../../domain/tourism.dart';
 import '../data/content.dart';
 import '../data/repository.dart';
 import '../data/store.dart';
@@ -22,8 +24,12 @@ sealed class ScanResult {
 }
 
 class PlateScan extends ScanResult {
-  const PlateScan(this.item);
+  const PlateScan(this.item, [this.token]);
   final Item item;
+
+  /// Token secreto impresso só no QR da placa física (sem ele, o servidor
+  /// pede a localização).
+  final String? token;
 }
 
 class OfferScan extends ScanResult {
@@ -40,10 +46,10 @@ ScanResult? parseScan(String raw) {
     final c = Content.cupom(offer.group(1));
     return c == null ? null : OfferScan(c);
   }
-  final plate = RegExp(r'MP-[A-Z0-9]{2,6}', caseSensitive: false).firstMatch(t);
+  final plate = RegExp(r'(MP-[A-Z0-9]{2,6})(?::([0-9a-f]{12,64}))?', caseSensitive: false).firstMatch(t);
   if (plate != null) {
-    final i = itemByPlate(plate.group(0)!);
-    if (i != null) return PlateScan(i);
+    final i = itemByPlate(plate.group(1)!);
+    if (i != null) return PlateScan(i, plate.group(2)?.toLowerCase());
   }
   return null;
 }
@@ -114,8 +120,8 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with SingleTickerProvid
     HapticFeedback.mediumImpact();
     unawaited(_cam?.stop());
     switch (r) {
-      case PlateScan(:final item):
-        await _checkin(item);
+      case PlateScan(:final item, :final token):
+        await _checkin(item, token);
       case OfferScan(:final cupom):
         await _offer(cupom);
     }
@@ -124,7 +130,7 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with SingleTickerProvid
     unawaited(_cam?.start());
   }
 
-  Future<void> _checkin(Item item) async {
+  Future<void> _checkin(Item item, String? token) async {
     final store = ref.read(appStoreProvider);
     if (store.alreadyCheckedIn(item.id)) {
       await _sheet(_ResultSheet.already(item: item));
@@ -134,7 +140,22 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with SingleTickerProvid
     Checkin c;
     setState(() => _busy = true);
     try {
-      c = await store.checkInAsync(item);
+      if (token != null || !store.online) {
+        c = await store.checkInAsync(item, method: 'placa', token: token);
+      } else {
+        // Código digitado: o servidor confere pela localização.
+        final GeoPoint me;
+        try {
+          me = await checkinLocate();
+        } catch (_) {
+          throw const LocationFailure(LocationProblem.unavailable, 'sem GPS');
+        }
+        c = await store.checkInAsync(item, method: 'codigo', lat: me.lat, lng: me.lng);
+      }
+    } on LocationFailure {
+      if (mounted) setState(() => _busy = false);
+      if (mounted) showMpSnack(context, 'Código digitado precisa da sua localização. Permita o GPS ou leia o QR da placa.');
+      return;
     } catch (e) {
       if (mounted) setState(() => _busy = false);
       if (mounted) showMpSnack(context, e is MvpException ? e.message : 'Não foi possível registrar agora. Tente de novo.');

@@ -255,6 +255,7 @@ class _FlowState extends ConsumerState<CheckinFlowScreen> {
   bool _newStamp = false;
   int _stars = 0;
   double? _distance;
+  GeoPoint? _me;
 
   @override
   void initState() {
@@ -288,12 +289,13 @@ class _FlowState extends ConsumerState<CheckinFlowScreen> {
           return;
         }
       }
+      _me = me;
     }
     if (!mounted) return;
     final store = ref.read(appStoreProvider);
     _newStamp = !store.stampedPolos.contains(widget.item.polo);
     try {
-      _c = await store.checkInAsync(widget.item);
+      _c = await store.checkInAsync(widget.item, method: 'gps', lat: _me?.lat, lng: _me?.lng);
     } catch (e) {
       if (!mounted) return;
       showMpSnack(

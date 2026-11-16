@@ -8,6 +8,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:marapass_mapa/mvp/data/content.dart';
 import 'package:marapass_mapa/mvp/ui/checkin.dart';
+import 'package:marapass_mapa/mvp/ui/map_tab.dart' show itemPoint;
 import 'package:marapass_mapa/mvp/ui/plates.dart';
 import 'package:qr/qr.dart';
 
@@ -35,9 +36,9 @@ List<String> _lines(String t) {
   return out;
 }
 
-String plateSvg(Item i, String logo) {
+String plateSvg(Item i, String logo, String? token) {
   // Página A6 em milímetros: 105 × 148.
-  final qr = QrImage(QrCode.fromData(data: plateQr(i), errorCorrectLevel: QrErrorCorrectLevel.M));
+  final qr = QrImage(QrCode.fromData(data: plateQr(i, token: token), errorCorrectLevel: QrErrorCorrectLevel.M));
   const qrSize = 70.0, qrX = (105 - qrSize) / 2, qrY = 30.0;
   final cell = qrSize / qr.moduleCount;
   final b = StringBuffer();
@@ -75,15 +76,30 @@ void main() {
   test('gera placas para impressão', () {
     final out = Directory('../placas')..createSync(recursive: true);
     final logo = File('assets/brand/logo_white.svg').readAsStringSync();
+    // Tokens secretos das placas (gerados no Supabase; fora do git).
+    final tokFile = File('${out.path}/.tokens.csv');
+    final tokens = <String, String>{
+      if (tokFile.existsSync())
+        for (final l in tokFile.readAsLinesSync().where((l) => l.contains(',')))
+          l.split(',')[0]: l.split(',')[1],
+    };
     final items = Content.items.where((i) => i.cat != Cat.transporte && i.cat != Cat.fotografia).toList();
     final csv = StringBuffer('codigo,local,cidade,qr,latitude,longitude,precisao\n');
     final imgs = StringBuffer();
     for (final i in items) {
       final file = 'placa-${plateCode(i)}.svg';
-      File('${out.path}/$file').writeAsStringSync(plateSvg(i, logo));
-      csv.writeln('${plateCode(i)},"${i.titulo}","${i.cidade}",${plateQr(i)},${i.lat ?? ''},${i.lng ?? ''},${i.loc.name}');
+      File('${out.path}/$file').writeAsStringSync(plateSvg(i, logo, tokens[plateCode(i)]));
+      csv.writeln('${plateCode(i)},"${i.titulo}","${i.cidade}",${plateQr(i)}:<token>,${i.lat ?? ''},${i.lng ?? ''},${i.loc.name}');
       imgs.writeln('<img src="$file" alt="${_esc(i.titulo)}">');
     }
+    // Cadastro das placas no banco (coordenada e raio do check-in por GPS).
+    final seed = StringBuffer('insert into public.mvp_places (item_key, code, lat, lng, radius_m) values\n');
+    seed.write([
+      for (final i in Content.items)
+        "  ('${i.id}', '${plateCode(i)}', ${i.lat ?? itemPoint(i).lat}, ${i.lng ?? itemPoint(i).lng}, ${i.loc.checkinRadiusM.round()})",
+    ].join(',\n'));
+    seed.write('\non conflict (item_key) do update set code = excluded.code, lat = excluded.lat, lng = excluded.lng, radius_m = excluded.radius_m;\n');
+    File('${out.path}/seed_places.sql').writeAsStringSync(seed.toString());
     File('${out.path}/codigos.csv').writeAsStringSync(csv.toString());
     File('${out.path}/index.html').writeAsStringSync('''<!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8"><title>Placas MaraPass</title>

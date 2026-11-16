@@ -45,6 +45,11 @@ void main() {
       expect((parseScan(plateQr(i)) as PlateScan).item.id, i.id);
     }
     expect((parseScan(offerQr('c2')) as OfferScan).cupom.id, 'c2');
+    final it = Content.item('juja')!;
+    final withToken = parseScan(plateQr(it, token: 'a1b2c3d4e5f6a7b8c9')) as PlateScan;
+    expect(withToken.item.id, 'juja');
+    expect(withToken.token, 'a1b2c3d4e5f6a7b8c9');
+    expect((parseScan(plateCode(it)) as PlateScan).token, isNull);
   });
 
   testWidgets('check-in por GPS longe do local pede o QR da placa', (tester) async {

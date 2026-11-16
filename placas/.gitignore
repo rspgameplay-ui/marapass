@@ -1,0 +1,3 @@
+.tokens.csv
+# As placas levam o token secreto no QR: geradas localmente, nunca no git.
+*.svg

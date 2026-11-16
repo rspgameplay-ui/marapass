@@ -463,9 +463,25 @@ class AppStore extends ChangeNotifier {
     await _applyRes(await remote!.decideReservation(id, accept));
   }
 
-  Future<Checkin> checkInAsync(Item item) async {
+  /// [method]: 'placa' (com [token]), 'gps' ou 'codigo' (com [lat]/[lng]).
+  /// Sem conta, registra só no aparelho.
+  Future<Checkin> checkInAsync(
+    Item item, {
+    String method = 'gps',
+    String? token,
+    double? lat,
+    double? lng,
+  }) async {
     if (!online) return checkIn(item);
-    final row = await remote!.checkIn(item.id, item.polo, item.cidade);
+    final row = await remote!.checkIn(
+      item.id,
+      item.polo,
+      item.cidade,
+      method: method,
+      token: token,
+      lat: lat,
+      lng: lng,
+    );
     final c = Checkin(
       itemId: item.id,
       polo: item.polo,

@@ -105,15 +105,21 @@ class MvpRemote {
     ),
   );
 
+  /// Check-in validado no servidor: token da placa ('placa') ou GPS
+  /// dentro do raio do local ('gps' e 'codigo').
   Future<Map<String, dynamic>> checkIn(
     String itemKey,
     String polo,
-    String cidade,
-  ) => _g(
+    String cidade, {
+    required String method,
+    String? token,
+    double? lat,
+    double? lng,
+  }) => _g(
     () async => _row(
       await _c.rpc(
         'mvp_checkin',
-        params: {'p_item_key': itemKey, 'p_polo': polo, 'p_cidade': cidade},
+        params: {'p_item_key': itemKey, 'p_polo': polo, 'p_cidade': cidade, 'p_method': method, 'p_token': token, 'p_lat': lat, 'p_lng': lng},
       ),
     ),
   );

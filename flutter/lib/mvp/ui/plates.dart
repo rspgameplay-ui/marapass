@@ -12,7 +12,10 @@ import '../theme/widgets.dart';
 import 'checkin.dart';
 
 /// Conteúdo do QR da placa de um local (lido pelo leitor do app).
-String plateQr(Item i) => 'marapass:plate:${plateCode(i)}';
+/// Com o token secreto da placa (impresso só na placa física), o servidor
+/// aceita o check-in sem GPS.
+String plateQr(Item i, {String? token}) =>
+    'marapass:plate:${plateCode(i)}${token == null ? '' : ':$token'}';
 
 /// Conteúdo do QR de uma oferta de parceiro (vira cupom ao ser lido).
 String offerQr(String cupomId) => 'marapass:offer:$cupomId';
