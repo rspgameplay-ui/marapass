@@ -139,7 +139,10 @@ class RoadRoute {
     final steps = <RoadStep>[];
     var traveled = 0.0;
     final summaries = <String>[];
-    for (final leg in raw['legs'] as List) {
+    final legs = raw['legs'] as List;
+    for (var legIndex = 0; legIndex < legs.length; legIndex++) {
+      final leg = legs[legIndex];
+      final lastLeg = legIndex == legs.length - 1;
       if ('${leg['summary']}'.trim().isNotEmpty) {
         summaries.add('${leg['summary']}');
       }
@@ -159,7 +162,12 @@ class RoadRoute {
         steps.add(
           RoadStep(
             mode: "${s['mode'] ?? 'driving'}",
-            instruction: maneuverInstruction(s),
+            // Em roteiros com paradas, só a última chegada é o destino.
+            instruction: m['type'] == 'arrive' && !lastLeg
+                ? 'Chegue à parada ${legIndex + 1}'
+                : m['type'] == 'depart' && legIndex > 0
+                ? 'Siga para a parada ${legIndex + 2}'
+                : maneuverInstruction(s),
             road: '${s['name'] ?? ''}',
             type: '${m['type']}',
             modifier: '${m['modifier'] ?? ''}',

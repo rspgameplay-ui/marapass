@@ -118,7 +118,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             const SizedBox(height: MP.s2),
             Text(
               _codeStep
-                  ? 'Enviamos um código de 6 números para ${_email.text.trim()}.'
+                  ? 'Enviamos um código para ${_email.text.trim()}.'
                   : (widget.reason ??
                         'Sem senha: enviamos um código para o seu e-mail.'),
               style: Theme.of(context).textTheme.bodyMedium

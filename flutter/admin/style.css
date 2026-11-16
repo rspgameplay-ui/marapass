@@ -120,3 +120,14 @@ footer{border-top:1px solid #d8e7e2;margin-top:34px;padding-top:17px;font-size:1
 .invite-tag[data-status="none"]{background:#eef1f3;color:#697a82}
 #tableBody .row-actions{min-width:145px}.row-actions button{font-size:12px;padding:9px 12px}
 @media(max-width:650px){.row-actions button{min-height:42px}}
+
+/* App MaraPass (MVP) */
+.mvp-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:16px 0}
+.mvp-metrics .metric{background:#f3f5f7;border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:2px}
+.mvp-metrics .metric span{font-size:13px;color:#556677}.mvp-metrics .metric strong{font-size:24px;color:#0b3a66}
+.mvp-table{width:100%;border-collapse:collapse}.mvp-table th,.mvp-table td{text-align:left;padding:10px 8px;border-bottom:1px solid #eef1f4;vertical-align:middle;font-size:14px}
+.mvp-table td button,.mvp-table td a{margin:2px 4px 2px 0}.small{min-height:36px;padding:6px 12px;font-size:14px}
+.pill{display:inline-block;padding:2px 10px;border-radius:999px;background:#eef1f4;font-size:13px;font-weight:700}
+.pill.pendente{background:#fef3c7;color:#b45309}.pill.aprovado{background:#dcfce7;color:#15803d}.pill.recusado{background:#fee2e2;color:#c53b36}
+.radius{width:90px;margin-right:6px}.qr-dialog{border:none;border-radius:18px;padding:24px;text-align:center;max-width:92vw}
+.qr-dialog img{display:block;margin:12px auto;max-width:80vw;height:auto}.qr-dialog::backdrop{background:rgba(6,18,32,.6)}

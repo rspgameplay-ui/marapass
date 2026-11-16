@@ -1,4 +1,5 @@
 import { createMapModule } from './map-content.js';
+import { createMvpModule } from './mvp-admin.js';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.95.0';
 
 // Esta é a chave PUBLICÁVEL do projeto, apropriada para o frontend.
@@ -10,6 +11,7 @@ const supabase = createClient(PROJECT_URL, PUBLISHABLE_KEY, {
   auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: true },
 });
 const mapModule = createMapModule(supabase);
+const mvpModule = createMvpModule(supabase, document.getElementById('workspaceApp'));
 const $ = (id) => document.getElementById(id);
 const toggle = (id, active) => $(id).classList.toggle('hidden', !active);
 const status = (message, kind = '') => {
@@ -52,19 +54,21 @@ function formatValue(key, value) {
 }
 // V8 / Administração orientada a tarefas, usando somente dados já autorizados pelo Supabase.
 function setWorkspace(workspace, tabName) {
-  if (!['today','partners','catalog','bookings','coupons','map'].includes(workspace)) return;
+  if (!['today','partners','catalog','bookings','coupons','map','app'].includes(workspace)) return;
   activeWorkspace = workspace;
   toggle('workspaceOverview', workspace === 'today');
-  toggle('workspaceTable', workspace !== 'today' && workspace !== 'map');
+  toggle('workspaceTable', workspace !== 'today' && workspace !== 'map' && workspace !== 'app');
   toggle('workspaceMap', workspace === 'map');
+  toggle('workspaceApp', workspace === 'app');
   if(workspace === 'map') mapModule.open();
+  if(workspace === 'app') mvpModule.open();
   document.querySelectorAll('[data-workspace]').forEach(button => {
     const active = button.dataset.workspace === workspace;
     button.classList.toggle('active',active);
     if (active) button.setAttribute('aria-current','page');
     else button.removeAttribute('aria-current');
   });
-  if (workspace !== 'today' && workspace !== 'map') {
+  if (workspace !== 'today' && workspace !== 'map' && workspace !== 'app') {
     const route = tabName || {partners:'partners',catalog:'establishments',bookings:'reservations',coupons:'coupons'}[workspace];
     if (route) loadTab(route);
   }

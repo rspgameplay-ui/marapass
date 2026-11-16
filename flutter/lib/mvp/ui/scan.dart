@@ -396,6 +396,8 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with SingleTickerProvid
                     icon: const Icon(Icons.keyboard_rounded),
                     label: const Text('Digitar código manualmente'),
                   ),
+                  // Simulação só sem conta: logado, o servidor exige a placa real.
+                  if (!ref.watch(appStoreProvider).online) ...[
                   const SizedBox(height: MP.s1),
                   TextButton(
                     key: const Key('scan-simulate'),
@@ -403,6 +405,7 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with SingleTickerProvid
                     style: TextButton.styleFrom(foregroundColor: const Color(0xffc9d6e3)),
                     child: const Text('Simular leitura (demonstração)'),
                   ),
+                  ],
                 ],
               ),
             ),
