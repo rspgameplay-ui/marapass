@@ -46,7 +46,9 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => Scaffold(body: _body(context));
+
+  Widget _body(BuildContext context) {
     final results = Content.search(_q);
     return SafeArea(
       bottom: false,
@@ -55,7 +57,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
         children: [
           const MpHeader(
             'Explorar',
-            back: false,
+            back: true,
             subtitle: 'Busque por lugar, passeio, comida ou cidade.',
           ),
           Padding(

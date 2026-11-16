@@ -11,6 +11,7 @@ import '../providers.dart';
 import '../theme/tokens.dart';
 import '../theme/widgets.dart';
 import 'common.dart';
+import 'shell.dart' show Tabs;
 
 /// Código impresso na placa MaraPass do local (demonstração).
 String plateCode(Item i) =>
@@ -29,7 +30,10 @@ Item? itemByPlate(String code) {
 class CheckinScreen extends ConsumerWidget {
   const CheckinScreen({super.key});
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context, WidgetRef ref) =>
+      Scaffold(body: _body(context, ref));
+
+  Widget _body(BuildContext context, WidgetRef ref) {
     final store = ref.watch(appStoreProvider);
     return SafeArea(
       bottom: false,
@@ -38,7 +42,7 @@ class CheckinScreen extends ConsumerWidget {
         children: [
           const MpHeader(
             'Registrar visita',
-            back: false,
+            back: true,
             subtitle:
                 'Faça check-in nos lugares que visitar e ganhe pontos e selos.',
           ),
@@ -104,7 +108,8 @@ class CheckinScreen extends ConsumerWidget {
                       '${store.points} pontos · ${store.stampedPolos.length} de ${Content.polos.length} selos',
                   tint: MP.tintYellow,
                   color: const Color(0xffa87b00),
-                  onTap: () => ref.read(shellTabProvider.notifier).go(4),
+                  onTap: () =>
+                      ref.read(shellTabProvider.notifier).go(Tabs.passaporte),
                 ),
                 const SizedBox(height: MP.sectionGap),
                 const MpSectionTitle('Visitas recentes'),
@@ -388,7 +393,7 @@ class _FlowState extends ConsumerState<CheckinFlowScreen> {
               'Você já fez check-in em ${i.titulo} hoje. Volte amanhã ou visite outro lugar.',
           primaryLabel: 'Ver meu passaporte',
           onPrimary: () {
-            ref.read(shellTabProvider.notifier).go(4);
+            ref.read(shellTabProvider.notifier).go(Tabs.passaporte);
             Navigator.of(context).popUntil((r) => r.isFirst);
           },
         );
@@ -514,7 +519,7 @@ class _FlowState extends ConsumerState<CheckinFlowScreen> {
                 FilledButton(
                   key: const Key('checkin-to-passport'),
                   onPressed: () {
-                    ref.read(shellTabProvider.notifier).go(4);
+                    ref.read(shellTabProvider.notifier).go(Tabs.passaporte);
                     Navigator.of(context).popUntil((r) => r.isFirst);
                   },
                   child: const Text('Ver meu passaporte'),

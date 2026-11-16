@@ -28,6 +28,7 @@ dependencies:
   supabase_flutter: ^2.18.3
   qr_flutter: ^4.1.0
   uuid: ^4.6.0
+  flutter_svg: ^2.4.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -38,9 +39,14 @@ flutter:
     - assets/data/
     - assets/map/
     - assets/photos/
+    - assets/brand/
+    - assets/fonts/PlusJakartaSans_OFL.txt
     - assets/fonts/Manrope_OFL.txt
 
   fonts:
+    - family: Jakarta
+      fonts:
+        - asset: assets/fonts/PlusJakartaSans.ttf
     - family: MaraSans
       fonts:
         - asset: assets/fonts/Manrope.ttf

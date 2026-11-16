@@ -1,25 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../presentation/brand.dart';
 import '../../presentation/legacy_theme.dart';
 import '../../presentation/map_screen.dart';
 import '../auth/auth.dart';
 import '../data/content.dart';
 import '../data/store.dart';
 import '../providers.dart';
+import '../theme/brand.dart';
 import '../theme/tokens.dart';
 import '../theme/widgets.dart';
 import 'booking.dart';
 import 'catalog.dart';
+import 'checkin.dart';
 import 'common.dart';
+import 'explore.dart';
 import 'profile.dart';
+import 'shell.dart' show Tabs;
 
+/// Abre o mapa por cima da tela atual (usado em telas internas).
 void openMap(BuildContext context) => push<void>(
   context,
   Theme(data: legacyMapTheme(), child: const MapScreen()),
 );
 
+/// Início no formato do protótipo aprovado: logo, saudação, busca, quatro
+/// atalhos, cartão do passaporte, passeios em destaque e destinos.
+/// As funções novas entram sem poluir: categorias numa linha de chips,
+/// eventos e a dica da semana no fim.
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
   @override
@@ -66,16 +74,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             padding: const EdgeInsets.fromLTRB(MP.pageH, MP.s3, MP.s3, 0),
             child: Row(
               children: [
-                const MaraBrand(),
+                const MpLogo(width: 84),
                 const Spacer(),
                 Badge(
                   isLabelVisible: store.unreadAvisos > 0,
-                  label: Text('${store.unreadAvisos}'),
+                  smallSize: 10,
                   backgroundColor: MP.error,
                   child: IconButton(
                     key: const Key('home-bell'),
                     tooltip: 'Avisos',
-                    iconSize: 28,
+                    iconSize: 26,
+                    style: IconButton.styleFrom(backgroundColor: MP.soft),
                     onPressed: () => push<void>(context, const AvisosScreen()),
                     icon: const Icon(
                       Icons.notifications_none_rounded,
@@ -83,6 +92,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                   ),
                 ),
+                const SizedBox(width: MP.s2),
                 Semantics(
                   button: true,
                   label: 'Perfil',
@@ -91,13 +101,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     customBorder: const CircleBorder(),
                     onTap: () => push<void>(context, const ProfileScreen()),
                     child: CircleAvatar(
-                      radius: 24,
+                      radius: 23,
                       backgroundColor: MP.yellow,
                       child: Text(
                         (name ?? 'V').substring(0, 1).toUpperCase(),
                         style: const TextStyle(
                           fontWeight: FontWeight.w800,
-                          fontSize: 20,
+                          fontSize: 19,
                           color: MP.ink,
                         ),
                       ),
@@ -130,7 +140,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   child: InkWell(
                     key: const Key('home-search'),
                     borderRadius: BorderRadius.circular(MP.rMedium),
-                    onTap: () => tab(1),
+                    onTap: () => push<void>(context, const ExploreScreen()),
                     child: Container(
                       height: 58,
                       padding: const EdgeInsets.symmetric(horizontal: MP.s4),
@@ -172,7 +182,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         label: 'Mapa',
                         tint: MP.tintBlue,
                         color: MP.navy,
-                        onTap: () => openMap(context),
+                        onTap: () => tab(Tabs.mapa),
                       ),
                     ),
                     const SizedBox(width: MP.s2),
@@ -183,7 +193,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         label: 'Cupons',
                         tint: MP.tintYellow,
                         color: const Color(0xffa87b00),
-                        onTap: () => tab(3),
+                        onTap: () => tab(Tabs.cupons),
                       ),
                     ),
                     const SizedBox(width: MP.s2),
@@ -194,7 +204,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         label: 'Check-in',
                         tint: MP.tintGreen,
                         color: MP.green,
-                        onTap: () => tab(2),
+                        onTap: () => push<void>(context, const CheckinScreen()),
                       ),
                     ),
                     const SizedBox(width: MP.s2),
@@ -212,14 +222,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ],
                 ),
                 const SizedBox(height: MP.s4),
-                // Cartão do passaporte (protótipo aprovado)
                 Semantics(
                   button: true,
                   label: 'Meu passaporte: ${store.points} pontos',
                   child: InkWell(
                     key: const Key('home-passport'),
                     borderRadius: BorderRadius.circular(MP.rXl),
-                    onTap: () => tab(4),
+                    onTap: () => tab(Tabs.passaporte),
                     child: Container(
                       padding: const EdgeInsets.all(MP.s5),
                       decoration: BoxDecoration(
@@ -269,9 +278,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                     fontWeight: FontWeight.w800,
                                   ),
                                 ),
-                                TextSpan(
-                                  text: ' pontos · ${lv.$1}',
-                                  style: const TextStyle(
+                                const TextSpan(
+                                  text: ' pontos',
+                                  style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.w700,
                                   ),
@@ -299,7 +308,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           Text(
                             lv.$4 == null
                                 ? 'Você está no nível máximo!'
-                                : 'Faltam ${lv.$4! - store.points} pontos para ${lv.$3}',
+                                : 'Faltam ${lv.$4! - store.points} pts para o próximo nível',
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 15,
@@ -312,6 +321,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                 ),
               ],
+            ),
+          ),
+          const SizedBox(height: MP.s4),
+          // Categorias numa única linha (antes: grade de 9 blocos).
+          SizedBox(
+            height: 52,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
+              itemCount: Cat.values.length,
+              separatorBuilder: (_, __) => const SizedBox(width: MP.s2),
+              itemBuilder: (_, k) {
+                final c = Cat.values[k];
+                return ActionChip(
+                  key: Key('cat-${c.name}'),
+                  avatar: Icon(c.icon, size: 20, color: c.tint.fg),
+                  label: Text(c.label),
+                  backgroundColor: MP.soft,
+                  onPressed: () => push<void>(context, CategoryScreen(cat: c)),
+                );
+              },
             ),
           ),
           const SizedBox(height: MP.sectionGap),
@@ -336,70 +366,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
           const SizedBox(height: MP.sectionGap),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: MP.pageH),
-            child: MpSectionTitle('O que você procura?'),
-          ),
-          const SizedBox(height: MP.s3),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
-            child: GridView.count(
-              crossAxisCount: 3,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              mainAxisSpacing: MP.s2,
-              crossAxisSpacing: MP.s2,
-              childAspectRatio: 1.05,
-              children: [
-                for (final c in Cat.values)
-                  MpShortcut(
-                    key: Key('cat-${c.name}'),
-                    icon: c.icon,
-                    label: c.label,
-                    tint: c.tint.bg,
-                    color: c.tint.fg,
-                    onTap: () => push<void>(context, CategoryScreen(cat: c)),
-                  ),
-              ],
-            ),
-          ),
-          const SizedBox(height: MP.sectionGap),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
-            child: MpCard(
-              color: MP.goldBg,
-              onTap: () {
-                final it = Content.item(dica.itemId);
-                if (it != null) openItem(context, it);
-              },
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const MpBadge(
-                    'Dica de quem conhece · edição da semana',
-                    fg: Color(0xff8a6500),
-                    bg: Colors.white,
-                  ),
-                  const SizedBox(height: MP.s3),
-                  Text(
-                    '“${dica.titulo}”',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: MP.s2),
-                  Text(
-                    dica.texto,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  const SizedBox(height: MP.s2),
-                  Text(
-                    '${dica.autor} · ${dica.papel}',
-                    style: Theme.of(context).textTheme.labelMedium,
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: MP.sectionGap),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
             child: Column(
@@ -407,7 +373,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               children: [
                 MpSectionTitle(
                   'Destinos',
-                  action: 'Os 11 polos',
+                  action: 'Ver os 11',
                   onAction: () => push<void>(context, const PolosScreen()),
                 ),
                 const SizedBox(height: MP.s3),
@@ -463,32 +429,75 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                   const SizedBox(height: MP.s3),
                 ],
+                const SizedBox(height: MP.s3),
+                MpSectionTitle(
+                  'Eventos',
+                  action: 'Agenda',
+                  onAction: () => push<void>(
+                    context,
+                    const CategoryScreen(cat: Cat.evento),
+                  ),
+                ),
+                const SizedBox(height: MP.s2),
+                for (final e in eventos.take(2)) ...[
+                  ItemRow(item: e),
+                  const SizedBox(height: MP.s2),
+                ],
+                const SizedBox(height: MP.s4),
+                MpCard(
+                  color: MP.soft,
+                  border: false,
+                  onTap: () {
+                    final it = Content.item(dica.itemId);
+                    if (it != null) openItem(context, it);
+                  },
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.tips_and_updates_rounded,
+                        color: Color(0xffa87b00),
+                        size: 30,
+                      ),
+                      const SizedBox(width: MP.s3),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Dica de quem conhece',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w800,
+                                color: MP.textSecondary,
+                              ),
+                            ),
+                            Text(
+                              dica.titulo,
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                            Text(
+                              dica.autor,
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Icon(
+                        Icons.chevron_right_rounded,
+                        color: MP.textMuted,
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
-          const SizedBox(height: MP.s4),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
-            child: MpSectionTitle(
-              'Próximos eventos',
-              action: 'Agenda',
-              onAction: () =>
-                  push<void>(context, const CategoryScreen(cat: Cat.evento)),
-            ),
-          ),
-          const SizedBox(height: MP.s3),
-          for (final e in eventos.take(2))
-            Padding(
-              padding: const EdgeInsets.fromLTRB(MP.pageH, 0, MP.pageH, MP.s3),
-              child: ItemRow(item: e),
-            ),
         ],
       ),
     );
   }
 }
 
-/// Central de avisos (ofertas, lembretes, épocas).
 class AvisosScreen extends ConsumerWidget {
   const AvisosScreen({super.key});
   @override
@@ -538,7 +547,7 @@ class AvisosScreen extends ConsumerWidget {
 
   void _go(BuildContext context, WidgetRef ref, String dest) {
     if (dest == 'cupons') {
-      ref.read(shellTabProvider.notifier).go(3);
+      ref.read(shellTabProvider.notifier).go(Tabs.cupons);
       Navigator.of(context).popUntil((r) => r.isFirst);
     } else if (dest == 'reservas') {
       push<void>(context, const ReservationsScreen());

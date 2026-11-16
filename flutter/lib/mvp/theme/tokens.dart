@@ -7,10 +7,10 @@ import 'package:flutter/material.dart';
 /// pensado também para pessoas mais velhas.
 abstract final class MP {
   // Marca (Figma)
-  static const green = Color(0xff176b54);
-  static const greenPressed = Color(0xff0f4a3a);
+  static const green = Color(0xff14775a);
+  static const greenPressed = Color(0xff0e5a44);
   static const greenBg = Color(0xffe7f4ee);
-  static const navy = Color(0xff1a3a5c);
+  static const navy = Color(0xff0b3a66);
   static const ink = Color(0xff13263d);
   static const gold = Color(0xffd4a017);
   static const yellow = Color(0xfffac61d);
@@ -71,7 +71,7 @@ abstract final class MP {
   static const buttonHeight = 56.0;
 }
 
-const mpFont = 'MaraSans';
+const mpFont = 'Jakarta';
 
 ThemeData mvpTheme() {
   final scheme = ColorScheme.fromSeed(

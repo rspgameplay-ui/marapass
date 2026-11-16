@@ -14,6 +14,7 @@ import 'common.dart';
 import 'login_screen.dart';
 import 'partner.dart';
 import 'services.dart';
+import 'shell.dart' show Tabs;
 import 'support.dart';
 
 /// MP-T21 · Perfil e configurações.
@@ -172,7 +173,7 @@ class ProfileScreen extends ConsumerWidget {
                           '${store.coupons.where((c) => c.active).length} ativos',
                           null,
                           () {
-                            ref.read(shellTabProvider.notifier).go(3);
+                            ref.read(shellTabProvider.notifier).go(Tabs.cupons);
                             Navigator.of(context).popUntil((r) => r.isFirst);
                           },
                         ),

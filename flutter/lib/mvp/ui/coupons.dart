@@ -22,14 +22,19 @@ class CouponsScreen extends ConsumerStatefulWidget {
 }
 
 class _CouponsScreenState extends ConsumerState<CouponsScreen> {
-  int _tab = 0; // 0 ofertas, 1 meus, 2 usados, 3 expirados
+  // 0 Disponíveis (meus ativos + ofertas para ativar), 1 Usados, 2 Expirados (pelo menu).
+  int _tab = 0;
   Cat? _cat;
 
   @override
   Widget build(BuildContext context) {
     final store = ref.watch(appStoreProvider);
-    final mine = store.coupons;
-    final activeIds = {for (final c in mine.where((c) => !c.used)) c.cupomId};
+    final mine = store.coupons
+        .where((c) => _cat == null || c.cupom?.cat == _cat)
+        .toList();
+    final activeIds = {
+      for (final c in store.coupons.where((c) => !c.used)) c.cupomId,
+    };
     final offers =
         Content.allCupons
             .where(
@@ -40,75 +45,149 @@ class _CouponsScreenState extends ConsumerState<CouponsScreen> {
             )
             .toList()
           ..sort((a, b) => a.validade.compareTo(b.validade));
-    final list = switch (_tab) {
-      1 => mine.where((c) => c.active),
-      2 => mine.where((c) => c.used),
-      _ => mine.where((c) => c.expired),
-    }.where((c) => _cat == null || c.cupom?.cat == _cat).toList();
+    final active = mine.where((c) => c.active).toList();
+    final used = mine.where((c) => c.used).toList();
+    final expired = mine.where((c) => c.expired).toList();
     final cats = {for (final c in Content.allCupons) c.cat}.toList();
+
+    Widget ticket(LocalCoupon c) => Padding(
+      padding: const EdgeInsets.fromLTRB(MP.pageH, 0, MP.pageH, MP.s3),
+      child: TicketCard(
+        cupom: c.cupom!,
+        status: c.used ? 'Usado' : (c.expired ? 'Expirado' : 'Ativo'),
+        statusColor: c.used
+            ? MP.textSecondary
+            : (c.expired ? MP.warning : MP.success),
+        onTap: () => push<void>(context, CouponActiveScreen(couponId: c.id)),
+      ),
+    );
 
     return SafeArea(
       bottom: false,
       child: ListView(
         padding: const EdgeInsets.only(bottom: MP.s10),
         children: [
-          const MpHeader(
+          MpHeader(
             'Cupons',
             back: false,
             subtitle: 'Descontos em parceiros MaraPass.',
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
-            child: Row(
-              children: [
-                Expanded(
-                  child: _Stat(
-                    label: 'Ativos',
-                    value: mine.where((c) => c.active).length,
-                    color: MP.green,
-                  ),
+            trailing: PopupMenuButton<Object>(
+              key: const Key('coupon-menu'),
+              tooltip: 'Mais opções',
+              icon: const Icon(Icons.tune_rounded, color: MP.ink, size: 28),
+              onSelected: (v) => setState(() {
+                if (v == 'expired') {
+                  _tab = 2;
+                } else if (v == 'all') {
+                  _cat = null;
+                } else if (v is Cat) {
+                  _cat = v;
+                }
+              }),
+              itemBuilder: (_) => [
+                PopupMenuItem(
+                  value: 'expired',
+                  child: Text('Ver expirados (${expired.length})'),
                 ),
-                const SizedBox(width: MP.s2),
-                Expanded(
-                  child: _Stat(
-                    label: 'Usados',
-                    value: mine.where((c) => c.used).length,
-                    color: MP.navy,
-                  ),
+                const PopupMenuDivider(),
+                CheckedPopupMenuItem(
+                  value: 'all',
+                  checked: _cat == null,
+                  child: const Text('Todas as categorias'),
                 ),
-                const SizedBox(width: MP.s2),
-                Expanded(
-                  child: _Stat(
-                    label: 'Para ativar',
-                    value: offers.length,
-                    color: const Color(0xffa87b00),
+                for (final c in cats)
+                  CheckedPopupMenuItem(
+                    value: c,
+                    checked: _cat == c,
+                    child: Text(c.label),
                   ),
-                ),
               ],
             ),
           ),
-          const SizedBox(height: MP.s4),
-          FilterChips<int>(
-            options: const [0, 1, 2, 3],
-            selected: _tab,
-            label: (v) =>
-                const ['Para ativar', 'Meus cupons', 'Usados', 'Expirados'][v],
-            onSelect: (v) => setState(() => _tab = v),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
+            child: SegmentedButton<int>(
+              key: const Key('coupon-segments'),
+              showSelectedIcon: false,
+              segments: [
+                ButtonSegment(
+                  value: 0,
+                  label: Text('Disponíveis (${active.length + offers.length})'),
+                ),
+                ButtonSegment(value: 1, label: Text('Usados (${used.length})')),
+              ],
+              selected: {_tab == 2 ? 0 : _tab},
+              onSelectionChanged: (v) => setState(() => _tab = v.first),
+              style: SegmentedButton.styleFrom(
+                minimumSize: const Size.fromHeight(52),
+                selectedBackgroundColor: MP.navy,
+                selectedForegroundColor: Colors.white,
+                textStyle: const TextStyle(
+                  fontFamily: mpFont,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
           ),
-          const SizedBox(height: MP.s2),
-          FilterChips<Cat?>(
-            options: [null, ...cats],
-            selected: _cat,
-            label: (v) => v?.label ?? 'Todas as categorias',
-            onSelect: (v) => setState(() => _cat = v),
-          ),
+          if (_cat != null)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(MP.pageH, MP.s3, MP.pageH, 0),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: InputChip(
+                  label: Text(_cat!.label),
+                  onDeleted: () => setState(() => _cat = null),
+                ),
+              ),
+            ),
           const SizedBox(height: MP.s4),
-          if (_tab == 0) ...[
-            if (offers.isEmpty)
+          if (_tab == 2) ...[
+            Padding(
+              padding: const EdgeInsets.fromLTRB(MP.pageH, 0, MP.pageH, MP.s2),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Expirados',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () => setState(() => _tab = 0),
+                    child: const Text('Voltar'),
+                  ),
+                ],
+              ),
+            ),
+            if (expired.isEmpty)
               const MpEmpty(
-                icon: Icons.local_activity_outlined,
-                title: 'Você já ativou todas',
-                message: 'Veja seus cupons em Meus cupons.',
+                icon: Icons.event_busy_rounded,
+                title: 'Nenhum cupom expirado',
+                message: 'Quando um cupom vencer, ele aparece aqui.',
+              ),
+            for (final c in expired) ticket(c),
+          ] else if (_tab == 1) ...[
+            if (used.isEmpty)
+              const MpEmpty(
+                icon: Icons.confirmation_number_outlined,
+                title: 'Nenhum cupom usado',
+                message: 'Quando você usar um cupom, ele aparece aqui.',
+              ),
+            for (final c in used) ticket(c),
+          ] else ...[
+            if (active.isNotEmpty) ...[
+              const Padding(
+                padding: EdgeInsets.fromLTRB(MP.pageH, 0, MP.pageH, MP.s2),
+                child: MpSectionTitle('Meus cupons ativos'),
+              ),
+              for (final c in active) ticket(c),
+              const SizedBox(height: MP.s3),
+            ],
+            if (offers.isNotEmpty)
+              const Padding(
+                padding: EdgeInsets.fromLTRB(MP.pageH, 0, MP.pageH, MP.s2),
+                child: MpSectionTitle('Para ativar'),
               ),
             for (final c in offers)
               Padding(
@@ -124,42 +203,12 @@ class _CouponsScreenState extends ConsumerState<CouponsScreen> {
                       push<void>(context, CouponDetailScreen(cupom: c)),
                 ),
               ),
-          ] else ...[
-            if (list.isEmpty)
-              MpEmpty(
-                icon: Icons.confirmation_number_outlined,
-                title: switch (_tab) {
-                  1 => 'Nenhum cupom ativo',
-                  2 => 'Nenhum cupom usado',
-                  _ => 'Nenhum cupom expirado',
-                },
-                message: _tab == 1
-                    ? 'Toque em Para ativar e escolha uma oferta.'
-                    : 'Quando isso acontecer, aparece aqui.',
-                actionLabel: _tab == 1 ? 'Ver ofertas' : null,
-                onAction: _tab == 1 ? () => setState(() => _tab = 0) : null,
+            if (active.isEmpty && offers.isEmpty)
+              const MpEmpty(
+                icon: Icons.local_activity_outlined,
+                title: 'Nenhum cupom agora',
+                message: 'Novas ofertas dos parceiros aparecem aqui.',
               ),
-            for (final c in list)
-              if (c.cupom != null)
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    MP.pageH,
-                    0,
-                    MP.pageH,
-                    MP.s3,
-                  ),
-                  child: TicketCard(
-                    cupom: c.cupom!,
-                    status: c.used
-                        ? 'Usado'
-                        : (c.expired ? 'Expirado' : 'Ativo'),
-                    statusColor: c.used
-                        ? MP.textSecondary
-                        : (c.expired ? MP.warning : MP.success),
-                    onTap: () =>
-                        push<void>(context, CouponActiveScreen(couponId: c.id)),
-                  ),
-                ),
           ],
         ],
       ),
@@ -167,42 +216,6 @@ class _CouponsScreenState extends ConsumerState<CouponsScreen> {
   }
 }
 
-class _Stat extends StatelessWidget {
-  const _Stat({required this.label, required this.value, required this.color});
-  final String label;
-  final int value;
-  final Color color;
-  @override
-  Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.symmetric(vertical: MP.s3),
-    decoration: BoxDecoration(
-      color: MP.soft,
-      borderRadius: BorderRadius.circular(MP.rMedium),
-    ),
-    child: Column(
-      children: [
-        Text(
-          '$value',
-          style: TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.w800,
-            color: color,
-          ),
-        ),
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w700,
-            color: MP.textSecondary,
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
-/// MP-T10 · Detalhe do cupom.
 class CouponDetailScreen extends ConsumerWidget {
   const CouponDetailScreen({super.key, required this.cupom});
   final Cupom cupom;

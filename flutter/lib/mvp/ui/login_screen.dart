@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../presentation/brand.dart';
+import '../theme/brand.dart';
 import '../auth/auth.dart';
 import '../data/repository.dart';
 import '../theme/tokens.dart';
@@ -108,7 +108,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(MP.pageH, MP.s2, MP.pageH, MP.s8),
           children: [
-            const MaraBrand(),
+            const MpLogo(width: 110),
             const SizedBox(height: MP.s6),
             Text(
               _codeStep ? 'Digite o código' : 'Entre no MaraPass',

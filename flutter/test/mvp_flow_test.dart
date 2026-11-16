@@ -145,13 +145,7 @@ void main() {
       await boot(tester);
       expect(find.textContaining('viajante!'), findsOneWidget);
       expect(find.text('Para onde você quer ir?'), findsOneWidget);
-      for (final l in [
-        'Início',
-        'Explorar',
-        'Check-in',
-        'Cupons',
-        'Passaporte',
-      ]) {
+      for (final l in ['Início', 'Mapa', 'Cupons', 'Passaporte']) {
         expect(find.text(l), findsWidgets);
       }
     });
@@ -175,7 +169,7 @@ void main() {
       'Explorar: busca encontra o passeio e mostra estado vazio claro',
       (tester) async {
         await boot(tester);
-        await tester.tap(find.text('Explorar').last);
+        await tester.tap(find.byKey(const Key('home-search')));
         await tester.pumpAndSettle();
         await tester.enterText(
           find.byKey(const Key('explore-search')),
@@ -221,8 +215,18 @@ void main() {
       'reserva: escolhe dia e horário, faz login e confirma o envio',
       (tester) async {
         final (store, _) = await boot(tester);
-        await tapIt(tester, find.text('Passeio às Lagoas').first);
-        await tapIt(tester, find.byKey(const Key('item-reserve')));
+        await tester.tap(find.byKey(const Key('home-search')));
+        await tester.pumpAndSettle();
+        await tester.enterText(
+          find.byKey(const Key('explore-search')),
+          'lagoas',
+        );
+        await tester.pump(const Duration(milliseconds: 400));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Passeio às Lagoas').first);
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(const Key('item-reserve')));
+        await tester.pumpAndSettle();
         final submit = find.byKey(const Key('booking-submit'));
         expect(
           tester
@@ -255,7 +259,7 @@ void main() {
       tester,
     ) async {
       final (store, _) = await boot(tester);
-      await tester.tap(find.text('Check-in').last);
+      await tester.tap(find.byKey(const Key('qa-checkin')));
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(const Key('checkin-plate')));
       await tester.pumpAndSettle();

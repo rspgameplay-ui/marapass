@@ -3,10 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/content.dart';
 import '../data/store.dart';
-import '../providers.dart';
 import '../theme/tokens.dart';
 import '../theme/widgets.dart';
 import 'booking.dart';
+import 'checkin.dart';
 import 'common.dart';
 
 /// MP-T16 · Passaporte: nível, pontos, selos dos 11 polos, selos municipais,
@@ -148,9 +148,9 @@ class _PassportScreenState extends ConsumerState<PassportScreen> {
                 Expanded(
                   child: OutlinedButton.icon(
                     key: const Key('pass-checkin'),
-                    onPressed: () => ref.read(shellTabProvider.notifier).go(2),
+                    onPressed: () => push<void>(context, const CheckinScreen()),
                     icon: const Icon(Icons.qr_code_scanner_rounded),
-                    label: const Text('Check-in'),
+                    label: const Text('Registrar visita'),
                   ),
                 ),
                 const SizedBox(width: MP.s2),
@@ -171,9 +171,9 @@ class _PassportScreenState extends ConsumerState<PassportScreen> {
             options: const [0, 1, 2, 3],
             selected: _tab,
             label: (v) => const [
-              'Selos dos polos',
-              'Selos das cidades',
               'Conquistas',
+              'Destinos visitados',
+              'Cidades',
               'Histórico',
             ][v],
             onSelect: (v) => setState(() => _tab = v),
@@ -182,9 +182,9 @@ class _PassportScreenState extends ConsumerState<PassportScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
             child: switch (_tab) {
-              0 => _PoloStamps(store: store),
-              1 => _CityStamps(store: store),
-              2 => _Achievements(store: store),
+              0 => _Achievements(store: store),
+              1 => _PoloStamps(store: store),
+              2 => _CityStamps(store: store),
               _ => _History(store: store),
             },
           ),

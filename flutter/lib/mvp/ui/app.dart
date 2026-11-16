@@ -3,7 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../presentation/brand.dart';
+import '../theme/brand.dart';
 import '../data/store.dart';
 import '../theme/tokens.dart';
 import '../theme/widgets.dart';
@@ -108,21 +108,8 @@ class _Splash extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          SizedBox(
-            width: 96,
-            height: 96,
-            child: CustomPaint(painter: PinwheelPainter()),
-          ),
-          SizedBox(height: MP.s4),
-          Text(
-            'MaraPass',
-            style: TextStyle(
-              fontSize: 38,
-              fontWeight: FontWeight.w800,
-              color: Colors.white,
-            ),
-          ),
-          SizedBox(height: MP.s1),
+          MpLogo(width: 150, white: true),
+          SizedBox(height: MP.s3),
           Text(
             'DESCUBRA · VIVA · VALORIZE',
             style: TextStyle(
@@ -211,20 +198,8 @@ class _WelcomeState extends ConsumerState<_Welcome> {
                     child: Column(
                       children: [
                         const SizedBox(height: MP.s4),
-                        const SizedBox(
-                          width: 72,
-                          height: 72,
-                          child: CustomPaint(painter: PinwheelPainter()),
-                        ),
+                        const MpLogo(width: 150, white: true),
                         const SizedBox(height: MP.s2),
-                        const Text(
-                          'MaraPass',
-                          style: TextStyle(
-                            fontSize: 34,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.white,
-                          ),
-                        ),
                         const Text(
                           'DESCUBRA · VIVA · VALORIZE',
                           style: TextStyle(

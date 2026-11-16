@@ -1,31 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../presentation/legacy_theme.dart';
+import '../../presentation/map_screen.dart';
 import '../auth/auth.dart';
 import '../data/store.dart';
 import '../providers.dart';
-import 'checkin.dart';
 import 'coupons.dart';
-import 'explore.dart';
 import 'home.dart';
 import 'passport.dart';
 
-/// Navegação inferior oficial do Design Master:
-/// Início · Explorar · Check-in · Cupons · Passaporte (perfil pelo avatar).
-class MvpShell extends ConsumerWidget {
+/// Abas da barra inferior, na ordem do protótipo aprovado.
+abstract final class Tabs {
+  static const inicio = 0;
+  static const mapa = 1;
+  static const cupons = 2;
+  static const passaporte = 3;
+}
+
+/// Barra inferior do primeiro design: Início · Mapa · Cupons · Passaporte.
+/// Explorar (busca e categorias) abre pela busca da Início; Check-in pelo
+/// atalho da Início e pelo botão "Registrar visita" do Passaporte.
+class MvpShell extends ConsumerStatefulWidget {
   const MvpShell({super.key});
+  @override
+  ConsumerState<MvpShell> createState() => _MvpShellState();
+}
+
+class _MvpShellState extends ConsumerState<MvpShell> {
+  bool _mapOpened = false;
 
   static const _tabs = <(IconData, IconData, String)>[
     (Icons.home_outlined, Icons.home_rounded, 'Início'),
-    (Icons.explore_outlined, Icons.explore_rounded, 'Explorar'),
-    (Icons.qr_code_scanner_rounded, Icons.qr_code_scanner_rounded, 'Check-in'),
+    (Icons.map_outlined, Icons.map_rounded, 'Mapa'),
     (Icons.local_activity_outlined, Icons.local_activity_rounded, 'Cupons'),
     (Icons.badge_outlined, Icons.badge_rounded, 'Passaporte'),
   ];
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final i = ref.watch(shellTabProvider);
+  Widget build(BuildContext context) {
+    final i = ref.watch(shellTabProvider).clamp(0, _tabs.length - 1);
+    if (i == Tabs.mapa) _mapOpened = true;
     // Ao entrar na conta, traz cupons, reservas e check-ins do banco.
     ref.listen(authProvider, (prev, next) {
       if (next != null && prev?.id != next.id)
@@ -34,12 +49,14 @@ class MvpShell extends ConsumerWidget {
     return Scaffold(
       body: IndexedStack(
         index: i,
-        children: const [
-          HomeScreen(),
-          ExploreScreen(),
-          CheckinScreen(),
-          CouponsScreen(),
-          PassportScreen(),
+        children: [
+          const HomeScreen(),
+          // O mapa é pesado: só monta na primeira vez que a aba é aberta.
+          _mapOpened
+              ? Theme(data: legacyMapTheme(), child: const MapScreen())
+              : const SizedBox.shrink(),
+          const CouponsScreen(),
+          const PassportScreen(),
         ],
       ),
       bottomNavigationBar: Column(
@@ -62,10 +79,10 @@ class MvpShell extends ConsumerWidget {
             height: 5,
             child: Row(
               children: [
-                Expanded(child: ColoredBox(color: Color(0xff176b54))),
+                Expanded(child: ColoredBox(color: Color(0xff14775a))),
                 Expanded(child: ColoredBox(color: Color(0xfffac61d))),
                 Expanded(child: ColoredBox(color: Color(0xffc53b36))),
-                Expanded(child: ColoredBox(color: Color(0xff1a3a5c))),
+                Expanded(child: ColoredBox(color: Color(0xff0b3a66))),
               ],
             ),
           ),

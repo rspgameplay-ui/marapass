@@ -82,7 +82,19 @@ class ItemDetailScreen extends ConsumerWidget {
       i.faixaLabel,
     ].join(' · ');
 
+    // Ação principal fixa embaixo (padrão do protótipo); as demais ficam na página.
+    final acts = _actions(context, ref, store);
     return Scaffold(
+      bottomNavigationBar: SafeArea(
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(MP.pageH, MP.s3, MP.pageH, MP.s3),
+          decoration: const BoxDecoration(
+            color: MP.page,
+            border: Border(top: BorderSide(color: MP.border)),
+          ),
+          child: acts.first,
+        ),
+      ),
       body: ListView(
         padding: EdgeInsets.zero,
         children: [
@@ -249,7 +261,7 @@ class ItemDetailScreen extends ConsumerWidget {
                   _PackList(itemId: i.id),
                 ],
                 const SizedBox(height: MP.sectionGap),
-                ..._actions(context, ref, store),
+                ...acts.skip(1),
                 const SizedBox(height: MP.s3),
                 if (i.cat != Cat.transporte &&
                     i.cat != Cat.fotografia &&

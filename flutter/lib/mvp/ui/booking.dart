@@ -9,6 +9,7 @@ import '../providers.dart';
 import '../theme/tokens.dart';
 import '../theme/widgets.dart';
 import 'common.dart';
+import 'explore.dart';
 import 'login_screen.dart';
 import 'support.dart';
 
@@ -463,10 +464,11 @@ class ReservationsScreen extends ConsumerWidget {
                       title: 'Nenhuma reserva ainda',
                       message: 'Escolha um passeio e toque em Reservar. O parceiro confirma e você acompanha aqui.',
                       actionLabel: 'Ver passeios',
-                      onAction: () {
-                        ref.read(shellTabProvider.notifier).go(1);
-                        Navigator.of(context).popUntil((r) => r.isFirst);
-                      },
+                      onAction: () => Navigator.of(context).pushReplacement(
+                        MaterialPageRoute<void>(
+                          builder: (_) => const ExploreScreen(),
+                        ),
+                      ),
                     ),
                   ),
                 ],
