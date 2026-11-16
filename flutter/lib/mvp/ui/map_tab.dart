@@ -118,19 +118,19 @@ class Poi {
       );
 }
 
-/// Sedes aproximadas das cidades do catálogo editorial (pontos de demonstração).
+/// Sedes das cidades do catálogo (IBGE, Localidades 2022; Atins pelo OpenStreetMap).
 const _cityCenters = <String, GeoPoint>{
-  'Barreirinhas': GeoPoint(-2.7547, -42.8269),
-  'Santo Amaro': GeoPoint(-2.5033, -43.2558),
-  'Atins': GeoPoint(-2.5773, -42.7434),
-  'São Luís': GeoPoint(-2.5297, -44.3028),
-  'Axixá': GeoPoint(-2.8394, -44.0619),
-  'Carolina': GeoPoint(-7.3325, -47.4689),
-  'Cururupu': GeoPoint(-1.8289, -44.8686),
-  'Tutóia': GeoPoint(-2.7617, -42.2742),
-  'Rosário': GeoPoint(-2.9342, -44.2342),
-  'Codó': GeoPoint(-4.4553, -43.8856),
-  'Fernando Falcão': GeoPoint(-6.1617, -44.8975),
+  'Barreirinhas': GeoPoint(-2.7502, -42.8270988),
+  'Santo Amaro': GeoPoint(-2.5002, -43.2538986),
+  'Atins': GeoPoint(-2.57, -42.7445),
+  'São Luís': GeoPoint(-2.5274, -44.3060989),
+  'Axixá': GeoPoint(-2.8381, -44.0519981),
+  'Carolina': GeoPoint(-7.3347998, -47.4734001),
+  'Cururupu': GeoPoint(-1.8256, -44.8671989),
+  'Tutóia': GeoPoint(-2.7632, -42.2742004),
+  'Rosário': GeoPoint(-2.9372001, -44.2450981),
+  'Codó': GeoPoint(-4.4527998, -43.8875999),
+  'Fernando Falcão': GeoPoint(-6.1508002, -44.9011002),
 };
 
 const _maranhao = LatLng(-3.9, -44.8);
@@ -150,17 +150,24 @@ const _covers = <PoiKind, String>{
   PoiKind.outros: 'p3',
 };
 
-/// Posição de demonstração de um item do catálogo: perto da sede da cidade,
-/// sempre no mesmo lugar (calculada a partir do id).
+/// Posição de um item no mapa: a coordenada real do catálogo (OpenStreetMap
+/// ou sede do IBGE). Pontos exatos e atrações ficam onde estão; pontos de
+/// saída e aproximados, que muitas vezes caem na mesma sede, ganham um pequeno
+/// afastamento fixo (até ~450 m) para os marcadores não se sobreporem.
 GeoPoint itemPoint(Item i) {
-  final c = _cityCenters[i.cidade] ?? const GeoPoint(-2.5297, -44.3028);
+  final base = i.lat != null && i.lng != null
+      ? GeoPoint(i.lat!, i.lng!)
+      : (_cityCenters[i.cidade] ?? const GeoPoint(-2.5297, -44.3028));
+  if (i.lat != null && (i.loc == Loc.exato || i.loc == Loc.atracao)) {
+    return base;
+  }
   var h = 2166136261;
   for (final u in i.id.codeUnits) {
     h = ((h ^ u) * 16777619) % 4294967296;
   }
   final a = (h % 65536) / 65536 * math.pi * 2;
-  final r = .004 + ((h ~/ 65536) % 65536) / 65536 * .012;
-  return GeoPoint(c.lat + math.sin(a) * r, c.lng + math.cos(a) * r);
+  final r = .0015 + ((h ~/ 65536) % 65536) / 65536 * .0025;
+  return GeoPoint(base.lat + math.sin(a) * r, base.lng + math.cos(a) * r);
 }
 
 /// Mapa turístico com MapLibre: visão 2D e 3D (inclinação e rotação), prédios
@@ -1575,6 +1582,23 @@ class _CardHeader extends StatelessWidget {
                   ),
                 ],
               ),
+              if (it != null && it.loc != Loc.exato) ...[
+                const SizedBox(height: 2),
+                Row(
+                  key: const Key('poi-precision'),
+                  children: [
+                    Icon(
+                      it.loc == Loc.aproximado ? Icons.blur_circular_rounded : Icons.place_rounded,
+                      size: 14,
+                      color: MP.textSecondary,
+                    ),
+                    const SizedBox(width: 4),
+                    Flexible(
+                      child: Text(it.loc.label, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13, color: MP.textSecondary)),
+                    ),
+                  ],
+                ),
+              ],
               if (it?.nota != null) ...[
                 const SizedBox(height: 2),
                 Row(

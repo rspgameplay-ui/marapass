@@ -102,7 +102,12 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with SingleTickerProvid
     final r = parseScan(raw);
     if (r == null) {
       HapticFeedback.heavyImpact();
-      showMpSnack(context, 'Este QR não é de um local MaraPass. Procure a placa no balcão ou na entrada.');
+      showMpSnack(
+        context,
+        raw.contains('marapass:offer:')
+            ? 'Esta oferta não está mais ativa. Veja as ofertas disponíveis em Cupons.'
+            : 'Este QR não é de um local MaraPass. Procure a placa no balcão ou na entrada.',
+      );
       return;
     }
     _handling = true;

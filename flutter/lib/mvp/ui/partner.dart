@@ -9,6 +9,7 @@ import '../data/store.dart';
 import '../theme/tokens.dart';
 import '../theme/widgets.dart';
 import 'common.dart';
+import 'plates.dart';
 import 'support.dart';
 
 const _partnerName = 'Lençóis Experience';
@@ -438,6 +439,10 @@ class OfferManageScreen extends ConsumerWidget {
                       Icons.pause_circle_rounded,
                       'Pausada: ${o.pauseReason}',
                     ),
+                  if (o.status == 'Ativa') ...[
+                    const SizedBox(height: MP.s4),
+                    OfferQrCard(cupomId: 'po:${o.id}', title: o.title),
+                  ],
                   const SizedBox(height: MP.s4),
                   Row(
                     children: [
@@ -1274,6 +1279,14 @@ class _AccountTab extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: MP.s4),
+              MpListTile(
+                key: const Key('partner-plates'),
+                icon: Icons.qr_code_2_rounded,
+                title: 'Placas MaraPass (QR)',
+                subtitle: 'Baixe e imprima a placa de check-in',
+                onTap: () => push<void>(context, const PlatesScreen()),
+              ),
+              const SizedBox(height: MP.s2),
               MpListTile(
                 icon: Icons.event_available_rounded,
                 title: 'Central de reservas',

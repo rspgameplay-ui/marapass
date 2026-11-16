@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:marapass_mapa/mvp/data/content.dart';
 import 'package:marapass_mapa/mvp/data/store.dart';
-import 'package:marapass_mapa/mvp/providers.dart';
 import 'package:marapass_mapa/mvp/theme/tokens.dart';
 import 'package:marapass_mapa/mvp/ui/checkin.dart';
 import 'package:marapass_mapa/mvp/ui/coupons.dart';
@@ -42,10 +41,10 @@ void main() {
     }
   });
 
-  test('posição dos itens no mapa é estável e perto da cidade', () {
+  test('posição dos itens no mapa usa a coordenada real (Lagoa Azul)', () {
     final it = Content.item('lagoas')!;
     expect(itemPoint(it).lat, itemPoint(it).lat);
-    expect(itemPoint(it).distanceKm(const GeoPoint(-2.7547, -42.8269)), lessThan(3));
+    expect(itemPoint(it).distanceKm(const GeoPoint(-2.6630536, -42.8602811)), lessThan(.01));
   });
 
   test('valor estimado dos cupons é sempre positivo', () {

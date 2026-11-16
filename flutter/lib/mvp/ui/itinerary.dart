@@ -55,7 +55,7 @@ const dayPlans = <DayPlan>[
     title: 'Lençóis em um dia',
     lens: 'Natureza e sabores locais, sem correria',
     rest: 'Pausa de 1h30 depois do almoço: o sol do meio-dia nas dunas é forte.',
-    tip: 'Leve água, protetor solar e uma sacola para o celular: as lagoas molham.',
+    tip: 'Leve água, protetor solar e uma sacola para o celular: as lagoas molham. Na volta, a Casa do Mangue serve jantar até as 23h.',
     stops: [
       DayStop(
         time: '9h00',
@@ -68,10 +68,9 @@ const dayPlans = <DayPlan>[
       DayStop(
         time: '12h00',
         slot: 'Almoço',
-        itemId: 'juja',
-        why: 'Galinha caipira e comida de casa, o almoço mais maranhense da cidade.',
-        backupId: 'mangue',
-        backupNote: 'A Casa de Juja abre só de sexta a domingo; nos outros dias, vá à Casa do Mangue.',
+        itemId: 'mangue',
+        why: 'Peixe regional no centro, perto da saída dos passeios da tarde.',
+        backupNote: 'Indo para Atins? A Casa de Juja serve galinha caipira de sexta a domingo.',
       ),
       DayStop(
         time: '14h30',
@@ -81,12 +80,6 @@ const dayPlans = <DayPlan>[
         backupId: 'marcelino',
         backupNote: 'Se chover forte, troque pela vivência em Marcelino.',
         anchor: true,
-      ),
-      DayStop(
-        time: '19h30',
-        slot: 'Noite',
-        itemId: 'mangue',
-        why: 'Peixe regional e ambiente tranquilo; abre até as 23h.',
       ),
     ],
   ),

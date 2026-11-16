@@ -38,6 +38,20 @@ enum MP_Tint {
   final Color fg;
 }
 
+/// Precisão da localização de um item no mapa.
+enum Loc {
+  exato('Endereço confirmado', 300),
+  atracao('Local da atividade', 1500),
+  saida('Ponto de saída', 1500),
+  aproximado('Localização aproximada', 5000);
+
+  const Loc(this.label, this.checkinRadiusM);
+  final String label;
+
+  /// Distância máxima para o check-in por GPS ("Estou no local").
+  final double checkinRadiusM;
+}
+
 class Polo {
   const Polo({
     required this.id,
@@ -94,6 +108,9 @@ class Item {
     this.comodidades = const [],
     this.cafeIncluso = false,
     this.cancelamentoGratis = false,
+    this.lat,
+    this.lng,
+    this.loc = Loc.aproximado,
   });
   final String id;
   final Cat cat;
@@ -132,6 +149,11 @@ class Item {
   /// Políticas da diária, no padrão das tarifas de hotel.
   final bool cafeIncluso;
   final bool cancelamentoGratis;
+
+  /// Coordenada real (OpenStreetMap/IBGE) e o quanto ela é precisa.
+  final double? lat;
+  final double? lng;
+  final Loc loc;
 
   String get faixaLabel => r'$' * faixa;
   String get mapsQuery => '$titulo $cidade Maranhão';
@@ -320,6 +342,9 @@ abstract final class Content {
     // Passeios
     const Item(
       id: 'lagoas',
+      lat: -2.6630536,
+      lng: -42.8602811,
+      loc: Loc.atracao, // Lagoa Azul (OSM)
       cat: Cat.passeio,
       titulo: 'Passeio às Lagoas',
       resumo: 'Lagoas Azul e Bonita, com banho e fotos.',
@@ -338,6 +363,9 @@ abstract final class Content {
     ),
     const Item(
       id: 'rio',
+      lat: -2.7502,
+      lng: -42.8270988,
+      loc: Loc.saida, // Sede de Barreirinhas, saída dos barcos
       cat: Cat.passeio,
       titulo: 'Passeio pelo Rio Preguiças',
       resumo: 'Barco até Vassouras e o farol.',
@@ -355,6 +383,9 @@ abstract final class Content {
     ),
     const Item(
       id: 'por',
+      lat: -2.5002,
+      lng: -43.2538986,
+      loc: Loc.saida, // Sede de Santo Amaro do Maranhão
       cat: Cat.passeio,
       titulo: 'Pôr do sol nas dunas',
       resumo: 'Caminhada leve até o alto das dunas.',
@@ -371,6 +402,9 @@ abstract final class Content {
     ),
     const Item(
       id: '4x4',
+      lat: -2.57,
+      lng: -42.7445,
+      loc: Loc.saida, // Vila de Atins
       cat: Cat.passeio,
       titulo: 'Passeio de 4x4 pelas dunas',
       resumo: 'Até Atins e Canto do Atins, com almoço.',
@@ -387,6 +421,9 @@ abstract final class Content {
     ),
     const Item(
       id: 'kite',
+      lat: -2.57,
+      lng: -42.7445,
+      loc: Loc.aproximado, // Vila de Atins
       cat: Cat.passeio,
       titulo: 'Aula de kitesurf',
       resumo: 'Para iniciantes, com equipamento.',
@@ -404,6 +441,9 @@ abstract final class Content {
     ),
     const Item(
       id: 'centro',
+      lat: -2.5299415,
+      lng: -44.3052847,
+      loc: Loc.atracao, // Centro Histórico de São Luís (OSM)
       cat: Cat.passeio,
       titulo: 'Caminhada no centro histórico',
       resumo: 'Casarões, igrejas e museus com guia.',
@@ -421,6 +461,9 @@ abstract final class Content {
     ),
     const Item(
       id: 'barco',
+      lat: -2.8381,
+      lng: -44.0519981,
+      loc: Loc.saida, // Sede de Axixá
       cat: Cat.passeio,
       titulo: 'Passeio de barco no Munim',
       resumo: 'Rio calmo com parada para banho.',
@@ -438,6 +481,9 @@ abstract final class Content {
     ),
     const Item(
       id: 'delta-ilhas',
+      lat: -2.7651338,
+      lng: -42.2746479,
+      loc: Loc.exato, // Cais do atracadouro de Tutóia (OSM)
       cat: Cat.passeio,
       titulo: 'Ilhas do Delta',
       resumo: 'Igarapés, dunas e revoada de aves.',
@@ -455,6 +501,9 @@ abstract final class Content {
     // Natureza
     const Item(
       id: 'cach',
+      lat: -7.2256737,
+      lng: -46.4550109,
+      loc: Loc.atracao, // Cachoeira de Santa Bárbara, Riachão (OSM)
       cat: Cat.natureza,
       titulo: 'Trilha das cachoeiras',
       resumo: 'Santa Bárbara e São Romão, com banho.',
@@ -473,6 +522,9 @@ abstract final class Content {
     ),
     const Item(
       id: 'guara',
+      lat: -1.8309433,
+      lng: -44.8708906,
+      loc: Loc.saida, // Cururupu (OSM)
       cat: Cat.natureza,
       titulo: 'Revoada dos guarás',
       resumo: 'Aves voltando para os ninhos.',
@@ -491,6 +543,9 @@ abstract final class Content {
     ),
     const Item(
       id: 'mirante',
+      lat: -7.1892989,
+      lng: -47.4261869,
+      loc: Loc.atracao, // Portal da Chapada das Mesas (OSM)
       cat: Cat.natureza,
       titulo: 'Mirante da Chapada',
       resumo: 'Vista do pôr do sol sobre as mesas.',
@@ -509,6 +564,9 @@ abstract final class Content {
     // Cultura
     const Item(
       id: 'boi',
+      lat: -2.5274,
+      lng: -44.3060989,
+      loc: Loc.aproximado, // Sede de São Luís
       cat: Cat.cultura,
       titulo: 'Noite de Bumba meu boi',
       resumo: 'Música, dança e comidas típicas.',
@@ -540,6 +598,9 @@ abstract final class Content {
     ),
     const Item(
       id: 'quilombo',
+      lat: -2.5304938,
+      lng: -44.3054154,
+      loc: Loc.atracao, // Casa do Tambor de Crioula (OSM)
       cat: Cat.cultura,
       titulo: 'Quilombo Urbano de São Luís',
       resumo: 'História, tambor de crioula e culinária.',
@@ -557,6 +618,9 @@ abstract final class Content {
     ),
     const Item(
       id: 'marcelino',
+      lat: -2.7502,
+      lng: -42.8270988,
+      loc: Loc.aproximado, // Sede de Barreirinhas
       cat: Cat.cultura,
       titulo: 'Vivência em Marcelino',
       resumo: 'Pesca artesanal e vida de vila.',
@@ -574,6 +638,9 @@ abstract final class Content {
     // Gastronomia
     const Item(
       id: 'mangue',
+      lat: -2.7502,
+      lng: -42.8270988,
+      loc: Loc.aproximado, // Sede de Barreirinhas
       nota: 4.7,
       avaliacoes: 342,
       comodidades: ['Aceita cartão', 'Área kids', 'Acessível'],
@@ -596,6 +663,9 @@ abstract final class Content {
     ),
     const Item(
       id: 'buriti',
+      lat: -2.5002,
+      lng: -43.2538986,
+      loc: Loc.aproximado, // Sede de Santo Amaro do Maranhão
       nota: 4.6,
       avaliacoes: 198,
       comodidades: ['Aceita cartão', 'Vista para o rio'],
@@ -615,6 +685,9 @@ abstract final class Content {
     ),
     const Item(
       id: 'cozinha',
+      lat: -2.5294866,
+      lng: -44.3059187,
+      loc: Loc.aproximado, // Praia Grande, Centro Histórico (OSM)
       nota: 4.8,
       avaliacoes: 511,
       comodidades: ['Comida regional', 'Aceita Pix'],
@@ -635,6 +708,9 @@ abstract final class Content {
     ),
     const Item(
       id: 'juja',
+      lat: -2.5695848,
+      lng: -42.7405062,
+      loc: Loc.exato, // Casa de Juja, Atins (OSM)
       nota: 4.9,
       avaliacoes: 77,
       comodidades: ['Comida caseira', 'Aceita Pix'],
@@ -646,7 +722,7 @@ abstract final class Content {
       cidade: 'Barreirinhas',
       foto: 'rest',
       horario: 'Sexta a domingo, 11h às 15h',
-      endereco: 'Barreirinhas - MA',
+      endereco: 'Atins, Barreirinhas - MA',
       telefone: '(98) 99777-0001',
       faixa: 1,
       distanciaKm: 6,
@@ -654,6 +730,9 @@ abstract final class Content {
     ),
     const Item(
       id: 'conchas',
+      lat: -2.4969085,
+      lng: -44.3086571,
+      loc: Loc.aproximado, // Praia da Ponta d'Areia (OSM)
       nota: 4.5,
       avaliacoes: 260,
       comodidades: ['Vista para o mar', 'Música ao vivo', 'Aceita cartão'],
@@ -674,6 +753,9 @@ abstract final class Content {
     // Hospedagem
     const Item(
       id: 'vila',
+      lat: -2.5002,
+      lng: -43.2538986,
+      loc: Loc.aproximado, // Sede de Santo Amaro do Maranhão
       precoCents: 32000,
       nota: 4.8,
       avaliacoes: 126,
@@ -698,6 +780,9 @@ abstract final class Content {
     ),
     const Item(
       id: 'atins-hotel',
+      lat: -2.57,
+      lng: -42.7445,
+      loc: Loc.aproximado, // Vila de Atins
       precoCents: 54000,
       nota: 4.9,
       avaliacoes: 88,
@@ -718,6 +803,9 @@ abstract final class Content {
     ),
     const Item(
       id: 'slz-hotel',
+      lat: -2.5299415,
+      lng: -44.3052847,
+      loc: Loc.aproximado, // Centro Histórico de São Luís (OSM)
       precoCents: 41000,
       nota: 4.6,
       avaliacoes: 214,
@@ -741,6 +829,9 @@ abstract final class Content {
     // Eventos
     Item(
       id: 'ev-boi',
+      lat: -2.5240863,
+      lng: -44.2966019,
+      loc: Loc.exato, // Escadaria da Praça Maria Aragão (OSM)
       cat: Cat.evento,
       titulo: 'Festival de Bumba meu boi',
       resumo: 'Os grupos de boi na praça.',
@@ -757,6 +848,9 @@ abstract final class Content {
     ),
     Item(
       id: 'ev-sabores',
+      lat: -2.7502,
+      lng: -42.8270988,
+      loc: Loc.aproximado, // Sede de Barreirinhas
       cat: Cat.evento,
       titulo: 'Circuito de Sabores de Barreirinhas',
       resumo: 'Restaurantes com pratos especiais.',
@@ -770,6 +864,9 @@ abstract final class Content {
     ),
     Item(
       id: 'ev-regata',
+      lat: -2.7502,
+      lng: -42.8270988,
+      loc: Loc.aproximado, // Sede de Barreirinhas
       cat: Cat.evento,
       titulo: 'Regata de canoas no Preguiças',
       resumo: 'Competição tradicional de canoas.',
@@ -784,6 +881,9 @@ abstract final class Content {
     // Artesanato
     const Item(
       id: 'ceramica',
+      lat: -2.9372001,
+      lng: -44.2450981,
+      loc: Loc.aproximado, // Sede de Rosário
       cat: Cat.artesanato,
       titulo: 'Cerâmica de Rosário',
       resumo: 'Peças de barro feitas à mão.',
@@ -802,6 +902,9 @@ abstract final class Content {
     ),
     const Item(
       id: 'buriti-bolsa',
+      lat: -2.7502,
+      lng: -42.8270988,
+      loc: Loc.aproximado, // Sede de Barreirinhas
       cat: Cat.artesanato,
       titulo: 'Bolsa de fibra de buriti',
       resumo: 'Trançada por artesãs de Barreirinhas.',
@@ -817,6 +920,9 @@ abstract final class Content {
     ),
     const Item(
       id: 'biojoia',
+      lat: -7.3347998,
+      lng: -47.4734001,
+      loc: Loc.aproximado, // Sede de Carolina
       cat: Cat.artesanato,
       titulo: 'Colar de biojoias',
       resumo: 'Sementes e capim dourado.',
@@ -849,6 +955,9 @@ abstract final class Content {
     // Fotografia
     const Item(
       id: 'foto-dunas',
+      lat: -2.7502,
+      lng: -42.8270988,
+      loc: Loc.saida, // Sede de Barreirinhas
       cat: Cat.fotografia,
       titulo: 'Ensaio nas dunas',
       resumo: '1 hora com fotógrafo local.',
@@ -863,6 +972,9 @@ abstract final class Content {
     ),
     const Item(
       id: 'foto-centro',
+      lat: -2.5299415,
+      lng: -44.3052847,
+      loc: Loc.atracao, // Centro Histórico de São Luís (OSM)
       cat: Cat.fotografia,
       titulo: 'Fotos no centro histórico',
       resumo: 'Retratos entre azulejos.',
@@ -878,6 +990,9 @@ abstract final class Content {
     // Transporte
     const Item(
       id: 'transfer-slz',
+      lat: -2.5274,
+      lng: -44.3060989,
+      loc: Loc.saida, // Sede de São Luís
       cat: Cat.transporte,
       titulo: 'Transfer São Luís → Barreirinhas',
       resumo: 'Van com ar-condicionado, 4 horas.',
@@ -891,6 +1006,9 @@ abstract final class Content {
     ),
     const Item(
       id: 'transfer-atins',
+      lat: -2.7502,
+      lng: -42.8270988,
+      loc: Loc.saida, // Sede de Barreirinhas
       cat: Cat.transporte,
       titulo: 'Travessia para Atins',
       resumo: 'Lancha ou 4x4 a partir de Barreirinhas.',

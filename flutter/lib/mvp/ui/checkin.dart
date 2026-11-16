@@ -1,8 +1,11 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../domain/tourism.dart';
+import '../../location/location_service.dart';
 import '../data/content.dart';
 import '../data/repository.dart';
 import '../data/store.dart';
@@ -13,9 +16,32 @@ import 'common.dart';
 import 'scan.dart';
 import 'shell.dart' show Tabs;
 
-/// Código impresso na placa MaraPass do local (demonstração).
-String plateCode(Item i) =>
-    'MP-${i.id.replaceAll('-', '').toUpperCase().substring(0, min(6, i.id.replaceAll('-', '').length))}';
+/// Coordenada real do item (sem o afastamento visual do mapa).
+GeoPoint? itemAnchor(Item i) =>
+    i.lat == null || i.lng == null ? null : GeoPoint(i.lat!, i.lng!);
+
+/// Posição atual do aparelho. Substituível nos testes.
+Future<GeoPoint> Function() checkinLocate = () async {
+  final p = await LocationService().acquire().timeout(const Duration(seconds: 12));
+  return GeoPoint(p.latitude, p.longitude);
+};
+
+String fmtMeters(double m) => m < 1000
+    ? '${m.round()} m'
+    : '${(m / 1000).toStringAsFixed(m < 10000 ? 1 : 0).replaceAll('.', ',')} km';
+
+/// Código impresso na placa MaraPass do local: 4 letras do local e 2
+/// caracteres de verificação (únicos por local, iguais em todo aparelho).
+String plateCode(Item i) {
+  final letters = i.id.replaceAll('-', '').toUpperCase();
+  final head = (letters.length >= 4 ? letters.substring(0, 4) : letters.padRight(4, 'X'));
+  var h = 2166136261;
+  for (final u in i.id.codeUnits) {
+    h = ((h ^ u) * 16777619) % 4294967296;
+  }
+  final tail = (h % 1296).toRadixString(36).toUpperCase().padLeft(2, '0');
+  return 'MP-$head$tail';
+}
 
 Item? itemByPlate(String code) {
   final c = code.trim().toUpperCase();
@@ -143,51 +169,61 @@ class CheckinScreen extends ConsumerWidget {
   }
 }
 
-/// "Estou no local": escolher o lugar.
-class PickPlaceScreen extends StatelessWidget {
+/// "Estou no local": escolher o lugar, do mais perto para o mais longe
+/// (distância real pelo GPS; sem GPS, a ordem do catálogo).
+class PickPlaceScreen extends StatefulWidget {
   const PickPlaceScreen({super.key});
   @override
+  State<PickPlaceScreen> createState() => _PickPlaceState();
+}
+
+class _PickPlaceState extends State<PickPlaceScreen> {
+  GeoPoint? _me;
+  bool _locating = true;
+
+  @override
+  void initState() {
+    super.initState();
+    checkinLocate().then((p) {
+      if (mounted) setState(() => _me = p);
+    }).catchError((Object _) {}).whenComplete(() {
+      if (mounted) setState(() => _locating = false);
+    });
+  }
+
+  double? _dist(Item i) {
+    final a = itemAnchor(i), me = _me;
+    return a == null || me == null ? null : me.distanceKm(a) * 1000;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final list =
-        Content.items
-            .where(
-              (i) =>
-                  i.cat != Cat.transporte &&
-                  i.cat != Cat.fotografia &&
-                  i.cat != Cat.artesanato,
-            )
-            .toList()
-          ..sort(
-            (a, b) => (a.distanciaKm ?? 999).compareTo(b.distanciaKm ?? 999),
-          );
+    final list = Content.items
+        .where((i) => i.cat != Cat.transporte && i.cat != Cat.fotografia && i.cat != Cat.artesanato)
+        .toList()
+      ..sort((a, b) => (_dist(a) ?? (a.distanciaKm ?? 999) * 1e6).compareTo(_dist(b) ?? (b.distanciaKm ?? 999) * 1e6));
     return Scaffold(
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.only(bottom: MP.s8),
           children: [
-            const MpHeader(
+            MpHeader(
               'Onde você está?',
-              subtitle: 'Lugares mais próximos primeiro.',
+              subtitle: _me != null
+                  ? 'Lugares mais próximos de você primeiro.'
+                  : (_locating ? 'Buscando sua localização…' : 'Sem localização: escolha o lugar na lista.'),
             ),
             for (final i in list)
               Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  MP.pageH,
-                  0,
-                  MP.pageH,
-                  MP.s2,
-                ),
+                padding: const EdgeInsets.fromLTRB(MP.pageH, 0, MP.pageH, MP.s2),
                 child: MpListTile(
                   icon: i.cat.icon,
                   tint: i.cat.tint.bg,
                   color: i.cat.tint.fg,
                   title: i.titulo,
-                  subtitle:
-                      '${i.cidade}${i.distanciaKm != null ? ' · ${i.distanciaKm!.round()} km' : ''}',
+                  subtitle: '${i.cidade}${_dist(i) != null ? ' · a ${fmtMeters(_dist(i)!)}' : ''}',
                   onTap: () => Navigator.of(context).pushReplacement(
-                    MaterialPageRoute<void>(
-                      builder: (_) => CheckinFlowScreen(item: i),
-                    ),
+                    MaterialPageRoute<void>(builder: (_) => CheckinFlowScreen(item: i)),
                   ),
                 ),
               ),
@@ -211,13 +247,14 @@ class CheckinFlowScreen extends ConsumerStatefulWidget {
   ConsumerState<CheckinFlowScreen> createState() => _FlowState();
 }
 
-enum _Step { permission, checking, done, already }
+enum _Step { permission, checking, done, already, far, noGps }
 
 class _FlowState extends ConsumerState<CheckinFlowScreen> {
   late _Step _step;
   Checkin? _c;
   bool _newStamp = false;
   int _stars = 0;
+  double? _distance;
 
   @override
   void initState() {
@@ -231,7 +268,27 @@ class _FlowState extends ConsumerState<CheckinFlowScreen> {
 
   Future<void> _check() async {
     setState(() => _step = _Step.checking);
-    await Future<void>.delayed(const Duration(milliseconds: 1400));
+    if (widget.viaPlate) {
+      await Future<void>.delayed(const Duration(milliseconds: 1400));
+    } else {
+      // Confirma pelo GPS que a pessoa está perto do local de verdade.
+      final anchor = itemAnchor(widget.item);
+      GeoPoint me;
+      try {
+        me = await checkinLocate();
+      } catch (_) {
+        if (mounted) setState(() => _step = _Step.noGps);
+        return;
+      }
+      if (!mounted) return;
+      if (anchor != null) {
+        _distance = me.distanceKm(anchor) * 1000;
+        if (_distance! > widget.item.loc.checkinRadiusM) {
+          setState(() => _step = _Step.far);
+          return;
+        }
+      }
+    }
     if (!mounted) return;
     final store = ref.read(appStoreProvider);
     _newStamp = !store.stampedPolos.contains(widget.item.polo);
@@ -269,6 +326,36 @@ class _FlowState extends ConsumerState<CheckinFlowScreen> {
             ref.read(shellTabProvider.notifier).go(Tabs.passaporte);
             Navigator.of(context).popUntil((r) => r.isFirst);
           },
+        );
+      case _Step.far:
+        return MpStatusScreen(
+          icon: Icons.wrong_location_rounded,
+          color: MP.warning,
+          bg: MP.warningBg,
+          title: 'Você ainda não está no local',
+          message:
+              'Sua localização está a ${fmtMeters(_distance!)} de ${i.titulo}. O check-in vale a até ${fmtMeters(i.loc.checkinRadiusM)} do local. Se você já está lá, leia o QR da placa MaraPass.',
+          primaryLabel: 'Ler QR da placa',
+          onPrimary: () => Navigator.of(context).pushReplacement(
+            MaterialPageRoute<void>(builder: (_) => const ScanScreen()),
+          ),
+          secondaryLabel: 'Tentar de novo',
+          onSecondary: _check,
+        );
+      case _Step.noGps:
+        return MpStatusScreen(
+          icon: Icons.location_off_rounded,
+          color: MP.warning,
+          bg: MP.warningBg,
+          title: 'Não conseguimos sua localização',
+          message:
+              'Permita a localização no navegador ou no aparelho e tente de novo. Você também pode registrar a visita lendo o QR da placa MaraPass.',
+          primaryLabel: 'Ler QR da placa',
+          onPrimary: () => Navigator.of(context).pushReplacement(
+            MaterialPageRoute<void>(builder: (_) => const ScanScreen()),
+          ),
+          secondaryLabel: 'Tentar de novo',
+          onSecondary: _check,
         );
       case _Step.permission:
         return MpStatusScreen(
