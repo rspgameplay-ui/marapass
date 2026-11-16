@@ -34,236 +34,402 @@ class ProfileScreen extends ConsumerWidget {
     final store = ref.watch(appStoreProvider);
     final user = ref.watch(authProvider);
     final display = store.name ?? user?.email?.split('@').first ?? 'Visitante';
+    final lv = store.level;
+    final progress = lv.$4 == null
+        ? 1.0
+        : ((store.points - lv.$2) / (lv.$4! - lv.$2)).clamp(0.0, 1.0);
+    final visited = {for (final c in store.checkins) c.itemId}.length;
+
     return Scaffold(
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.only(bottom: MP.s10),
-          children: [
-            const MpHeader('Perfil'),
-            Padding(
+      backgroundColor: MP.soft,
+      body: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          // Cabeçalho
+          Container(
+            padding: EdgeInsets.fromLTRB(
+              MP.pageH,
+              MediaQuery.paddingOf(context).top + MP.s3,
+              MP.pageH,
+              72,
+            ),
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [MP.navy, Color(0xff14507f)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const MpBackPill(onDark: true),
+                    const Spacer(),
+                    IconButton(
+                      key: const Key('edit-name'),
+                      tooltip: 'Editar nome',
+                      onPressed: () => _editName(context, store),
+                      style: IconButton.styleFrom(
+                        backgroundColor: Colors.white24,
+                        minimumSize: const Size(MP.minTap, MP.minTap),
+                      ),
+                      icon: const Icon(
+                        Icons.edit_rounded,
+                        color: Colors.white,
+                        size: MP.iconMd,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: MP.s5),
+                Row(
+                  children: [
+                    Container(
+                      width: 76,
+                      height: 76,
+                      decoration: BoxDecoration(
+                        color: MP.yellow,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 3),
+                        boxShadow: MP.shadowFloat,
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        display.substring(0, 1).toUpperCase(),
+                        style: const TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.w800,
+                          color: MP.ink,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: MP.s4),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            display,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 24,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            user?.email ??
+                                'Visitante · entre para salvar sua viagem',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 14,
+                            ),
+                          ),
+                          const SizedBox(height: MP.s2),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: MP.yellow,
+                              borderRadius: BorderRadius.circular(MP.rPill),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(
+                                  Icons.workspace_premium_rounded,
+                                  size: 16,
+                                  color: MP.ink,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  '${lv.$1} · ${store.points} pts',
+                                  style: const TextStyle(
+                                    color: MP.ink,
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          // Resumo do passaporte e métricas
+          Transform.translate(
+            offset: const Offset(0, -52),
+            child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   MpCard(
-                    child: Row(
+                    onTap: () {
+                      ref.read(shellTabProvider.notifier).go(Tabs.passaporte);
+                      Navigator.of(context).popUntil((r) => r.isFirst);
+                    },
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        CircleAvatar(
-                          radius: 32,
-                          backgroundColor: MP.yellow,
-                          child: Text(
-                            display.substring(0, 1).toUpperCase(),
-                            style: const TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.w800,
-                              color: MP.ink,
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.menu_book_rounded,
+                              color: MP.navy,
+                              size: MP.iconMd,
                             ),
-                          ),
-                        ),
-                        const SizedBox(width: MP.s4),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                display,
-                                style: Theme.of(context).textTheme.titleLarge,
-                              ),
-                              Text(
-                                user?.email ?? 'Você está como visitante',
-                                style: Theme.of(context).textTheme.bodySmall,
-                              ),
-                              Text(
-                                '${store.points} pontos · ${store.level.$1}',
-                                style: const TextStyle(
-                                  color: MP.green,
+                            const SizedBox(width: MP.s2),
+                            const Expanded(
+                              child: Text(
+                                'Meu passaporte',
+                                style: TextStyle(
                                   fontWeight: FontWeight.w800,
-                                  fontSize: 15,
+                                  fontSize: 16,
+                                  color: MP.ink,
                                 ),
                               ),
-                            ],
+                            ),
+                            Flexible(
+                              child: Text(
+                                lv.$4 == null
+                                    ? 'Nível máximo'
+                                    : 'Próximo: ${lv.$3}',
+                                style: const TextStyle(
+                                  color: MP.textSecondary,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: MP.s3),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(MP.rPill),
+                          child: LinearProgressIndicator(
+                            value: progress,
+                            minHeight: 10,
+                            color: MP.green,
+                            backgroundColor: MP.soft,
                           ),
                         ),
-                        IconButton(
-                          key: const Key('edit-name'),
-                          tooltip: 'Editar nome',
-                          iconSize: 26,
-                          onPressed: () => _editName(context, store),
-                          icon: const Icon(Icons.edit_rounded),
+                        const SizedBox(height: MP.s2),
+                        Text(
+                          lv.$4 == null
+                              ? 'Você completou todos os níveis.'
+                              : 'Faltam ${lv.$4! - store.points} pontos',
+                          style: const TextStyle(
+                            color: MP.textSecondary,
+                            fontSize: 14,
+                          ),
                         ),
                       ],
                     ),
                   ),
+                  const SizedBox(height: MP.s3),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _Metric(
+                          key: const Key('metric-visited'),
+                          icon: Icons.place_rounded,
+                          color: MP.green,
+                          value: '$visited',
+                          label: 'Lugares\nvisitados',
+                        ),
+                      ),
+                      const SizedBox(width: MP.s2),
+                      Expanded(
+                        child: _Metric(
+                          key: const Key('metric-routes'),
+                          icon: Icons.route_rounded,
+                          color: const Color(0xff1a73e8),
+                          value: '${store.routesDone}',
+                          label: 'Rotas\ntraçadas',
+                        ),
+                      ),
+                      const SizedBox(width: MP.s2),
+                      Expanded(
+                        child: _Metric(
+                          key: const Key('metric-stamps'),
+                          icon: Icons.verified_rounded,
+                          color: const Color(0xffa87800),
+                          value:
+                              '${store.stampedPolos.length}/${Content.polos.length}',
+                          label: 'Carimbos\ndos polos',
+                        ),
+                      ),
+                    ],
+                  ),
                   if (user == null) ...[
-                    const SizedBox(height: MP.s3),
+                    const SizedBox(height: MP.s4),
                     MpCtaButton(
                       key: const Key('profile-login'),
                       label: 'Entrar com e-mail',
                       onPressed: () => requireLogin(context, ref),
                     ),
                   ],
-                  const SizedBox(height: MP.sectionGap),
-                  const MpSectionTitle('Facilidades'),
-                  const SizedBox(height: MP.s2),
-                  MpCard(
-                    padding: const EdgeInsets.symmetric(horizontal: MP.s3),
-                    child: Column(
+                  const SizedBox(height: MP.s5),
+                  _Group(
+                    title: 'Minha viagem',
+                    children: [
+                      _Row(
+                        icon: Icons.event_note_rounded,
+                        color: const Color(0xff6a4fb3),
+                        title: 'Minhas reservas',
+                        subtitle: '${store.myReservations.length} reservas',
+                        onTap: () =>
+                            push<void>(context, const ReservationsScreen()),
+                      ),
+                      _Row(
+                        icon: Icons.local_activity_rounded,
+                        color: const Color(0xffa87800),
+                        title: 'Meus cupons',
+                        subtitle:
+                            '${store.coupons.where((c) => c.active).length} ativos',
+                        onTap: () {
+                          ref.read(shellTabProvider.notifier).go(Tabs.cupons);
+                          Navigator.of(context).popUntil((r) => r.isFirst);
+                        },
+                      ),
+                      _Row(
+                        icon: Icons.photo_library_rounded,
+                        color: const Color(0xffb0407e),
+                        title: 'Minhas galerias',
+                        subtitle: 'Fotos e álbum da viagem',
+                        onTap: () =>
+                            push<void>(context, const GalleriesScreen()),
+                      ),
+                      _Row(
+                        icon: Icons.group_add_rounded,
+                        color: MP.green,
+                        title: 'Conexões MaraPass',
+                        subtitle: 'Convide amigos e família',
+                        onTap: () =>
+                            push<void>(context, const ConnectionsScreen()),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: MP.s4),
+                  _Group(
+                    title: 'Preferências',
+                    children: [
+                      _SwitchRow(
+                        key: const Key('big-text'),
+                        icon: Icons.text_increase_rounded,
+                        title: 'Letra grande',
+                        subtitle: 'Aumenta o texto do app inteiro',
+                        value: store.bigText,
+                        onChanged: store.setBigText,
+                      ),
+                      _SwitchRow(
+                        key: const Key('offer-alerts'),
+                        icon: Icons.notifications_active_rounded,
+                        title: 'Avisos de ofertas',
+                        subtitle: store.offerAlerts
+                            ? 'Cupons novos e lembretes'
+                            : 'Só lembretes de reserva',
+                        value: store.offerAlerts,
+                        onChanged: store.setOfferAlerts,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: MP.s4),
+                  _Group(
+                    title: 'Ajuda',
+                    children: [
+                      _Row(
+                        icon: Icons.support_agent_rounded,
+                        color: MP.navy,
+                        title: 'Atendimento',
+                        subtitle: 'Conversas, suporte e sugestões',
+                        onTap: () =>
+                            push<void>(context, const SupportCenterScreen()),
+                      ),
+                      _Row(
+                        icon: Icons.help_rounded,
+                        color: MP.navy,
+                        title: 'Perguntas frequentes',
+                        onTap: () => push<void>(context, const HelpScreen()),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: MP.s4),
+                  _Group(
+                    title: 'Para empresas',
+                    children: [
+                      _Row(
+                        key: const Key('partner-area'),
+                        icon: Icons.storefront_rounded,
+                        color: MP.navy,
+                        title: 'Área do parceiro',
+                        subtitle: 'Cupons, validação e reservas',
+                        onTap: () {
+                          store.enterPartnerArea();
+                          Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) => const PartnerShell(),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                  if (user != null) ...[
+                    const SizedBox(height: MP.s4),
+                    _Group(
+                      title: 'Conta',
                       children: [
-                        SwitchListTile(
-                          key: const Key('big-text'),
-                          value: store.bigText,
-                          onChanged: store.setBigText,
-                          secondary: const Icon(
-                            Icons.text_increase_rounded,
-                            color: MP.navy,
-                            size: 30,
-                          ),
-                          title: const Text(
-                            'Letra grande',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w800,
-                              fontSize: 18,
-                            ),
-                          ),
-                          subtitle: const Text(
-                            'Aumenta o texto do aplicativo inteiro',
-                          ),
+                        _Row(
+                          key: const Key('sign-out'),
+                          icon: Icons.logout_rounded,
+                          color: MP.textSecondary,
+                          title: 'Sair da conta',
+                          onTap: () async {
+                            try {
+                              await ref.read(authGatewayProvider).signOut();
+                            } on MvpException catch (e) {
+                              if (context.mounted)
+                                showMpSnack(context, e.message);
+                            }
+                          },
                         ),
-                        const Divider(),
-                        SwitchListTile(
-                          key: const Key('offer-alerts'),
-                          value: store.offerAlerts,
-                          onChanged: store.setOfferAlerts,
-                          secondary: const Icon(
-                            Icons.notifications_active_rounded,
-                            color: MP.navy,
-                            size: 30,
-                          ),
-                          title: const Text(
-                            'Avisos de ofertas',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w800,
-                              fontSize: 18,
-                            ),
-                          ),
-                          subtitle: Text(
-                            store.offerAlerts
-                                ? 'Você recebe cupons novos e lembretes'
-                                : 'Desligados: só lembretes de reserva',
-                          ),
+                        _Row(
+                          key: const Key('delete-account'),
+                          icon: Icons.delete_forever_rounded,
+                          color: MP.error,
+                          title: 'Excluir minha conta',
+                          danger: true,
+                          onTap: () => _delete(context, ref),
                         ),
                       ],
                     ),
-                  ),
-                  const SizedBox(height: MP.sectionGap),
-                  const MpSectionTitle('Minha conta'),
-                  const SizedBox(height: MP.s2),
-                  for (final e
-                      in <(IconData, String, String, Widget?, VoidCallback?)>[
-                        (
-                          Icons.event_note_rounded,
-                          'Minhas reservas',
-                          '${store.myReservations.length} reservas',
-                          const ReservationsScreen(),
-                          null,
-                        ),
-                        (
-                          Icons.local_activity_rounded,
-                          'Meus cupons',
-                          '${store.coupons.where((c) => c.active).length} ativos',
-                          null,
-                          () {
-                            ref.read(shellTabProvider.notifier).go(Tabs.cupons);
-                            Navigator.of(context).popUntil((r) => r.isFirst);
-                          },
-                        ),
-                        (
-                          Icons.photo_library_rounded,
-                          'Minhas galerias',
-                          'Fotos e álbum da viagem',
-                          const GalleriesScreen(),
-                          null,
-                        ),
-                        (
-                          Icons.support_agent_rounded,
-                          'Atendimento',
-                          'Conversas, suporte e sugestões',
-                          const SupportCenterScreen(),
-                          null,
-                        ),
-                        (
-                          Icons.group_add_rounded,
-                          'Conexões MaraPass',
-                          'Convide amigos e família',
-                          const ConnectionsScreen(),
-                          null,
-                        ),
-                        (
-                          Icons.help_rounded,
-                          'Ajuda',
-                          'Perguntas frequentes',
-                          const HelpScreen(),
-                          null,
-                        ),
-                      ]) ...[
-                    MpListTile(
-                      icon: e.$1,
-                      title: e.$2,
-                      subtitle: e.$3,
-                      onTap: e.$5 ?? () => push<void>(context, e.$4!),
-                    ),
-                    const SizedBox(height: MP.s2),
                   ],
-                  const SizedBox(height: MP.s4),
-                  MpListTile(
-                    key: const Key('partner-area'),
-                    icon: Icons.storefront_rounded,
-                    title: 'Área do parceiro',
-                    subtitle: 'Para empresas: cupons, validação e reservas',
-                    tint: MP.navy,
-                    color: Colors.white,
-                    onTap: () {
-                      store.enterPartnerArea();
-                      Navigator.of(context).push(
-                        MaterialPageRoute<void>(
-                          builder: (_) => const PartnerShell(),
-                        ),
-                      );
-                    },
-                  ),
-                  const SizedBox(height: MP.s4),
-                  const MpNotice.demo(
-                    'Versão de teste: parceiros, ofertas e preços são de demonstração. Seus cupons, reservas e check-ins ficam salvos neste aparelho.',
-                  ),
                   const SizedBox(height: MP.s5),
-                  if (user != null) ...[
-                    OutlinedButton.icon(
-                      key: const Key('sign-out'),
-                      onPressed: () async {
-                        try {
-                          await ref.read(authGatewayProvider).signOut();
-                        } on MvpException catch (e) {
-                          if (context.mounted) showMpSnack(context, e.message);
-                        }
-                      },
-                      icon: const Icon(Icons.logout_rounded),
-                      label: const Text('Sair da conta'),
-                    ),
-                    const SizedBox(height: MP.s2),
-                    TextButton(
-                      key: const Key('delete-account'),
-                      onPressed: () => _delete(context, ref),
-                      child: const Text(
-                        'Excluir minha conta',
-                        style: TextStyle(color: MP.error),
-                      ),
-                    ),
-                  ],
+                  const Text(
+                    'Versão de teste: parceiros, ofertas e preços são de demonstração.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: MP.textSecondary, fontSize: 13),
+                  ),
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -302,6 +468,227 @@ class ProfileScreen extends ConsumerWidget {
       if (context.mounted) showMpSnack(context, e.message);
     }
   }
+}
+
+class _Metric extends StatelessWidget {
+  const _Metric({
+    super.key,
+    required this.icon,
+    required this.color,
+    required this.value,
+    required this.label,
+  });
+  final IconData icon;
+  final Color color;
+  final String value;
+  final String label;
+  @override
+  Widget build(BuildContext context) => Semantics(
+    label: '${label.replaceAll('\n', ' ')}: $value',
+    child: Container(
+      padding: const EdgeInsets.symmetric(vertical: MP.s4, horizontal: MP.s3),
+      decoration: BoxDecoration(
+        color: MP.card,
+        borderRadius: BorderRadius.circular(MP.rLarge),
+        boxShadow: MP.shadowCard,
+      ),
+      child: ExcludeSemantics(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(icon, color: color, size: MP.iconMd),
+            const SizedBox(height: MP.s2),
+            Text(
+              value,
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w800,
+                color: MP.ink,
+              ),
+            ),
+            Text(
+              label,
+              style: const TextStyle(
+                fontSize: 13,
+                height: 1.25,
+                fontWeight: FontWeight.w600,
+                color: MP.textSecondary,
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+/// Bloco de configurações: título + cartão com linhas separadas por divisor.
+class _Group extends StatelessWidget {
+  const _Group({required this.title, required this.children});
+  final String title;
+  final List<Widget> children;
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Padding(
+        padding: const EdgeInsets.only(left: MP.s1, bottom: MP.s2),
+        child: Text(
+          title.toUpperCase(),
+          style: const TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w800,
+            letterSpacing: .8,
+            color: MP.textSecondary,
+          ),
+        ),
+      ),
+      DecoratedBox(
+        decoration: BoxDecoration(
+          color: MP.card,
+          borderRadius: BorderRadius.circular(MP.rLarge),
+          boxShadow: MP.shadowCard,
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(MP.rLarge),
+          child: Column(
+            children: [
+              for (var i = 0; i < children.length; i++) ...[
+                if (i > 0) const Divider(height: 1, indent: 68),
+                children[i],
+              ],
+            ],
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+class _RowIcon extends StatelessWidget {
+  const _RowIcon(this.icon, this.color);
+  final IconData icon;
+  final Color color;
+  @override
+  Widget build(BuildContext context) => Container(
+    width: 40,
+    height: 40,
+    decoration: BoxDecoration(
+      color: color.withValues(alpha: .12),
+      borderRadius: BorderRadius.circular(MP.rSmall),
+    ),
+    child: Icon(icon, color: color, size: MP.iconMd),
+  );
+}
+
+class _Row extends StatelessWidget {
+  const _Row({
+    super.key,
+    required this.icon,
+    required this.color,
+    required this.title,
+    this.subtitle,
+    required this.onTap,
+    this.danger = false,
+  });
+  final IconData icon;
+  final Color color;
+  final String title;
+  final String? subtitle;
+  final VoidCallback onTap;
+  final bool danger;
+  @override
+  Widget build(BuildContext context) => Material(
+    color: MP.card,
+    child: InkWell(
+      onTap: onTap,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: 64),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: MP.s4,
+            vertical: MP.s3,
+          ),
+          child: Row(
+            children: [
+              _RowIcon(icon, color),
+              const SizedBox(width: MP.s3),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: danger ? MP.error : MP.ink,
+                      ),
+                    ),
+                    if (subtitle != null)
+                      Text(
+                        subtitle!,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: MP.textSecondary,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              if (!danger)
+                const Icon(
+                  Icons.chevron_right_rounded,
+                  color: MP.textMuted,
+                  size: MP.iconLg,
+                ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+class _SwitchRow extends StatelessWidget {
+  const _SwitchRow({
+    super.key,
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.value,
+    required this.onChanged,
+  });
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final bool value;
+  final ValueChanged<bool> onChanged;
+  @override
+  Widget build(BuildContext context) => Material(
+    color: MP.card,
+    child: SwitchListTile(
+      value: value,
+      onChanged: onChanged,
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: MP.s4,
+        vertical: MP.s1,
+      ),
+      secondary: _RowIcon(icon, MP.navy),
+      title: Text(
+        title,
+        style: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w700,
+          color: MP.ink,
+        ),
+      ),
+      subtitle: Text(
+        subtitle,
+        style: const TextStyle(fontSize: 14, color: MP.textSecondary),
+      ),
+    ),
+  );
 }
 
 class _NameDialog extends StatefulWidget {

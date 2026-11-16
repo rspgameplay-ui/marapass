@@ -281,6 +281,7 @@ class AppStore extends ChangeNotifier {
   final packs = <String, Set<int>>{};
   final tickets = <Ticket>[];
   int invites = 0;
+  int routesDone = 0;
   bool fotoAlbum = false;
 
   // Parceiro (demonstração)
@@ -738,6 +739,7 @@ class AppStore extends ChangeNotifier {
         ),
       );
       invites = j['inv'] as int? ?? 0;
+      routesDone = j['rt'] as int? ?? 0;
       fotoAlbum = j['fa'] as bool? ?? false;
       partnerOffers.addAll(
         ((j['po'] as List?) ?? []).map(
@@ -828,6 +830,7 @@ class AppStore extends ChangeNotifier {
           'pk': packs.map((k, v) => MapEntry(k, v.toList())),
           'tk': tickets.map((e) => e.toJson()).toList(),
           'inv': invites,
+          'rt': routesDone,
           'fa': fotoAlbum,
           'po': partnerOffers.map((e) => e.toJson()).toList(),
           'va': validations.map((e) => e.toJson()).toList(),
@@ -1075,6 +1078,12 @@ class AppStore extends ChangeNotifier {
 
   void reply(String ticketId, String text) {
     tickets.firstWhere((t) => t.id == ticketId).replies.add(text);
+    _save();
+  }
+
+  /// Rotas traçadas no mapa (métrica do perfil).
+  void addRoute() {
+    routesDone++;
     _save();
   }
 

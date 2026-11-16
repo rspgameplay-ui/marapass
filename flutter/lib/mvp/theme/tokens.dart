@@ -66,6 +66,23 @@ abstract final class MP {
   static const rXl = 22.0;
   static const rPill = 999.0;
 
+  // Ícones (uma família: Material Rounded)
+  static const iconSm = 20.0;
+  static const iconMd = 24.0;
+  static const iconLg = 28.0;
+
+  // Sombras suaves (elevação discreta, sem borrão pesado)
+  static const shadowCard = [
+    BoxShadow(color: Color(0x0f13263d), blurRadius: 12, offset: Offset(0, 4)),
+  ];
+  static const shadowFloat = [
+    BoxShadow(color: Color(0x2413263d), blurRadius: 18, offset: Offset(0, 6)),
+  ];
+
+  // Durações de interação
+  static const fast = Duration(milliseconds: 120);
+  static const medium = Duration(milliseconds: 220);
+
   /// Alvo de toque: 48 px (o design pede no mínimo 44).
   static const minTap = 48.0;
   static const buttonHeight = 56.0;
@@ -165,6 +182,8 @@ ThemeData mvpTheme() {
     ),
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(
+        elevation: 0,
+        overlayColor: Colors.white,
         backgroundColor: MP.navy,
         foregroundColor: MP.textInverse,
         disabledBackgroundColor: MP.border,
@@ -182,6 +201,7 @@ ThemeData mvpTheme() {
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
+        overlayColor: MP.navy,
         foregroundColor: MP.navy,
         backgroundColor: MP.soft,
         minimumSize: const Size.fromHeight(MP.buttonHeight),
@@ -232,14 +252,17 @@ ThemeData mvpTheme() {
     navigationBarTheme: NavigationBarThemeData(
       backgroundColor: MP.page,
       indicatorColor: MP.greenBg,
-      height: 76,
-      elevation: 3,
+      height: 72,
+      elevation: 0,
+      labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
       shadowColor: Colors.black26,
       labelTextStyle: WidgetStateProperty.resolveWith(
         (s) => TextStyle(
           fontFamily: mpFont,
           fontSize: 12,
-          fontWeight: FontWeight.w800,
+          fontWeight: s.contains(WidgetState.selected)
+              ? FontWeight.w800
+              : FontWeight.w600,
           letterSpacing: -.2,
           color: s.contains(WidgetState.selected) ? MP.green : MP.textSecondary,
         ),

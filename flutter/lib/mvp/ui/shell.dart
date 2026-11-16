@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../presentation/legacy_theme.dart';
-import '../../presentation/map_screen.dart';
 import '../auth/auth.dart';
 import '../data/store.dart';
 import '../providers.dart';
 import 'coupons.dart';
 import 'home.dart';
+import 'map_tab.dart';
 import 'passport.dart';
 
 /// Abas da barra inferior, na ordem do protótipo aprovado.
@@ -34,7 +33,7 @@ class _MvpShellState extends ConsumerState<MvpShell> {
     (Icons.home_outlined, Icons.home_rounded, 'Início'),
     (Icons.map_outlined, Icons.map_rounded, 'Mapa'),
     (Icons.local_activity_outlined, Icons.local_activity_rounded, 'Cupons'),
-    (Icons.badge_outlined, Icons.badge_rounded, 'Passaporte'),
+    (Icons.menu_book_outlined, Icons.menu_book_rounded, 'Passaporte'),
   ];
 
   @override
@@ -52,9 +51,7 @@ class _MvpShellState extends ConsumerState<MvpShell> {
         children: [
           const HomeScreen(),
           // O mapa é pesado: só monta na primeira vez que a aba é aberta.
-          _mapOpened
-              ? Theme(data: legacyMapTheme(), child: const MapScreen())
-              : const SizedBox.shrink(),
+          _mapOpened ? const MapTab() : const SizedBox.shrink(),
           const CouponsScreen(),
           const PassportScreen(),
         ],
@@ -62,6 +59,7 @@ class _MvpShellState extends ConsumerState<MvpShell> {
       bottomNavigationBar: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          const Divider(height: 1, thickness: 1, color: Color(0xffe6eaee)),
           NavigationBar(
             selectedIndex: i,
             onDestinationSelected: ref.read(shellTabProvider.notifier).go,

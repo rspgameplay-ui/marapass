@@ -1,6 +1,24 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 
 import 'tokens.dart';
+
+/// Fotos do protótipo com menos de 400 px de largura: precisam dos originais
+/// em alta resolução (fornecidos pelo cliente) para ocupar áreas grandes.
+const lowResPhotos = {
+  'fish',
+  'food',
+  'p1',
+  'p2',
+  'p3',
+  'p4',
+  'rest',
+  'rest2',
+  'sunset',
+  'ceramica',
+  'lagoa_boat',
+};
 
 /// Foto real do catálogo (assets/photos). Sem foto: gradiente da marca com ícone,
 /// nunca um espaço vazio.
@@ -40,10 +58,37 @@ class MpPhoto extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            if (photo != null)
+            if (photo != null &&
+                lowResPhotos.contains(photo) &&
+                (height ?? 0) > 160)
+              // Foto pequena demais para esta área: mostra no tamanho natural sobre
+              // um fundo desfocado dela mesma, em vez de ampliar e pixelar.
+              Stack(
+                fit: StackFit.expand,
+                children: [
+                  ImageFiltered(
+                    imageFilter: ui.ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+                    child: Image.asset(
+                      'assets/photos/$photo.jpg',
+                      fit: BoxFit.cover,
+                      filterQuality: FilterQuality.low,
+                    ),
+                  ),
+                  const ColoredBox(color: Color(0x33000000)),
+                  Center(
+                    child: Image.asset(
+                      'assets/photos/$photo.jpg',
+                      fit: BoxFit.scaleDown,
+                      filterQuality: FilterQuality.medium,
+                    ),
+                  ),
+                ],
+              )
+            else if (photo != null)
               Image.asset(
                 'assets/photos/$photo.jpg',
                 fit: BoxFit.cover,
+                filterQuality: FilterQuality.medium,
                 semanticLabel: '',
                 errorBuilder: (_, __, ___) =>
                     _Gradient(p: p, icon: icon, h: height),
@@ -128,8 +173,9 @@ class MpCard extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(MP.rLarge),
             border: border && color == MP.card
-                ? Border.all(color: MP.border)
+                ? Border.all(color: MP.borderSubtle)
                 : null,
+            boxShadow: border && color == MP.card ? MP.shadowCard : null,
           ),
           child: onTap == null
               ? body
