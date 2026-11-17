@@ -55,7 +55,27 @@ class TourismRepository {
   ReferenceRoadNetwork? roads;
   ElevationData? elevations;
   Map<String, dynamic>? terrainManifest;
-  Future<void> initialize() async {
+  Future<void>? _loading;
+  bool loaded = false;
+
+  /// Carrega o catálogo do mapa uma única vez (pode rodar em segundo plano,
+  /// depois da primeira tela do app).
+  Future<void> ensureLoaded({bool withRoads = true}) =>
+      _loading ??= initialize(withRoads: withRoads).then((_) => loaded = true);
+
+  /// Rede de estradas de referência (9,9 MB): só para as telas do mapa antigo.
+  Future<void>? _roadsLoading;
+  Future<void> loadRoads() => _roadsLoading ??= () async {
+    if (roads != null) return;
+    await ensureLoaded(withRoads: false);
+    roads = ReferenceRoadNetwork(
+      jsonDecode(await rootBundle.loadString('assets/map/roads_reference.json'))
+          as Map<String, dynamic>,
+      boundary!,
+    );
+  }();
+
+  Future<void> initialize({bool withRoads = true}) async {
     publishedCatalog.restoreCache();
     final raw = jsonDecode(
       await rootBundle.loadString('assets/data/places.json'),
@@ -107,11 +127,13 @@ class TourismRepository {
     boundary = jsonDecode(
       await rootBundle.loadString('assets/map/maranhao.geojson'),
     ) as Map<String, dynamic>;
-    roads = ReferenceRoadNetwork(
-      jsonDecode(await rootBundle.loadString('assets/map/roads_reference.json'))
-          as Map<String, dynamic>,
-      boundary!,
-    );
+    if (withRoads) {
+      roads = ReferenceRoadNetwork(
+        jsonDecode(await rootBundle.loadString('assets/map/roads_reference.json'))
+            as Map<String, dynamic>,
+        boundary!,
+      );
+    }
   }
 
   List<TourismPlace> cachedPartners() {

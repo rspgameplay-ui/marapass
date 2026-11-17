@@ -16,6 +16,40 @@ class RoutingRepository {
   final String baseUrl;
   DateTime? _lastRequest;
   bool _busy = false;
+  /// Rota única passando por várias paradas, na ordem dada (roteiro do dia).
+  Future<RoadRoute> routeThrough(List<GeoPoint> stops) async {
+    if (stops.length < 2) {
+      throw const FormatException('O roteiro precisa de ao menos duas paradas.');
+    }
+    final coords = stops.map((p) => '${p.lng},${p.lat}').join(';');
+    final uri = Uri.parse('$baseUrl/route/v1/driving/$coords').replace(
+      queryParameters: {
+        'steps': 'true',
+        'overview': 'full',
+        'geometries': 'geojson',
+        'radiuses': List.filled(stops.length, '1000').join(';'),
+      },
+    );
+    final response = await client
+        .get(
+          uri,
+          headers: kIsWeb
+              ? null
+              : {'User-Agent': 'MaraPass/0.2 (+https://marapass.com)'},
+        )
+        .timeout(const Duration(seconds: 20));
+    if (response.statusCode != 200) {
+      throw const FormatException(
+        'Serviço de rotas indisponível. Tente novamente com conexão.',
+      );
+    }
+    final json = jsonDecode(response.body) as Map<String, dynamic>;
+    if (json['code'] != 'Ok') {
+      throw const FormatException('Não foi possível ligar todas as paradas por estrada.');
+    }
+    return RoadRoute.fromOsrm(json, 0);
+  }
+
   Future<List<RoadRoute>> routes(
     GeoPoint origin,
     GeoPoint destination, {

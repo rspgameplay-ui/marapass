@@ -1,0 +1,5 @@
+-- Aplicadas em 2026-11-16/17 (nomes: mvp_admin_command, mvp_reservations_lodging_period).
+-- mvp_admin_command(p_action, p_args): gestão do app pela Central (admin ativo + aal2):
+--   overview, partner_requests, decide_partner, offers, set_offer, places, set_radius, checkins.
+-- mvp_reservations.period aceita 'Manhã'/'Tarde' ou '<N> noite(s) · <quarto>' (hospedagem).
+-- O SQL completo está em supabase_migrations.schema_migrations.
