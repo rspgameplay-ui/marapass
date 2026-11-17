@@ -1,17 +1,13 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
-import '../theme/mara_logo.dart';
 
-/// Abertura animada (2,8 s) contando a construção do símbolo:
-/// 1. Pulso do território: ponto dourado vira rosa dos ventos, com a onda
-///    das dunas na base (0,0–0,8 s).
-/// 2. Giro cultural: as 6 hélices entram em espiral, como as fitas do
-///    Caboclo de Fitas e a saia rodada do Tambor de Crioula, e o cata-vento
-///    dá um giro completo com brilho (0,8–1,9 s).
-/// 3. Assinatura: o símbolo sobe e surge "MaraPass · MARANHÃO 2026"
-///    (1,9–2,8 s). Um toque pula a abertura.
+/// Abertura animada (3,2 s) com a logo OFICIAL (os arquivos do manual, em
+/// vetor): ponto de luz e rosa dos ventos sobre a foto dos Lençóis, o símbolo
+/// entra girando como cata-vento, o nome sobe e surge a assinatura.
+/// Um toque pula a abertura.
 class AnimatedSplash extends StatefulWidget {
   const AnimatedSplash({super.key, required this.onDone});
   final VoidCallback onDone;
@@ -20,10 +16,10 @@ class AnimatedSplash extends StatefulWidget {
 }
 
 class _AnimatedSplashState extends State<AnimatedSplash> with SingleTickerProviderStateMixin {
-  static const _total = 2800.0;
+  static const _total = 3200.0;
   late final AnimationController _c = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 2800),
+    duration: const Duration(milliseconds: 3200),
   )..addStatusListener((s) {
       if (s == AnimationStatus.completed) _finish();
     });
@@ -47,7 +43,6 @@ class _AnimatedSplashState extends State<AnimatedSplash> with SingleTickerProvid
     super.dispose();
   }
 
-  /// Progresso (0..1) de um trecho em milissegundos, com curva.
   double _seg(double t, double from, double to, [Curve curve = Curves.linear]) {
     final ms = t * _total;
     if (ms <= from) return 0;
@@ -58,82 +53,84 @@ class _AnimatedSplashState extends State<AnimatedSplash> with SingleTickerProvid
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
-    final logo = math.min(size.width * .46, 210.0);
+    final w = math.min(size.width * .72, 330.0);
     return Semantics(
       label: 'MaraPass, carregando',
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: _finish,
         child: Material(
-          color: maraNight,
+          color: const Color(0xff1b2a3b),
           child: AnimatedBuilder(
             animation: _c,
             builder: (context, _) {
               final t = _c.value;
-              // Ato 1
-              final pulse = _seg(t, 0, 800, Curves.easeOutCubic);
-              final rings = _seg(t, 100, 1100, Curves.easeOut);
-              // Ato 2: hélices a cada 80 ms, cada uma em 450 ms
-              final blades = [
-                for (var i = 0; i < 6; i++)
-                  Curves.easeOutBack.transform(_seg(t, 800 + i * 80.0, 1250 + i * 80.0)),
-              ];
-              final spin = _seg(t, 1450, 2350, Curves.easeOutCubic) * math.pi * 2;
-              final glow = math.sin(_seg(t, 1450, 2400) * math.pi);
-              // Ato 3
-              final sign = _seg(t, 1900, 2600, Curves.easeOutCubic);
-              final lift = sign * 36;
+              final pulse = _seg(t, 0, 900, Curves.easeOutCubic);
+              final symbol = Curves.easeOutBack.transform(_seg(t, 700, 1500));
+              final spin = _seg(t, 1400, 2450, Curves.easeOutCubic);
+              final word = _seg(t, 2000, 2700, Curves.easeOutCubic);
+              final tag = _seg(t, 2500, 3100);
+              final lift = word * 0.0;
               return Stack(
                 fit: StackFit.expand,
                 children: [
-                  RepaintBoundary(child: CustomPaint(painter: _TerritoryPainter(pulse: pulse, rings: rings, wave: t))),
-                  Center(
-                    child: Transform.translate(
-                      offset: Offset(0, -lift),
-                      child: RepaintBoundary(
-                        child: SizedBox.square(
-                        dimension: logo,
-                        child: CustomPaint(
-                          painter: MaraSymbolPainter(progress: blades, spin: spin, glow: glow),
-                        ),
-                      ),
+                  Transform.scale(
+                    scale: 1.14 - .14 * Curves.easeOut.transform(t),
+                    child: Image.asset('assets/photos/splash_bg.jpg', fit: BoxFit.cover),
+                  ),
+                  const DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [Color(0xb80e1b2a), Color(0x4d142436), Color(0xeb0e1b2a)],
+                        stops: [0, .4, 1],
                       ),
                     ),
                   ),
-                  Positioned(
-                    left: 0,
-                    right: 0,
-                    top: size.height / 2 + logo / 2 - lift + 18,
-                    child: Opacity(
-                      opacity: sign,
-                      child: Transform.translate(
-                        offset: Offset(0, (1 - sign) * 22),
-                        child: const Column(
-                          children: [
-                            Text(
-                              'MaraPass',
-                              style: TextStyle(
-                                fontFamily: 'Jakarta',
-                                fontWeight: FontWeight.w800,
-                                fontSize: 40,
-                                letterSpacing: -.8,
-                                color: Colors.white,
-                                height: 1,
+                  RepaintBoundary(child: CustomPaint(painter: _TerritoryPainter(pulse: pulse, rings: _seg(t, 100, 1100, Curves.easeOut), wave: 0))),
+                  Center(
+                    child: Transform.translate(
+                      offset: Offset(0, -w * .08 * word + lift),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Opacity(
+                            opacity: symbol.clamp(0.0, 1.0),
+                            child: Transform.rotate(
+                              angle: (1 - symbol.clamp(0.0, 1.0)) * -1.9 + spin * math.pi * 2,
+                              child: Transform.scale(
+                                scale: symbol.clamp(.05, 1.12),
+                                child: SvgPicture.asset('assets/brand/logo_mark.svg', width: w * .62),
                               ),
                             ),
-                            SizedBox(height: 10),
-                            Text(
-                              'MARANHÃO 2026',
-                              style: TextStyle(
-                                fontFamily: 'Jakarta',
-                                fontWeight: FontWeight.w700,
-                                fontSize: 13,
-                                letterSpacing: 6,
-                                color: Color(0xCCFFFFFF),
-                              ),
+                          ),
+                          SizedBox(height: w * .09),
+                          Opacity(
+                            opacity: word,
+                            child: Transform.translate(
+                              offset: Offset(0, (1 - word) * 24),
+                              child: SvgPicture.asset('assets/brand/logo_word_white.svg', width: w),
                             ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(height: 14),
+                          Opacity(
+                            opacity: tag,
+                            child: const Column(
+                              children: [
+                                Text(
+                                  'DESCUBRA · VIVA · VALORIZE',
+                                  style: TextStyle(fontFamily: 'Jakarta', fontWeight: FontWeight.w800, fontSize: 13, letterSpacing: 4.6, color: Colors.white),
+                                ),
+                                SizedBox(height: 8),
+                                Text(
+                                  'MARANHÃO 2026',
+                                  style: TextStyle(fontFamily: 'Jakarta', fontWeight: FontWeight.w600, fontSize: 11, letterSpacing: 5, color: Color(0x9effffff)),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),

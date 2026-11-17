@@ -7,10 +7,10 @@ void main() {
   testWidgets('abertura dura cerca de 2,8 s e termina sozinha', (tester) async {
     var done = 0;
     await tester.pumpWidget(MaterialApp(home: AnimatedSplash(onDone: () => done++)));
-    await tester.pump(const Duration(milliseconds: 2000));
+    await tester.pump(const Duration(milliseconds: 3000));
     expect(done, 0);
-    expect(find.text('MaraPass'), findsOneWidget);
-    await tester.pump(const Duration(milliseconds: 900));
+    expect(find.text('DESCUBRA · VIVA · VALORIZE'), findsOneWidget);
+    await tester.pump(const Duration(milliseconds: 400));
     expect(done, 1);
   });
 
