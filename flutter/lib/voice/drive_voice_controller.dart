@@ -83,8 +83,9 @@ class DriveVoiceController extends ChangeNotifier {
   }
 
   Future<void> _listen(int revision) async {
-    if (!_current(revision) || _busy || mapSpeechEngine.speech.isListening)
+    if (!_current(revision) || _busy || mapSpeechEngine.speech.isListening) {
       return;
+    }
     if (speaking()) {
       _schedule(revision);
       return;
@@ -100,8 +101,9 @@ class DriveVoiceController extends ChangeNotifier {
           cancelOnError: false,
         ),
         onResult: (result) {
-          if (!result.finalResult || !_current(revision) || _busy || speaking())
+          if (!result.finalResult || !_current(revision) || _busy || speaking()) {
             return;
+          }
           final text = result.recognizedWords;
           if (pending != null && confirmsDriveDestination(text)) {
             unawaited(confirm());
@@ -112,10 +114,12 @@ class DriveVoiceController extends ChangeNotifier {
               _exchange(revision, () async {
                 pending = null;
                 final matches = resolve(term);
-                if (matches.isEmpty)
+                if (matches.isEmpty) {
                   return 'Não encontrei o destino. Diga o nome e a cidade.';
-                if (matches.length != 1)
+                }
+                if (matches.length != 1) {
                   return 'Encontrei mais de um lugar. Diga o nome completo e a cidade.';
+                }
                 final destination = matches.single;
                 if (destination.needsVisitPlanning) {
                   return 'Esse local exige planejamento de visita. Mantive a rota atual.';
@@ -133,8 +137,9 @@ class DriveVoiceController extends ChangeNotifier {
         },
       );
     } catch (_) {
-      if (_current(revision))
+      if (_current(revision)) {
         stop('Escuta interrompida. A rota atual continua.');
+      }
     }
   }
 

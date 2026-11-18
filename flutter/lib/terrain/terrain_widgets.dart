@@ -17,10 +17,11 @@ const terrainColors = [
 
 Future<void> terrainLink(BuildContext context, String url) async {
   try {
-    if (await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication))
+    if (await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication)) {
       return;
+    }
   } catch (_) {}
-  if (context.mounted)
+  if (context.mounted) {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text(
@@ -28,6 +29,7 @@ Future<void> terrainLink(BuildContext context, String url) async {
         ),
       ),
     );
+  }
 }
 
 class PlaceElevation extends ConsumerWidget {

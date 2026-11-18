@@ -372,13 +372,14 @@ class _BarreirinhasPilotState extends ConsumerState<BarreirinhasPilot> {
             .watch(mapStateProvider)
             .places
             .where((p) => p.id == place.id);
-        if (current.isEmpty)
+        if (current.isEmpty) {
           return const Padding(
             padding: EdgeInsets.all(24),
             child: Text(
               'Este local não está mais disponível. Atualize a seleção.',
             ),
           );
+        }
         final p = current.first, note = pilotVisitNote(p.id);
         return SafeArea(
           child: ConstrainedBox(

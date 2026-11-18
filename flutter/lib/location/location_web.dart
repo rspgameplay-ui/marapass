@@ -17,34 +17,38 @@ LocationGateway createGateway() => _WebGateway();
 class _WebGateway implements LocationGateway, InitialLocationGateway {
   @override
   Future<void> authorize() async {
-    if (!web.window.isSecureContext)
+    if (!web.window.isSecureContext) {
       throw const LocationFailure(
         LocationProblem.insecure,
         'O GPS precisa de uma conexão segura HTTPS. Abra o endereço publicado diretamente no Safari ou Chrome.',
       );
+    }
     if (!(web.window.navigator as JSObject)
         .hasProperty('geolocation'.toJS)
-        .toDart)
+        .toDart) {
       throw const LocationFailure(
         LocationProblem.unsupported,
         'Este navegador não oferece localização. Abra o mapa no Safari ou Chrome atualizado.',
       );
+    }
     bool? allowed;
     try {
       final document = web.document as JSObject;
       final policy =
           document.getProperty<JSObject?>('permissionsPolicy'.toJS) ??
           document.getProperty<JSObject?>('featurePolicy'.toJS);
-      if (policy != null)
+      if (policy != null) {
         allowed = _PermissionsPolicy(policy).allowsFeature('geolocation');
+      }
     } catch (_) {
       /* The policy introspection API is optional, including on Safari. */
     }
-    if (allowed == false)
+    if (allowed == false) {
       throw const LocationFailure(
         LocationProblem.policy,
         'A janela que abriu o mapa bloqueia a localização. Copie o link e abra diretamente no Safari ou Chrome; depois permita o acesso à sua posição.',
       );
+    }
   }
 
   @override

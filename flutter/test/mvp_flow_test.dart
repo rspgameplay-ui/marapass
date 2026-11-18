@@ -156,11 +156,7 @@ void main() {
       'primeira abertura mostra a apresentação e permite entrar sem cadastro',
       (tester) async {
         await boot(tester, onboarded: false);
-        expect(find.text('Mais que destinos, boas histórias.'), findsOneWidget);
-        await tester.tap(find.byKey(const Key('onb-next')));
-        await tester.pumpAndSettle();
-        await tester.tap(find.byKey(const Key('onb-next')));
-        await tester.pumpAndSettle();
+        expect(find.text('Bem-vindo! Bora\nconhecer o Maranhão.'), findsOneWidget);
         await tester.tap(find.byKey(const Key('onb-visitor')));
         await tester.pumpAndSettle();
         expect(find.text('Para onde você quer ir?'), findsOneWidget);

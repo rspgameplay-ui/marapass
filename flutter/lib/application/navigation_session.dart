@@ -495,8 +495,9 @@ class NavigationSession extends ChangeNotifier {
         locationIssue = locationFailure(error);
         _recordFailure(locationIssue!);
         message = locationIssue!.message;
-        if (phase == NavigationPhase.navigating)
+        if (phase == NavigationPhase.navigating) {
           phase = NavigationPhase.preview;
+        }
         notifyListeners();
       }
     } finally {
@@ -529,8 +530,9 @@ class NavigationSession extends ChangeNotifier {
     }
     if (accuracyMeters.isFinite &&
         accuracyMeters >= 0 &&
-        DateTime.now().difference(timestamp).inSeconds.abs() <= 15)
+        DateTime.now().difference(timestamp).inSeconds.abs() <= 15) {
       accuracy = accuracyMeters;
+    }
     if (!p.lat.isFinite ||
         !p.lng.isFinite ||
         p.lat.abs() > 90 ||
@@ -717,8 +719,9 @@ class NavigationSession extends ChangeNotifier {
           : ((meters - r.cumulative[i - 1]) / length).clamp(0.0, 1.0);
       final dy = b.lat - a.lat,
           dx = (b.lng - a.lng) * math.cos(a.lat * math.pi / 180);
-      if (dx != 0 || dy != 0)
+      if (dx != 0 || dy != 0) {
         heading = (math.atan2(dx, dy) * 180 / math.pi + 360) % 360;
+      }
       headingKnown = true;
       accuracy = 12;
       location = GeoPoint(
@@ -807,20 +810,24 @@ class NavigationSession extends ChangeNotifier {
   }
 
   Future<void> _say(String text, {bool assistant = false}) {
-    if ((!assistant && (!voice || _assistantPrompt)) || disposed)
+    if ((!assistant && (!voice || _assistantPrompt)) || disposed) {
       return Future.value();
+    }
     final revision = ++_voiceRevision;
     return _voiceQueue = _voiceQueue.then((_) async {
-      if ((!voice && !assistant) || disposed || revision != _voiceRevision)
+      if ((!voice && !assistant) || disposed || revision != _voiceRevision) {
         return;
+      }
       try {
         final tts = _tts ??= FlutterTts();
         await (_voiceSetup ??= _configureVoice(tts));
-        if ((!voice && !assistant) || disposed || revision != _voiceRevision)
+        if ((!voice && !assistant) || disposed || revision != _voiceRevision) {
           return;
+        }
         await tts.stop();
-        if ((!voice && !assistant) || disposed || revision != _voiceRevision)
+        if ((!voice && !assistant) || disposed || revision != _voiceRevision) {
           return;
+        }
         await tts.awaitSpeakCompletion(true);
         if (disposed || revision != _voiceRevision) return;
         speaking = true;

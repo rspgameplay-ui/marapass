@@ -270,7 +270,7 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
                 itemCount: dayPlans.length,
-                separatorBuilder: (_, __) => const SizedBox(width: MP.s2),
+                separatorBuilder: (_, _) => const SizedBox(width: MP.s2),
                 itemBuilder: (_, k) => ChoiceChip(
                   key: Key('itinerary-city-$k'),
                   selected: k == _i,

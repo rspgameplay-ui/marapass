@@ -17,6 +17,7 @@ import 'common.dart';
 import 'itinerary.dart';
 import 'explore.dart';
 import 'profile.dart';
+import 'season_calendar.dart';
 import 'shell.dart' show Tabs;
 
 /// Abre o mapa por cima da tela atual (usado em telas internas).
@@ -50,10 +51,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final store = ref.watch(appStoreProvider);
     final user = ref.watch(authProvider);
     final name = store.name ?? user?.email?.split('@').first;
-    final lv = store.level;
-    final progress = lv.$4 == null
-        ? 1.0
-        : ((store.points - lv.$2) / (lv.$4! - lv.$2)).clamp(0.0, 1.0);
     final polos = Content.polos
         .where((p) => p.destaque || store.isFav(p.id))
         .where((p) => !_onlyFav || store.isFav(p.id))
@@ -251,104 +248,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ],
                 ),
                 const SizedBox(height: MP.s4),
-                Semantics(
-                  button: true,
-                  label: 'Meu passaporte: ${store.points} pontos',
-                  child: InkWell(
-                    key: const Key('home-passport'),
-                    borderRadius: BorderRadius.circular(MP.rXl),
-                    onTap: () => tab(Tabs.passaporte),
-                    child: Container(
-                      padding: const EdgeInsets.all(MP.s5),
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [MP.navy, MP.green],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(MP.rXl),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              const Expanded(
-                                child: Text(
-                                  'Meu passaporte',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                width: 36,
-                                height: 36,
-                                decoration: BoxDecoration(
-                                  color: Colors.white24,
-                                  borderRadius: BorderRadius.circular(18),
-                                ),
-                                child: const Icon(
-                                  Icons.chevron_right_rounded,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Text.rich(
-                            TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: '${store.points}',
-                                  style: const TextStyle(
-                                    fontSize: 40,
-                                    fontWeight: FontWeight.w800,
-                                  ),
-                                ),
-                                const TextSpan(
-                                  text: ' pontos',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                          const SizedBox(height: MP.s2),
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(MP.rPill),
-                            child: TweenAnimationBuilder<double>(
-                              tween: Tween(begin: 0, end: progress),
-                              duration: const Duration(milliseconds: 900),
-                              curve: Curves.easeOutCubic,
-                              builder: (_, v, __) => LinearProgressIndicator(
-                                value: v,
-                                minHeight: 10,
-                                color: MP.yellow,
-                                backgroundColor: Colors.white24,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: MP.s2),
-                          Text(
-                            lv.$4 == null
-                                ? 'Você está no nível máximo!'
-                                : 'Faltam ${lv.$4! - store.points} pts para o próximo nível',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+                const SeasonCalendarCard(),
                 const SizedBox(height: MP.s3),
                 const ItineraryShortcut(),
               ],
@@ -362,7 +262,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
               itemCount: Cat.values.length,
-              separatorBuilder: (_, __) => const SizedBox(width: MP.s2),
+              separatorBuilder: (_, _) => const SizedBox(width: MP.s2),
               itemBuilder: (_, k) {
                 final c = Cat.values[k];
                 return ActionChip(
@@ -392,7 +292,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
               itemCount: destaques.length,
-              separatorBuilder: (_, __) => const SizedBox(width: MP.s3),
+              separatorBuilder: (_, _) => const SizedBox(width: MP.s3),
               itemBuilder: (_, i) => ItemMiniCard(item: destaques[i]),
             ),
           ),

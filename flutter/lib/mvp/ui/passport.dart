@@ -186,7 +186,7 @@ class _Cover extends StatelessWidget {
                           tween: Tween(begin: 0, end: progress),
                           duration: const Duration(milliseconds: 900),
                           curve: Curves.easeOutCubic,
-                          builder: (_, v, __) => CustomPaint(
+                          builder: (_, v, _) => CustomPaint(
                             painter: _Ring(v),
                             child: Center(
                               child: Column(
@@ -450,8 +450,9 @@ class _StampPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final c = size.center(Offset.zero);
     final r = size.width / 2 - 2;
-    if (earned)
+    if (earned) {
       canvas.drawCircle(c, r, Paint()..color = color.withValues(alpha: .08));
+    }
     canvas.drawCircle(
       c,
       r,

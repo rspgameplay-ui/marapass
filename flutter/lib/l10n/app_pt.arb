@@ -1,0 +1,18 @@
+{
+  "@@locale": "pt",
+  "navHome": "Início",
+  "navMap": "Mapa",
+  "navCoupons": "Cupons",
+  "navPassport": "Passaporte",
+  "languageTitle": "Idioma",
+  "languageSubtitle": "Português ou inglês",
+  "supportChannelsTitle": "Canais de atendimento",
+  "supportPhone": "Telefone",
+  "supportPhoneHours": "{phone} · seg a sáb, 8h às 20h",
+  "@supportPhoneHours": {"placeholders": {"phone": {"type": "String"}}},
+  "supportEmail": "E-mail",
+  "supportWhatsapp": "WhatsApp",
+  "supportWhatsappSubtitle": "Mensagem pronta com o seu protocolo",
+  "supportWhatsappMessage": "Olá! Preciso de ajuda com o MaraPass.",
+  "supportSafetyNotice": "No WhatsApp, informe o número do protocolo. Nunca envie senhas, códigos de login ou dados de cartão."
+}

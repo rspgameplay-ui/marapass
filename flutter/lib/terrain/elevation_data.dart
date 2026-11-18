@@ -12,11 +12,13 @@ class ElevationData {
     final sample = points[place.id];
     if (sample is! Map) return null;
     final lat = sample['lat'], lng = sample['lng'], meters = sample['meters'];
-    if (lat is! num || lng is! num || meters is! num || !meters.isFinite)
+    if (lat is! num || lng is! num || meters is! num || !meters.isFinite) {
       return null;
+    }
     if ((lat - place.point.lat).abs() > 0.0000001 ||
-        (lng - place.point.lng).abs() > 0.0000001)
+        (lng - place.point.lng).abs() > 0.0000001) {
       return null;
+    }
     return meters.toDouble();
   }
 }

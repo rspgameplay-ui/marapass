@@ -28,13 +28,14 @@ Future<void> _decide(
 ) async {
   try {
     await s.decideReservationAsync(id, accept);
-    if (context.mounted)
+    if (context.mounted) {
       showMpSnack(
         context,
         accept
             ? 'Reserva confirmada. O turista vê na hora.'
             : 'Reserva recusada.',
       );
+    }
   } on MvpException catch (e) {
     if (context.mounted) showMpSnack(context, e.message);
   }
@@ -173,7 +174,7 @@ class _Dashboard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final s = ref.watch(appStoreProvider);
-    if (s.remote != null)
+    if (s.remote != null) {
       return PartnerCouponList(
         dashboard: true,
         shortcuts: Wrap(
@@ -196,6 +197,7 @@ class _Dashboard extends ConsumerWidget {
           ],
         ),
       );
+    }
     final today = DateTime.now();
     final todayVal = s.validations
         .where(
@@ -562,8 +564,9 @@ class OfferManageScreen extends ConsumerWidget {
                               );
                             }
                           } on MvpException catch (e) {
-                            if (context.mounted)
+                            if (context.mounted) {
                               showMpSnack(context, e.message);
+                            }
                           }
                         }
                       },
@@ -576,8 +579,9 @@ class OfferManageScreen extends ConsumerWidget {
                       onPressed: () async {
                         try {
                           await s.setOfferStatusAsync(o.id, 'Ativa');
-                          if (context.mounted)
+                          if (context.mounted) {
                             showMpSnack(context, 'Oferta ativa de novo.');
+                          }
                         } on MvpException catch (e) {
                           if (context.mounted) showMpSnack(context, e.message);
                         }
@@ -599,14 +603,16 @@ class OfferManageScreen extends ConsumerWidget {
                         onPressed: () async {
                           try {
                             await s.setOfferStatusAsync(o.id, 'Ativa');
-                            if (context.mounted)
+                            if (context.mounted) {
                               showMpSnack(
                                 context,
                                 'Oferta publicada. Os turistas já podem ativar.',
                               );
+                            }
                           } on MvpException catch (e) {
-                            if (context.mounted)
+                            if (context.mounted) {
                               showMpSnack(context, e.message);
+                            }
                           }
                         },
                         icon: const Icon(Icons.verified_rounded),
@@ -713,8 +719,9 @@ class _CreateOfferState extends ConsumerState<CreateOfferScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (ref.watch(appStoreProvider).remote != null)
+    if (ref.watch(appStoreProvider).remote != null) {
       return const SaleOfferForm();
+    }
     final steps = ['Oferta', 'Regras', 'Prévia'];
     return Scaffold(
       body: SafeArea(
@@ -1390,8 +1397,9 @@ class _AccountTab extends StatelessWidget {
                       ],
                     ),
                   );
-                  if (ok == true && context.mounted)
+                  if (ok == true && context.mounted) {
                     Navigator.of(context).pop();
+                  }
                 },
                 icon: const Icon(Icons.logout_rounded),
                 label: const Text('Sair com segurança'),

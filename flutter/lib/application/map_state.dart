@@ -98,8 +98,9 @@ class MapState {
           if (n == target) return 0;
           if (p.searchAliases.any((a) => spokenName(a) == target)) return 1;
           if (p.category == PlaceCategory.nature &&
-              (n.startsWith('parque nacional ') || n.startsWith('portal ')))
+              (n.startsWith('parque nacional ') || n.startsWith('portal '))) {
             return 2;
+          }
           return 3;
         }
 

@@ -157,7 +157,7 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
                       child: ListView.separated(
                         scrollDirection: Axis.horizontal,
                         itemCount: _days.length,
-                        separatorBuilder: (_, __) =>
+                        separatorBuilder: (_, _) =>
                             const SizedBox(width: MP.s2),
                         itemBuilder: (_, k) {
                           final d = _days[k];
@@ -702,8 +702,9 @@ class ReservationDetailScreen extends ConsumerWidget {
     if (p == null || !context.mounted) return;
     try {
       await store.rescheduleAsync(r.id, d, p);
-      if (context.mounted)
+      if (context.mounted) {
         showMpSnack(context, 'Pedido de novo dia enviado ao parceiro.');
+      }
     } on MvpException catch (e) {
       if (context.mounted) showMpSnack(context, e.message);
     }

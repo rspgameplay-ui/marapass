@@ -1,0 +1,17 @@
+{
+  "@@locale": "en",
+  "navHome": "Home",
+  "navMap": "Map",
+  "navCoupons": "Coupons",
+  "navPassport": "Passport",
+  "languageTitle": "Language",
+  "languageSubtitle": "Portuguese or English",
+  "supportChannelsTitle": "Support channels",
+  "supportPhone": "Phone",
+  "supportPhoneHours": "{phone} · Mon to Sat, 8am to 8pm",
+  "supportEmail": "Email",
+  "supportWhatsapp": "WhatsApp",
+  "supportWhatsappSubtitle": "Ready-made message with your ticket number",
+  "supportWhatsappMessage": "Hello! I need help with MaraPass.",
+  "supportSafetyNotice": "On WhatsApp, give your ticket number. Never send passwords, login codes or card details."
+}

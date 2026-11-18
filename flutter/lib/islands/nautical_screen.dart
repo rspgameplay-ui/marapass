@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../application/map_state.dart';
-import '../domain/tourism.dart';
 import '../maps/road_map.dart';
 import '../terrain/terrain_widgets.dart' show terrainLink;
 import 'nautical_connections.dart';
@@ -50,8 +49,9 @@ class _NauticalScreenState extends ConsumerState<NauticalScreen> {
             ),
           );
         }
-        if (!snapshot.hasData)
+        if (!snapshot.hasData) {
           return const Center(child: CircularProgressIndicator());
+        }
         final data = snapshot.data!;
         final routes = data.routes
             .where(

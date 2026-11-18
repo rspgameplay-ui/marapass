@@ -42,8 +42,9 @@ class _Navigation3DCanvasState extends State<Navigation3DCanvas> {
       final origin = web.window.location.origin;
       if (message.origin != origin ||
           message.source != _frame?.contentWindow ||
-          !mounted)
+          !mounted) {
         return;
+      }
       final data = message.data.dartify();
       if (data is! String) return;
       Object? decoded;

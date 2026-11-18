@@ -319,7 +319,7 @@ class _RoadMapState extends ConsumerState<RoadMap>
         imprecise: widget.imprecise,
         onGesture: widget.onGesture,
         onFeature: widget.onFeature ?? (_) {},
-        onViewport: widget.onViewport ?? (_, __) {},
+        onViewport: widget.onViewport ?? (_, _) {},
       );
     }
     final features = clusterPlaces(
@@ -350,8 +350,9 @@ class _RoadMapState extends ConsumerState<RoadMap>
                   widget.follow &&
                   (event is MapEventRotateStart ||
                       event is MapEventDoubleTapZoom ||
-                      event is MapEventScrollWheelZoom))
+                      event is MapEventScrollWheelZoom)) {
                 widget.onGesture?.call();
+              }
             },
             onMapReady: () {
               ready = true;
@@ -391,8 +392,9 @@ class _RoadMapState extends ConsumerState<RoadMap>
             if (widget.terrainManifest != null)
               Builder(
                 builder: (context) {
-                  if (MapCamera.of(context).zoom > 11)
+                  if (MapCamera.of(context).zoom > 11) {
                     return const SizedBox.shrink();
+                  }
                   final b = widget.terrainManifest!['bounds'] as Map;
                   return OverlayImageLayer(
                     overlayImages: [

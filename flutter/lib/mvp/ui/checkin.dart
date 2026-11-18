@@ -450,8 +450,9 @@ class _FlowState extends ConsumerState<CheckinFlowScreen> {
                   value: _stars,
                   onChanged: (v) {
                     setState(() => _stars = v);
-                    if (_c != null)
+                    if (_c != null) {
                       ref.read(appStoreProvider).rateAsync(_c!, v);
+                    }
                   },
                 ),
                 if (_stars > 0)
@@ -522,7 +523,7 @@ class _ConfettiState extends State<_Confetti>
     height: 150,
     child: AnimatedBuilder(
       animation: _a,
-      builder: (_, __) => CustomPaint(
+      builder: (_, _) => CustomPaint(
         painter: _ConfettiPainter(_a.value),
         child: Center(
           child: Transform.scale(

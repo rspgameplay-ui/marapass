@@ -166,7 +166,7 @@ void main() {
         publishableKey: 'public',
         client: MockClient((r) async {
           if (!online) return http.Response('', 503);
-          if (r.url.path.endsWith('/establishments'))
+          if (r.url.path.endsWith('/establishments')) {
             return http.Response(
               jsonEncode([
                 {
@@ -181,6 +181,7 @@ void main() {
               ]),
               200,
             );
+          }
           return http.Response(
             jsonEncode(
               published

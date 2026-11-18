@@ -214,8 +214,9 @@ class TourismRepository {
         if ((o['starts_at'] != null && start == null) ||
             (o['ends_at'] != null && end == null) ||
             (o['id'] as String? ?? '').trim().isEmpty ||
-            (o['title'] as String? ?? '').trim().isEmpty)
+            (o['title'] as String? ?? '').trim().isEmpty) {
           continue;
+        }
         if ((start == null || !start.isAfter(now)) &&
             (end == null || end.isAfter(now))) {
           active.putIfAbsent(o['establishment_id'] as String, () => o);

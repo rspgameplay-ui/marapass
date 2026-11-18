@@ -293,6 +293,7 @@ class AppStore extends ChangeNotifier {
 
   // Preferências
   bool bigText = false;
+  String language = 'pt';
   bool offerAlerts = true;
   bool highContrast = false;
   String? name;
@@ -474,7 +475,7 @@ class AppStore extends ChangeNotifier {
     required String requestKey,
     String? cupomId,
   }) async {
-    if (!online)
+    if (!online) {
       return requestReservation(
         itemId: itemId,
         date: date,
@@ -482,6 +483,7 @@ class AppStore extends ChangeNotifier {
         people: people,
         cupomId: cupomId,
       );
+    }
     final row = await remote!.requestReservation(
       itemKey: itemId,
       itemTitle: Content.item(itemId)?.titulo ?? itemId,
@@ -704,7 +706,7 @@ class AppStore extends ChangeNotifier {
     required DateTime until,
     String category = 'passeio',
   }) async {
-    if (!online)
+    if (!online) {
       return createOffer(
         title: title,
         benefit: benefit,
@@ -712,6 +714,7 @@ class AppStore extends ChangeNotifier {
         limit: limit,
         until: until,
       );
+    }
     final o = _offerFrom(
       await remote!.createOffer(
         title: title,
@@ -833,6 +836,7 @@ class AppStore extends ChangeNotifier {
     try {
       final j = jsonDecode(raw) as Map<String, dynamic>;
       bigText = j['bigText'] as bool? ?? false;
+      language = j['lang'] == 'en' ? 'en' : 'pt';
       offerAlerts = j['offerAlerts'] as bool? ?? true;
       highContrast = j['hc'] as bool? ?? false;
       name = j['name'] as String?;
@@ -943,6 +947,7 @@ class AppStore extends ChangeNotifier {
         _key,
         jsonEncode({
           'bigText': bigText,
+          'lang': language,
           'offerAlerts': offerAlerts,
           'hc': highContrast,
           'name': name,
@@ -983,6 +988,11 @@ class AppStore extends ChangeNotifier {
     _save();
   }
 
+  void setLanguage(String v) {
+    language = v == 'en' ? 'en' : 'pt';
+    _save();
+  }
+
   void setOfferAlerts(bool v) {
     offerAlerts = v;
     _save();
@@ -996,8 +1006,9 @@ class AppStore extends ChangeNotifier {
   void setName(String v) {
     name = v.trim().isEmpty ? null : v.trim();
     _save();
-    if (online && name != null)
+    if (online && name != null) {
       unawaited(remote!.updateName(name!).catchError((_) {}));
+    }
   }
 
   // ---------- Favoritos

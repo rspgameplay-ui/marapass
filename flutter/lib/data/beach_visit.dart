@@ -224,8 +224,9 @@ class SaoLuisTideForecast {
     if (hour + 1 >= hourly.length) return null;
     final next = events.indexWhere((event) => event.time.isAfter(now));
     if (next <= 0 ||
-        events[next].time.difference(events[next - 1].time).inHours >= 10)
+        events[next].time.difference(events[next - 1].time).inHours >= 10) {
       return null;
+    }
     final height =
         hourly[hour] + (hourly[hour + 1] - hourly[hour]) * (minutes % 60) / 60;
     return (next: events[next], height: height);

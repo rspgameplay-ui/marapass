@@ -34,7 +34,7 @@ class ReferenceRoadNetwork {
                 )
                 .toList(),
             color: const Color(0xfff3f3ed),
-            holePointsList: (p as List)
+            holePointsList: (p)
                 .skip(1)
                 .map(
                   (ring) => (ring as List)

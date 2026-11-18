@@ -90,8 +90,9 @@ class _NavigationScreenState extends ConsumerState<NavigationScreen>
         ref.read(repositoryProvider).municipalities,
       );
       if (command.error != null ||
-          (command.term.isEmpty && command.city == null))
+          (command.term.isEmpty && command.city == null)) {
         return [];
+      }
       final matches = resolvePlaces(command, ref.read(mapStateProvider).places);
       if (matches.isEmpty) return [];
       return matches
@@ -113,7 +114,7 @@ class _NavigationScreenState extends ConsumerState<NavigationScreen>
     from = null;
     initialOrigin = '';
     camera = CameraRequest(destination.point, 11, 0);
-    if (!destination.isBeach && !destination.needsVisitPlanning)
+    if (!destination.isBeach && !destination.needsVisitPlanning) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
           if (!widget.roadOnly &&
@@ -125,6 +126,7 @@ class _NavigationScreenState extends ConsumerState<NavigationScreen>
           }
         }
       });
+    }
   }
 
   @override
@@ -234,8 +236,9 @@ class _NavigationScreenState extends ConsumerState<NavigationScreen>
         originStatus = null;
       });
       ref.read(mapStateProvider.notifier).setLocation(from!);
-      if (widget.autoPlan || !automatic)
+      if (widget.autoPlan || !automatic) {
         await session.calculate(from!, destination.point, roadOnly: _roadOnly);
+      }
     } catch (e) {
       if (mounted && revision == originRevision && !automatic) {
         showLocationHelp(context, failure: locationFailure(e));
@@ -740,11 +743,12 @@ class _NavigationScreenState extends ConsumerState<NavigationScreen>
                                   ? () => n.setFollow(false)
                                   : null,
                               onViewport: (bounds, zoom) {
-                                if (mounted)
+                                if (mounted) {
                                   setState(() {
                                     routeViewport = bounds;
                                     routeZoom = zoom;
                                   });
+                                }
                               },
                               onFeature: (feature) {
                                 if (feature.isCluster) {
@@ -761,8 +765,9 @@ class _NavigationScreenState extends ConsumerState<NavigationScreen>
                                     (e) =>
                                         e.place.id == feature.places.first.id,
                                   );
-                                  if (entries.isNotEmpty)
+                                  if (entries.isNotEmpty) {
                                     discovery(entries.first);
+                                  }
                                 }
                               },
                             ),
@@ -830,7 +835,7 @@ class _NavigationScreenState extends ConsumerState<NavigationScreen>
                                                     n.nextDistance,
                                                   ),
                                             style: const TextStyle(
-                                              color: const Color(0xff067681),
+                                              color: Color(0xff067681),
                                               fontSize: 24,
                                               fontWeight: FontWeight.bold,
                                             ),
@@ -861,8 +866,9 @@ class _NavigationScreenState extends ConsumerState<NavigationScreen>
                                 listenable: _driveVoice,
                                 builder: (context, _) {
                                   final status = _driveVoice.status;
-                                  if (status == null)
+                                  if (status == null) {
                                     return const SizedBox.shrink();
+                                  }
                                   return Card(
                                     child: Padding(
                                       padding: const EdgeInsets.symmetric(
@@ -1027,14 +1033,14 @@ class _NavigationScreenState extends ConsumerState<NavigationScreen>
                                   style: const TextStyle(
                                     fontSize: 23,
                                     fontWeight: FontWeight.w800,
-                                    color: const Color(0xff086b79),
+                                    color: Color(0xff086b79),
                                   ),
                                 ),
                                 const Text(
                                   'km/h',
                                   style: TextStyle(
                                     fontSize: 12,
-                                    color: const Color(0xff086b79),
+                                    color: Color(0xff086b79),
                                   ),
                                 ),
                               ],
