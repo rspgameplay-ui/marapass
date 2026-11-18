@@ -265,6 +265,7 @@ button,a,.chip,.tab{touch-action:manipulation}
 .laytog button{min-height:38px;padding:0 14px;border-radius:10px;font-size:14px;font-weight:700;color:var(--muted);text-align:center}
 .laytog button.on{background:var(--btn);color:#fff}
 .mapbox>.zre{position:absolute;right:12px;top:124px;width:46px;height:46px;border-radius:14px;background:#fff;color:var(--btn);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 10px rgba(19,38,61,.25)}
+.mapbox>.zre.zoff{top:178px;font-size:11px;font-weight:800}.mapbox>.zre.zoff.busy{background:var(--btn);color:#fff}.mapbox>.zre.zoff.ok{color:#1E8E4E}
 .lmap .leaflet-top.leaflet-right{top:2px;right:2px}
 .lmap .leaflet-control-zoom{border:0;border-radius:14px;overflow:hidden;box-shadow:0 2px 10px rgba(19,38,61,.25);margin:10px 10px 0 0}
 .lmap .leaflet-control-zoom a{width:46px;height:46px;line-height:44px;font-size:24px;color:var(--ink);font-weight:600}
@@ -453,6 +454,7 @@ return `<div class="scr"><div class="pad" style="padding-top:calc(var(--top) + 4
 <div class="pad"><div class="mapbox" id="mapbox"><div id="lmap" class="lmap" role="application" aria-label="Mapa da região de Barreirinhas"></div>
 <div class="laytog" role="group" aria-label="Tipo de mapa"><button class="${U.lay==='sat'?'on':''}" data-lay="sat">Satélite</button><button class="${U.lay==='map'?'on':''}" data-lay="map">Mapa</button></div>
 <button class="zre" data-recenter aria-label="Mostrar todos os lugares"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="6.5"/><circle cx="12" cy="12" r="2" fill="currentColor"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></button>
+<button class="zre zoff" id="mapdl" aria-label="Baixar mapa para usar offline" title="Baixar mapa offline"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M5 20h14"/></svg></button>
 <div class="mapcard" id="mapcard" hidden></div><div class="mapoff" id="mapoff" hidden>Sem internet para carregar o mapa.<br><a href="${gmaps('Barreirinhas, Maranhão')}" target="_blank" rel="noopener">Abrir no Google Maps</a></div></div>
 <div class="mlegend"><span><i style="background:#0B6FB8"></i>Passeios</span><span><i style="background:#D9480F"></i>Comer</span><span><i style="background:#7B3FA0"></i>Hospedagem</span></div></div>
 <div class="pad"><div class="stack" style="margin-top:16px">${L.map(p=>`<button class="item ${U.sel===p.n?'sel':''}" data-row="${p.n}" data-sel="${p.n}" aria-label="Mostrar ${p.n} no mapa"><div class="img" style="${bg(p.img)};width:72px;height:72px"></div><div class="t"><b>${p.n}</b><span class="small">${p.t} · ${p.dist}</span></div><span class="pinbtn" aria-hidden="true">${I.map}</span></button>`).join('')}</div>
@@ -640,6 +642,18 @@ function fit(){if(innerWidth<=500){A.style.transform='';return}const s=Math.min(
 addEventListener('resize',fit);fit();
 addEventListener('hashchange',()=>{const h=location.hash.slice(1).replace('-',':');if(h&&h!==cur&&V[h.split(':')[0]]){cur=h;render()}});
 const h0=location.hash.slice(1).replace('-',':');if(h0&&V[h0.split(':')[0]])cur=h0;render();
+/* ---- offline: Service Worker + download da região do mapa ---- */
+if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol))addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+document.addEventListener('click',async e=>{const b=e.target.closest('#mapdl');if(!b||b.classList.contains('busy'))return;
+if(!window.L||!navigator.serviceWorker||!navigator.serviceWorker.controller){toast('Offline indisponível aqui. Abra o app pelo site e tente de novo.');return}
+const pts=Object.values(GEO).concat([TOWNG]).filter(p=>p[0]>-2.9&&p[1]>-43.0),la=pts.map(p=>p[0]),lo=pts.map(p=>p[1]),pad=.03;
+const B={s:Math.min(...la)-pad,n:Math.max(...la)+pad,w:Math.min(...lo)-pad,e:Math.max(...lo)+pad},r=L.Browser.retina?'@2x':'';
+const tx=(lo,z)=>Math.floor((lo+180)/360*2**z),ty=(la,z)=>{const q=la*Math.PI/180;return Math.floor((1-Math.log(Math.tan(q)+1/Math.cos(q))/Math.PI)/2*2**z)};
+const urls=[];for(let z=10;z<=13;z++)for(let x=tx(B.w,z);x<=tx(B.e,z);x++)for(let y=ty(B.n,z);y<=ty(B.s,z);y++){
+urls.push(`https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}`,`https://a.basemaps.cartocdn.com/rastertiles/voyager_only_labels/${z}/${x}/${y}${r}.png`,`https://a.basemaps.cartocdn.com/rastertiles/voyager/${z}/${x}/${y}${r}.png`)}
+b.classList.add('busy');let n=0,f=0;const t=()=>{b.textContent=Math.round(n/urls.length*100)+'%'};t();
+const q=urls.slice();await Promise.all(Array.from({length:4},async()=>{for(let u;(u=q.shift());){try{const x=await fetch(u,{mode:'cors'});if(!x.ok)f++}catch(_){f++}n++;t()}}));
+b.classList.remove('busy');b.classList.add('ok');b.innerHTML='✓';toast(f>urls.length/2?'Não foi possível baixar o mapa agora.':'Mapa da região salvo para usar offline')});
 </script>
 
 </body>
