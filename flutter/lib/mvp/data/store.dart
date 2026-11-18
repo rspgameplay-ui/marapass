@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'content.dart';
+import 'models.dart' show formatBrl;
 import 'remote.dart';
 import 'repository.dart' show MvpException;
 
@@ -22,17 +23,36 @@ class LocalCoupon {
     required this.code,
     required this.issuedAt,
     this.usedAt,
+    this.sale,
+    this.stage,
   });
   final String id;
   final String cupomId;
   final String code;
   final DateTime issuedAt;
   DateTime? usedAt;
-  Cupom? get cupom => Content.cupom(cupomId);
+  final Map<String, dynamic>? sale;
+  final String? stage;
+  bool get closed => stage == 'cancelled' || stage == 'declined';
+  Cupom? get cupom {
+    final terms = sale;
+    if (terms == null) return Content.cupom(cupomId);
+    return Cupom(
+      id: cupomId,
+      itemId: '',
+      parceiro: terms['title'] as String,
+      cat: Content.cupom(cupomId)?.cat ?? Cat.passeio,
+      beneficio: terms['benefit'] as String,
+      detalhe: terms['rules'] as String,
+      validade: DateTime.parse(terms['expires'] as String),
+      valorCents: terms['discount_cents'] as int,
+    );
+  }
+
   bool get used => usedAt != null;
   bool get expired =>
       !used && (cupom?.validade.isBefore(DateTime.now()) ?? false);
-  bool get active => !used && !expired;
+  bool get active => !used && !expired && !closed;
   Map<String, dynamic> toJson() => {
     'id': id,
     'c': cupomId,
@@ -192,6 +212,7 @@ class PartnerOffer {
     this.issued = 0,
     this.pauseReason,
     this.imageUrl,
+    this.saleTerms,
   });
   final String id;
   String title;
@@ -204,6 +225,7 @@ class PartnerOffer {
   int issued;
   String? pauseReason;
   String? imageUrl;
+  final Map<String, dynamic>? saleTerms;
   Map<String, dynamic> toJson() => {
     'id': id,
     't': title,
@@ -295,6 +317,26 @@ class AppStore extends ChangeNotifier {
   /// Supabase (funções mvp_*). Nulo nos testes e no modo demonstração.
   MvpRemote? remote;
   bool syncing = false;
+  final commercialPoints = <Map<String, dynamic>>[];
+  String? _account;
+  int _syncGeneration = 0;
+  void changeAccount() {
+    if (remote == null || _account == remote!.userId) return;
+    ++_syncGeneration;
+    _account = remote!.userId;
+    syncing = false;
+    coupons.clear();
+    commercialPoints.clear();
+    validations.clear();
+    partnerOffers.clear();
+    reservations.clear();
+    checkins.clear();
+    tickets.clear();
+    Content.extraCupons.clear();
+    isPartnerMember = false;
+    notifyListeners();
+  }
+
   bool isPartnerMember = false;
 
   /// Com login real, cupons, reservas e check-ins vivem no banco.
@@ -307,6 +349,7 @@ class AppStore extends ChangeNotifier {
     } catch (_) {}
     final s = AppStore._(p)..remote = remote;
     s._restore();
+    s.changeAccount();
     return s;
   }
 
@@ -318,6 +361,8 @@ class AppStore extends ChangeNotifier {
     cupomId: '${r['cupom_key']}',
     code: '${r['code']}',
     issuedAt: _dt(r['issued_at']),
+    stage: r['sale_stage'] as String?,
+    sale: r['sale'] as Map<String, dynamic>?,
     usedAt: r['used_at'] == null ? null : _dt(r['used_at']),
   );
 
@@ -343,7 +388,20 @@ class AppStore extends ChangeNotifier {
   /// Traz do banco os dados da conta. Chamado no login e ao abrir a área do parceiro.
   Future<void> syncFromServer() async {
     final r = remote;
-    if (r == null || !r.signedIn || syncing) return;
+    changeAccount();
+    if (r == null || syncing) return;
+    if (!r.signedIn) {
+      try {
+        final offers = await r.publicSales();
+        if (!r.signedIn) {
+          _setPublicOffers(offers);
+          notifyListeners();
+        }
+      } catch (_) {}
+      return;
+    }
+    final generation = _syncGeneration;
+    final account = r.userId;
     syncing = true;
     try {
       final results = await Future.wait([
@@ -351,7 +409,12 @@ class AppStore extends ChangeNotifier {
         r.reservations(),
         r.myCheckins(),
         r.isPartner(),
+        r.couponPoints(),
       ]);
+      if (generation != _syncGeneration || r.userId != account) return;
+      commercialPoints
+        ..clear()
+        ..addAll(results[4] as List<Map<String, dynamic>>);
       isPartnerMember = results[3] as bool;
       coupons
         ..clear()
@@ -377,12 +440,19 @@ class AppStore extends ChangeNotifier {
     } catch (_) {
       // sem rede: mantém o que está no aparelho
     } finally {
-      syncing = false;
-      await _save();
+      if (generation == _syncGeneration) {
+        syncing = false;
+        await _save();
+      }
     }
   }
 
   Future<LocalCoupon> activateCouponAsync(String cupomId) async {
+    if (remote != null && (!online || !cupomId.startsWith('po:'))) {
+      throw const MvpException(
+        'Para emitir, entre na sua conta e escolha uma oferta comercial aprovada.',
+      );
+    }
     if (!online) return activateCoupon(cupomId);
     final c = _couponFrom(
       cupomId.startsWith('po:')
@@ -555,6 +625,7 @@ class AppStore extends ChangeNotifier {
       used: st.$2,
       pauseReason: o['pause_reason'] as String?,
       imageUrl: o['image_url'] as String?,
+      saleTerms: o['sale_terms'] as Map<String, dynamic>?,
     );
   }
 
@@ -569,25 +640,38 @@ class AppStore extends ChangeNotifier {
     replies: [for (final x in (t['replies'] as List? ?? const [])) '$x'],
   );
 
-  Future<void> _syncExtras(MvpRemote r) async {
-    final offers = await r.offers();
+  void _setPublicOffers(List<Map<String, dynamic>> offers) {
     // Ofertas aprovadas aparecem para os turistas como cupons.
     Content.extraCupons
       ..clear()
       ..addAll([
-        for (final o in offers.where((o) => o['status'] == 'Ativa'))
+        for (final o in offers.where(
+          (o) =>
+              o['status'] == 'Ativa' &&
+              o['sale_approved'] == true &&
+              o['sale_terms'] != null,
+        ))
           Cupom(
             id: 'po:${o['id']}',
             itemId: '',
             parceiro: '${o['title']}',
             cat: _cats[o['category']] ?? Cat.passeio,
             beneficio: '${o['benefit']}',
-            detalhe: '${o['rules'] ?? ''}',
+            detalhe:
+                '${o['rules'] ?? ''} · Valor com desconto: ${formatBrl(o['sale_terms']['due'] as int)}',
+            valorCents: o['sale_terms']['discount_cents'] as int,
             foto: o['image_url'] as String?,
             validade: DateTime.parse('${o['valid_until']}')
                 .add(const Duration(hours: 23, minutes: 59)),
           ),
       ]);
+  }
+
+  Future<void> _syncExtras(MvpRemote r) async {
+    final account = r.userId;
+    final offers = await r.offers();
+    if (account != r.userId) return;
+    _setPublicOffers(offers);
     if (isPartnerMember) {
       final stats = {
         for (final s in await r.offerStats())
@@ -596,13 +680,20 @@ class AppStore extends ChangeNotifier {
             (s['used'] as num).toInt(),
           ),
       };
+      if (account != r.userId) return;
       partnerOffers
         ..clear()
-        ..addAll(offers.map((o) => _offerFrom(o, stats)));
+        ..addAll(
+          offers
+              .where((o) => o['created_by'] == account)
+              .map((o) => _offerFrom(o, stats)),
+        );
     }
+    final ownTickets = await r.myTickets();
+    if (account != r.userId) return;
     tickets
       ..clear()
-      ..addAll((await r.myTickets()).map(_ticketFrom));
+      ..addAll(ownTickets.map(_ticketFrom));
   }
 
   Future<PartnerOffer> createOfferAsync({
@@ -747,17 +838,17 @@ class AppStore extends ChangeNotifier {
       name = j['name'] as String?;
       favorites.addAll(((j['fav'] as List?) ?? []).cast<String>());
       coupons.addAll(
-        ((j['cup'] as List?) ?? []).map(
+        ((remote == null ? j['cup'] as List? : null) ?? []).map(
           (e) => LocalCoupon.fromJson(e as Map<String, dynamic>),
         ),
       );
       reservations.addAll(
-        ((j['res'] as List?) ?? []).map(
+        ((remote == null ? j['res'] as List? : null) ?? []).map(
           (e) => LocalReservation.fromJson(e as Map<String, dynamic>),
         ),
       );
       checkins.addAll(
-        ((j['chk'] as List?) ?? []).map(
+        ((remote == null ? j['chk'] as List? : null) ?? []).map(
           (e) => Checkin.fromJson(e as Map<String, dynamic>),
         ),
       );
@@ -767,7 +858,7 @@ class AppStore extends ChangeNotifier {
         (k, v) => packs['$k'] = (v as List).cast<int>().toSet(),
       );
       tickets.addAll(
-        ((j['tk'] as List?) ?? []).map(
+        ((remote == null ? j['tk'] as List? : null) ?? []).map(
           (e) => Ticket.fromJson(e as Map<String, dynamic>),
         ),
       );
@@ -775,12 +866,12 @@ class AppStore extends ChangeNotifier {
       routesDone = j['rt'] as int? ?? 0;
       fotoAlbum = j['fa'] as bool? ?? false;
       partnerOffers.addAll(
-        ((j['po'] as List?) ?? []).map(
+        ((remote == null ? j['po'] as List? : null) ?? []).map(
           (e) => PartnerOffer.fromJson(e as Map<String, dynamic>),
         ),
       );
       validations.addAll(
-        ((j['va'] as List?) ?? []).map(
+        ((remote == null ? j['va'] as List? : null) ?? []).map(
           (e) => Validation.fromJson(e as Map<String, dynamic>),
         ),
       );
@@ -791,6 +882,7 @@ class AppStore extends ChangeNotifier {
   }
 
   void _seedPartner() {
+    if (remote != null) return;
     partnerOffers
       ..clear()
       ..addAll([
@@ -855,18 +947,24 @@ class AppStore extends ChangeNotifier {
           'hc': highContrast,
           'name': name,
           'fav': favorites.toList(),
-          'cup': coupons.map((e) => e.toJson()).toList(),
-          'res': reservations.map((e) => e.toJson()).toList(),
-          'chk': checkins.map((e) => e.toJson()).toList(),
+          'cup': remote != null ? [] : coupons.map((e) => e.toJson()).toList(),
+          'res': remote != null
+              ? []
+              : reservations.map((e) => e.toJson()).toList(),
+          'chk': remote != null ? [] : checkins.map((e) => e.toJson()).toList(),
           'ev': savedEvents.toList(),
           'av': readAvisos.toList(),
           'pk': packs.map((k, v) => MapEntry(k, v.toList())),
-          'tk': tickets.map((e) => e.toJson()).toList(),
+          'tk': remote != null ? [] : tickets.map((e) => e.toJson()).toList(),
           'inv': invites,
           'rt': routesDone,
           'fa': fotoAlbum,
-          'po': partnerOffers.map((e) => e.toJson()).toList(),
-          'va': validations.map((e) => e.toJson()).toList(),
+          'po': remote != null
+              ? []
+              : partnerOffers.map((e) => e.toJson()).toList(),
+          'va': remote != null
+              ? []
+              : validations.map((e) => e.toJson()).toList(),
         }),
       );
     } catch (_) {}
@@ -912,7 +1010,7 @@ class AppStore extends ChangeNotifier {
   // ---------- Cupons (idempotente por cupom: um ativo por pessoa)
   LocalCoupon? activeCouponFor(String cupomId) {
     for (final c in coupons) {
-      if (c.cupomId == cupomId && !c.used) return c;
+      if (c.cupomId == cupomId && c.active) return c;
     }
     return null;
   }
@@ -1036,7 +1134,8 @@ class AppStore extends ChangeNotifier {
   /// Saldo = soma das movimentações (regra 6 da especificação).
   int get points =>
       checkins.length * 50 +
-      coupons.where((c) => c.used).length * 20 +
+      coupons.where((c) => c.used && c.sale == null).length * 20 +
+      commercialPoints.fold<int>(0, (n, e) => n + (e['points'] as int)) +
       stampedPolos.length * 100;
 
   (String, int, String?, int?) get level {

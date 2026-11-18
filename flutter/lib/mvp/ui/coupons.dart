@@ -13,6 +13,8 @@ import '../theme/tokens.dart';
 import '../theme/widgets.dart';
 import 'common.dart';
 import 'login_screen.dart';
+import 'coupon_commerce.dart';
+import '../data/coupon_commerce.dart';
 
 /// Carteira de cupons (MP-T09): ofertas para ativar e os seus cupons em
 /// Disponíveis, Usados e Expirados, no formato de ingresso.
@@ -31,15 +33,16 @@ class _CouponsScreenState extends ConsumerState<CouponsScreen> {
   Widget build(BuildContext context) {
     final store = ref.watch(appStoreProvider);
     final mine = store.coupons
-        .where((c) => _cat == null || c.cupom?.cat == _cat)
+        .where((c) => c.cupom != null && (_cat == null || c.cupom?.cat == _cat))
         .toList();
     final activeIds = {
-      for (final c in store.coupons.where((c) => !c.used)) c.cupomId,
+      for (final c in store.coupons.where((c) => c.active)) c.cupomId,
     };
     final offers =
         Content.allCupons
             .where(
               (c) =>
+                  (store.remote == null || c.id.startsWith('po:')) &&
                   !activeIds.contains(c.id) &&
                   c.validade.isAfter(DateTime.now()) &&
                   (_cat == null || c.cat == _cat),
@@ -47,7 +50,7 @@ class _CouponsScreenState extends ConsumerState<CouponsScreen> {
             .toList()
           ..sort((a, b) => a.validade.compareTo(b.validade));
     final active = mine.where((c) => c.active).toList();
-    final used = mine.where((c) => c.used).toList();
+    final used = mine.where((c) => c.used || c.closed).toList();
     final expired = mine.where((c) => c.expired).toList();
     final cats = {for (final c in Content.allCupons) c.cat}.toList();
 
@@ -55,7 +58,13 @@ class _CouponsScreenState extends ConsumerState<CouponsScreen> {
       padding: const EdgeInsets.fromLTRB(MP.pageH, 0, MP.pageH, MP.s3),
       child: TicketCard(
         cupom: c.cupom!,
-        status: c.used ? 'Utilizado' : (c.expired ? 'Expirado' : 'Ativado'),
+        status: c.expired
+            ? 'Expirado'
+            : c.sale != null
+            ? (couponStates[c.stage] ?? 'Emitido')
+            : c.used
+            ? 'Utilizado'
+            : 'Ativado',
         statusColor: c.used
             ? MP.textSecondary
             : (c.expired ? MP.warning : MP.success),
@@ -147,6 +156,19 @@ class _CouponsScreenState extends ConsumerState<CouponsScreen> {
               ),
             ),
           const SizedBox(height: MP.s4),
+          if (store.remote != null)
+            for (final c in store.coupons.where(
+              (c) =>
+                  c.sale == null &&
+                  c.cupom == null &&
+                  (_tab == 1 ? c.used : !c.used),
+            ))
+              ListTile(
+                title: const Text('Cupom anterior'),
+                subtitle: Text(c.code),
+                onTap: () =>
+                    push<void>(context, CouponActiveScreen(couponId: c.id)),
+              ),
           if (_tab == 2) ...[
             Padding(
               padding: const EdgeInsets.fromLTRB(MP.pageH, 0, MP.pageH, MP.s2),
@@ -283,7 +305,8 @@ class CouponDetailScreen extends ConsumerWidget {
                   Icons.event_busy_rounded,
                   'Válido até ${fmtDate(cupom.validade)}',
                 ),
-                const MpInfoRow(Icons.person_rounded, 'Um cupom por pessoa'),
+                if (!cupom.id.startsWith('po:'))
+                  const MpInfoRow(Icons.person_rounded, 'Um cupom por pessoa'),
                 const MpInfoRow(
                   Icons.qr_code_2_rounded,
                   'Mostre o QR ao atendente na hora de pagar',
@@ -295,9 +318,10 @@ class CouponDetailScreen extends ConsumerWidget {
                     onTap: () => openItem(context, item),
                   ),
                 const SizedBox(height: MP.s4),
-                const MpNotice.demo(
-                  'Oferta de demonstração: não indica parceria comercial nesta versão de teste.',
-                ),
+                if (!cupom.id.startsWith('po:'))
+                  const MpNotice.demo(
+                    'Oferta de demonstração: não indica parceria comercial nesta versão de teste.',
+                  ),
                 const SizedBox(height: MP.s5),
                 if (active != null)
                   FilledButton(
@@ -308,7 +332,7 @@ class CouponDetailScreen extends ConsumerWidget {
                     ),
                     child: const Text('Ver meu cupom ativo'),
                   )
-                else
+                else if (store.remote == null || cupom.id.startsWith('po:'))
                   MpCtaButton(
                     key: const Key('coupon-activate'),
                     label: 'Ativar cupom',
@@ -470,7 +494,22 @@ class _ActiveState extends ConsumerState<CouponActiveScreen> {
   @override
   Widget build(BuildContext context) {
     final store = ref.watch(appStoreProvider);
-    final c = store.coupons.firstWhere((e) => e.id == widget.couponId);
+    final c = store.coupons.where((e) => e.id == widget.couponId).firstOrNull;
+    if (c != null && store.remote != null && c.sale == null)
+      return Scaffold(
+        appBar: AppBar(title: const Text('Cupom anterior')),
+        body: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Text(
+            'Cupom ${c.code} emitido em ${fmtDate(c.issuedAt)}. Para conferir as condições originais, procure o atendimento MaraPass.',
+          ),
+        ),
+      );
+    if (c == null || c.cupom == null)
+      return const Scaffold(
+        body: Center(child: Text('Cupom indisponível nesta conta.')),
+      );
+    if (c.sale != null) return CouponReceipt(code: c.code, scope: 'tourist');
     final cupom = c.cupom!;
     final (label, fg, bg) = c.used
         ? ('Utilizado', MP.textSecondary, MP.soft)
@@ -660,9 +699,19 @@ class WalletSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final used = store.coupons.where((c) => c.used && c.cupom != null).toList();
-    final active = store.coupons.where((c) => c.active && c.cupom != null).toList();
-    final saved = used.fold<int>(0, (a, c) => a + couponValueCents(c.cupom!));
-    final potential = active.fold<int>(0, (a, c) => a + couponValueCents(c.cupom!));
+    final active = store.coupons
+        .where((c) => c.active && c.cupom != null)
+        .toList();
+    final saved = store.remote == null
+        ? used.fold<int>(0, (a, c) => a + couponValueCents(c.cupom!))
+        : store.commercialPoints.fold<int>(
+            0,
+            (sum, e) => sum + (e['paid_cents'] as int),
+          );
+    final potential = active.fold<int>(
+      0,
+      (a, c) => a + couponValueCents(c.cupom!),
+    );
     return Container(
       key: const Key('wallet-summary'),
       padding: EdgeInsets.all(flat ? MP.s4 : MP.s5),
@@ -702,9 +751,11 @@ class WalletSummary extends StatelessWidget {
             key: const Key('wallet-saved'),
             style: const TextStyle(color: Colors.white, fontSize: 34, fontWeight: FontWeight.w800, height: 1.1),
           ),
-          const Text(
-            'economia estimada com cupons usados',
-            style: TextStyle(color: Color(0xffc9d6e3), fontSize: 14),
+          Text(
+            store.remote == null
+                ? 'economia estimada com cupons usados'
+                : 'valor pago com cupons, após estornos',
+            style: const TextStyle(color: Color(0xffc9d6e3), fontSize: 14),
           ),
           const SizedBox(height: MP.s4),
           Row(

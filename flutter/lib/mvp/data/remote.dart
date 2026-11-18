@@ -252,6 +252,141 @@ class MvpRemote {
     ),
   );
 
+  Future<List<Map<String, dynamic>>> statement(
+    String scope, {
+    String? code,
+    Map<String, dynamic>? cursor,
+    Map<String, dynamic> filters = const {},
+  }) => _g(
+    () async => List<Map<String, dynamic>>.from(
+      await _c.rpc(
+        'mvp_coupon_statement',
+        params: {
+          'p_scope': scope,
+          'p_code': code,
+          'p_filters': filters,
+          'p_before': cursor?['issued_at'],
+          'p_before_id': cursor?['id'],
+        },
+      ) as List,
+    ),
+  );
+
+  Future<List<Map<String, dynamic>>> publicSales() => _g(
+    () async => List<Map<String, dynamic>>.from(
+      await _c.rpc('mvp_public_sales') as List,
+    ),
+  );
+  Future<List<Map<String, dynamic>>> couponPoints() => _g(() async {
+    final result = <Map<String, dynamic>>[];
+    const size = 500;
+    for (var offset = 0; ; offset += size) {
+      final rows =
+          await _c.rpc('mvp_coupon_points').range(offset, offset + size - 1)
+              as List;
+      result.addAll(List<Map<String, dynamic>>.from(rows));
+      if (rows.length < size) return result;
+    }
+  });
+  Future<Map<String, dynamic>> confirmReceipt(
+    String code,
+    int amount,
+    String channel,
+  ) => _g(
+    () async => Map<String, dynamic>.from(
+      await _c.rpc(
+        'mvp_confirm_receipt',
+        params: {
+          'p_code': code,
+          'p_amount_cents': amount,
+          'p_channel': channel,
+        },
+      ) as Map,
+    ),
+  );
+  Future<void> couponAction(
+    String code,
+    String action,
+    String? reason,
+    String channel,
+  ) => _g(
+    () => _c.rpc(
+      'mvp_coupon_action',
+      params: {
+        'p_code': code,
+        'p_action': action,
+        'p_reason': reason,
+        'p_channel': channel,
+      },
+    ),
+  );
+  Future<Map<String, dynamic>> couponOverview(Map<String, dynamic> filters) =>
+      _g(
+        () async => Map<String, dynamic>.from(
+          await _c.rpc(
+            'mvp_coupon_overview',
+            params: {'p_scope': 'partner', 'p_filters': filters},
+          ) as Map,
+        ),
+      );
+  Future<void> reportPayment(String code) =>
+      _g(() => _c.rpc('mvp_report_payment', params: {'p_code': code}));
+  Future<void> refundCoupon(
+    String code,
+    int cents,
+    String reference,
+    String reason,
+  ) => _g(
+    () => _c.rpc(
+      'mvp_refund_coupon',
+      params: {
+        'p_code': code,
+        'p_amount': cents,
+        'p_reference': reference,
+        'p_reason': reason,
+      },
+    ),
+  );
+  Future<void> saveSale(
+    Map<String, dynamic> offer,
+    Map<String, dynamic> terms, {
+    String? id,
+  }) => _g(() async {
+    if (id == null) {
+      await _c.rpc(
+        'mvp_create_sale_offer',
+        params: {'p_offer': offer, 'p_terms': terms},
+      );
+    } else {
+      await _c.rpc(
+        'mvp_set_sale_terms',
+        params: {
+          'p_offer_id': id,
+          for (final e in terms.entries) 'p_${e.key}': e.value,
+        },
+      );
+    }
+  });
+
+  String? get confirmedPhone => _c.auth.currentUser?.phoneConfirmedAt == null
+      ? null
+      : _c.auth.currentUser?.phone;
+  Future<bool> waPreference() =>
+      _g(() async => await _c.rpc('mvp_wa_preference') == true);
+  Future<void> setWa(bool enabled) => _g(() async {
+    await _c.rpc('mvp_wa_opt', params: {'p_enabled': enabled});
+  });
+  Future<void> startPhone(String number) => _g(() async {
+    await _c.auth.updateUser(UserAttributes(phone: number));
+  });
+  Future<void> confirmPhone(String number, String token) => _g(() async {
+    await _c.auth.verifyOTP(
+      type: OtpType.phoneChange,
+      phone: number,
+      token: token,
+    );
+  });
+
   // ---------- Atendimento
   Future<List<Map<String, dynamic>>> myTickets() => _g(
     () async => List<Map<String, dynamic>>.from(

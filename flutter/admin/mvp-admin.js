@@ -25,7 +25,7 @@ export function createMvpModule(supabase, root) {
   const metrics = el('div', { class: 'mvp-metrics' });
   const body = el('div', { class: 'mvp-body' });
   const tabs = el('div', { class: 'tabs', role: 'group', 'aria-label': 'App MaraPass' });
-  const names = { requests: 'Cadastros de parceiro', offers: 'Ofertas', places: 'Placas e QR', checkins: 'Check-ins' };
+  const names = { requests: 'Cadastros de parceiro', offers: 'Ofertas', commerce: 'Cupons e comissões', places: 'Placas e QR', checkins: 'Check-ins' };
   for (const [k, v] of Object.entries(names)) {
     tabs.append(el('button', { type: 'button', class: 'tab', 'data-mvp': k, onclick: () => { tab = k; render(); } }, v));
   }
@@ -74,21 +74,100 @@ export function createMvpModule(supabase, root) {
     catch (e) { say(e.message, 'error'); }
   }
 
+  async function commerceRpc(name, args) {
+    const {data, error} = await supabase.rpc(name, args);
+    if (error) throw Error(error.message);
+    return data;
+  }
+  const money = cents => (cents/100).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+  const stateNames = {issued:'Emitido', payment_reported:'Pagamento informado', converted:'Convertido',
+    expired:'Vencido',cancelled:'Cancelado',interested:'Interessado',utilized:'Utilizado',completed:'Concluído',declined:'Recusado',disputed:'Contestado',partial_refund:'Estorno parcial',refunded:'Estorno integral'};
+  async function renderCommerce() {
+    const box = el('div'), results=el('div');
+    const filter=el('input',{placeholder:'Código completo do cupom','aria-label':'Código completo do cupom'});
+    const criteria = {};
+    const toolbar=el('div'),summary=el('p');
+    for(const [key,title,type] of [['from','Emitido a partir de','date'],['until','Emitido até','date'],['city','Município','text'],['category','Categoria','text']]){
+      const input=el('input',{type,'aria-label':title});
+      toolbar.append(el('label',{},title,input));criteria[key]=input;
+    }
+    const owners=await commerceRpc('mvp_admin_sale_terms',{});
+    const partner=el('select',{'aria-label':'Parceiro'},el('option',{value:''},'Todos os parceiros'));
+    for(const [id,name] of new Map(owners.map(o=>[o.owner,o.partner])))partner.append(el('option',{value:id},name||id));
+    toolbar.append(el('label',{},'Parceiro',partner));criteria.owner=partner;
+    const feeNames={pending:'Pendente',invoiced:'Faturada',paid:'Paga',disputed:'Contestada'};
+    let cursor=null, busy=false, records=[];
+    const refresh=async(reset)=>{
+      if(busy)return;
+      busy=true;
+      try {
+        if(reset){cursor=null;records=[];}
+        const filters=Object.fromEntries(Object.entries(criteria).map(([key,node])=>[key,node.value.trim()]));
+        const k=await commerceRpc('mvp_coupon_overview',{p_scope:'admin',p_filters:filters});
+        summary.textContent=k.issued+' emissões · '+k.converted+' conversões ('+k.conversion_pct+'%) · vendas líquidas '+money(k.paid)+
+          ' · descontos na conversão '+money(k.discount)+' · comissão líquida '+money(k.fee)+' · ticket médio '+money(k.ticket);
+        const list=await commerceRpc('mvp_coupon_statement',{p_scope:'admin',p_filters:filters,p_code:filter.value.trim()||null,
+          p_before:cursor?.issued_at,p_before_id:cursor?.id,p_limit:50});
+        records.push(...list);cursor=list.at(-1);
+        results.replaceChildren(table(['Oferta e cupom','Emissão','Situação','Recebido','Comissão 5%','Histórico'],
+          records.map(r=>el('tr',{},el('td',{},r.sale.title,el('br'),r.code),el('td',{},fmt(r.issued_at)),
+            el('td',{},stateNames[r.state]),el('td',{},money(r.paid)),el('td',{},money(r.fee)+' · '+(feeNames[r.fee_state]??'Sem lançamento')),
+            el('td',{},el('button',{type:'button',onclick:async()=>{
+              try{
+                const delivery=await commerceRpc('mvp_coupon_deliveries',{p_code:r.code,p_scope:'admin'});
+                const labels={issued:'Emissão',payment_reported:'Pagamento informado',amount_mismatch:'Valor divergente',converted:'Conversão',refunded:'Estorno',interest:'Interesse',cancel:'Cancelamento',decline:'Recusa',resolve:'Divergência resolvida',utilize:'Utilização',complete:'Conclusão',dispute:'Contestação'};
+                const dlg=el('dialog',{},el('h3',{},r.sale.title),el('p',{},r.code),
+                  ...r.events.map(e=>el('p',{},fmt(e.at)+' · '+(labels[e.kind]??e.kind)+' · '+(e.actor??'')+' · '+(e.detail.channel??'app')+' '+(e.detail.reason??'')+
+                    (e.kind==='amount_mismatch'?' · '+money(e.detail.received):''))),
+                  ...r.entries.map(e=>el('p',{},(e.kind==='refund'?'Estorno':'Conversão')+' · '+e.reference+' · '+money(e.paid_cents)+
+                    ' · comissão '+money(e.fee_cents)+' · '+e.points+' pontos '+(e.reason??''))),
+                  el('h4',{},'Entregas pelo WhatsApp'),
+                  ...(delivery.length ? delivery.map(d=>el('p',{},(d.event==='converted'?'Conversão':'Emissão')+' · '+(d.audience==='partner'?'Parceiro':'Turista')+' · '+d.state+' · tentativas '+d.attempts))
+                      : [el('p',{},'Nenhum envio autorizado nesta emissão.')]),
+                  el('button',{type:'button',onclick:()=>dlg.close()},'Fechar'));
+                const actions=[];
+                if(r.fee_state==='pending')actions.push(['fee_invoiced','Registrar faturamento']);
+                if(r.fee_state==='invoiced')actions.push(['fee_paid','Registrar quitação']);
+                if(r.fee_state&&r.fee_state!=='disputed')actions.push(['fee_disputed','Contestar comissão']);
+                if(r.fee_state==='disputed')actions.push(['fee_pending','Reabrir comissão']);
+                if(r.state==='disputed')actions.push(['resolve','Registrar solução']);
+                for(const [action,label] of actions)dlg.append(el('button',{type:'button',onclick:async()=>{
+                  const reason=prompt('Motivo ou referência do lançamento');if(!reason?.trim())return;
+                  try{await commerceRpc('mvp_coupon_action',{p_code:r.code,p_action:action,p_reason:reason.trim(),p_channel:'admin'});
+                    dlg.close();await refresh(true);}catch(e){say(e.message,'error');}
+                }},label));
+                dlg.addEventListener('close',()=>dlg.remove(),{once:true}); document.body.append(dlg);dlg.showModal();
+              }catch(e){say(e.message,'error');}
+            }},'Auditoria'))))));
+        if(list.length===50)results.append(el('button',{type:'button',onclick:()=>refresh(false)},'Ver mais'));
+      }catch(e){say(e.message,'error');}finally{busy=false;}
+    };
+    box.append(toolbar,filter,el('button',{type:'button',onclick:()=>refresh(true)},'Buscar'),summary,results);
+    await refresh(true);return box;
+  }
   async function renderOffers() {
     const list = await call('offers');
+    const termsList = await commerceRpc('mvp_admin_sale_terms', {});
+    const terms = new Map(termsList.map(row=>[row.id,row.terms]));
     return table(['Oferta', 'Benefício', 'Parceiro', 'Validade', 'Emitidos / usados', 'Situação', 'Ações'], list.map((o) => {
       const act = el('td');
-      if (o.status !== 'Ativa') act.append(el('button', { type: 'button', class: 'primary small', onclick: () => setOffer(o, 'Ativa') }, 'Ativar'));
+      if (o.status !== 'Rascunho' && o.status !== 'Ativa' && terms.has(o.id)) act.append(el('button', { type: 'button', class: 'primary small', onclick: () => setOffer(o, 'Ativa') }, 'Ativar'));
       if (o.status === 'Ativa') act.append(el('button', { type: 'button', class: 'secondary small', onclick: () => setOffer(o, 'Pausada') }, 'Pausar'));
+      if (o.status !== 'Rascunho' && o.status !== 'Encerrada') act.append(el('button',{type:'button',onclick:()=>setOffer(o,'Encerrada')},'Encerrar'));
+      if (o.status === 'Em análise') act.append(el('button',{type:'button',onclick:()=>setOffer(o,'Em análise')},'Solicitar correção'));
       if (o.status === 'Em análise') act.append(el('button', { type: 'button', class: 'secondary small', onclick: () => setOffer(o, 'Recusada') }, 'Recusar'));
       if (o.status === 'Ativa') act.append(el('button', { type: 'button', class: 'secondary small', onclick: () => showQr(`marapass:offer:po:${o.id}`, o.title, `oferta-${o.id}`) }, 'QR do balcão'));
-      return el('tr', {}, el('td', {}, o.title), el('td', {}, o.benefit), el('td', {}, o.email ?? '—'), el('td', {}, o.valid_until ?? '—'),
+      return el('tr', {}, el('td', {}, o.title), el('td', {}, o.benefit,
+        terms.get(o.id) ? el('p',{},'Preço '+money(terms.get(o.id).price)+' · desconto '+money(terms.get(o.id).discount_cents)+
+          ' · a pagar '+money(terms.get(o.id).due)+' · limite por turista '+terms.get(o.id).per_user+
+          ' · '+(terms.get(o.id).url??'')+' '+(terms.get(o.id).payment??'')) : el('small',{},' Sem condições comerciais estruturadas')),
+        el('td', {}, o.email ?? '—'), el('td', {}, o.valid_until ?? '—'),
         el('td', {}, `${o.issued} / ${o.used}`), el('td', {}, el('span', { class: 'pill' }, o.status)), act);
     }));
   }
   async function setOffer(o, status) {
     const reason = status === 'Ativa' ? '' : (prompt('Motivo (opcional):', '') ?? '');
-    try { await call('set_offer', { id: o.id, status, reason }); say(`Oferta "${o.title}": ${status}.`, 'success'); render(); }
+    try { await commerceRpc('mvp_admin_sale_status',{p_id:o.id,p_status:status,p_reason:reason}); say(`Oferta "${o.title}": ${status}.`, 'success'); render(); }
     catch (e) { say(e.message, 'error'); }
   }
 
@@ -133,7 +212,7 @@ export function createMvpModule(supabase, root) {
     root.querySelectorAll('[data-mvp]').forEach((b) => b.classList.toggle('selected', b.dataset.mvp === tab));
     body.replaceChildren(el('p', { class: 'muted' }, 'Carregando…'));
     try {
-      const view = await { requests: renderRequests, offers: renderOffers, places: renderPlaces, checkins: renderCheckins }[tab]();
+      const view = await { requests: renderRequests, offers: renderOffers, commerce: renderCommerce, places: renderPlaces, checkins: renderCheckins }[tab]();
       body.replaceChildren(view);
       await loadMetrics();
     } catch (e) {

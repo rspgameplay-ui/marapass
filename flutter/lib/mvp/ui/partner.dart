@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+
+import 'coupon_offer_form.dart';
+import 'coupon_commerce.dart';
+
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -102,7 +106,14 @@ class _PartnerHeader extends StatelessWidget {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const MpBadge('ÁREA DO PARCEIRO · DEMONSTRAÇÃO', fg: MP.navy),
+        Consumer(
+          builder: (context, ref, _) => MpBadge(
+            ref.watch(appStoreProvider).remote == null
+                ? 'ÁREA DO PARCEIRO · DEMONSTRAÇÃO'
+                : 'ÁREA DO PARCEIRO',
+            fg: MP.navy,
+          ),
+        ),
         const SizedBox(height: MP.s2),
         Text(title, style: Theme.of(context).textTheme.headlineMedium),
         if (subtitle != null)
@@ -162,6 +173,29 @@ class _Dashboard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final s = ref.watch(appStoreProvider);
+    if (s.remote != null)
+      return PartnerCouponList(
+        dashboard: true,
+        shortcuts: Wrap(
+          children: [
+            TextButton(onPressed: () => onGo(1), child: const Text('Ofertas')),
+            TextButton(onPressed: () => onGo(2), child: const Text('Validar')),
+            TextButton(
+              onPressed: () =>
+                  push<void>(context, const PartnerReservationsScreen()),
+              child: const Text('Reservas'),
+            ),
+            TextButton(
+              onPressed: () => push<void>(context, const PartnerEventsScreen()),
+              child: const Text('Eventos'),
+            ),
+            TextButton(
+              onPressed: () => push<void>(context, const SupportCenterScreen()),
+              child: const Text('Atendimento'),
+            ),
+          ],
+        ),
+      );
     final today = DateTime.now();
     final todayVal = s.validations
         .where(
@@ -417,6 +451,16 @@ class OfferManageScreen extends ConsumerWidget {
           padding: const EdgeInsets.only(bottom: MP.s8),
           children: [
             MpHeader(o.title, subtitle: o.benefit),
+            if (s.online)
+              TextButton(
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) =>
+                        SaleOfferForm(offerId: o.id, existing: o.saleTerms),
+                  ),
+                ),
+                child: const Text('Configurar preço, desconto e pagamento'),
+              ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
               child: Column(
@@ -669,6 +713,8 @@ class _CreateOfferState extends ConsumerState<CreateOfferScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (ref.watch(appStoreProvider).remote != null)
+      return const SaleOfferForm();
     final steps = ['Oferta', 'Regras', 'Prévia'];
     return Scaffold(
       body: SafeArea(
@@ -987,6 +1033,7 @@ class _ValidateTabState extends ConsumerState<_ValidateTab> {
   @override
   Widget build(BuildContext context) {
     final s = ref.watch(appStoreProvider);
+    if (s.remote != null) return const PartnerCouponList(lookup: true);
     return SafeArea(
       child: ListView(
         padding: const EdgeInsets.only(bottom: MP.s8),
@@ -1100,6 +1147,7 @@ class _ReportsTabState extends ConsumerState<_ReportsTab> {
   @override
   Widget build(BuildContext context) {
     final s = ref.watch(appStoreProvider);
+    if (s.remote != null) return const PartnerCouponList();
     final issued = s.partnerOffers.fold<int>(0, (a, o) => a + o.issued);
     final used =
         s.partnerOffers.fold<int>(0, (a, o) => a + o.used) +

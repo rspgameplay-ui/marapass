@@ -697,8 +697,10 @@ class _Achievements extends StatelessWidget {
           ],
         ),
         const SizedBox(height: MP.s4),
-        const MpNotice(
-          'Níveis: Viajante (0), Explorador (500), Aventureiro (1.000) e Mestre (2.500 pontos). Check-in vale 50, cupom usado 20 e o primeiro check-in em cada polo, 100.',
+        MpNotice(
+          store.remote != null
+              ? 'Compras elegíveis geram 1 ponto por real inteiro confirmado. Estornos ajustam os pontos no extrato.'
+              : 'Níveis: Viajante (0), Explorador (500), Aventureiro (1.000) e Mestre (2.500 pontos). Check-in vale 50, cupom usado 20 e o primeiro check-in em cada polo, 100.',
         ),
       ],
     );
@@ -742,8 +744,31 @@ class _HistoryState extends State<_History> {
         out.add(_Entry(c.at.add(const Duration(seconds: 1)), Icons.workspace_premium_rounded, const Color(0xffa87b00), 'Carimbo novo: $polo', 'Primeira visita no polo', 100, 'ST-${c.polo.toUpperCase()}'));
       }
     }
-    for (final c in store.coupons.where((c) => c.used)) {
-      out.add(_Entry(c.usedAt!, Icons.local_activity_rounded, MP.navy, 'Cupom usado: ${c.cupom?.parceiro ?? ''}', c.cupom?.beneficio ?? '', 20, 'CP-${c.code}'));
+    for (final e in store.commercialPoints) {
+      out.add(
+        _Entry(
+          DateTime.parse(e['at'] as String).toLocal(),
+          Icons.receipt_long,
+          MP.navy,
+          '${e['kind'] == 'refund' ? 'Estorno' : 'Compra'}: ${e['title']}',
+          'Compra com cupom',
+          e['points'] as int,
+          '${e['coupon_id']} · ${e['reference']}',
+        ),
+      );
+    }
+    for (final c in store.coupons.where((c) => c.sale == null && c.used)) {
+      out.add(
+        _Entry(
+          c.usedAt!,
+          Icons.local_activity_rounded,
+          MP.navy,
+          'Cupom usado: ${c.cupom?.parceiro ?? ''}',
+          c.cupom?.beneficio ?? '',
+          20,
+          'CP-${c.code}',
+        ),
+      );
     }
     for (final r in store.myReservations) {
       out.add(_Entry(r.date, Icons.event_rounded, MP.textSecondary, 'Reserva: ${r.item?.titulo ?? ''}', r.period, 0, 'RS-${r.id.length > 6 ? r.id.substring(0, 6).toUpperCase() : r.id.toUpperCase()}', status: r.status.label));

@@ -12,6 +12,7 @@ import '../theme/widgets.dart';
 import 'booking.dart';
 import 'common.dart';
 import 'login_screen.dart';
+import 'coupon_commerce.dart';
 import 'partner.dart';
 import 'partner_request.dart';
 import 'services.dart';
@@ -329,6 +330,13 @@ class ProfileScreen extends ConsumerWidget {
                   _Group(
                     title: 'Preferências',
                     children: [
+                      if (store.online)
+                        ListTile(
+                          leading: const Icon(Icons.chat_outlined),
+                          title: const Text('Cupons pelo WhatsApp'),
+                          onTap: () =>
+                              push<void>(context, const CouponConsent()),
+                        ),
                       _SwitchRow(
                         key: const Key('big-text'),
                         icon: Icons.text_increase_rounded,

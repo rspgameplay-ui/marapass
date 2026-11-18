@@ -11,6 +11,8 @@ import '../theme/tokens.dart';
 import 'animated_splash.dart';
 import '../theme/widgets.dart';
 import 'login_screen.dart';
+import 'coupon_commerce.dart';
+import '../data/coupon_commerce.dart';
 import 'shell.dart';
 
 const _onboardedKey = 'mvp_onboarded_v1';
@@ -51,7 +53,16 @@ class MvpApp extends ConsumerWidget {
           ),
         );
       },
-      home: _Gate(splash: splash),
+      home:
+          commercialCouponCode(Uri.base.queryParameters['cupom'] ?? '') != null
+          ? CouponReceipt(
+              code: commercialCouponCode(Uri.base.queryParameters['cupom']!)!,
+              channel: 'whatsapp',
+              scope: Uri.base.queryParameters['uso'] == 'parceiro'
+                  ? 'partner'
+                  : 'tourist',
+            )
+          : _Gate(splash: splash),
     );
   }
 }

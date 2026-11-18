@@ -45,8 +45,11 @@ class _MvpShellState extends ConsumerState<MvpShell> {
     if (i == Tabs.mapa) _mapOpened = true;
     // Ao entrar na conta, traz cupons, reservas e check-ins do banco.
     ref.listen(authProvider, (prev, next) {
-      if (next != null && prev?.id != next.id)
-        ref.read(appStoreProvider).syncFromServer();
+      if (prev?.id != next?.id) {
+        final store = ref.read(appStoreProvider);
+        store.changeAccount();
+        store.syncFromServer();
+      }
     });
     return Scaffold(
       backgroundColor: MP.soft,
