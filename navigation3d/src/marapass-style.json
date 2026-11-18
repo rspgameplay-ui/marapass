@@ -48,7 +48,7 @@
       "id": "background",
       "type": "background",
       "paint": {
-        "background-color": "#edf3e7"
+        "background-color": "#f2efe9"
       }
     },
     {
@@ -91,9 +91,9 @@
         false
       ],
       "paint": {
-        "fill-color": "#a8dca1",
+        "fill-color": "#c8facc",
         "fill-opacity": 0.7,
-        "fill-outline-color": "rgba(95, 208, 100, 1)"
+        "fill-outline-color": "#b6e6ba"
       }
     },
     {
@@ -114,7 +114,7 @@
         false
       ],
       "paint": {
-        "line-color": "rgba(228, 241, 215, 1)",
+        "line-color": "#c8facc",
         "line-dasharray": [
           1,
           1.5
@@ -136,7 +136,7 @@
         "residential"
       ],
       "paint": {
-        "fill-color": "#f1eee7"
+        "fill-color": "#e9e5dc"
       }
     },
     {
@@ -154,7 +154,7 @@
       ],
       "paint": {
         "fill-antialias": false,
-        "fill-color": "#a9ce91",
+        "fill-color": "#add19e",
         "fill-opacity": 0.4
       }
     },
@@ -173,7 +173,7 @@
       ],
       "paint": {
         "fill-antialias": false,
-        "fill-color": "#c5e7ae",
+        "fill-color": "#cdebb0",
         "fill-opacity": 0.3
       }
     },
@@ -231,7 +231,7 @@
         "pitch"
       ],
       "paint": {
-        "fill-color": "#DEE3CD"
+        "fill-color": "#aae0cb"
       }
     },
     {
@@ -248,7 +248,7 @@
         "track"
       ],
       "paint": {
-        "fill-color": "#DEE3CD"
+        "fill-color": "#aae0cb"
       }
     },
     {
@@ -265,7 +265,7 @@
         "cemetery"
       ],
       "paint": {
-        "fill-color": "hsl(75,37%,81%)"
+        "fill-color": "#aacbaf"
       }
     },
     {
@@ -282,7 +282,7 @@
         "hospital"
       ],
       "paint": {
-        "fill-color": "#fde"
+        "fill-color": "#f2dad9"
       }
     },
     {
@@ -299,7 +299,7 @@
         "school"
       ],
       "paint": {
-        "fill-color": "rgb(236,238,204)"
+        "fill-color": "#f0f0d8"
       }
     },
     {
@@ -316,7 +316,7 @@
         "tunnel"
       ],
       "paint": {
-        "line-color": "#a0c8f0",
+        "line-color": "#aad3df",
         "line-dasharray": [
           3,
           3
@@ -379,7 +379,7 @@
         "line-cap": "round"
       },
       "paint": {
-        "line-color": "#a0c8f0",
+        "line-color": "#aad3df",
         "line-width": [
           "interpolate",
           [
@@ -424,7 +424,7 @@
         "line-cap": "round"
       },
       "paint": {
-        "line-color": "#a0c8f0",
+        "line-color": "#aad3df",
         "line-width": [
           "interpolate",
           [
@@ -455,7 +455,7 @@
         "tunnel"
       ],
       "paint": {
-        "fill-color": "#9cdaed"
+        "fill-color": "#aad3df"
       }
     },
     {
@@ -472,7 +472,7 @@
         "sand"
       ],
       "paint": {
-        "fill-color": "rgba(247, 239, 195, 1)"
+        "fill-color": "#f5e9c6"
       }
     },
     {
@@ -628,7 +628,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#e9ac77",
+        "line-color": "#d2a37a",
         "line-dasharray": [
           0.5,
           0.25
@@ -686,7 +686,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#cfcdca",
+        "line-color": "#c5c1b8",
         "line-dasharray": [
           0.5,
           0.25
@@ -737,7 +737,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#e9ac77",
+        "line-color": "#d2a37a",
         "line-width": [
           "interpolate",
           [
@@ -791,7 +791,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#cfcdca",
+        "line-color": "#c5c1b8",
         "line-opacity": [
           "interpolate",
           [
@@ -858,7 +858,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#e9ac77",
+        "line-color": "#d2a37a",
         "line-width": [
           "interpolate",
           [
@@ -908,7 +908,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#e9ac77",
+        "line-color": "#d2a37a",
         "line-width": [
           "interpolate",
           [
@@ -965,7 +965,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#e9ac77",
+        "line-color": "#d2a37a",
         "line-dasharray": [
           0.5,
           0.25
@@ -1089,7 +1089,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#fc8",
+        "line-color": "#fcd6a4",
         "line-width": [
           "interpolate",
           [
@@ -1143,7 +1143,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#fff",
+        "line-color": "#ffffff",
         "line-width": [
           "interpolate",
           [
@@ -1190,7 +1190,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#fff4c6",
+        "line-color": "#f7fabf",
         "line-width": [
           "interpolate",
           [
@@ -1243,7 +1243,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#fff",
+        "line-color": "#ffffff",
         "line-width": [
           "interpolate",
           [
@@ -1295,7 +1295,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#fff4c6",
+        "line-color": "#f7fabf",
         "line-width": [
           "interpolate",
           [
@@ -1347,7 +1347,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#fff4c6",
+        "line-color": "#f7fabf",
         "line-width": [
           "interpolate",
           [
@@ -1402,7 +1402,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#ffdaa6",
+        "line-color": "#fcd6a4",
         "line-width": [
           "interpolate",
           [
@@ -1677,7 +1677,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#e9ac77",
+        "line-color": "#d2a37a",
         "line-width": [
           "interpolate",
           [
@@ -1737,7 +1737,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#cfcdca",
+        "line-color": "#c5c1b8",
         "line-width": [
           "interpolate",
           [
@@ -1807,7 +1807,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#e9ac77",
+        "line-color": "#d2a37a",
         "line-width": [
           "interpolate",
           [
@@ -1886,7 +1886,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#cfcdca",
+        "line-color": "#c5c1b8",
         "line-opacity": [
           "interpolate",
           [
@@ -1967,7 +1967,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#e9ac77",
+        "line-color": "#d2a37a",
         "line-width": [
           "interpolate",
           [
@@ -2022,7 +2022,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#e9ac77",
+        "line-color": "#d2a37a",
         "line-width": [
           "interpolate",
           [
@@ -2086,7 +2086,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#e9ac77",
+        "line-color": "#d2a37a",
         "line-width": [
           "interpolate",
           [
@@ -2222,7 +2222,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#fc8",
+        "line-color": "#fcd6a4",
         "line-width": [
           "interpolate",
           [
@@ -2282,7 +2282,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#fff",
+        "line-color": "#ffffff",
         "line-width": [
           "interpolate",
           [
@@ -2352,7 +2352,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#fea",
+        "line-color": "#f7fabf",
         "line-width": [
           "interpolate",
           [
@@ -2423,7 +2423,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#fff",
+        "line-color": "#ffffff",
         "line-width": [
           "interpolate",
           [
@@ -2481,7 +2481,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#fea",
+        "line-color": "#f7fabf",
         "line-width": [
           "interpolate",
           [
@@ -2538,7 +2538,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#fea",
+        "line-color": "#f7fabf",
         "line-width": [
           "interpolate",
           [
@@ -2871,7 +2871,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#e9ac77",
+        "line-color": "#d2a37a",
         "line-width": [
           "interpolate",
           [
@@ -2925,7 +2925,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#cfcdca",
+        "line-color": "#c5c1b8",
         "line-width": [
           "interpolate",
           [
@@ -2972,7 +2972,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#e9ac77",
+        "line-color": "#d2a37a",
         "line-width": [
           "interpolate",
           [
@@ -3156,7 +3156,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#e9ac77",
+        "line-color": "#d2a37a",
         "line-width": [
           "interpolate",
           [
@@ -3206,7 +3206,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#e9ac77",
+        "line-color": "#d2a37a",
         "line-width": [
           "interpolate",
           [
@@ -3263,7 +3263,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#e9ac77",
+        "line-color": "#d2a37a",
         "line-width": [
           "interpolate",
           [
@@ -3383,7 +3383,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#fc8",
+        "line-color": "#fcd6a4",
         "line-width": [
           "interpolate",
           [
@@ -3437,7 +3437,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#fff",
+        "line-color": "#ffffff",
         "line-width": [
           "interpolate",
           [
@@ -3484,7 +3484,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#fea",
+        "line-color": "#f7fabf",
         "line-width": [
           "interpolate",
           [
@@ -3537,7 +3537,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#fff",
+        "line-color": "#ffffff",
         "line-width": [
           "interpolate",
           [
@@ -3589,7 +3589,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#fea",
+        "line-color": "#f7fabf",
         "line-width": [
           "interpolate",
           [
@@ -3641,7 +3641,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#fea",
+        "line-color": "#f7fabf",
         "line-width": [
           "interpolate",
           [
@@ -3696,7 +3696,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#fc8",
+        "line-color": "#fcd6a4",
         "line-width": [
           "interpolate",
           [
@@ -3907,7 +3907,7 @@
       "minzoom": 13,
       "maxzoom": 14,
       "paint": {
-        "fill-color": "#d9d9cc",
+        "fill-color": "#d9d0c9",
         "fill-outline-color": [
           "interpolate",
           [
@@ -3941,7 +3941,7 @@
           "get",
           "render_min_height"
         ],
-        "fill-extrusion-color": "#d9ded4",
+        "fill-extrusion-color": "#d9d0c9",
         "fill-extrusion-height": [
           "get",
           "render_height"
@@ -4172,7 +4172,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#103649",
+        "line-color": "#7a1f12",
         "line-width": 14
       }
     },
@@ -4185,7 +4185,7 @@
         "line-join": "round"
       },
       "paint": {
-        "line-color": "#06cfdf",
+        "line-color": "#e04a2a",
         "line-width": 9
       }
     },
@@ -4287,7 +4287,7 @@
         "text-size": 14
       },
       "paint": {
-        "text-color": "#74aee9",
+        "text-color": "#5b7fb8",
         "text-halo-color": "#ffffff",
         "text-halo-width": 1.5
       }
@@ -4360,7 +4360,7 @@
         ]
       },
       "paint": {
-        "text-color": "#495e91",
+        "text-color": "#5b7fb8",
         "text-halo-color": "#ffffff",
         "text-halo-width": 1.5
       }
@@ -4423,7 +4423,7 @@
         "text-size": 14
       },
       "paint": {
-        "text-color": "#495e91",
+        "text-color": "#5b7fb8",
         "text-halo-color": "#ffffff",
         "text-halo-width": 1.5
       }
@@ -4519,7 +4519,7 @@
         "text-size": 12
       },
       "paint": {
-        "text-color": "#666",
+        "text-color": "#555555",
         "text-halo-blur": 0.5,
         "text-halo-color": "#ffffff",
         "text-halo-width": 1
@@ -4624,7 +4624,7 @@
         "text-size": 12
       },
       "paint": {
-        "text-color": "#666",
+        "text-color": "#555555",
         "text-halo-blur": 0.5,
         "text-halo-color": "#ffffff",
         "text-halo-width": 1
@@ -4729,7 +4729,7 @@
         "text-size": 12
       },
       "paint": {
-        "text-color": "#666",
+        "text-color": "#555555",
         "text-halo-blur": 0.5,
         "text-halo-color": "#ffffff",
         "text-halo-width": 1
@@ -4967,7 +4967,7 @@
         ]
       },
       "paint": {
-        "text-color": "#666",
+        "text-color": "#555555",
         "text-halo-blur": 0.5,
         "text-halo-width": 1,
         "text-halo-color": "#ffffff"
@@ -5045,7 +5045,7 @@
         ]
       },
       "paint": {
-        "text-color": "#666",
+        "text-color": "#555555",
         "text-halo-blur": 0.5,
         "text-halo-width": 1,
         "text-halo-color": "#ffffff"
@@ -5352,7 +5352,7 @@
         "text-size": 12
       },
       "paint": {
-        "text-color": "#666",
+        "text-color": "#555555",
         "text-halo-blur": 0.5,
         "text-halo-color": "#ffffff",
         "text-halo-width": 1
@@ -5433,7 +5433,7 @@
         "text-transform": "uppercase"
       },
       "paint": {
-        "text-color": "#333",
+        "text-color": "#2b2b2b",
         "text-halo-blur": 1,
         "text-halo-color": "#ffffff",
         "text-halo-width": 1
@@ -5517,7 +5517,7 @@
         ]
       },
       "paint": {
-        "text-color": "#000",
+        "text-color": "#2b2b2b",
         "text-halo-blur": 1,
         "text-halo-color": "#ffffff",
         "text-halo-width": 1
@@ -5601,7 +5601,7 @@
         ]
       },
       "paint": {
-        "text-color": "#000",
+        "text-color": "#2b2b2b",
         "text-halo-blur": 1,
         "text-halo-color": "#ffffff",
         "text-halo-width": 1
@@ -5674,7 +5674,7 @@
         "text-transform": "uppercase"
       },
       "paint": {
-        "text-color": "#333",
+        "text-color": "#2b2b2b",
         "text-halo-blur": 1,
         "text-halo-color": "#ffffff",
         "text-halo-width": 1
@@ -5775,7 +5775,7 @@
         ]
       },
       "paint": {
-        "text-color": "#000",
+        "text-color": "#2b2b2b",
         "text-halo-blur": 1,
         "text-halo-color": "#ffffff",
         "text-halo-width": 1
@@ -5876,7 +5876,7 @@
         ]
       },
       "paint": {
-        "text-color": "#000",
+        "text-color": "#2b2b2b",
         "text-halo-blur": 1,
         "text-halo-color": "#ffffff",
         "text-halo-width": 1
@@ -5958,7 +5958,7 @@
         ]
       },
       "paint": {
-        "text-color": "#000",
+        "text-color": "#2b2b2b",
         "text-halo-blur": 1,
         "text-halo-color": "#ffffff",
         "text-halo-width": 1
@@ -6039,7 +6039,7 @@
         ]
       },
       "paint": {
-        "text-color": "#000",
+        "text-color": "#2b2b2b",
         "text-halo-blur": 1,
         "text-halo-color": "#ffffff",
         "text-halo-width": 1
@@ -6120,7 +6120,7 @@
         ]
       },
       "paint": {
-        "text-color": "#000",
+        "text-color": "#2b2b2b",
         "text-halo-blur": 1,
         "text-halo-color": "#ffffff",
         "text-halo-width": 1
