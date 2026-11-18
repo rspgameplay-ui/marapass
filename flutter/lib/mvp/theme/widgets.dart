@@ -45,6 +45,8 @@ class MpPhoto extends StatelessWidget {
               Image.network(
                 photo!,
                 fit: BoxFit.cover,
+                // Decodifica em tamanho de tela: poupa memória em fotos grandes.
+                cacheWidth: 900,
                 semanticLabel: '',
                 frameBuilder: (_, child, frame, sync) => sync || frame != null
                     ? child
