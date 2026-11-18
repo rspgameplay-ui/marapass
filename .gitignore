@@ -9,3 +9,5 @@ flutter/config/*.local.json
 **/node_modules/
 **/build/
 /dist/
+
+supabase/.temp/
