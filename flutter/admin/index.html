@@ -58,6 +58,8 @@
         <input id="newPassword" type="password" minlength="12" autocomplete="new-password" required>
         <label for="confirmNewPassword">Confirme a nova senha</label>
         <input id="confirmNewPassword" type="password" minlength="12" autocomplete="new-password" required>
+        <label for="recoveryMfaCode">Código do autenticador (6 dígitos)</label>
+        <input id="recoveryMfaCode" type="text" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code">
         <div class="action-row"><button type="submit" id="saveNewPassword" class="primary">Salvar nova senha</button></div>
       </form>
       <p class="hint">Use pelo menos 12 caracteres e uma senha exclusiva. O processo não altera sua permissão de administrador.</p>

@@ -412,8 +412,19 @@ $('changePasswordForm').addEventListener('submit', async (event) => {
   try {
     const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
     if (sessionError || !sessionData.session) throw new Error('Seu link expirou. Solicite um novo link de recuperação.');
+    // Com MFA ativo o Supabase só aceita trocar a senha em sessão AAL2: a sessão do
+    // link de recuperação é AAL1, então confirmamos o código do autenticador antes.
+    const {data: factorData} = await supabase.auth.mfa.listFactors();
+    const totp = factorData?.totp?.find(f => f.status === 'verified');
+    if (totp) {
+      const mfaCode = $('recoveryMfaCode').value.trim();
+      if (!/^[0-9]{6}$/.test(mfaCode)) throw new Error('Digite o código de seis dígitos do aplicativo autenticador.');
+      const {error: mfaError} = await supabase.auth.mfa.challengeAndVerify({factorId: totp.id, code: mfaCode});
+      if (mfaError) throw new Error('Código do autenticador inválido ou vencido. Gere um novo código e tente de novo.');
+    }
     const {error} = await supabase.auth.updateUser({password: pass});
     if (error) throw new Error('Senha não atualizada. Verifique os requisitos de segurança e tente novamente.');
+    $('recoveryMfaCode').value = '';
     $('newPassword').value = '';
     $('confirmNewPassword').value = '';
     passwordRecoverySession = false;
