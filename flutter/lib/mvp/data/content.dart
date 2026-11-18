@@ -101,6 +101,7 @@ class Item {
     this.autentica = false,
     this.distanciaKm,
     this.data,
+    this.destaque = false,
     this.artesao,
     this.remoteId,
     this.nota,
@@ -133,6 +134,8 @@ class Item {
   final bool acessivel;
   final bool autentica;
   final double? distanciaKm;
+  /// Evento em destaque no calendário (fixado no topo, com selo).
+  final bool destaque;
   final DateTime? data;
   final String? artesao;
 
@@ -839,6 +842,7 @@ abstract final class Content {
       polo: 'saoluis',
       cidade: 'São Luís',
       foto: 'cultura',
+      destaque: true,
       data: _d(2026, 12, 6, 19),
       endereco: 'Praça Maria Aragão',
       faixa: 1,
@@ -858,6 +862,7 @@ abstract final class Content {
       polo: 'lencois',
       cidade: 'Barreirinhas',
       foto: 'food',
+      destaque: true,
       data: _d(2026, 11, 28, 11),
       faixa: 2,
       distanciaKm: 2,

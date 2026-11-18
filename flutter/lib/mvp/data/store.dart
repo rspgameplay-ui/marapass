@@ -1067,7 +1067,49 @@ class AppStore extends ChangeNotifier {
     ),
     (Icons.favorite_rounded, 'Cinco favoritos', favorites.length >= 5),
     (Icons.group_add_rounded, 'Convidou um amigo', invites > 0),
+    (Icons.explore_rounded, 'Dez visitas registradas', checkins.length >= 10),
+    (
+      Icons.location_city_rounded,
+      'Cinco cidades carimbadas',
+      stampedCities.length >= 5,
+    ),
+    (
+      Icons.workspace_premium_rounded,
+      'Sete polos visitados',
+      stampedPolos.length >= 7,
+    ),
+    (
+      Icons.star_rounded,
+      'Primeira avaliação',
+      checkins.any((c) => c.rating > 0),
+    ),
   ];
+
+  /// Missões em andamento: (ícone, texto, progresso atual, meta). Só as que
+  /// ainda não foram concluídas, da mais próxima de fechar para a mais longe.
+  List<(IconData, String, int, int)> get missions {
+    final all = <(IconData, String, int, int)>[
+      (Icons.flag_rounded, 'Registre sua 1ª visita', checkins.length, 1),
+      (Icons.explore_rounded, 'Registre 10 visitas', checkins.length, 10),
+      (Icons.map_rounded, 'Visite 3 polos diferentes', stampedPolos.length, 3),
+      (
+        Icons.location_city_rounded,
+        'Carimbe 5 cidades',
+        stampedCities.length,
+        5,
+      ),
+      (
+        Icons.local_activity_rounded,
+        'Use um cupom em um parceiro',
+        coupons.where((c) => c.used).length,
+        1,
+      ),
+      (Icons.group_add_rounded, 'Convide um amigo', invites, 1),
+    ];
+    final open = all.where((m) => m.$3 < m.$4).toList()
+      ..sort((a, b) => (b.$3 / b.$4).compareTo(a.$3 / a.$4));
+    return open.take(3).toList();
+  }
 
   // ---------- Eventos, artesanato, pacote
   bool isSaved(String id) => savedEvents.contains(id);

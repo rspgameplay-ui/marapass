@@ -573,6 +573,57 @@ class _Achievements extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        if (store.missions.isNotEmpty) ...[
+          const Text(
+            'Próximas missões',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+          ),
+          const SizedBox(height: MP.s2),
+          for (final m in store.missions)
+            Padding(
+              padding: const EdgeInsets.only(bottom: MP.s2),
+              child: Container(
+                padding: const EdgeInsets.all(MP.s3),
+                decoration: BoxDecoration(
+                  color: MP.card,
+                  borderRadius: BorderRadius.circular(MP.rLarge),
+                  border: Border.all(color: MP.borderSubtle),
+                ),
+                child: Row(
+                  children: [
+                    Icon(m.$1, color: MP.navy),
+                    const SizedBox(width: MP.s3),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            m.$2,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 16,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          LinearProgressIndicator(
+                            value: m.$3 / m.$4,
+                            minHeight: 8,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: MP.s3),
+                    Text(
+                      '${m.$3}/${m.$4}',
+                      style: const TextStyle(fontWeight: FontWeight.w800),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          const SizedBox(height: MP.s4),
+        ],
         Text(
           '$done de ${list.length} conquistas',
           style: Theme.of(context).textTheme.bodyMedium

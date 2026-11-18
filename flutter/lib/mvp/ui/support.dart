@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/config.dart';
 import '../data/repository.dart';
 import '../data/store.dart';
 import '../theme/tokens.dart';
@@ -146,7 +147,7 @@ class ChannelsScreen extends StatelessWidget {
                   color: MP.green,
                   onTap: () => openWhatsApp(
                     context,
-                    _supportPhone,
+                    AppConfig.supportWhatsapp,
                     'Olá! Preciso de ajuda com o MaraPass.',
                   ),
                 ),
@@ -320,6 +321,19 @@ class _TicketState extends ConsumerState<TicketScreen> {
         child: Column(
           children: [
             MpHeader(t.subject, subtitle: 'Protocolo ${t.id} · ${t.status}'),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
+              child: OutlinedButton.icon(
+                key: const Key('ticket-whatsapp'),
+                onPressed: () => openWhatsApp(
+                  context,
+                  AppConfig.supportWhatsapp,
+                  'Olá! Preciso falar com uma pessoa sobre o protocolo ${t.id} (${t.kind}: ${t.subject}).',
+                ),
+                icon: const Icon(Icons.chat_rounded, size: MP.iconMd),
+                label: const Text('Falar com uma pessoa no WhatsApp'),
+              ),
+            ),
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.symmetric(horizontal: MP.pageH),

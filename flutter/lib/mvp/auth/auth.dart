@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -18,8 +19,16 @@ abstract class AuthGateway {
   Stream<AuthUser?> get changes;
   Future<void> sendCode(String email);
   Future<void> verifyCode(String email, String code);
+
+  /// Login social ("google" ou "apple"). No celular abre o navegador e volta
+  /// ao app pelo link `marapass://login-callback`; na web redireciona a página.
+  Future<void> signInWithProvider(String provider);
   Future<void> signOut();
 }
+
+/// Endereço de retorno do login social (precisa estar nas "Redirect URLs"
+/// do Supabase Auth).
+const authRedirectUrl = 'marapass://login-callback';
 
 class SupabaseAuthGateway implements AuthGateway {
   SupabaseAuthGateway(this._client);
@@ -54,6 +63,18 @@ class SupabaseAuthGateway implements AuthGateway {
         email: email.trim(),
         token: code.trim(),
         type: OtpType.email,
+      );
+    } catch (e) {
+      throw translateError(e);
+    }
+  }
+
+  @override
+  Future<void> signInWithProvider(String provider) async {
+    try {
+      await _client.auth.signInWithOAuth(
+        provider == 'apple' ? OAuthProvider.apple : OAuthProvider.google,
+        redirectTo: kIsWeb ? null : authRedirectUrl,
       );
     } catch (e) {
       throw translateError(e);
@@ -97,6 +118,12 @@ class DemoAuthGateway implements AuthGateway {
       );
     }
     _user = AuthUser(id: 'demo-user', email: email.trim());
+    _ctrl.add(_user);
+  }
+
+  @override
+  Future<void> signInWithProvider(String provider) async {
+    _user = AuthUser(id: 'demo-user', email: 'demo@$provider.com');
     _ctrl.add(_user);
   }
 

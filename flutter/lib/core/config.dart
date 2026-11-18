@@ -19,7 +19,13 @@ abstract final class AppConfig {
     defaultValue:
         'https://marapass-mapa-flutter-preview.dfamorim-10.chatgpt.site/admin/',
   );
-  static const supabaseUrl = String.fromEnvironment('SUPABASE_URL');
+  /// WhatsApp do atendimento humano do MaraPass (DDD + número, só dígitos).
+  /// Defina com --dart-define=SUPPORT_WHATSAPP=98999999999.
+  static const supportWhatsapp = String.fromEnvironment(
+    'SUPPORT_WHATSAPP',
+    defaultValue: '9830000000',
+  );
+  static const supabaseUrl =String.fromEnvironment('SUPABASE_URL');
   static const publishableKey = String.fromEnvironment(
     'SUPABASE_PUBLISHABLE_KEY',
   );

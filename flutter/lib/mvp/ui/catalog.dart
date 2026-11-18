@@ -23,6 +23,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
   String _tipo = 'Todos';
   bool _perto = false;
   bool _acessivel = false;
+  bool _soDestaque = false;
 
   static const _tipos = <Cat, List<String>>{
     Cat.gastronomia: ['Todos', 'Regional', 'Frutos do mar', 'Bar', 'Com cupom'],
@@ -60,7 +61,8 @@ class _CategoryScreenState extends State<CategoryScreen> {
               (_faixa == 0 || i.faixa == _faixa) &&
               (_cidade == 'Todas' || i.cidade == _cidade) &&
               _matchTipo(i) &&
-              (!_acessivel || i.acessivel),
+              (!_acessivel || i.acessivel) &&
+              (!_soDestaque || i.destaque),
         )
         .toList();
     if (_perto) {
@@ -68,8 +70,13 @@ class _CategoryScreenState extends State<CategoryScreen> {
         (a, b) => (a.distanciaKm ?? 9999).compareTo(b.distanciaKm ?? 9999),
       );
     }
-    if (widget.cat == Cat.evento)
-      list.sort((a, b) => a.data!.compareTo(b.data!));
+    if (widget.cat == Cat.evento) {
+      // Destaques primeiro; dentro de cada grupo, em ordem de data.
+      list.sort((a, b) {
+        if (a.destaque != b.destaque) return a.destaque ? -1 : 1;
+        return a.data!.compareTo(b.data!);
+      });
+    }
     final tipos = _tipos[widget.cat];
 
     return Scaffold(
@@ -125,6 +132,24 @@ class _CategoryScreenState extends State<CategoryScreen> {
                     ),
                     onSelected: (v) => setState(() => _perto = v),
                   ),
+                  if (widget.cat == Cat.evento)
+                    FilterChip(
+                      key: const Key('filter-destaque'),
+                      avatar: Icon(
+                        Icons.star_rounded,
+                        size: 18,
+                        color: _soDestaque ? Colors.white : MP.ink,
+                      ),
+                      label: const Text('Em destaque'),
+                      selected: _soDestaque,
+                      selectedColor: MP.green,
+                      labelStyle: TextStyle(
+                        color: _soDestaque ? Colors.white : MP.ink,
+                        fontWeight: FontWeight.w800,
+                        fontFamily: mpFont,
+                      ),
+                      onSelected: (v) => setState(() => _soDestaque = v),
+                    ),
                   FilterChip(
                     key: const Key('filter-a11y'),
                     avatar: Icon(
@@ -173,6 +198,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                   _tipo = 'Todos';
                   _perto = false;
                   _acessivel = false;
+                  _soDestaque = false;
                 }),
               ),
             for (final i in list)
@@ -260,9 +286,17 @@ class _EventRow extends ConsumerWidget {
                   '${fmtTime(d)} · ${item.cidade}',
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
-                if (item.cupom != null) ...[
+                if (item.destaque || item.cupom != null) ...[
                   const SizedBox(height: 4),
-                  const MpBadge('Com benefício', fg: MP.warning, bg: MP.goldBg),
+                  Wrap(
+                    spacing: MP.s2,
+                    children: [
+                      if (item.destaque)
+                        const MpBadge('Em destaque', fg: MP.error, bg: MP.tintRed),
+                      if (item.cupom != null)
+                        const MpBadge('Com benefício', fg: MP.warning, bg: MP.goldBg),
+                    ],
+                  ),
                 ],
               ],
             ),

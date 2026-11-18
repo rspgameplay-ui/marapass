@@ -340,6 +340,17 @@ class ItemDetailScreen extends ConsumerWidget {
               icon: const Icon(Icons.call_rounded),
               label: const Text('Ligar'),
             ),
+            const SizedBox(height: MP.s3),
+            OutlinedButton.icon(
+              key: const Key('item-whatsapp'),
+              onPressed: () => openWhatsApp(
+                context,
+                i.telefone!,
+                'Olá! Vi ${i.titulo} no MaraPass e gostaria de mais informações.',
+              ),
+              icon: const Icon(Icons.chat_rounded),
+              label: const Text('Falar no WhatsApp'),
+            ),
           ],
         ];
       case Cat.gastronomia:
@@ -372,6 +383,17 @@ class ItemDetailScreen extends ConsumerWidget {
               onPressed: () => callPhone(context, i.telefone!),
               icon: const Icon(Icons.call_rounded),
               label: const Text('Ligar'),
+            ),
+            const SizedBox(height: MP.s3),
+            OutlinedButton.icon(
+              key: const Key('item-whatsapp'),
+              onPressed: () => openWhatsApp(
+                context,
+                i.telefone!,
+                'Olá! Vi ${i.titulo} no MaraPass e gostaria de mais informações.',
+              ),
+              icon: const Icon(Icons.chat_rounded),
+              label: const Text('Falar no WhatsApp'),
             ),
           ],
         ];

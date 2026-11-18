@@ -90,8 +90,28 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
+  Future<void> _social(String provider) async {
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
+    try {
+      await ref.read(authGatewayProvider).signInWithProvider(provider);
+    } on MvpException catch (e) {
+      if (mounted) setState(() => _error = e.message);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Login social conclui fora desta tela (navegador): ao voltar logado, fecha.
+    ref.listen<AuthUser?>(authProvider, (prev, next) {
+      if (prev == null && next != null && mounted) {
+        Navigator.of(context).pop(true);
+      }
+    });
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -197,6 +217,32 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               OutlinedButton(
                 onPressed: _busy ? null : _send,
                 child: const Text('Enviar outro código'),
+              ),
+            ] else ...[
+              const SizedBox(height: MP.s4),
+              const Row(
+                children: [
+                  Expanded(child: Divider()),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: MP.s3),
+                    child: Text('ou entre com'),
+                  ),
+                  Expanded(child: Divider()),
+                ],
+              ),
+              const SizedBox(height: MP.s4),
+              OutlinedButton.icon(
+                key: const Key('login-google'),
+                onPressed: _busy ? null : () => _social('google'),
+                icon: const Icon(Icons.g_mobiledata_rounded, size: 32),
+                label: const Text('Continuar com Google'),
+              ),
+              const SizedBox(height: MP.s2),
+              OutlinedButton.icon(
+                key: const Key('login-apple'),
+                onPressed: _busy ? null : () => _social('apple'),
+                icon: const Icon(Icons.apple_rounded, size: 26),
+                label: const Text('Continuar com Apple'),
               ),
             ],
             const SizedBox(height: MP.s5),
