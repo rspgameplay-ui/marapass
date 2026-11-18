@@ -70,7 +70,6 @@ class _AnimatedSplashState extends State<AnimatedSplash> with SingleTickerProvid
               final spin = _seg(t, 1400, 2450, Curves.easeOutCubic);
               final word = _seg(t, 2000, 2700, Curves.easeOutCubic);
               final tag = _seg(t, 2500, 3100);
-              final lift = word * 0.0;
               return Stack(
                 fit: StackFit.expand,
                 children: [
@@ -89,49 +88,52 @@ class _AnimatedSplashState extends State<AnimatedSplash> with SingleTickerProvid
                     ),
                   ),
                   RepaintBoundary(child: CustomPaint(painter: _TerritoryPainter(pulse: pulse, rings: _seg(t, 100, 1100, Curves.easeOut), wave: 0))),
+                  // Catavento exatamente no centro da tela, onde a rosa dos
+                  // ventos é desenhada; o nome e a assinatura ficam abaixo.
                   Center(
-                    child: Transform.translate(
-                      offset: Offset(0, -w * .08 * word + lift),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Opacity(
-                            opacity: symbol.clamp(0.0, 1.0),
-                            child: Transform.rotate(
-                              angle: (1 - symbol.clamp(0.0, 1.0)) * -1.9 + spin * math.pi * 2,
-                              child: Transform.scale(
-                                scale: symbol.clamp(.05, 1.12),
-                                child: SvgPicture.asset('assets/brand/logo_mark.svg', width: w * .62),
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: w * .09),
-                          Opacity(
-                            opacity: word,
-                            child: Transform.translate(
-                              offset: Offset(0, (1 - word) * 24),
-                              child: SvgPicture.asset('assets/brand/logo_word_white.svg', width: w),
-                            ),
-                          ),
-                          const SizedBox(height: 14),
-                          Opacity(
-                            opacity: tag,
-                            child: const Column(
-                              children: [
-                                Text(
-                                  'DESCUBRA · VIVA · VALORIZE',
-                                  style: TextStyle(fontFamily: 'Jakarta', fontWeight: FontWeight.w800, fontSize: 13, letterSpacing: 4.6, color: Colors.white),
-                                ),
-                                SizedBox(height: 8),
-                                Text(
-                                  'MARANHÃO 2026',
-                                  style: TextStyle(fontFamily: 'Jakarta', fontWeight: FontWeight.w600, fontSize: 11, letterSpacing: 5, color: Color(0x9effffff)),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+                    child: Opacity(
+                      opacity: symbol.clamp(0.0, 1.0),
+                      child: Transform.rotate(
+                        angle: (1 - symbol.clamp(0.0, 1.0)) * -1.9 + spin * math.pi * 2,
+                        child: Transform.scale(
+                          scale: symbol.clamp(.05, 1.12),
+                          child: SvgPicture.asset('assets/brand/logo_mark.svg', width: w * .62, height: w * .62 * 260 / 242),
+                        ),
                       ),
+                    ),
+                  ),
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    top: size.height / 2 + w * .62 * 260 / 242 / 2 + w * .09,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Opacity(
+                          opacity: word,
+                          child: Transform.translate(
+                            offset: Offset(0, (1 - word) * 24),
+                            child: SvgPicture.asset('assets/brand/logo_word_white.svg', width: w),
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+                        Opacity(
+                          opacity: tag,
+                          child: const Column(
+                            children: [
+                              Text(
+                                'DESCUBRA · VIVA · VALORIZE',
+                                style: TextStyle(fontFamily: 'Jakarta', fontWeight: FontWeight.w800, fontSize: 13, letterSpacing: 4.6, color: Colors.white),
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                'MARANHÃO 2026',
+                                style: TextStyle(fontFamily: 'Jakarta', fontWeight: FontWeight.w600, fontSize: 11, letterSpacing: 5, color: Color(0x9effffff)),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],

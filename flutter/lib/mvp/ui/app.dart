@@ -1,15 +1,14 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../theme/brand.dart';
 import '../data/store.dart';
 import '../theme/mara_logo.dart';
 import '../theme/tokens.dart';
 import 'animated_splash.dart';
-import '../theme/widgets.dart';
 import 'login_screen.dart';
 import 'coupon_commerce.dart';
 import '../data/coupon_commerce.dart';
@@ -26,12 +25,13 @@ class MvpApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final big = ref.watch(appStoreProvider.select((s) => s.bigText));
+    final english = ref.watch(appStoreProvider.select((s) => s.language == 'en'));
     return MaterialApp(
       title: 'MaraPass',
       debugShowCheckedModeBanner: false,
-      locale: const Locale('pt', 'BR'),
-      supportedLocales: const [Locale('pt', 'BR')],
-      localizationsDelegates: GlobalMaterialLocalizations.delegates,
+      locale: english ? const Locale('en') : const Locale('pt', 'BR'),
+      supportedLocales: const [Locale('pt', 'BR'), Locale('en')],
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
       theme: mvpTheme(),
       themeMode: ThemeMode.light,
       scrollBehavior: const _AppScroll(),
@@ -165,174 +165,134 @@ class _Splash extends StatelessWidget {
   );
 }
 
-/// Apresentação com foto em tela cheia (protótipo aprovado) e os três
-/// pilares do Design Master: descobrir, benefícios e passaporte.
-class _Welcome extends ConsumerStatefulWidget {
+/// Apresentação simples: título, ilustração e as opções de entrada.
+class _Welcome extends ConsumerWidget {
   const _Welcome({super.key, required this.onDone});
   final Future<void> Function() onDone;
-  @override
-  ConsumerState<_Welcome> createState() => _WelcomeState();
-}
-
-class _WelcomeState extends ConsumerState<_Welcome> {
-  final _page = PageController();
-  int _i = 0;
-
-  static const _slides = [
-    (
-      'splash_bg',
-      'Mais que destinos, boas histórias.',
-      'Seu passaporte turístico do Maranhão.',
-    ),
-    (
-      'lagoa_boat',
-      'Benefícios de verdade',
-      'Ative cupons em parceiros e mostre o QR na hora de usar.',
-    ),
-    (
-      'cultura',
-      'Seu passaporte digital',
-      'Faça check-in, ganhe selos e acompanhe suas reservas.',
-    ),
-  ];
 
   @override
-  void dispose() {
-    _page.dispose();
-    super.dispose();
-  }
+  Widget build(BuildContext context, WidgetRef ref) {
+    Future<void> login() async {
+      if (await requireLogin(context, ref)) await onDone();
+    }
 
-  Future<void> _login() async {
-    final ok = await requireLogin(context, ref);
-    if (ok) await widget.onDone();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final last = _i == _slides.length - 1;
     return Scaffold(
-      backgroundColor: Colors.black,
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          PageView.builder(
-            controller: _page,
-            itemCount: _slides.length,
-            onPageChanged: (v) => setState(() => _i = v),
-            itemBuilder: (_, i) => MpPhoto(
-              photo: _slides[i].$1,
-              height: null,
-              radius: 0,
-              darken: true,
-            ),
-          ),
-          SafeArea(
-            child: LayoutBuilder(
-              builder: (context, c) => SingleChildScrollView(
-                padding: const EdgeInsets.all(MP.pageH),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minHeight: c.maxHeight - MP.pageH * 2,
-                  ),
-                  child: IntrinsicHeight(
-                    child: Column(
-                      children: [
-                        const SizedBox(height: MP.s4),
-                        const MpLogo(width: 150, white: true),
-                        const SizedBox(height: MP.s2),
-                        const Text(
-                          'DESCUBRA · VIVA · VALORIZE',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: 2.2,
-                            fontSize: 13,
-                          ),
-                        ),
-                        const Spacer(),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            _slides[_i].$2,
-                            style: const TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.w800,
-                              color: Colors.white,
-                              height: 1.15,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: MP.s2),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            _slides[_i].$3,
-                            style: const TextStyle(
-                              fontSize: 18,
-                              color: Colors.white,
-                              height: 1.4,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: MP.s5),
-                        Row(
-                          children: [
-                            for (var k = 0; k < _slides.length; k++)
-                              AnimatedContainer(
-                                duration: const Duration(milliseconds: 200),
-                                margin: const EdgeInsets.only(right: 6),
-                                width: k == _i ? 28 : 10,
-                                height: 10,
-                                decoration: BoxDecoration(
-                                  color: k == _i ? MP.yellow : Colors.white54,
-                                  borderRadius: BorderRadius.circular(MP.rPill),
-                                ),
-                              ),
-                          ],
-                        ),
-                        const SizedBox(height: MP.s5),
-                        if (!last)
-                          MpCtaButton(
-                            key: const Key('onb-next'),
-                            label: _i == 0 ? 'Começar' : 'Continuar',
-                            onPressed: () => _page.nextPage(
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeOut,
-                            ),
-                          )
-                        else ...[
-                          MpCtaButton(
-                            key: const Key('onb-login'),
-                            label: 'Entrar com e-mail',
-                            onPressed: _login,
-                          ),
-                          const SizedBox(height: MP.s3),
-                          FilledButton(
-                            key: const Key('onb-visitor'),
-                            onPressed: widget.onDone,
-                            style: FilledButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              foregroundColor: MP.ink,
-                            ),
-                            child: const Text('Entrar sem cadastro'),
-                          ),
-                        ],
-                        TextButton(
-                          onPressed: widget.onDone,
-                          child: const Text(
-                            'Pular apresentação',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+      backgroundColor: const Color(0xfff4f3ee),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(MP.s6, MP.s2, MP.s6, MP.s4),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Align(
+                alignment: Alignment.centerRight,
+                child: IconButton(
+                  tooltip: 'Fechar',
+                  onPressed: onDone,
+                  icon: const Icon(Icons.close_rounded, color: MP.ink, size: 28),
                 ),
               ),
-            ),
+              const SizedBox(height: MP.s4),
+              const Text(
+                'Bem-vindo! Bora\nconhecer o Maranhão.',
+                style: TextStyle(fontSize: 30, fontWeight: FontWeight.w800, color: MP.ink, height: 1.12, letterSpacing: -.6),
+              ),
+              const Expanded(child: Center(child: _WelcomeArt())),
+              _PillButton(key: const Key('onb-login'), icon: Icons.mail_outline_rounded, label: 'Continuar com e-mail', onTap: login),
+              const SizedBox(height: MP.s3),
+              _PillButton(key: const Key('onb-social'), icon: Icons.account_circle_outlined, label: 'Continuar com Google ou Apple', onTap: login),
+              const SizedBox(height: MP.s5),
+              Center(
+                child: TextButton(
+                  key: const Key('onb-visitor'),
+                  onPressed: onDone,
+                  style: TextButton.styleFrom(foregroundColor: MP.ink),
+                  child: const Text('Explorar sem cadastro',
+                      style: TextStyle(fontSize: 15.5, fontWeight: FontWeight.w600, decoration: TextDecoration.underline)),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
+}
+
+class _PillButton extends StatelessWidget {
+  const _PillButton({super.key, required this.icon, required this.label, required this.onTap});
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => SizedBox(
+    height: 56,
+    child: OutlinedButton(
+      onPressed: onTap,
+      style: OutlinedButton.styleFrom(
+        foregroundColor: MP.ink,
+        side: const BorderSide(color: MP.ink, width: 1.2),
+        shape: const StadiumBorder(),
+        padding: const EdgeInsets.symmetric(horizontal: MP.s5),
+      ),
+      child: Row(children: [
+        Icon(icon, size: 22),
+        Expanded(
+          child: Text(label, textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+        ),
+        const SizedBox(width: 22),
+      ]),
+    ),
+  );
+}
+
+/// Foto recortada em arco com nuvens e sol desenhados, no traço da referência.
+class _WelcomeArt extends StatelessWidget {
+  const _WelcomeArt();
+
+  @override
+  Widget build(BuildContext context) => SizedBox(
+    width: 280,
+    height: 260,
+    child: Stack(clipBehavior: Clip.none, children: [
+      Positioned(
+        left: 30, right: 30, top: 10, bottom: 0,
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: MP.ink, width: 2.5),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(200), bottom: Radius.circular(28)),
+          ),
+          child: ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(198), bottom: Radius.circular(26)),
+            child: Image.asset('assets/photos/w_lencois.jpg', fit: BoxFit.cover),
+          ),
+        ),
+      ),
+      Positioned(right: 12, top: 0, child: _sun()),
+      const Positioned(left: -6, top: 70, child: _Cloud(width: 92)),
+      const Positioned(right: -10, top: 130, child: _Cloud(width: 76)),
+    ]),
+  );
+
+  Widget _sun() => Container(
+    width: 54, height: 54,
+    decoration: BoxDecoration(color: MP.yellow, shape: BoxShape.circle, border: Border.all(color: MP.ink, width: 2.5)),
+  );
+}
+
+class _Cloud extends StatelessWidget {
+  const _Cloud({required this.width});
+  final double width;
+  @override
+  Widget build(BuildContext context) => Container(
+    width: width,
+    height: width * .42,
+    decoration: BoxDecoration(
+      color: const Color(0xffc9d6f8),
+      borderRadius: BorderRadius.circular(width),
+      border: Border.all(color: MP.ink, width: 2.5),
+    ),
+  );
 }

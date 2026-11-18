@@ -263,7 +263,7 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with SingleTickerProvid
               child: IgnorePointer(
                 child: AnimatedBuilder(
                   animation: _line,
-                  builder: (_, __) => Align(
+                  builder: (_, _) => Align(
                     alignment: Alignment(0, -1 + 2 * Curves.easeInOut.transform(_line.value)),
                     child: Container(
                       height: 3,

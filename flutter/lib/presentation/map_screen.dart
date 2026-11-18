@@ -50,11 +50,12 @@ class _MapScreenState extends ConsumerState<MapScreen>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    if (Uri.base.queryParameters['layer'] == 'condominios')
+    if (Uri.base.queryParameters['layer'] == 'condominios') {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) coordinator.category(PlaceCategory.residential);
       });
-    if (Uri.base.queryParameters['route'] == 'barreirinhas')
+    }
+    if (Uri.base.queryParameters['route'] == 'barreirinhas') {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
         final places = ref
@@ -65,22 +66,25 @@ class _MapScreenState extends ConsumerState<MapScreen>
                   p.category == PlaceCategory.destination &&
                   p.city == 'Barreirinhas',
             );
-        if (places.isNotEmpty)
+        if (places.isNotEmpty) {
           Navigator.of(context).push(
             MaterialPageRoute<void>(
               builder: (_) =>
                   NavigationScreen(destination: places.first, autoPlan: true),
             ),
           );
+        }
       });
+    }
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       coordinator.refresh();
-      if (automaticLocationRequested && locationStream == null)
+      if (automaticLocationRequested && locationStream == null) {
         locate(automatic: true);
+      }
     } else {
       locationStream?.cancel();
       locationStream = null;
@@ -207,7 +211,7 @@ class _MapScreenState extends ConsumerState<MapScreen>
       showDragHandle: true,
       builder: (context) => StatefulBuilder(
         builder: (context, setSheet) {
-          if (expanded)
+          if (expanded) {
             return PlaceDetails(
               place: place,
               access: selectedAccess,
@@ -234,6 +238,7 @@ class _MapScreenState extends ConsumerState<MapScreen>
                 );
               },
             );
+          }
           return SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
@@ -314,8 +319,9 @@ class _MapScreenState extends ConsumerState<MapScreen>
           if (!mounted || !usablePosition(position)) return;
           final now = DateTime.now();
           if (lastLocationUpdate != null &&
-              now.difference(lastLocationUpdate!).inSeconds < 5)
+              now.difference(lastLocationUpdate!).inSeconds < 5) {
             return;
+          }
           lastLocationUpdate = now;
           coordinator.setLocation(
             GeoPoint(position.latitude, position.longitude),
@@ -784,8 +790,9 @@ class _MapScreenState extends ConsumerState<MapScreen>
             mapBodyHeight = constraints.maxHeight;
             return NotificationListener<DraggableScrollableNotification>(
               onNotification: (n) {
-                if ((sheetFraction - n.extent).abs() > .002)
+                if ((sheetFraction - n.extent).abs() > .002) {
                   setState(() => sheetFraction = n.extent);
+                }
                 return false;
               },
               child: Stack(
@@ -844,7 +851,7 @@ class _MapScreenState extends ConsumerState<MapScreen>
                                         ),
                                       ),
                                       child: Text(
-                                        '${state.islandsOnly ? 'Ilhas ×' : '${state.city ?? state.area ?? 'Maranhão'} ▾'}',
+                                        state.islandsOnly ? 'Ilhas ×' : '${state.city ?? state.area ?? 'Maranhão'} ▾',
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                         style: const TextStyle(

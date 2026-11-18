@@ -7,7 +7,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math' as math;
 import 'dart:ui' as ui;
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
@@ -127,8 +126,9 @@ class _LibreCanvasState extends ConsumerState<LibreCanvas> {
         ),
       ) as Map<String, dynamic>;
       for (final layer in json['layers'] as List) {
-        if (layer['layout']?['text-font'] != null)
+        if (layer['layout']?['text-font'] != null) {
           layer['layout']['text-font'] = ['Noto Sans Regular'];
+        }
       }
       if (mounted) {
         setState(() => style = jsonEncode(json));
@@ -462,14 +462,16 @@ class _GoogleCanvasState extends State<GoogleCanvas> {
       final t = (DateTime.now().difference(animationStart).inMilliseconds / 800)
           .clamp(0.0, 1.0);
       final a = fromPosition, b = targetPosition;
-      if (a != null && b != null)
+      if (a != null && b != null) {
         visualPosition = GeoPoint(
           a.lat + (b.lat - a.lat) * t,
           a.lng + (b.lng - a.lng) * t,
         );
+      }
       visualHeading = fromHeading + (targetHeading - fromHeading) * t;
-      if (DateTime.now().difference(modeStart).inMilliseconds >= 250)
+      if (DateTime.now().difference(modeStart).inMilliseconds >= 250) {
         previousMode = null;
+      }
       setState(() {});
       if (t >= 1 && previousMode == null) {
         animation?.cancel();
@@ -497,7 +499,7 @@ class _GoogleCanvasState extends State<GoogleCanvas> {
     final fade = (DateTime.now().difference(modeStart).inMilliseconds / 250)
         .clamp(0.0, 1.0);
     for (final mode in [
-      if (previousMode != null) previousMode!,
+      ?previousMode,
       widget.travelMode,
     ]) {
       final icon = travelerIcons['$mode:${widget.imprecise}'];
@@ -611,19 +613,22 @@ class _GoogleCanvasState extends State<GoogleCanvas> {
     }
     if (old.live != widget.live ||
         old.heading != widget.heading ||
-        old.travelMode != widget.travelMode)
+        old.travelMode != widget.travelMode) {
       moveTraveler();
-    if (widget.follow && widget.live != null && old.live != widget.live)
+    }
+    if (widget.follow && widget.live != null && old.live != widget.live) {
       controller?.animateCamera(
         g.CameraUpdate.newLatLngZoom(
           g.LatLng(widget.live!.lat, widget.live!.lng),
           16,
         ),
       );
+    }
     if (old.state.inView != widget.state.inView ||
         old.state.zoom != widget.state.zoom ||
-        old.state.selectedId != widget.state.selectedId)
+        old.state.selectedId != widget.state.selectedId) {
       _markers();
+    }
   }
 
   Future<g.BitmapDescriptor> _icon(MapFeature f) async {

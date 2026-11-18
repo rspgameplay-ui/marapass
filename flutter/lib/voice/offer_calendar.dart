@@ -46,10 +46,11 @@ class OfferCalendar {
     PlaceCategory? category,
     String term = '',
   }) async {
-    if (url.isEmpty || key.isEmpty)
+    if (url.isEmpty || key.isEmpty) {
       throw const FormatException(
         'A consulta de ofertas precisa de conexão com o catálogo.',
       );
+    }
     final date =
         '${day.year}-${day.month.toString().padLeft(2, '0')}-${day.day.toString().padLeft(2, '0')}';
     final r = await client
@@ -64,16 +65,18 @@ class OfferCalendar {
           }),
         )
         .timeout(const Duration(seconds: 15));
-    if (r.statusCode != 200)
+    if (r.statusCode != 200) {
       throw const FormatException(
         'Não foi possível consultar as ofertas. Tente novamente com internet.',
       );
+    }
     final data = jsonDecode(r.body) as Map<String, dynamic>;
     final rows = data['offers'] as List;
-    if (rows.length > 100)
+    if (rows.length > 100) {
       throw const FormatException(
         'Muitas ofertas neste município. Refine a pesquisa antes de continuar.',
       );
+    }
     return rows
         .map((j) => CalendarOffer.fromJson(Map<String, dynamic>.from(j)))
         .toList();

@@ -37,8 +37,9 @@ Future<void> openMaps(BuildContext context, String query) async {
 
 Future<void> callPhone(BuildContext context, String phone) async {
   final uri = Uri.parse('tel:${phone.replaceAll(RegExp(r'[^0-9+]'), '')}');
-  if (!await launchUrl(uri) && context.mounted)
+  if (!await launchUrl(uri) && context.mounted) {
     showMpSnack(context, 'Ligue para $phone');
+  }
 }
 
 Future<void> openWhatsApp(
@@ -337,7 +338,7 @@ class FilterChips<T> extends StatelessWidget {
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
       itemCount: options.length,
-      separatorBuilder: (_, __) => const SizedBox(width: MP.s2),
+      separatorBuilder: (_, _) => const SizedBox(width: MP.s2),
       itemBuilder: (_, i) {
         final o = options[i];
         final on = o == selected;

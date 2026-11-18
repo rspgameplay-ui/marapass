@@ -23,7 +23,7 @@ abstract final class AppConfig {
   /// Defina com --dart-define=SUPPORT_WHATSAPP=98999999999.
   static const supportWhatsapp = String.fromEnvironment(
     'SUPPORT_WHATSAPP',
-    defaultValue: '9830000000',
+    defaultValue: '98984334256',
   );
   static const supabaseUrl =String.fromEnvironment('SUPABASE_URL');
   static const publishableKey = String.fromEnvironment(

@@ -1024,11 +1024,12 @@ class _MapTabState extends ConsumerState<MapTab> {
       _routeError = null;
     });
     await _c?.setGeoJsonSource('route', _line(const []));
-    if (fly)
+    if (fly) {
       await _c?.animateCamera(
         CameraUpdate.newLatLngZoom(LatLng(p.point.lat, p.point.lng), 14),
         duration: const Duration(milliseconds: 900),
       );
+    }
   }
 
   /// Véu em fade durante a troca 2D/3D (a câmera também anima, sem corte).
@@ -1310,7 +1311,7 @@ class _MapTabState extends ConsumerState<MapTab> {
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(horizontal: MP.pageH, vertical: 2),
                   itemCount: PoiKind.values.length - 1,
-                  separatorBuilder: (_, __) => const SizedBox(width: MP.s2),
+                  separatorBuilder: (_, _) => const SizedBox(width: MP.s2),
                   itemBuilder: (_, i) {
                     final k = PoiKind.values[i];
                     final on = _kinds.contains(k);
@@ -1923,7 +1924,7 @@ class _PlanCard extends StatelessWidget {
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemCount: plan.stops.length,
-                separatorBuilder: (_, __) => const SizedBox(width: MP.s2),
+                separatorBuilder: (_, _) => const SizedBox(width: MP.s2),
                 itemBuilder: (_, k) {
                   final st = plan.stops[k];
                   return ActionChip(
@@ -2035,7 +2036,7 @@ class _PoiSearchSheetState extends State<_PoiSearchSheet> {
                     )
                   : ListView.separated(
                       itemCount: list.length,
-                      separatorBuilder: (_, __) => const Divider(indent: 76),
+                      separatorBuilder: (_, _) => const Divider(indent: 76),
                       itemBuilder: (_, i) {
                         final p = list[i];
                         return ListTile(

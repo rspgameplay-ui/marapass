@@ -84,7 +84,6 @@ class _CouponsScreenState extends ConsumerState<CouponsScreen> {
           MpHero(
             title: 'Cupons',
             subtitle: 'Descontos em parceiros MaraPass.',
-            child: WalletSummary(store: store, flat: true),
             trailing: PopupMenuButton<Object>(
               key: const Key('coupon-menu'),
               tooltip: 'Mais opções',
@@ -117,6 +116,7 @@ class _CouponsScreenState extends ConsumerState<CouponsScreen> {
                   ),
               ],
             ),
+            child: WalletSummary(store: store, flat: true),
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(MP.pageH, MP.s4, MP.pageH, 0),
@@ -495,7 +495,7 @@ class _ActiveState extends ConsumerState<CouponActiveScreen> {
   Widget build(BuildContext context) {
     final store = ref.watch(appStoreProvider);
     final c = store.coupons.where((e) => e.id == widget.couponId).firstOrNull;
-    if (c != null && store.remote != null && c.sale == null)
+    if (c != null && store.remote != null && c.sale == null) {
       return Scaffold(
         appBar: AppBar(title: const Text('Cupom anterior')),
         body: Padding(
@@ -505,10 +505,12 @@ class _ActiveState extends ConsumerState<CouponActiveScreen> {
           ),
         ),
       );
-    if (c == null || c.cupom == null)
+    }
+    if (c == null || c.cupom == null) {
       return const Scaffold(
         body: Center(child: Text('Cupom indisponível nesta conta.')),
       );
+    }
     if (c.sale != null) return CouponReceipt(code: c.code, scope: 'tourist');
     final cupom = c.cupom!;
     final (label, fg, bg) = c.used
@@ -615,8 +617,9 @@ class _ActiveState extends ConsumerState<CouponActiveScreen> {
                             await Clipboard.setData(
                               ClipboardData(text: c.code),
                             );
-                            if (context.mounted)
+                            if (context.mounted) {
                               showMpSnack(context, 'Código copiado');
+                            }
                           },
                           icon: const Icon(Icons.copy_rounded),
                           label: const Text('Copiar código'),

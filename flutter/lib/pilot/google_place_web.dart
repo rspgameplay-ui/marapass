@@ -11,7 +11,7 @@ Widget panel(String recordId, String name, String? placeId) =>
           queryParameters: {
             'record': recordId,
             'q': name,
-            if (placeId != null) 'place': placeId,
+            'place': ?placeId,
           },
         ).toString();
         frame.setAttribute(

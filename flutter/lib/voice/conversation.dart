@@ -1,7 +1,6 @@
 import '../domain/municipality.dart';
 import '../domain/tourism.dart';
 import 'command.dart';
-import 'place_resolver.dart';
 
 enum ConversationAction { search, confirmRoute, cancel, clarify }
 
@@ -43,8 +42,9 @@ class MapConversation {
         !p.route &&
         p.category == null &&
         p.city == null;
-    if ((!followUp && !contextualCity && !contextualName) || previous == null)
+    if ((!followUp && !contextualCity && !contextualName) || previous == null) {
       return p;
+    }
     final last = previous!;
     final uniqueCity = candidates.map((c) => c.city).toSet();
     Municipality? inferred;
@@ -99,11 +99,12 @@ class MapConversation {
       r'^(sim|isso|isso mesmo|confirmo|confirmar|pode calcular|pode tracar|vamos la)$',
     ).hasMatch(raw)) {
       final p = pendingRoute;
-      if (p == null)
+      if (p == null) {
         return const ConversationTurn(
           ConversationAction.clarify,
           message: 'Ainda não há um destino escolhido. Diga o nome do local.',
         );
+      }
       pendingRoute = null;
       return ConversationTurn(ConversationAction.confirmRoute, destination: p);
     }
@@ -126,11 +127,12 @@ class MapConversation {
         '3': 2,
         '4': 3,
       }[word]!;
-      if (i >= candidates.length)
+      if (i >= candidates.length) {
         return const ConversationTurn(
           ConversationAction.clarify,
           message: 'Essa opção não está na lista. Escolha um dos resultados exibidos.',
         );
+      }
       choose(candidates[i]);
       return ConversationTurn(
         ConversationAction.clarify,
@@ -138,22 +140,25 @@ class MapConversation {
       );
     }
     final other = RegExp(r'\b(outra|outro)\b').hasMatch(raw);
-    if (other && previous == null)
+    if (other && previous == null) {
       return const ConversationTurn(
         ConversationAction.clarify,
         message: 'Qual local você procura? Diga o nome ou o município.',
       );
+    }
     if (other) {
-      if (pendingRoute != null)
+      if (pendingRoute != null) {
         excluded.add(pendingRoute!.id);
-      else if (candidates.length == 1)
+      } else if (candidates.length == 1)
         excluded.add(candidates.single.id);
-    } else
+    } else {
       excluded = {};
+    }
     pendingRoute = null;
     final p = draft(text, cities, now: now);
-    if (p.error != null)
+    if (p.error != null) {
       return ConversationTurn(ConversationAction.clarify, message: p.error);
+    }
     if (p.coupons && p.city == null) {
       if(p.route&&p.term.isEmpty&&p.city==null&&p.category==null)return const ConversationTurn(ConversationAction.clarify,message:'Qual é o destino? Diga o nome do lugar ou município.');
     previous = p;

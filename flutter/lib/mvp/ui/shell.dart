@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../theme/mara_logo.dart';
 import '../theme/tokens.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -32,16 +33,17 @@ class MvpShell extends ConsumerStatefulWidget {
 class _MvpShellState extends ConsumerState<MvpShell> {
   bool _mapOpened = false;
 
-  static const _tabs = <(IconData, IconData, String)>[
-    (Icons.home_outlined, Icons.home_rounded, 'Início'),
-    (Icons.map_outlined, Icons.map_rounded, 'Mapa'),
-    (Icons.local_activity_outlined, Icons.local_activity_rounded, 'Cupons'),
-    (Icons.menu_book_outlined, Icons.menu_book_rounded, 'Passaporte'),
+  List<(IconData, IconData, String)> _tabsFor(AppLocalizations t) => [
+    (Icons.home_outlined, Icons.home_rounded, t.navHome),
+    (Icons.map_outlined, Icons.map_rounded, t.navMap),
+    (Icons.local_activity_outlined, Icons.local_activity_rounded, t.navCoupons),
+    (Icons.menu_book_outlined, Icons.menu_book_rounded, t.navPassport),
   ];
 
   @override
   Widget build(BuildContext context) {
-    final i = ref.watch(shellTabProvider).clamp(0, _tabs.length - 1);
+    final tabs = _tabsFor(AppLocalizations.of(context));
+    final i = ref.watch(shellTabProvider).clamp(0, tabs.length - 1);
     if (i == Tabs.mapa) _mapOpened = true;
     // Ao entrar na conta, traz cupons, reservas e check-ins do banco.
     ref.listen(authProvider, (prev, next) {
@@ -81,7 +83,7 @@ class _MvpShellState extends ConsumerState<MvpShell> {
                   selectedIndex: i,
                   onDestinationSelected: ref.read(shellTabProvider.notifier).go,
                   destinations: [
-                    for (final t in _tabs)
+                    for (final t in tabs)
                       NavigationDestination(
                         icon: Icon(t.$1),
                         selectedIcon: Icon(t.$2),

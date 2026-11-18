@@ -26,9 +26,7 @@ class _SaleOfferFormState extends ConsumerState<SaleOfferForm> {
     final t = widget.existing;
     String decimal(dynamic n) => n == null
         ? ''
-        : ((n as int) ~/ 100).toString() +
-              ',' +
-              (n % 100).toString().padLeft(2, '0');
+        : '${(n as int) ~/ 100},${(n % 100).toString().padLeft(2, '0')}';
     starts = DateTime.tryParse(t?['from'] as String? ?? '') ?? DateTime.now();
     kind = t?['kind'] as String? ?? 'percent';
     points = t?['points'] as bool? ?? true;
@@ -51,7 +49,9 @@ class _SaleOfferFormState extends ConsumerState<SaleOfferForm> {
 
   @override
   void dispose() {
-    for (final c in fields.values) c.dispose();
+    for (final c in fields.values) {
+      c.dispose();
+    }
     super.dispose();
   }
 
@@ -82,22 +82,27 @@ class _SaleOfferFormState extends ConsumerState<SaleOfferForm> {
         (getValue('title').length < 4 ||
             limit == null ||
             limit < 1 ||
-            limit > 10000))
+            limit > 10000)) {
       problem = 'Confira o nome e o estoque da oferta.';
+    }
     if (price == null ||
         price < 1 ||
         price > 1000000000 ||
         discount == null ||
         discount < 0 ||
-        discount > (kind == 'percent' ? 10000 : price))
+        discount > (kind == 'percent' ? 10000 : price)) {
       problem = 'Confira o preço e o desconto.';
-    if (per == null || per < 1 || per > 10000)
+    }
+    if (per == null || per < 1 || per > 10000) {
       problem = 'Informe um limite válido por turista.';
-    if (getValue('payment').isEmpty && getValue('url').isEmpty)
+    }
+    if (getValue('payment').isEmpty && getValue('url').isEmpty) {
       problem = 'Informe como o turista deve pagar ao estabelecimento.';
+    }
     if (getValue('url').isNotEmpty &&
-        (uri == null || uri.scheme != 'https' || uri.host.isEmpty))
+        (uri == null || uri.scheme != 'https' || uri.host.isEmpty)) {
       problem = 'Use o endereço HTTPS do parceiro.';
+    }
     if (problem != null) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(problem)));
@@ -143,9 +148,10 @@ class _SaleOfferFormState extends ConsumerState<SaleOfferForm> {
         Navigator.pop(context);
       }
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text(e.toString())));
+      }
     } finally {
       if (mounted) setState(() => busy = false);
     }

@@ -122,7 +122,7 @@ void main() {
               reference: repo.roads,
               terrainManifest: repo.terrainManifest,
               onFeature: (_) {},
-              onViewport: (_, __) {},
+              onViewport: (_, _) {},
             ),
           ),
         ),

@@ -52,8 +52,9 @@ class EnvironmentService {
   Future<EnvironmentalForecast> load(String city) async {
     final saved = cache[city];
     if (saved != null &&
-        DateTime.now().difference(saved.fetched).inMinutes < 10)
+        DateTime.now().difference(saved.fetched).inMinutes < 10) {
       return saved.data;
+    }
     final response = await client
         .get(
           Uri.parse(
@@ -65,8 +66,9 @@ class EnvironmentService {
     if (response.statusCode != 200) throw StateError('Previsão indisponível');
     final j = jsonDecode(response.body) as Map<String, dynamic>;
     final data = EnvironmentalForecast(j);
-    if (j['city']?['code'] != city || data.at(DateTime.now()) == null)
+    if (j['city']?['code'] != city || data.at(DateTime.now()) == null) {
       throw StateError('Previsão fora da validade');
+    }
     cache[city] = (fetched: DateTime.now(), data: data);
     return data;
   }

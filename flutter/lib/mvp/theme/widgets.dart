@@ -51,7 +51,7 @@ class MpPhoto extends StatelessWidget {
                 frameBuilder: (_, child, frame, sync) => sync || frame != null
                     ? child
                     : _Gradient(p: p, icon: icon, h: height),
-                errorBuilder: (_, __, ___) =>
+                errorBuilder: (_, _, _) =>
                     _Gradient(p: p, icon: icon, h: height),
               )
             else if (photo != null)
@@ -60,7 +60,7 @@ class MpPhoto extends StatelessWidget {
                 fit: BoxFit.cover,
                 filterQuality: FilterQuality.high,
                 semanticLabel: '',
-                errorBuilder: (_, __, ___) =>
+                errorBuilder: (_, _, _) =>
                     _Gradient(p: p, icon: icon, h: height),
               )
             else
@@ -80,7 +80,7 @@ class MpPhoto extends StatelessWidget {
                   ),
                 ),
               ),
-            if (child != null) child!,
+            ?child,
           ],
         ),
       ),

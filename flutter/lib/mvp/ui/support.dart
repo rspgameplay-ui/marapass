@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/config.dart';
+import '../../l10n/app_localizations.dart';
 import '../data/repository.dart';
 import '../data/store.dart';
 import '../theme/tokens.dart';
 import '../theme/widgets.dart';
 import 'common.dart';
 
-const _supportPhone = '(98) 3000-0000';
+const _supportPhone = '(98) 98433-4256';
 
 /// MP-T50 · Central de relacionamento: conversas, suporte e canais,
 /// avaliações e sugestões, abrir solicitação. O WhatsApp é opcional:
@@ -115,56 +116,59 @@ class SupportCenterScreen extends ConsumerWidget {
 class ChannelsScreen extends StatelessWidget {
   const ChannelsScreen({super.key});
   @override
-  Widget build(BuildContext context) => Scaffold(
-    body: SafeArea(
-      child: ListView(
-        padding: const EdgeInsets.only(bottom: MP.s8),
-        children: [
-          const MpHeader('Canais de atendimento'),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                MpListTile(
-                  icon: Icons.call_rounded,
-                  title: 'Telefone',
-                  subtitle: '$_supportPhone · seg a sáb, 8h às 20h',
-                  onTap: () => callPhone(context, _supportPhone),
-                ),
-                const SizedBox(height: MP.s2),
-                const MpListTile(
-                  icon: Icons.mail_rounded,
-                  title: 'E-mail',
-                  subtitle: 'atendimento@marapass.com.br',
-                ),
-                const SizedBox(height: MP.s2),
-                MpListTile(
-                  icon: Icons.chat_rounded,
-                  title: 'WhatsApp',
-                  subtitle: 'Mensagem pronta com o seu protocolo',
-                  tint: MP.tintGreen,
-                  color: MP.green,
-                  onTap: () => openWhatsApp(
-                    context,
-                    AppConfig.supportWhatsapp,
-                    'Olá! Preciso de ajuda com o MaraPass.',
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
+    return Scaffold(
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.only(bottom: MP.s8),
+          children: [
+            MpHeader(t.supportChannelsTitle),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  MpListTile(
+                    icon: Icons.call_rounded,
+                    title: t.supportPhone,
+                    subtitle: t.supportPhoneHours(_supportPhone),
+                    onTap: () => callPhone(context, _supportPhone),
                   ),
-                ),
-                const SizedBox(height: MP.s4),
-                const MpNotice(
-                  'No WhatsApp, informe o número do protocolo. Nunca envie senhas, códigos de login ou dados de cartão.',
-                  icon: Icons.shield_rounded,
-                  fg: MP.warning,
-                  bg: MP.warningBg,
-                ),
-              ],
+                  const SizedBox(height: MP.s2),
+                  MpListTile(
+                    icon: Icons.mail_rounded,
+                    title: t.supportEmail,
+                    subtitle: 'atendimento@marapass.com',
+                  ),
+                  const SizedBox(height: MP.s2),
+                  MpListTile(
+                    icon: Icons.chat_rounded,
+                    title: t.supportWhatsapp,
+                    subtitle: t.supportWhatsappSubtitle,
+                    tint: MP.tintGreen,
+                    color: MP.green,
+                    onTap: () => openWhatsApp(
+                      context,
+                      AppConfig.supportWhatsapp,
+                      t.supportWhatsappMessage,
+                    ),
+                  ),
+                  const SizedBox(height: MP.s4),
+                  MpNotice(
+                    t.supportSafetyNotice,
+                    icon: Icons.shield_rounded,
+                    fg: MP.warning,
+                    bg: MP.warningBg,
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 /// Redigir mensagem → solicitação aberta com protocolo.

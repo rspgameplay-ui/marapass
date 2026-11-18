@@ -40,7 +40,7 @@ Future<void> showLocationHelp(
                   .replace(path: '/', queryParameters: {})
                   .toString();
               await Clipboard.setData(ClipboardData(text: url));
-              if (sheet.mounted)
+              if (sheet.mounted) {
                 ScaffoldMessenger.of(sheet).showSnackBar(
                   const SnackBar(
                     content: Text(
@@ -48,6 +48,7 @@ Future<void> showLocationHelp(
                     ),
                   ),
                 );
+              }
             },
             icon: const Icon(Icons.copy),
             label: const Text('Copiar link do mapa'),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../auth/auth.dart';
 import '../data/content.dart';
 import '../data/repository.dart';
@@ -337,6 +338,23 @@ class ProfileScreen extends ConsumerWidget {
                           onTap: () =>
                               push<void>(context, const CouponConsent()),
                         ),
+                      ListTile(
+                        key: const Key('language'),
+                        leading: const Icon(Icons.language_rounded),
+                        title: Text(AppLocalizations.of(context).languageTitle),
+                        subtitle: Text(
+                          AppLocalizations.of(context).languageSubtitle,
+                        ),
+                        trailing: SegmentedButton<String>(
+                          showSelectedIcon: false,
+                          segments: const [
+                            ButtonSegment(value: 'pt', label: Text('PT')),
+                            ButtonSegment(value: 'en', label: Text('EN')),
+                          ],
+                          selected: {store.language},
+                          onSelectionChanged: (s) => store.setLanguage(s.first),
+                        ),
+                      ),
                       _SwitchRow(
                         key: const Key('big-text'),
                         icon: Icons.text_increase_rounded,
@@ -429,8 +447,9 @@ class ProfileScreen extends ConsumerWidget {
                             try {
                               await ref.read(authGatewayProvider).signOut();
                             } on MvpException catch (e) {
-                              if (context.mounted)
+                              if (context.mounted) {
                                 showMpSnack(context, e.message);
+                              }
                             }
                           },
                         ),

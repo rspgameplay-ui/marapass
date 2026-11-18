@@ -523,11 +523,12 @@ class _JourneyPreferencesSheetState
                             );
                         if (context.mounted) Navigator.pop(context);
                       } catch (_) {
-                        if (mounted)
+                        if (mounted) {
                           setState(
                             () => error =
                                 'Não foi possível salvar. Tente novamente.',
                           );
+                        }
                       } finally {
                         if (mounted) setState(() => saving = false);
                       }
@@ -610,7 +611,7 @@ class _JourneyDetailsState extends ConsumerState<_JourneyDetails> {
     final current = journey
         .catalog(map.places)
         .where((p) => p.id == entry.place.id);
-    if (current.isEmpty)
+    if (current.isEmpty) {
       return const SafeArea(
         child: Padding(
           padding: EdgeInsets.all(24),
@@ -619,6 +620,7 @@ class _JourneyDetailsState extends ConsumerState<_JourneyDetails> {
           ),
         ),
       );
+    }
     final p = current.first;
     final saved = map.saved.contains(p.id);
     final localizations = MaterialLocalizations.of(context);

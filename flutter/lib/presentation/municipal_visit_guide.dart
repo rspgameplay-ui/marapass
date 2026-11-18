@@ -84,8 +84,9 @@ class MunicipalVisitGuide extends ConsumerWidget {
                         .read(repositoryProvider)
                         .municipalities
                         .where((m) => m.name == city);
-                    if (municipal.isNotEmpty)
+                    if (municipal.isNotEmpty) {
                       coordinator.focus(municipal.first.point, 12);
+                    }
                     Navigator.pop(sheet);
                   },
                   child: const Text('Explorar locais deste município'),

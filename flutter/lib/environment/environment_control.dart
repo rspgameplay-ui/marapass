@@ -47,12 +47,13 @@ class _EnvironmentControlState extends ConsumerState<EnvironmentControl> {
     debounce?.cancel();
     if (widget.service == null && AppConfig.supabaseUrl.isEmpty) return;
     debounce = Timer(const Duration(milliseconds: 900), () {
-      if (mounted)
+      if (mounted) {
         setState(() {
           future = (widget.service ?? EnvironmentService.shared).load(
             widget.city.id,
           );
         });
+      }
     });
   }
 
@@ -236,17 +237,19 @@ class _EnvironmentControlState extends ConsumerState<EnvironmentControl> {
         if (await launchUrl(
           Uri.parse(url),
           mode: LaunchMode.externalApplication,
-        ))
+        )) {
           return;
+        }
       } catch (_) {}
-      if (mounted)
-        ScaffoldMessenger.of(this.context).showSnackBar(
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
               'Não foi possível abrir a fonte. Verifique a conexão.',
             ),
           ),
         );
+      }
     },
     child: Text(text),
   );
@@ -258,7 +261,7 @@ class _EnvironmentControlState extends ConsumerState<EnvironmentControl> {
           ? snapshot.data
           : null;
       final point = data?.at(DateTime.now());
-      if (widget.compact)
+      if (widget.compact) {
         return Material(
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(16),
@@ -289,6 +292,7 @@ class _EnvironmentControlState extends ConsumerState<EnvironmentControl> {
             ),
           ),
         );
+      }
       return Material(
         color: Theme.of(context).colorScheme.surface.withValues(alpha: .97),
         borderRadius: BorderRadius.circular(18),
@@ -459,8 +463,9 @@ class _WeatherPainter extends CustomPainter {
       );
     }
     if (rain) {
-      for (var x = 10.0; x < 24; x += 5)
+      for (var x = 10.0; x < 24; x += 5) {
         c.drawLine(Offset(x, 22), Offset(x - 1, 25), p);
+      }
     }
   }
 

@@ -7,7 +7,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:marapass_mapa/application/map_state.dart';
 import 'package:marapass_mapa/data/tourism_repository.dart';
 import 'package:marapass_mapa/domain/navigation.dart';
-import 'package:marapass_mapa/domain/tourism.dart';
 import 'package:marapass_mapa/journey/journey.dart';
 import 'package:marapass_mapa/journey/journey_controller.dart';
 import 'package:marapass_mapa/journey/journey_widgets.dart';

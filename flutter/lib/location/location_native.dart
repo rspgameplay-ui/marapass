@@ -10,14 +10,17 @@ LocationGateway createGateway() => _NativeGateway();
 class _NativeGateway implements LocationGateway, NavigationLocationGateway {
   @override
   Future<void> authorize() async {
-    if (!await Geolocator.isLocationServiceEnabled())
+    if (!await Geolocator.isLocationServiceEnabled()) {
       throw const LocationServiceDisabledException();
+    }
     var permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied)
+    if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
+    }
     if (permission == LocationPermission.denied ||
-        permission == LocationPermission.deniedForever)
+        permission == LocationPermission.deniedForever) {
       throw const PermissionDeniedException('Localização não autorizada');
+    }
   }
 
   @override
@@ -38,7 +41,7 @@ class _NativeGateway implements LocationGateway, NavigationLocationGateway {
       final accuracy = profile == 0
           ? LocationAccuracy.high
           : LocationAccuracy.bestForNavigation;
-      if (defaultTargetPlatform == TargetPlatform.android)
+      if (defaultTargetPlatform == TargetPlatform.android) {
         return AndroidSettings(
           accuracy: accuracy,
           distanceFilter: 0,
@@ -55,6 +58,7 @@ class _NativeGateway implements LocationGateway, NavigationLocationGateway {
             enableWakeLock: true,
           ),
         );
+      }
       return AppleSettings(
         accuracy: accuracy,
         distanceFilter: 0,

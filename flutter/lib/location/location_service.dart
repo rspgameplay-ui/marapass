@@ -43,21 +43,24 @@ abstract class LocationGateway {
 
 LocationFailure locationFailure(Object error) {
   if (error is LocationFailure) return error;
-  if (error is PermissionDeniedException)
+  if (error is PermissionDeniedException) {
     return const LocationFailure(
       LocationProblem.denied,
       'Localização não autorizada. Permita o acesso para este site no Safari/Chrome e nas configurações do aparelho. Se abriu pelo ChatGPT, abra o link diretamente no navegador.',
     );
-  if (error is LocationServiceDisabledException)
+  }
+  if (error is LocationServiceDisabledException) {
     return const LocationFailure(
       LocationProblem.disabled,
       'A localização do aparelho está desligada. Ative os Serviços de Localização e tente novamente.',
     );
-  if (error is TimeoutException)
+  }
+  if (error is TimeoutException) {
     return const LocationFailure(
       LocationProblem.timeout,
       'O aparelho não forneceu uma posição a tempo. Vá a um local aberto, confira a Localização Precisa e tente novamente.',
     );
+  }
   return const LocationFailure(
     LocationProblem.unavailable,
     'O aparelho não conseguiu fornecer a localização. Confira o sinal, os Serviços de Localização e abra o link no Safari/Chrome. Você pode continuar planejando a rota sem GPS.',
@@ -85,11 +88,12 @@ class LocationService {
   void cancelPending() => _cancel?.call();
 
   Future<Position> acquire({bool navigation = false}) async {
-    if (_cancel != null)
+    if (_cancel != null) {
       throw const LocationFailure(
         LocationProblem.unavailable,
         'Aguarde a busca de posição em andamento.',
       );
+    }
     StreamSubscription<Position>? subscription;
     Timer? timer;
     Position? last;
@@ -97,13 +101,14 @@ class LocationService {
     result.future.ignore();
     _cancel = () {
       timer?.cancel();
-      if (!result.isCompleted)
+      if (!result.isCompleted) {
         result.completeError(
           const LocationFailure(
             LocationProblem.cancelled,
             'Busca de posição cancelada.',
           ),
         );
+      }
     };
     try {
       gpsStage(GpsStage.permissionCheck);
@@ -133,17 +138,19 @@ class LocationService {
         (p) {
           last = p;
           if (!result.isCompleted &&
-              usablePosition(p, maximumAccuracy: navigation ? 50 : null))
+              usablePosition(p, maximumAccuracy: navigation ? 50 : null)) {
             result.complete(p);
+          }
         },
         onError: (Object error) {
           if (!result.isCompleted) result.completeError(locationFailure(error));
         },
         onDone: () {
-          if (!result.isCompleted)
+          if (!result.isCompleted) {
             result.completeError(
               locationFailure(StateError('location stream ended')),
             );
+          }
         },
       );
       return await result.future;

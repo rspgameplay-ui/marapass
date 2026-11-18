@@ -52,10 +52,11 @@ MapCommand parseCommand(
     }
   }
   final matches = chosen.values.toList();
-  if (matches.length > 1)
+  if (matches.length > 1) {
     return const MapCommand(
       error: 'Encontrei mais de um município. Escolha um destino por comando.',
     );
+  }
   final city = matches.isEmpty ? null : matches.first;
   final route = RegExp(
     r'\b(rota|navegar|leva|leve|levar|tracar|trace|traca|navegue|vamos|a gente vai|nos vamos|bora|como chegar|quero conhecer|ir para)\b',
@@ -157,10 +158,11 @@ MapCommand parseCommand(
   if (d != null && m != null) {
     y ??= today.year;
     day = DateTime(y, m, d);
-    if (day.month != m || day.day != d)
+    if (day.month != m || day.day != d) {
       return const MapCommand(
         error: 'Data inválida. Confira o dia, mês e ano.',
       );
+    }
     if (!explicit && day.isBefore(today)) day = DateTime(y + 1, m, d);
   } else if (raw.contains('amanha')) {
     day = today.add(const Duration(days: 1));
@@ -175,10 +177,11 @@ MapCommand parseCommand(
       error: 'Não entendi a data. Diga, por exemplo, 20 de janeiro de 2027.',
     );
   if (day != null &&
-      (day.isBefore(today) || day.difference(today).inDays > 366))
+      (day.isBefore(today) || day.difference(today).inDays > 366)) {
     return const MapCommand(
       error: 'Escolha uma data entre hoje e os próximos 366 dias.',
     );
+  }
   var term = dateText;
   if (city != null) term = term.replaceAll(normalize(city.name), '');
   if (dateMatch != null) term = term.replaceAll(dateMatch, '');
@@ -191,10 +194,11 @@ MapCommand parseCommand(
       )
       .replaceAll(RegExp(r'\s+'), ' ')
       .trim();
-  if (requireCouponCity && coupons && city == null)
+  if (requireCouponCity && coupons && city == null) {
     return const MapCommand(
       error: 'Diga o município para consultar as ofertas publicadas.',
     );
+  }
   return MapCommand(
     city: city,
     category: category,

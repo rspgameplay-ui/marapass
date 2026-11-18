@@ -44,26 +44,30 @@ List<PlaceMatch> resolvePlaces(
   for (final p in places) {
     if (excluded.contains(p.id) ||
         (command.city != null && p.city != command.city!.name) ||
-        (command.category != null && p.category != command.category))
+        (command.category != null && p.category != command.category)) {
       continue;
+    }
     if (p.category == PlaceCategory.residential &&
         command.category != PlaceCategory.residential &&
-        needle.isEmpty)
+        needle.isEmpty) {
       continue;
+    }
     if (command.route &&
         needle.isEmpty &&
         command.category == null &&
         command.city != null &&
-        p.category != PlaceCategory.destination)
+        p.category != PlaceCategory.destination) {
       continue;
+    }
     if (query.isEmpty) {
       matches.add(PlaceMatch(p, 1, false));
       continue;
     }
     final name = spokenName(p.name), tokens = spokenName(p.name).split(' ');
     // A bar/hotel mentioning a beach is not the beach itself.
-    if (query.first == 'praia' && tokens.first != 'praia' && !p.isBeach)
+    if (query.first == 'praia' && tokens.first != 'praia' && !p.isBeach) {
       continue;
+    }
     final aliasQuery = needle.replaceFirst(RegExp(r'^praia\s+'), '');
     if (p.isBeach && aliasQuery.isNotEmpty && aliasQuery != 'praia') {
       final variants = [p.name, ...p.searchAliases];
@@ -84,15 +88,16 @@ List<PlaceMatch> resolvePlaces(
         if (used.contains(i)) continue;
         final candidate = tokens[i];
         var score = 0.0;
-        if (word == candidate)
+        if (word == candidate) {
           score = 1;
-        else if (word.length >= 4 && candidate.length >= 4) {
+        } else if (word.length >= 4 && candidate.length >= 4) {
           final d = editDistance(word, candidate);
           final maxLength = word.length > candidate.length
               ? word.length
               : candidate.length;
-          if (d <= (maxLength >= 8 ? 2 : 1) && d / maxLength <= .25)
+          if (d <= (maxLength >= 8 ? 2 : 1) && d / maxLength <= .25) {
             score = 1 - d / maxLength;
+          }
         }
         if (score > best) {
           best = score;
@@ -119,7 +124,8 @@ List<PlaceMatch> resolvePlaces(
     return score != 0 ? score : a.place.id.compareTo(b.place.id);
   });
   // Exact full names outrank longer business names, but retain equal-name ambiguity.
-  if (query.length >= 2 && matches.isNotEmpty && matches.first.score == 1)
+  if (query.length >= 2 && matches.isNotEmpty && matches.first.score == 1) {
     return matches.where((m) => m.score == 1).toList();
+  }
   return matches;
 }

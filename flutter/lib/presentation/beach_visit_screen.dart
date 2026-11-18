@@ -300,12 +300,13 @@ class _BeachVisitScreenState extends ConsumerState<BeachVisitScreen> {
             answer,
           );
     } catch (_) {}
-    if (mounted)
+    if (mounted) {
       _notice(
         saved
             ? 'Resposta registrada neste aparelho.'
             : 'Não foi possível registrar a resposta.',
       );
+    }
   }
 
   void _accessInfo() => showModalBottomSheet<void>(
@@ -882,13 +883,15 @@ class _AccessOrientationState extends State<_AccessOrientation> {
     setState(() => busy = true);
     try {
       final fix = await service.acquire(navigation: false);
-      if (mounted)
+      if (mounted) {
         setState(() => position = GeoPoint(fix.latitude, fix.longitude));
+      }
     } catch (_) {
-      if (mounted)
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('GPS indisponível no momento.')),
         );
+      }
     } finally {
       if (mounted) setState(() => busy = false);
     }

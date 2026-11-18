@@ -44,12 +44,14 @@ class _OriginVoiceSheetState extends State<OriginVoiceSheet> {
         });
       };
       mapSpeechEngine.onStatus = (status) {
-        if (mounted && status != 'listening')
+        if (mounted && status != 'listening') {
           setState(() {
             listening = false;
-            if (heard.isEmpty)
+            if (heard.isEmpty) {
               message = 'Nada reconhecido. Tente novamente ou digite a origem.';
+            }
           });
+        }
       };
       final ready = await mapSpeechEngine.initialize();
       if (!mounted) return;
@@ -83,11 +85,12 @@ class _OriginVoiceSheetState extends State<OriginVoiceSheet> {
         },
       );
     } catch (_) {
-      if (mounted)
+      if (mounted) {
         setState(() {
           listening = false;
           message = 'Não foi possível usar o microfone. Digite a origem.';
         });
+      }
     }
   }
 

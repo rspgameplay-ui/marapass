@@ -92,7 +92,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
                 itemCount: _sugestoes.length,
-                separatorBuilder: (_, __) => const SizedBox(width: MP.s2),
+                separatorBuilder: (_, _) => const SizedBox(width: MP.s2),
                 itemBuilder: (_, i) => ActionChip(
                   label: Text(_sugestoes[i]),
                   avatar: const Icon(Icons.trending_up_rounded, size: 18),
@@ -169,7 +169,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
                 itemCount: Content.polos.length,
-                separatorBuilder: (_, __) => const SizedBox(width: MP.s3),
+                separatorBuilder: (_, _) => const SizedBox(width: MP.s3),
                 itemBuilder: (_, i) {
                   final p = Content.polos[i];
                   return SizedBox(

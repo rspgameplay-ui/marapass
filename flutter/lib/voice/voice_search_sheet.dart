@@ -87,7 +87,7 @@ class _VoiceSearchState extends ConsumerState<VoiceSearchSheet>
     });
     try {
       mapSpeechEngine.onError = (message) {
-        if (mounted)
+        if (mounted) {
           setState(() {
             listening = false;
             error =
@@ -97,9 +97,10 @@ class _VoiceSearchState extends ConsumerState<VoiceSearchSheet>
                 ? 'Microfone não autorizado. Permita o acesso ou digite o comando.'
                 : 'Não consegui ouvir o comando. Tente novamente ou digite.';
           });
+        }
       };
       mapSpeechEngine.onStatus = (status) {
-        if (mounted && status != 'listening')
+        if (mounted && status != 'listening') {
           setState(() {
             listening = false;
             if (text.text.trim().isEmpty &&
@@ -107,6 +108,7 @@ class _VoiceSearchState extends ConsumerState<VoiceSearchSheet>
               error = 'Não ouvi o destino. Toque no microfone para tentar novamente ou digite sua busca.';
             }
           });
+        }
       };
       final ready = await mapSpeechEngine.initialize();
       if (!mounted) return;
@@ -150,10 +152,11 @@ class _VoiceSearchState extends ConsumerState<VoiceSearchSheet>
         },
       );
     } catch (_) {
-      if (mounted)
+      if (mounted) {
         setState(
           () => error = 'Não foi possível usar o microfone. Você pode digitar o mesmo comando.',
         );
+      }
     } finally {
       if (mounted) setState(() => initializing = false);
     }
@@ -241,12 +244,14 @@ class _VoiceSearchState extends ConsumerState<VoiceSearchSheet>
         );
         next = [];
         for (final row in rows) {
-          if (parsed.category != null && row.place.category != parsed.category)
+          if (parsed.category != null && row.place.category != parsed.category) {
             continue;
+          }
           if (parsed.term.isNotEmpty &&
               !normalize('${row.place.name} ${row.title}')
-                  .contains(parsed.term))
+                  .contains(parsed.term)) {
             continue;
+          }
           if (mapped.containsKey(row.place.id)) continue;
           next.add(row.place);
           mapped[row.place.id] = row;
@@ -284,10 +289,11 @@ class _VoiceSearchState extends ConsumerState<VoiceSearchSheet>
     } on FormatException catch (e) {
       if (mounted && revision == generation) setState(() => error = e.message);
     } catch (_) {
-      if (mounted && revision == generation)
+      if (mounted && revision == generation) {
         setState(
           () => error = 'Não foi possível concluir a consulta. Confira a conexão e tente novamente.',
         );
+      }
     } finally {
       if (mounted && revision == generation) setState(() => busy = false);
     }

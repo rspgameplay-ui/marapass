@@ -226,8 +226,9 @@ class _CouponReceiptState extends ConsumerState<CouponReceipt> {
                                 if (!await launchUrl(
                                   url,
                                   mode: LaunchMode.externalApplication,
-                                ))
+                                )) {
                                   throw 'Não foi possível abrir o pagamento.';
+                                }
                               } catch (e) {
                                 if (context.mounted) _message(context, e);
                               }
@@ -289,7 +290,7 @@ class _CouponReceiptState extends ConsumerState<CouponReceipt> {
                                     widget.channel,
                                   );
                                   if (result['ok'] != true) await load();
-                                  if (result['ok'] != true)
+                                  if (result['ok'] != true) {
                                     throw switch (result['reason']) {
                                       'amount_mismatch' => 'O valor diverge do cupom. Confira o pagamento antes de confirmar.',
                                       'rate_limited' => 'Aguarde um minuto para tentar novamente.',
@@ -297,6 +298,7 @@ class _CouponReceiptState extends ConsumerState<CouponReceipt> {
                                       _ =>
                                         'Cupom indisponível para esta conta.',
                                     };
+                                  }
                                 }),
                           child: const Text('Confirmo que recebi este valor'),
                         ),
@@ -322,27 +324,28 @@ class _CouponReceiptState extends ConsumerState<CouponReceipt> {
                           onPressed: busy
                               ? null
                               : () => act(() async {
-                                  if (state == 'issued')
+                                  if (state == 'issued') {
                                     await remote.couponAction(
                                       receiptCode,
                                       'interest',
                                       null,
                                       widget.channel,
                                     );
+                                  }
                                   final uri = Uri.https(
                                     'wa.me',
                                     '/${sale['contact']}',
                                     {
                                       'text':
-                                          'Quero falar sobre o cupom ' +
-                                          receiptCode,
+                                          'Quero falar sobre o cupom $receiptCode',
                                     },
                                   );
                                   if (!await launchUrl(
                                     uri,
                                     mode: LaunchMode.externalApplication,
-                                  ))
+                                  )) {
                                     throw 'Não foi possível abrir a conversa.';
+                                  }
                                 }),
                           child: const Text('Falar com o parceiro'),
                         ),
@@ -457,8 +460,9 @@ class _CouponReceiptState extends ConsumerState<CouponReceipt> {
                                       if (cents == null ||
                                           cents < 1 ||
                                           reference.text.trim().isEmpty ||
-                                          reason.text.trim().isEmpty)
+                                          reason.text.trim().isEmpty) {
                                         throw 'Informe valor, referência e motivo.';
+                                      }
                                       await remote.refundCoupon(
                                         receiptCode,
                                         cents,
@@ -529,13 +533,14 @@ class _PartnerCouponListState extends ConsumerState<PartnerCouponList> {
         filters: filters,
       );
       final totals = reset ? await remote.couponOverview(filters) : summary;
-      if (mounted)
+      if (mounted) {
         setState(() {
           summary = totals;
           if (reset) rows.clear();
           rows.addAll(data);
           more = data.length == 50;
         });
+      }
     } catch (e) {
       if (mounted) setState(() => error = e.toString());
     } finally {
@@ -722,12 +727,13 @@ class _CouponConsentState extends ConsumerState<CouponConsent> {
     try {
       final r = ref.read(appStoreProvider).remote!;
       final value = await r.waPreference();
-      if (mounted)
+      if (mounted) {
         setState(() {
           enabled = value;
           phone.text = r.confirmedPhone ?? '';
           error = null;
         });
+      }
     } catch (e) {
       if (mounted) setState(() => error = e.toString());
     }
