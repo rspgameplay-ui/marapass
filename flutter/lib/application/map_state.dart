@@ -9,7 +9,7 @@ import '../domain/tourism.dart';
 import '../voice/command.dart';
 import '../voice/place_resolver.dart';
 
-enum MapEngine { streets, mapLibre, google, essential, terrain }
+enum MapEngine { streets, mapLibre, essential, terrain }
 
 final repositoryProvider = Provider<TourismRepository>(
   (ref) => throw UnimplementedError(),
@@ -186,7 +186,7 @@ class MapCoordinator extends StateNotifier<MapState> {
             ], CatalogWorkspace(repo.preferences).entries),
           ),
           saved: repo.preferences.getStringList('saved_places')?.toSet() ?? {},
-          engine: AppConfig.canUseGoogle ? MapEngine.google : MapEngine.streets,
+          engine: MapEngine.streets,
         ),
       ) {
     _clock = Timer.periodic(const Duration(seconds: 30), (_) {

@@ -6,7 +6,7 @@ import 'package:marapass_mapa/location/location_service.dart';
 import 'package:marapass_mapa/application/navigation_session.dart';
 import 'package:marapass_mapa/data/routing_repository.dart';
 
-import 'navigation_test.dart' show road;
+import 'helpers.dart' show road;
 
 Position fix({double accuracy = 8, bool stale = false}) => Position(
   longitude: -44.3,

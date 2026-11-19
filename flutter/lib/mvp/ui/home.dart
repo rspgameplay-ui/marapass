@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../presentation/legacy_theme.dart';
-import '../../presentation/map_screen.dart';
 import '../auth/auth.dart';
 import '../data/content.dart';
 import '../data/store.dart';
@@ -11,7 +9,7 @@ import '../theme/tokens.dart';
 import '../theme/widgets.dart';
 import 'booking.dart';
 import 'catalog.dart';
-import 'checkin.dart';
+import 'scan.dart';
 import '../theme/brand.dart';
 import 'common.dart';
 import 'itinerary.dart';
@@ -20,11 +18,11 @@ import 'profile.dart';
 import 'season_calendar.dart';
 import 'shell.dart' show Tabs;
 
-/// Abre o mapa por cima da tela atual (usado em telas internas).
-void openMap(BuildContext context) => push<void>(
-  context,
-  Theme(data: legacyMapTheme(), child: const MapScreen()),
-);
+/// Leva para a aba Mapa (usado em telas internas).
+void openMap(BuildContext context) {
+  ProviderScope.containerOf(context).read(shellTabProvider.notifier).go(Tabs.mapa);
+  Navigator.of(context).popUntil((r) => r.isFirst);
+}
 
 /// Início no formato do protótipo aprovado: logo, saudação, busca, quatro
 /// atalhos, cartão do passaporte, passeios em destaque e destinos.
@@ -61,7 +59,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final eventos = Content.byCat(Cat.evento)
       ..sort((a, b) => a.data!.compareTo(b.data!));
     final dica = Content.dicas[DateTime.now().day % Content.dicas.length];
-    void tab(int i) => ref.read(shellTabProvider.notifier).go(i);
 
     final top = MediaQuery.paddingOf(context).top;
     return ColoredBox(
@@ -75,7 +72,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [Color(0xff0b3a66), Color(0xff0e4f80), Color(0xff14775a)],
+                colors: [MP.navy, Color(0xff0e4f80), MP.green],
               ),
               borderRadius: BorderRadius.vertical(bottom: Radius.circular(28)),
             ),
@@ -203,34 +200,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   children: [
                     Expanded(
                       child: MpShortcut(
-                        key: const Key('qa-map'),
-                        icon: Icons.map_outlined,
-                        label: 'Mapa',
-                        tint: MP.tintBlue,
-                        color: MP.navy,
-                        onTap: () => tab(Tabs.mapa),
-                      ),
-                    ),
-                    const SizedBox(width: MP.s2),
-                    Expanded(
-                      child: MpShortcut(
-                        key: const Key('qa-coupons'),
-                        icon: Icons.local_activity_outlined,
-                        label: 'Cupons',
-                        tint: MP.tintYellow,
-                        color: const Color(0xffa87b00),
-                        onTap: () => tab(Tabs.cupons),
-                      ),
-                    ),
-                    const SizedBox(width: MP.s2),
-                    Expanded(
-                      child: MpShortcut(
                         key: const Key('qa-checkin'),
                         icon: Icons.qr_code_2_rounded,
-                        label: 'Check-in',
+                        label: 'Registrar visita',
                         tint: MP.tintGreen,
                         color: MP.green,
-                        onTap: () => push<void>(context, const CheckinScreen()),
+                        onTap: () => push<void>(context, const ScanScreen()),
                       ),
                     ),
                     const SizedBox(width: MP.s2),
@@ -279,7 +254,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
             child: MpSectionTitle(
-              'Passeios em destaque',
+              'Passeios',
               action: 'Ver todos',
               onAction: () =>
                   push<void>(context, const CategoryScreen(cat: Cat.passeio)),
@@ -386,7 +361,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     children: [
                       const Icon(
                         Icons.tips_and_updates_rounded,
-                        color: Color(0xffa87b00),
+                        color: MP.goldText,
                         size: 30,
                       ),
                       const SizedBox(width: MP.s3),

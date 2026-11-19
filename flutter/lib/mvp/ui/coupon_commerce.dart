@@ -7,6 +7,8 @@ import 'package:url_launcher/url_launcher.dart';
 import '../data/coupon_commerce.dart';
 import '../data/models.dart' show formatBrl;
 import '../data/store.dart';
+import '../theme/tokens.dart';
+import '../theme/widgets.dart';
 import 'login_screen.dart';
 
 String _when(dynamic date) {
@@ -161,7 +163,7 @@ class _CouponReceiptState extends ConsumerState<CouponReceipt> {
               ),
             )
           : r == null
-          ? const Center(child: CircularProgressIndicator())
+          ? const Padding(padding: EdgeInsets.all(MP.pageH), child: MpSkeletonList(rows: 5))
           : Builder(
               builder: (context) {
                 final sale = r['sale'] as Map, state = r['state'] as String;

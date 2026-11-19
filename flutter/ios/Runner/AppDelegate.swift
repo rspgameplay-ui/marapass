@@ -1,6 +1,5 @@
 import Flutter
 import UIKit
-import GoogleMaps
 import CoreLocation
 
 @main
@@ -10,10 +9,6 @@ import CoreLocation
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    if let key = Bundle.main.object(forInfoDictionaryKey: "GoogleMapsApiKey") as? String,
-       !key.isEmpty, !key.hasPrefix("$(") {
-      GMSServices.provideAPIKey(key)
-    }
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 

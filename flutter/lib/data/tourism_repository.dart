@@ -7,7 +7,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../core/config.dart';
 import '../domain/tourism.dart';
 import '../domain/municipality.dart';
-import '../maps/reference_roads.dart';
 import 'published_catalog.dart';
 import '../terrain/elevation_data.dart';
 import '../islands/coastal_island.dart';
@@ -52,7 +51,6 @@ class TourismRepository {
   Map<String, dynamic>? boundary;
   Map<String, dynamic>? municipalBoundaries;
   Map<String, dynamic>? sourceManifest;
-  ReferenceRoadNetwork? roads;
   ElevationData? elevations;
   Map<String, dynamic>? terrainManifest;
   Future<void>? _loading;
@@ -62,18 +60,6 @@ class TourismRepository {
   /// depois da primeira tela do app).
   Future<void> ensureLoaded({bool withRoads = true}) =>
       _loading ??= initialize(withRoads: withRoads).then((_) => loaded = true);
-
-  /// Rede de estradas de referência (9,9 MB): só para as telas do mapa antigo.
-  Future<void>? _roadsLoading;
-  Future<void> loadRoads() => _roadsLoading ??= () async {
-    if (roads != null) return;
-    await ensureLoaded(withRoads: false);
-    roads = ReferenceRoadNetwork(
-      jsonDecode(await rootBundle.loadString('assets/map/roads_reference.json'))
-          as Map<String, dynamic>,
-      boundary!,
-    );
-  }();
 
   Future<void> initialize({bool withRoads = true}) async {
     publishedCatalog.restoreCache();
@@ -127,13 +113,6 @@ class TourismRepository {
     boundary = jsonDecode(
       await rootBundle.loadString('assets/map/maranhao.geojson'),
     ) as Map<String, dynamic>;
-    if (withRoads) {
-      roads = ReferenceRoadNetwork(
-        jsonDecode(await rootBundle.loadString('assets/map/roads_reference.json'))
-            as Map<String, dynamic>,
-        boundary!,
-      );
-    }
   }
 
   List<TourismPlace> cachedPartners() {

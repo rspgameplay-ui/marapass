@@ -170,4 +170,4 @@ A navegação inclui Descobertas no caminho, interesses locais persistidos, prox
 
 ### Piloto Barreirinhas — 0.6.0
 
-Tela Flutter ?pilot=barreirinhas com seleção inicial, busca e filtros; vínculo googlePlaceId no CMS compartilhado e componente Google Places UI Kit web preparado, desativado até configuração de chave restrita. Estado e ativação: [docs/BARREIRINHAS_060.md](docs/BARREIRINHAS_060.md).
+(Removido: o app agora tem uma versão só, sem ?pilot=barreirinhas.) Antes: tela Flutter com seleção inicial, busca e filtros; vínculo googlePlaceId no CMS compartilhado e componente Google Places UI Kit web preparado, desativado até configuração de chave restrita. Estado e ativação: [docs/BARREIRINHAS_060.md](docs/BARREIRINHAS_060.md).

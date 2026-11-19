@@ -326,6 +326,67 @@ class MpError extends StatelessWidget {
   );
 }
 
+/// Placeholder pulsante de lista: mostra o formato do conteúdo enquanto carrega.
+class MpSkeletonList extends StatefulWidget {
+  const MpSkeletonList({super.key, this.rows = 4});
+  final int rows;
+  @override
+  State<MpSkeletonList> createState() => _MpSkeletonListState();
+}
+
+class _MpSkeletonListState extends State<MpSkeletonList> with SingleTickerProviderStateMixin {
+  late final AnimationController _c = AnimationController(vsync: this, duration: const Duration(milliseconds: 1100))..repeat(reverse: true);
+
+  @override
+  void dispose() {
+    _c.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+    label: 'Carregando',
+    liveRegion: true,
+    child: ExcludeSemantics(
+      child: AnimatedBuilder(
+        animation: _c,
+        builder: (_, _) {
+          final color = Color.lerp(MP.soft, MP.border, _c.value)!;
+          Widget bar(double w, double h) => Container(
+            width: w,
+            height: h,
+            decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(6)),
+          );
+          return Column(
+            children: [
+              for (var i = 0; i < widget.rows; i++)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: MP.s3),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 56,
+                        height: 56,
+                        decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(MP.rMedium)),
+                      ),
+                      const SizedBox(width: MP.s3),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [bar(double.infinity, 14), const SizedBox(height: 8), bar(140, 12)],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+          );
+        },
+      ),
+    ),
+  );
+}
+
 class MpLoading extends StatelessWidget {
   const MpLoading({super.key});
   @override

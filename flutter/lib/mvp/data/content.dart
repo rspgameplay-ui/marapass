@@ -1196,7 +1196,7 @@ abstract final class Content {
     return null;
   }
 
-  /// Ofertas publicadas por parceiros no banco (id 'po:<uuid>'), somadas às editoriais.
+  /// Ofertas publicadas por parceiros no banco (id 'po:uuid'), somadas às editoriais.
   static final extraCupons = <Cupom>[];
   static List<Cupom> get allCupons => [...cupons, ...extraCupons];
 

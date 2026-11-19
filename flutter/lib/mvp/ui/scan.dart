@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_scanner/mobile_scanner.dart' hide GeoPoint;
 
+import '../../core/config.dart';
 import '../../location/location_service.dart';
 import '../../domain/tourism.dart';
 import '../data/content.dart';
@@ -215,12 +217,17 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with SingleTickerProvid
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
     final pad = MediaQuery.paddingOf(context);
-    final box = math.min(size.width * .7, 280.0);
-    final top = pad.top + 150;
-    final frame = Rect.fromLTWH((size.width - box) / 2, top, box, box);
+    final box = math.min(size.width * .62, 250.0);
+    final frame = Rect.fromCenter(
+      center: Offset(size.width / 2, (size.height - pad.bottom) * .36),
+      width: box,
+      height: box,
+    );
+    final store = ref.watch(appStoreProvider);
+    final recent = store.checkins.reversed.take(4).toList();
     return Scaffold(
       key: const Key('scan-screen'),
-      backgroundColor: const Color(0xff07121f),
+      backgroundColor: MP.scanBg,
       body: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,
         child: Stack(
@@ -238,7 +245,7 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with SingleTickerProvid
                                 : 'Não foi possível abrir a câmera.');
                           }
                         });
-                        return const ColoredBox(color: Color(0xff07121f));
+                        return const ColoredBox(color: MP.scanBg);
                       },
                     )
                   : const DecoratedBox(
@@ -246,166 +253,183 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with SingleTickerProvid
                         gradient: LinearGradient(
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
-                          colors: [Color(0xff0b2741), Color(0xff07121f)],
+                          colors: [Color(0xff0b2741), MP.scanBg],
                         ),
                       ),
                     ),
             ),
-            // Escurece tudo em volta do visor
-            Positioned.fill(
-              child: IgnorePointer(
-                child: CustomPaint(painter: _ViewfinderPainter(frame)),
-              ),
-            ),
-            // Linha de leitura animada
+            // Véu leve em volta do visor + cantos brancos
+            Positioned.fill(child: IgnorePointer(child: CustomPaint(painter: _ViewfinderPainter(frame)))),
+            // Linha de leitura
             Positioned.fromRect(
-              rect: frame.deflate(18),
+              rect: frame.deflate(14),
               child: IgnorePointer(
                 child: AnimatedBuilder(
                   animation: _line,
                   builder: (_, _) => Align(
                     alignment: Alignment(0, -1 + 2 * Curves.easeInOut.transform(_line.value)),
                     child: Container(
-                      height: 3,
+                      height: 2,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(2),
-                        gradient: LinearGradient(
-                          colors: [MP.yellow.withValues(alpha: 0), MP.yellow, MP.yellow.withValues(alpha: 0)],
-                        ),
-                        boxShadow: [BoxShadow(color: MP.yellow.withValues(alpha: .6), blurRadius: 12)],
+                        gradient: LinearGradient(colors: [Colors.white.withValues(alpha: 0), Colors.white, Colors.white.withValues(alpha: 0)]),
                       ),
                     ),
                   ),
                 ),
               ),
             ),
-            if (_camError != null)
-              Positioned.fromRect(
-                rect: frame.deflate(24),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.no_photography_rounded, color: Colors.white70, size: 40),
-                    const SizedBox(height: MP.s2),
-                    Text(
-                      _camError!,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w600),
-                    ),
-                  ],
-                ),
-              ),
-            if (_busy)
-              Positioned.fromRect(
-                rect: frame,
-                child: const Center(child: CircularProgressIndicator(color: MP.yellow)),
-              ),
-            // Cabeçalho
-            Positioned(
-              left: MP.pageH,
-              right: MP.s3,
-              top: pad.top + MP.s3,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.only(top: MP.s2),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+            // Instrução ou erro dentro do visor
+            Positioned.fromRect(
+              rect: frame.deflate(22),
+              child: Center(
+                child: _busy
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : Column(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
+                          if (_camError != null) ...[
+                            const Icon(Icons.no_photography_rounded, color: Colors.white70, size: 34),
+                            const SizedBox(height: MP.s2),
+                          ],
                           Text(
-                            'Escanear QR Code do Local',
-                            style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w800, height: 1.2),
-                          ),
-                          SizedBox(height: MP.s2),
-                          Text(
-                            'Aponte a câmera para o código do estabelecimento para ganhar seu carimbo ou ativar o cupom.',
-                            style: TextStyle(color: Color(0xffc9d6e3), fontSize: 15, height: 1.4),
+                            _camError ?? 'Aponte a câmera\npara o código',
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                              height: 1.3,
+                              shadows: [Shadow(color: Color(0x99000000), blurRadius: 8)],
+                            ),
                           ),
                         ],
                       ),
-                    ),
-                  ),
-                  const SizedBox(width: MP.s2),
+              ),
+            ),
+            // Topo: fechar · título · digitar código
+            Positioned(
+              left: MP.s4,
+              right: MP.s4,
+              top: pad.top + MP.s3,
+              child: Row(
+                children: [
                   _GlassButton(
                     key: const Key('scan-close'),
                     icon: Icons.close_rounded,
                     tooltip: 'Fechar',
                     onTap: () => Navigator.of(context).maybePop(),
                   ),
+                  const Expanded(
+                    child: Text(
+                      'Escanear QR Code do Local',
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w800),
+                    ),
+                  ),
+                  _GlassButton(
+                    key: const Key('scan-manual'),
+                    icon: Icons.keyboard_rounded,
+                    tooltip: 'Digitar código',
+                    onTap: _busy ? () {} : _manual,
+                  ),
                 ],
               ),
             ),
-            // Controles da câmera
+            // Lanterna e troca de câmera, logo abaixo do visor
             Positioned(
               left: 0,
               right: 0,
-              top: frame.bottom + MP.s6,
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: size.width - 2 * MP.pageH),
-                  child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: .12),
-                    borderRadius: BorderRadius.circular(MP.rPill),
-                    border: Border.all(color: Colors.white.withValues(alpha: .18)),
+              top: frame.bottom + MP.s4,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _GlassButton(
+                    key: const Key('scan-torch'),
+                    icon: _torch ? Icons.flashlight_on_rounded : Icons.flashlight_off_rounded,
+                    tooltip: _torch ? 'Desligar lanterna' : 'Ligar lanterna',
+                    active: _torch,
+                    onTap: _toggleTorch,
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: MP.s2, vertical: MP.s1),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        _CamControl(
-                          key: const Key('scan-torch'),
-                          icon: _torch ? Icons.flashlight_on_rounded : Icons.flashlight_off_rounded,
-                          label: _torch ? 'Lanterna ligada' : 'Lanterna',
-                          active: _torch,
-                          onTap: _toggleTorch,
-                        ),
-                        Container(width: 1, height: 28, color: Colors.white24),
-                        Flexible(child: _CamControl(
-                          key: const Key('scan-switch'),
-                          icon: Icons.cameraswitch_rounded,
-                          label: 'Trocar câmera',
-                          onTap: _switch,
-                        )),
-                      ],
-                    ),
+                  const SizedBox(width: MP.s4),
+                  _GlassButton(
+                    key: const Key('scan-switch'),
+                    icon: Icons.cameraswitch_rounded,
+                    tooltip: 'Trocar câmera',
+                    onTap: _switch,
                   ),
-                ),
-                ),
+                ],
               ),
             ),
-            // Base: alternativa manual
+            // Base: saudação + últimas visitas
             Positioned(
-              left: MP.pageH,
-              right: MP.pageH,
-              bottom: pad.bottom + MP.s5,
+              left: MP.s4,
+              right: MP.s4,
+              bottom: pad.bottom + MP.s4,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: MainAxisSize.min,
                 children: [
+                  const Text(
+                    'Olá!\nLeio as placas dos locais e as ofertas dos parceiros.',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      height: 1.3,
+                      shadows: [Shadow(color: Color(0x99000000), blurRadius: 8)],
+                    ),
+                  ),
+                  const SizedBox(height: MP.s3),
+                  Row(
+                    children: [
+                      for (final c in recent)
+                        Padding(
+                          padding: const EdgeInsets.only(right: MP.s2),
+                          child: _RecentTile(checkin: c),
+                        ),
+                      if (recent.isEmpty)
+                        const Expanded(
+                          child: Text(
+                            'Suas visitas recentes aparecem aqui.',
+                            style: TextStyle(color: MP.onDarkMuted, fontSize: 14),
+                          ),
+                        )
+                      else
+                        const Spacer(),
+                      _GlassButton(
+                        key: const Key('scan-history'),
+                        icon: Icons.menu_book_rounded,
+                        tooltip: 'Abrir meu passaporte',
+                        onTap: () {
+                          ref.read(shellTabProvider.notifier).go(Tabs.passaporte);
+                          Navigator.of(context).popUntil((r) => r.isFirst);
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: MP.s3),
                   FilledButton.icon(
-                    key: const Key('scan-manual'),
-                    onPressed: _busy ? null : _manual,
+                    key: const Key('checkin-here'),
+                    onPressed: _busy ? null : () => push<void>(context, const PickPlaceScreen()),
                     style: FilledButton.styleFrom(
                       backgroundColor: Colors.white,
                       foregroundColor: MP.ink,
                       minimumSize: const Size.fromHeight(MP.buttonHeight),
                     ),
-                    icon: const Icon(Icons.keyboard_rounded),
-                    label: const Text('Digitar código manualmente'),
+                    icon: const Icon(Icons.my_location_rounded),
+                    label: const Text('Não achei o QR: usar localização'),
                   ),
-                  // Simulação só sem conta: logado, o servidor exige a placa real.
-                  if (!ref.watch(appStoreProvider).online) ...[
-                  const SizedBox(height: MP.s1),
-                  TextButton(
-                    key: const Key('scan-simulate'),
-                    onPressed: _busy ? null : () => _handle(plateCode(Content.items.first)),
-                    style: TextButton.styleFrom(foregroundColor: const Color(0xffc9d6e3)),
-                    child: const Text('Simular leitura (demonstração)'),
-                  ),
-                  ],
+                  // Simulação só em demonstração e sem conta: o turista real
+                  // não vê este botão; logado, o servidor exige a placa real.
+                  if ((kDebugMode || AppConfig.demoMode) && !store.online)
+                    TextButton(
+                      key: const Key('scan-simulate'),
+                      onPressed: _busy ? null : () => _handle(plateCode(Content.items.first)),
+                      style: TextButton.styleFrom(foregroundColor: MP.onDarkMuted),
+                      child: const Text('Simular leitura (demonstração)'),
+                    ),
                 ],
               ),
             ),
@@ -421,64 +445,39 @@ class _ViewfinderPainter extends CustomPainter {
   final Rect frame;
   @override
   void paint(Canvas canvas, Size size) {
-    final r = RRect.fromRectAndRadius(frame, const Radius.circular(28));
+    final r = RRect.fromRectAndRadius(frame, const Radius.circular(22));
     final shade = Path()
       ..fillType = PathFillType.evenOdd
       ..addRect(Offset.zero & size)
       ..addRRect(r);
-    canvas.drawPath(shade, Paint()..color = const Color(0xb3061220));
-    canvas.drawRRect(r, Paint()
-      ..color = Colors.white.withValues(alpha: .25)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1);
-    // Cantos iluminados na cor de destaque
-    const len = 34.0, rad = 28.0;
-    final glow = Paint()
-      ..color = MP.yellow.withValues(alpha: .45)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 10
-      ..strokeCap = StrokeCap.round
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 6);
+    canvas.drawPath(shade, Paint()..color = const Color(0x66061220));
     final line = Paint()
-      ..color = MP.yellow
+      ..color = Colors.white
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 5
+      ..strokeWidth = 4
       ..strokeCap = StrokeCap.round;
-    for (final p in [glow, line]) {
-      final l = frame.left, t = frame.top, rr = frame.right, b = frame.bottom;
-      canvas.drawPath(
-        Path()
-          ..moveTo(l, t + rad + len)
-          ..lineTo(l, t + rad)
-          ..arcToPoint(Offset(l + rad, t), radius: const Radius.circular(rad))
-          ..lineTo(l + rad + len, t),
-        p,
-      );
-      canvas.drawPath(
-        Path()
-          ..moveTo(rr - rad - len, t)
-          ..lineTo(rr - rad, t)
-          ..arcToPoint(Offset(rr, t + rad), radius: const Radius.circular(rad))
-          ..lineTo(rr, t + rad + len),
-        p,
-      );
-      canvas.drawPath(
-        Path()
-          ..moveTo(rr, b - rad - len)
-          ..lineTo(rr, b - rad)
-          ..arcToPoint(Offset(rr - rad, b), radius: const Radius.circular(rad))
-          ..lineTo(rr - rad - len, b),
-        p,
-      );
-      canvas.drawPath(
-        Path()
-          ..moveTo(l + rad + len, b)
-          ..lineTo(l + rad, b)
-          ..arcToPoint(Offset(l, b - rad), radius: const Radius.circular(rad))
-          ..lineTo(l, b - rad - len),
-        p,
-      );
-    }
+    const len = 30.0, rad = 22.0;
+    final l = frame.left, t = frame.top, rr = frame.right, b = frame.bottom;
+    canvas.drawPath(
+      Path()
+        ..moveTo(l, t + rad + len)
+        ..lineTo(l, t + rad)
+        ..arcToPoint(Offset(l + rad, t), radius: const Radius.circular(rad))
+        ..lineTo(l + rad + len, t)
+        ..moveTo(rr - rad - len, t)
+        ..lineTo(rr - rad, t)
+        ..arcToPoint(Offset(rr, t + rad), radius: const Radius.circular(rad))
+        ..lineTo(rr, t + rad + len)
+        ..moveTo(rr, b - rad - len)
+        ..lineTo(rr, b - rad)
+        ..arcToPoint(Offset(rr - rad, b), radius: const Radius.circular(rad))
+        ..lineTo(rr - rad - len, b)
+        ..moveTo(l + rad + len, b)
+        ..lineTo(l + rad, b)
+        ..arcToPoint(Offset(l, b - rad), radius: const Radius.circular(rad))
+        ..lineTo(l, b - rad - len),
+      line,
+    );
   }
 
   @override
@@ -486,58 +485,60 @@ class _ViewfinderPainter extends CustomPainter {
 }
 
 class _GlassButton extends StatelessWidget {
-  const _GlassButton({super.key, required this.icon, required this.tooltip, required this.onTap});
+  const _GlassButton({
+    super.key,
+    required this.icon,
+    required this.tooltip,
+    required this.onTap,
+    this.active = false,
+  });
   final IconData icon;
   final String tooltip;
   final VoidCallback onTap;
+  final bool active;
   @override
   Widget build(BuildContext context) => Tooltip(
     message: tooltip,
     child: Material(
-      color: Colors.white.withValues(alpha: .16),
-      shape: StadiumBorder(side: BorderSide(color: Colors.white.withValues(alpha: .22))),
+      color: active ? Colors.white : Colors.white.withValues(alpha: .18),
+      borderRadius: BorderRadius.circular(MP.rMedium),
       child: InkWell(
-        customBorder: const StadiumBorder(),
+        borderRadius: BorderRadius.circular(MP.rMedium),
         onTap: onTap,
-        child: SizedBox(width: 52, height: 48, child: Icon(icon, color: Colors.white, semanticLabel: tooltip)),
-      ),
-    ),
-  );
-}
-
-class _CamControl extends StatelessWidget {
-  const _CamControl({super.key, required this.icon, required this.label, required this.onTap, this.active = false});
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-  final bool active;
-  @override
-  Widget build(BuildContext context) => InkWell(
-    onTap: onTap,
-    borderRadius: BorderRadius.circular(MP.rPill),
-    child: ConstrainedBox(
-      constraints: const BoxConstraints(minHeight: 48, minWidth: 48),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: MP.s3, vertical: MP.s2),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, color: active ? MP.yellow : Colors.white, size: 22),
-            const SizedBox(width: MP.s2),
-            Flexible(
-              child: Text(
-                label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(color: active ? MP.yellow : Colors.white, fontSize: 15, fontWeight: FontWeight.w700),
-              ),
-            ),
-          ],
+        child: SizedBox(
+          width: 52,
+          height: 52,
+          child: Icon(icon, color: active ? MP.ink : Colors.white, semanticLabel: tooltip),
         ),
       ),
     ),
   );
 }
+
+/// Miniatura de uma visita recente (ícone do polo) no rodapé do scanner.
+class _RecentTile extends StatelessWidget {
+  const _RecentTile({required this.checkin});
+  final Checkin checkin;
+  @override
+  Widget build(BuildContext context) => Tooltip(
+    message: checkin.cidade,
+    child: Container(
+      width: 52,
+      height: 52,
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(MP.rMedium)),
+      child: Icon(_scanPoloIcon(checkin.polo), color: MP.navy, size: 26),
+    ),
+  );
+}
+
+IconData _scanPoloIcon(String polo) => switch (polo) {
+  'lencois' => Icons.waves_rounded,
+  'delta' => Icons.sailing_rounded,
+  'chapada' => Icons.terrain_rounded,
+  'saoluis' => Icons.account_balance_rounded,
+  'munim' => Icons.kayaking_rounded,
+  _ => Icons.place_rounded,
+};
 
 class _ManualSheet extends StatefulWidget {
   const _ManualSheet();
@@ -683,7 +684,7 @@ class _ResultSheetState extends ConsumerState<_ResultSheet> with SingleTickerPro
                   if (widget.newStamp)
                     MpBadge(
                       'Novo carimbo: ${Content.polo(item.polo).nome} (+100)',
-                      fg: const Color(0xffa87b00),
+                      fg: MP.goldText,
                       bg: MP.goldBg,
                       icon: Icons.workspace_premium_rounded,
                     ),
@@ -716,7 +717,7 @@ class _StampBadge extends StatelessWidget {
   final bool already;
   @override
   Widget build(BuildContext context) {
-    final color = cupom != null ? MP.green : (already ? MP.info : const Color(0xffa87b00));
+    final color = cupom != null ? MP.green : (already ? MP.info : MP.goldText);
     final bg = cupom != null ? MP.greenBg : (already ? MP.infoBg : MP.goldBg);
     return Container(
       width: 112,

@@ -1,15 +1,18 @@
 import 'dart:async';
 
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'catalog_cache.dart';
 import 'models.dart';
 import 'repository.dart';
 
 /// Implementação real. Toda regra de negócio (vagas, limites, idempotência,
 /// elegibilidade) é decidida no servidor pelas RPCs; o app só chama e traduz erros.
 class SupabaseMvpRepository implements MvpRepository {
-  SupabaseMvpRepository(this._client);
+  SupabaseMvpRepository(this._client, [SharedPreferences? prefs]) : _cache = CatalogCache(prefs);
   final SupabaseClient _client;
+  final CatalogCache _cache;
 
   String get _uid {
     final u = _client.auth.currentUser;
@@ -42,7 +45,10 @@ class SupabaseMvpRepository implements MvpRepository {
         if (query != null && query.trim().isNotEmpty) {
           q = q.ilike('title', '%${_escape(query)}%');
         }
-        final rows = await q.order('created_at', ascending: false).limit(60);
+        final rows = await _cache.rows(
+          'exp:${category ?? ''}:${query?.trim() ?? ''}',
+          () async => List<Map<String, dynamic>>.from(await q.order('created_at', ascending: false).limit(60)),
+        );
         return rows.map(Experience.fromJson).toList();
       });
 
@@ -67,7 +73,10 @@ class SupabaseMvpRepository implements MvpRepository {
     if (query != null && query.trim().isNotEmpty) {
       q = q.ilike('title', '%${_escape(query)}%');
     }
-    final rows = await q.order('created_at', ascending: false).limit(60);
+    final rows = await _cache.rows(
+      'off:${query?.trim() ?? ''}',
+      () async => List<Map<String, dynamic>>.from(await q.order('created_at', ascending: false).limit(60)),
+    );
     return rows.map(Offer.fromJson).toList();
   });
 
@@ -78,7 +87,10 @@ class SupabaseMvpRepository implements MvpRepository {
         if (query != null && query.trim().isNotEmpty) {
           q = q.ilike('name', '%${_escape(query)}%');
         }
-        final rows = await q.order('name').limit(60);
+        final rows = await _cache.rows(
+          'est:${query?.trim() ?? ''}',
+          () async => List<Map<String, dynamic>>.from(await q.order('name').limit(60)),
+        );
         return rows.map(Establishment.fromJson).toList();
       });
 
@@ -89,9 +101,9 @@ class SupabaseMvpRepository implements MvpRepository {
     required String requestKey,
   }) => _guard(() async {
     final r = await _client.rpc(
-      'request_reservation',
+      // A versão "my_" pega o usuário do login; a original é só do servidor.
+      'my_request_reservation',
       params: {
-        'p_user_id': _uid,
         'p_slot_id': slotId,
         'p_participants': participants,
         'p_request_key': requestKey,
@@ -118,9 +130,8 @@ class SupabaseMvpRepository implements MvpRepository {
     String? reservationId,
   }) => _guard(() async {
     final r = await _client.rpc(
-      'issue_coupon',
+      'my_issue_coupon',
       params: {
-        'p_user_id': _uid,
         'p_offer_id': offerId,
         'p_idempotency_key': idempotencyKey,
         'p_reservation_id': ?reservationId,
@@ -142,11 +153,12 @@ class SupabaseMvpRepository implements MvpRepository {
 
   @override
   Future<List<PassportProduct>> passportProducts() => _guard(() async {
-    final rows = await _client
-        .from('passport_products')
-        .select()
-        .eq('is_published', true)
-        .order('price_cents');
+    final rows = await _cache.rows(
+      'pass',
+      () async => List<Map<String, dynamic>>.from(
+        await _client.from('passport_products').select().eq('is_published', true).order('price_cents'),
+      ),
+    );
     return rows.map(PassportProduct.fromJson).toList();
   });
 

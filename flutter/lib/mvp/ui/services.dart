@@ -531,16 +531,17 @@ class _TransferState extends ConsumerState<TransferQuoteScreen> {
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   const SizedBox(height: MP.s2),
-                  for (final f in const [
+RadioGroup<String>(
+ groupValue: _from,
+ onChanged: (v) => setState(() => _from = v!),
+ child: Column(children: [
+ for (final f in const [
                     ('Rodoviária', Icons.directions_bus_rounded),
                     ('Aeroporto', Icons.flight_rounded),
                     ('Endereço', Icons.home_rounded),
-                  ])
-                    RadioListTile<String>(
+                  ]) RadioListTile<String>(
                       key: Key('from-${f.$1}'),
                       value: f.$1,
-                      groupValue: _from,
-                      onChanged: (v) => setState(() => _from = v!),
                       contentPadding: EdgeInsets.zero,
                       activeColor: MP.green,
                       secondary: Icon(f.$2, color: MP.navy),
@@ -552,6 +553,8 @@ class _TransferState extends ConsumerState<TransferQuoteScreen> {
                         ),
                       ),
                     ),
+ ]),
+ ),
                   if (_from == 'Endereço')
                     TextField(
                       controller: _addr,

@@ -27,7 +27,7 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
   DateTime? _day;
   String? _period;
   int _people = 2;
-  bool _useCoupon = false;
+  late bool _useCoupon = Content.cupom(widget.item.cupom) != null;
   bool _busy = false;
 
   /// Mesma chave em toda nova tentativa: o banco não duplica o pedido.
@@ -356,13 +356,37 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
             color: MP.page,
             border: Border(top: BorderSide(color: MP.border)),
           ),
-          child: MpCtaButton(
-            key: const Key('booking-submit'),
-            label: ready
-                ? 'Solicitar reserva'
-                : (_day == null ? 'Escolha o dia' : 'Escolha o horário'),
-            busy: _busy,
-            onPressed: ready ? _submit : null,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (ready)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: MP.s2),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.event_available_rounded, color: MP.green, size: MP.iconSm),
+                      const SizedBox(width: MP.s2),
+                      Expanded(
+                        child: Text(
+                          '${_day!.day.toString().padLeft(2, '0')}/${_day!.month.toString().padLeft(2, '0')} · $_period · $_people ${_people == 1 ? 'pessoa' : 'pessoas'}',
+                          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: MP.ink),
+                        ),
+                      ),
+                      if (unit > 0)
+                        Text(formatBrl(total), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: MP.ink)),
+                    ],
+                  ),
+                ),
+              MpCtaButton(
+                key: const Key('booking-submit'),
+                label: ready
+                    ? 'Solicitar reserva'
+                    : (_day == null ? 'Escolha o dia' : 'Escolha o horário'),
+                busy: _busy,
+                onPressed: ready ? _submit : null,
+              ),
+            ],
           ),
         ),
       ),
