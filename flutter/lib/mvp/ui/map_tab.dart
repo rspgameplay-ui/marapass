@@ -18,6 +18,8 @@ import '../../islands/nautical_connections.dart';
 import '../../islands/nautical_screen.dart';
 import '../../domain/tourism.dart';
 import '../../location/location_service.dart';
+import '../../location/ahead_filter.dart';
+import 'package:geolocator/geolocator.dart' show Position;
 import '../../presentation/legacy_theme.dart';
 import '../../presentation/map_screen.dart';
 import '../../presentation/municipal_visit_guide.dart';
@@ -1975,6 +1977,40 @@ class _PoiSearchSheet extends StatefulWidget {
 }
 
 class _PoiSearchSheetState extends State<_PoiSearchSheet> {
+  StreamSubscription<Position>? updates;
+  Timer? expiry;
+  Position? fix;
+  double? course;
+
+  @override
+  void initState() {
+    super.initState();
+    watchLocation();
+  }
+
+  Future<void> watchLocation() async {
+    final gateway = LocationService().gateway;
+    try {
+      await gateway.authorize();
+      if (!mounted) return;
+      updates = gateway.updates().listen((p) {
+        if (!mounted || !usablePosition(p, maximumAccuracy: 50)) return;
+        expiry?.cancel();
+        setState(() { course = travelCourse(p, fix); fix = p; });
+        expiry = Timer(courseValidity - DateTime.now().difference(p.timestamp), () {
+          if (mounted) setState(() { course = null; fix = null; });
+        });
+      }, onError: (Object _) {});
+    } on Exception { /* A pesquisa textual continua disponível. */ }
+  }
+
+  @override
+  void dispose() {
+    updates?.cancel();
+    expiry?.cancel();
+    super.dispose();
+  }
+
   String _q = '';
   static String _n(String s) {
     const a = 'áàâãéêíóôõúüçÁÀÂÃÉÊÍÓÔÕÚÜÇ', b = 'aaaaeeiooouucAAAAEEIOOOUUC';
@@ -1989,15 +2025,22 @@ class _PoiSearchSheetState extends State<_PoiSearchSheet> {
   @override
   Widget build(BuildContext context) {
     final q = _n(_q.trim());
-    final list = q.length < 2
-        ? widget.pois
-              .where((p) => p.featured && p.item != null)
-              .take(12)
-              .toList()
-        : widget.pois
-              .where((p) => _n('${p.name} ${p.city}').contains(q))
-              .take(40)
-              .toList();
+    final position = fix;
+    final origin = position == null ? null : GeoPoint(position.latitude, position.longitude);
+    final candidates = widget.pois.where((p) => q.length < 2
+        ? origin != null || (p.featured && p.item != null)
+        : _n([p.name, p.city, ...?p.place?.searchAliases].join(' ')).contains(q)).toList();
+    if (origin != null) {
+      final heading = course;
+      final ahead = {if (heading != null) for (final p in candidates) if (isAhead(origin,p.point,heading)) p.id};
+      final km = {for (final p in candidates) p.id: origin.distanceKm(p.point)};
+      candidates.sort((a,b) {
+        if (ahead.contains(a.id) != ahead.contains(b.id)) return ahead.contains(a.id) ? -1 : 1;
+        final distance = km[a.id]!.compareTo(km[b.id]!);
+        return distance != 0 ? distance : a.name.compareTo(b.name);
+      });
+    }
+    final list = candidates.take(q.length < 2 ? 12 : 40).toList();
     return SafeArea(
       child: SizedBox(
         height: MediaQuery.sizeOf(context).height * .8,
@@ -2017,12 +2060,12 @@ class _PoiSearchSheetState extends State<_PoiSearchSheet> {
               ),
             ),
             if (q.length < 2)
-              const Padding(
+              Padding(
                 padding: EdgeInsets.fromLTRB(MP.pageH, 0, MP.pageH, MP.s2),
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    'Destaques',
+                    origin == null ? 'Destaques' : 'Lugares próximos',
                     style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
                   ),
                 ),

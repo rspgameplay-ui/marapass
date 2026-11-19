@@ -1,0 +1,18 @@
+[
+  {
+    "id": "marapass:cafe-da-dany-bacabeira",
+    "name": "Café da Dany",
+    "city": "Bacabeira",
+    "lat": -2.914819,
+    "lng": -44.35147,
+    "cat": "gastronomy",
+    "address": "BR-135, Avenida Brasil, Periz de Baixo",
+    "description": "Café em Periz de Baixo, na BR-135.",
+    "searchAliases": [
+      "Cafe da Dany",
+      "Café da Dani"
+    ],
+    "sourceUrl": "https://maps.app.goo.gl/ZQD3Q7vEcbhNq2RR9",
+    "dataSource": "https://jornalmaranhaoagora.com.br/lugar/cafe-da-dany-bacabeira"
+  }
+]

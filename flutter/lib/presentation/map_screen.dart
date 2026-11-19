@@ -671,6 +671,7 @@ class _MapScreenState extends ConsumerState<MapScreen>
         directionReady && isAhead(location, point, course);
 
     final sorted = <TourismPlace>[];
+    final ahead = <String>{};
     final accesses = <String, IslandLandAccess>{};
     final distances = <String, double>{};
     if (!aheadOnly || directionReady) {
@@ -687,11 +688,19 @@ class _MapScreenState extends ConsumerState<MapScreen>
         sorted.add(place);
         if (access != null) accesses[place.id] = access;
         if (point != null && location != null) {
+          if (inFront(point)) ahead.add(place.id);
           distances[place.id] = location.distanceKm(point);
         }
       }
     }
-    if (state.query.isEmpty) {
+    if (state.query.isNotEmpty && location != null) {
+      final relevance = {for (var i = 0; i < sorted.length; i++) sorted[i].id: i};
+      sorted.sort((a,b) {
+        if (ahead.contains(a.id) != ahead.contains(b.id)) return ahead.contains(a.id) ? -1 : 1;
+        final distance = (distances[a.id] ?? double.infinity).compareTo(distances[b.id] ?? double.infinity);
+        return distance != 0 ? distance : relevance[a.id]!.compareTo(relevance[b.id]!);
+      });
+    } else if (state.query.isEmpty) {
       sorted.sort((a, b) {
         if (nearby && !aheadOnly) {
           final saved = (state.saved.contains(b.id) ? 1 : 0).compareTo(
