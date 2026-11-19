@@ -105,15 +105,9 @@ export function createMapModule(supabase) {
   $('mapPreviewMapStatus').textContent='Coordenadas do rascunho salvo. Confira o acesso no local antes de marcar a entrada como verificada.';
   if(map){map.remove();map=null;}
   if(previewListener)window.removeEventListener('message',previewListener);
-  const frame=document.createElement('iframe');frame.title='Prévia do ponto no mapa MaraPass';frame.src='../?cms-preview=1';frame.className='map-preview-frame';
-  previewListener=event=>{
-    if(event.origin!==window.location.origin||event.source!==frame.contentWindow)return;
-    try{const message=JSON.parse(event.data);if(message.type==='marapass.editorial.ready'){
-      frame.contentWindow.postMessage(JSON.stringify({type:'marapass.editorial.preview',content:c}),window.location.origin);
-      $('mapPreviewMapStatus').textContent='Prévia do marcador no mesmo mapa Flutter do aplicativo. Confira as coordenadas e o acesso real antes de publicar.';
-    }}catch{/* Ignore messages from unrelated components. */}
-  };
-  window.addEventListener('message',previewListener);$('mapPreviewMap').replaceChildren(frame);map=frame;
+  const info=document.createElement('p');info.className='map-preview-frame';
+  info.textContent='A prévia visual no mapa foi desativada na versão única do app. Confira as coordenadas e o acesso real no local antes de publicar.';
+  previewListener=null;$('mapPreviewMap').replaceChildren(info);map=null;
 
  }
  async function history(){

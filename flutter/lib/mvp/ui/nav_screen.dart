@@ -12,7 +12,7 @@ import '../../domain/navigation.dart';
 import '../../domain/tourism.dart';
 import '../theme/tokens.dart';
 import '../theme/widgets.dart';
-import 'checkin.dart';
+import 'scan.dart';
 
 /// Navegação passo a passo no visual do MaraPass: mapa claro com a rota em
 /// destaque, manobra em cartão azul no topo e painel inferior com tempo,
@@ -338,7 +338,7 @@ class _RouteNavScreenState extends ConsumerState<RouteNavScreen> {
               onSimulate: _simulate,
               onSteps: _steps,
               onEnd: _end,
-              onCheckin: () => push<void>(context, const CheckinScreen()),
+              onCheckin: () => push<void>(context, const ScanScreen()),
             ),
           ),
         ],

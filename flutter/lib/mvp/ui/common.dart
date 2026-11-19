@@ -425,7 +425,7 @@ class TicketCard extends StatelessWidget {
                         Text(
                           cupom.cat.label.toUpperCase(),
                           style: const TextStyle(
-                            fontSize: 12,
+                            fontSize: 13,
                             fontWeight: FontWeight.w800,
                             color: MP.textSecondary,
                             letterSpacing: .8,

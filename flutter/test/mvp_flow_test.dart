@@ -194,8 +194,7 @@ void main() {
         await login(tester);
         expect(auth.current, isNotNull);
         expect(find.text('Revisar ativação'), findsOneWidget);
-        await tester.tap(find.byKey(const Key('review-accept')));
-        await tester.pumpAndSettle();
+        expect(find.byKey(const Key('review-terms')), findsOneWidget);
         await tester.tap(find.byKey(const Key('review-confirm')));
         await tester.pump(const Duration(milliseconds: 400));
         await tester.pumpAndSettle();
@@ -265,8 +264,6 @@ void main() {
     ) async {
       final (store, _) = await boot(tester);
       await tester.tap(find.byKey(const Key('qa-checkin')));
-      await tester.pumpAndSettle();
-      await tester.tap(find.byKey(const Key('checkin-plate')));
       await tester.pumpAndSettle();
       expect(find.text('Escanear QR Code do Local'), findsOneWidget);
       await tester.tap(find.byKey(const Key('scan-manual')));

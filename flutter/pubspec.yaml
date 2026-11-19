@@ -10,14 +10,9 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  intl: any
+  intl: 0.20.3
   flutter_riverpod: 2.6.1
-  google_maps_flutter: 2.19.0
-  google_maps_flutter_ios_sdk10: 2.19.0
   maplibre_gl: 0.27.1
-  flutter_map: 8.3.2
-  flutter_map_vector_tiles: 2.10.1
-  latlong2: 0.10.1
   flutter_tts: 4.2.5
   speech_to_text: 7.5.0
   geolocator: 14.1.2
@@ -26,13 +21,13 @@ dependencies:
   http: 1.6.0
   web: 1.1.1
   cupertino_icons: 1.0.8
-  supabase_flutter: ^2.18.3
-  qr_flutter: ^4.1.0
-  qr: ^3.0.3
-  uuid: ^4.6.0
-  flutter_svg: ^2.4.0
-  mobile_scanner: ^7.5.0
-  image_picker: ^1.2.4
+  supabase_flutter: 2.18.3
+  qr_flutter: 4.1.0
+  qr: 3.0.3
+  uuid: 4.6.0
+  flutter_svg: 2.4.0
+  mobile_scanner: 7.5.0
+  image_picker: 1.2.4
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -4,10 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../application/map_state.dart';
 import '../domain/tourism.dart';
 import '../terrain/terrain_widgets.dart' show terrainLink;
-import '../presentation/navigation_screen.dart';
 import 'coastal_island.dart';
 import 'island_land_access.dart';
-import 'nautical_screen.dart';
 
 class IslandDirectory extends ConsumerStatefulWidget {
   const IslandDirectory({super.key});
@@ -90,16 +88,6 @@ class _IslandDirectoryState extends ConsumerState<IslandDirectory> {
                     Navigator.pop(context);
                   },
                 ),
-                TextButton.icon(
-                  onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute<void>(
-                      builder: (_) => const NauticalScreen(),
-                    ),
-                  ),
-                  icon: const Icon(Icons.directions_boat_outlined),
-                  label: const Text('Travessias e pontos de embarque'),
-                ),
                 const SizedBox(height: 12),
                 const Text(
                   'O marcador localiza a ilha; não indica desembarque ou acesso liberado. Combine a visita com a comunidade ou prestador local e confira maré, tempo, embarcação e coletes.',
@@ -175,16 +163,6 @@ class IslandVisitInfo extends ConsumerWidget {
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
-            OutlinedButton.icon(
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute<void>(
-                  builder: (_) => NauticalScreen(islandId: island.place.id),
-                ),
-              ),
-              icon: const Icon(Icons.directions_boat_outlined),
-              label: const Text('Travessias e embarque'),
-            ),
             Text(
               island.place.id == 'osm:relation:10037013'
                   ? 'Upaon-Açu também é conhecida como Ilha do Maranhão ou Ilha de São Luís. Abrange São Luís, São José de Ribamar, Paço do Lumiar e Raposa. Para chegar de carro, escolha um endereço ou estabelecimento específico.'
@@ -205,20 +183,6 @@ class IslandVisitInfo extends ConsumerWidget {
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
                 Text(access.destination.description),
-                FilledButton.icon(
-                  onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute<void>(
-                      builder: (_) => NavigationScreen(
-                        destination: access.destination,
-                        autoPlan: true,
-                        roadOnly: true,
-                      ),
-                    ),
-                  ),
-                  icon: const Icon(Icons.directions_car_outlined),
-                  label: Text('Rota de carro até ${access.destination.name}'),
-                ),
                 Wrap(
                   spacing: 8,
                   children: [

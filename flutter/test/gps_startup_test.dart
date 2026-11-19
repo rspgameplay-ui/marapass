@@ -12,7 +12,7 @@ import 'package:marapass_mapa/domain/tourism.dart';
 import 'package:marapass_mapa/location/location_service.dart';
 
 import 'location_service_test.dart' show FakeLocation, fix;
-import 'navigation_test.dart' show road, fixture;
+import 'helpers.dart' show road, fixture;
 
 class SingleFixGateway extends FakeLocation implements InitialLocationGateway {
   int initialReads = 0;

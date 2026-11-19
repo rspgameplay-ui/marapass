@@ -7,8 +7,7 @@ import '../data/content.dart';
 import '../data/store.dart';
 import '../theme/tokens.dart';
 import '../theme/widgets.dart';
-import 'booking.dart';
-import 'checkin.dart';
+import 'scan.dart';
 import 'common.dart';
 
 /// Ícone e cor de cada polo nos carimbos (vetoriais: nítidos em qualquer tela).
@@ -17,8 +16,8 @@ const _poloStyle = <String, (IconData, Color)>{
   'delta': (Icons.sailing_rounded, Color(0xff0f7a8a)),
   'chapada': (Icons.terrain_rounded, Color(0xffb4541f)),
   'saoluis': (Icons.account_balance_rounded, Color(0xff8a5a2b)),
-  'munim': (Icons.kayaking_rounded, Color(0xff14775a)),
-  'guaras': (Icons.flutter_dash_rounded, Color(0xffc53b36)),
+  'munim': (Icons.kayaking_rounded, MP.green),
+  'guaras': (Icons.flutter_dash_rounded, MP.error),
   'lagos': (Icons.local_florist_rounded, Color(0xff6a4fb3)),
   'cocais': (Icons.park_rounded, Color(0xff5d7a1f)),
   'amazonia': (Icons.forest_rounded, Color(0xff1e6b3a)),
@@ -51,7 +50,7 @@ class _PassportScreenState extends ConsumerState<PassportScreen> {
         children: [
           MpHero(
             title: 'Meu passaporte',
-            subtitle: 'Seus carimbos, pontos e visitas.',
+            subtitle: 'Visite lugares, ganhe carimbos e pontos.',
             child: _Cover(store: store, progress: progress),
           ),
           const SizedBox(height: MP.s4),
@@ -64,15 +63,7 @@ class _PassportScreenState extends ConsumerState<PassportScreen> {
                   key: const Key('pass-checkin'),
                   label: 'Registrar visita',
                   icon: Icons.qr_code_scanner_rounded,
-                  onPressed: () => push<void>(context, const CheckinScreen()),
-                ),
-                const SizedBox(height: MP.s2),
-                OutlinedButton.icon(
-                  key: const Key('pass-reservas'),
-                  onPressed: () =>
-                      push<void>(context, const ReservationsScreen()),
-                  icon: const Icon(Icons.event_note_rounded, size: MP.iconMd),
-                  label: const Text('Minhas reservas'),
+                  onPressed: () => push<void>(context, const ScanScreen()),
                 ),
               ],
             ),
@@ -107,176 +98,165 @@ class _PassportScreenState extends ConsumerState<PassportScreen> {
   }
 }
 
-/// Capa do passaporte: azul-marinho com cata-vento discreto, anel de progresso.
+/// Capa do passaporte em formato de bilhete: parte branca com nível e
+/// progresso, estatísticas, e canhoto azul com os pontos e código de barras.
 class _Cover extends StatelessWidget {
   const _Cover({required this.store, required this.progress});
   final AppStore store;
   final double progress;
+
+  static const _blue = MP.ticket;
+  static const _blueDark = MP.ticketDark;
+
   @override
   Widget build(BuildContext context) {
     final lv = store.level;
+    final name = store.name ?? 'Viajante';
+    final stamped = store.stampedPolos.length;
+    final used = store.coupons.where((c) => c.used).length;
     return Semantics(
-      label: 'Nível ${lv.$1}, ${store.points} pontos',
+      label: 'Nível ${lv.$1}, ${store.points} pontos, $stamped de ${Content.polos.length} carimbos',
       child: Container(
-        clipBehavior: Clip.antiAlias,
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xff0b3a66), Color(0xff0e4d84)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(MP.rXl),
-          boxShadow: MP.shadowFloat,
-        ),
-        child: Stack(
+        decoration: BoxDecoration(boxShadow: MP.shadowFloat),
+        child: Column(
           children: [
-            Positioned(
-              right: -40,
-              top: -40,
-              child: CustomPaint(
-                size: const Size(200, 200),
-                painter: _CoverPattern(),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(MP.s5),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.menu_book_rounded,
-                        color: MP.yellow,
-                        size: MP.iconMd,
-                      ),
-                      const SizedBox(width: MP.s2),
-                      const Expanded(
-                        child: Text(
-                          'PASSAPORTE MARAPASS',
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: 1.6,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                      Flexible(
-                        child: Text(
-                          store.name ?? 'Viajante',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w800,
-                            fontSize: 15,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: MP.s5),
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: 108,
-                        height: 108,
-                        child: TweenAnimationBuilder<double>(
-                          tween: Tween(begin: 0, end: progress),
-                          duration: const Duration(milliseconds: 900),
-                          curve: Curves.easeOutCubic,
-                          builder: (_, v, _) => CustomPaint(
-                            painter: _Ring(v),
-                            child: Center(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    '${store.points}',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 28,
-                                      fontWeight: FontWeight.w800,
-                                      height: 1,
-                                    ),
-                                  ),
-                                  const Text(
-                                    'pontos',
-                                    style: TextStyle(
-                                      color: Colors.white70,
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: MP.s5),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Seu nível',
-                              style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 14,
-                              ),
-                            ),
-                            Text(
-                              lv.$1,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 28,
-                                fontWeight: FontWeight.w800,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              lv.$4 == null
-                                  ? 'Nível máximo alcançado'
-                                  : 'Faltam ${lv.$4! - store.points} pts para ${lv.$3}',
-                              style: const TextStyle(
-                                color: MP.yellow,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: MP.s5),
-                  Container(
-                    padding: const EdgeInsets.symmetric(vertical: MP.s3),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: .08),
-                      borderRadius: BorderRadius.circular(MP.rMedium),
-                    ),
-                    child: Row(
+            ClipPath(
+              clipper: _TicketClipper(top: false),
+              child: Container(
+                color: Colors.white,
+                padding: const EdgeInsets.fromLTRB(MP.s5, MP.s5, MP.s5, MP.s4),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
                       children: [
-                        _Mini(
-                          label: 'Visitas',
-                          value: '${store.checkins.length}',
+                        const Icon(Icons.explore_rounded, color: _blue, size: MP.iconLg),
+                        const SizedBox(width: MP.s2),
+                        const Expanded(
+                          child: Text(
+                            'PASSAPORTE\nMARAPASS',
+                            style: TextStyle(color: MP.ink, fontSize: 13, fontWeight: FontWeight.w800, letterSpacing: 1.2, height: 1.2),
+                          ),
                         ),
-                        _Mini(
-                          label: 'Carimbos',
-                          value:
-                              '${store.stampedPolos.length}/${Content.polos.length}',
-                        ),
-                        _Mini(
-                          label: 'Cupons usados',
-                          value: '${store.coupons.where((c) => c.used).length}',
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: MP.s3, vertical: 6),
+                          decoration: BoxDecoration(color: _blueDark, borderRadius: BorderRadius.circular(6)),
+                          child: Text(
+                            lv.$1.toUpperCase(),
+                            style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w800, letterSpacing: .6),
+                          ),
                         ),
                       ],
                     ),
-                  ),
-                ],
+                    const SizedBox(height: MP.s5),
+                    const Text('Viajante', style: TextStyle(color: MP.textMuted, fontSize: 13, fontWeight: FontWeight.w700)),
+                    Text(
+                      name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(color: _blue, fontSize: 32, fontWeight: FontWeight.w800, height: 1.1),
+                    ),
+                    const SizedBox(height: MP.s4),
+                    // "Rota" de nível: de onde está até o próximo
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Flexible(flex: 3, child: _Leg(label: 'Nível atual', value: lv.$1)),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(MP.s2, 0, MP.s2, 6),
+                            child: LayoutBuilder(
+                              builder: (_, c) {
+                                final plane = Icon(Icons.flight_takeoff_rounded, color: _blue.withValues(alpha: .8), size: 22);
+                                if (c.maxWidth < 64) return Center(child: plane);
+                                return Row(
+                                  children: [
+                                    const Expanded(child: _Dashes()),
+                                    const SizedBox(width: 6),
+                                    plane,
+                                    const SizedBox(width: 6),
+                                    const Expanded(child: _Dashes()),
+                                  ],
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                        Flexible(flex: 3, child: _Leg(label: 'Próximo nível', value: lv.$4 == null ? 'Máximo' : lv.$3 ?? '', end: true)),
+                      ],
+                    ),
+                    const SizedBox(height: MP.s3),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(MP.rPill),
+                      child: TweenAnimationBuilder<double>(
+                        tween: Tween(begin: 0, end: progress),
+                        duration: const Duration(milliseconds: 900),
+                        curve: Curves.easeOutCubic,
+                        builder: (_, v, _) => LinearProgressIndicator(
+                          value: v,
+                          minHeight: 8,
+                          backgroundColor: MP.ticketTrack,
+                          valueColor: const AlwaysStoppedAnimation(_blue),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      lv.$4 == null ? 'Nível máximo alcançado' : 'Faltam ${lv.$4! - store.points} pts para ${lv.$3}',
+                      style: const TextStyle(color: MP.textSecondary, fontSize: 13, fontWeight: FontWeight.w700),
+                    ),
+                    const SizedBox(height: MP.s4),
+                    const Divider(height: 1, color: MP.border),
+                    const SizedBox(height: MP.s3),
+                    Row(
+                      children: [
+                        _Stat(label: 'Visitas', value: '${store.checkins.length}'),
+                        const _StatDivider(),
+                        _Stat(label: 'Carimbos', value: '$stamped/${Content.polos.length}'),
+                        const _StatDivider(),
+                        _Stat(label: 'Cupons', value: '$used'),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 3),
+            ClipPath(
+              clipper: _TicketClipper(top: true),
+              child: Container(
+                color: _blue,
+                padding: const EdgeInsets.fromLTRB(MP.s5, MP.s5, MP.s5, MP.s4),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Seus pontos', style: TextStyle(color: MP.onBlueMuted, fontSize: 13, fontWeight: FontWeight.w700)),
+                          Text(
+                            '${store.points}',
+                            style: const TextStyle(color: Colors.white, fontSize: 40, fontWeight: FontWeight.w800, height: 1.1),
+                          ),
+                          const Text('pts acumulados', style: TextStyle(color: MP.onBlueMuted, fontSize: 13, fontWeight: FontWeight.w600)),
+                        ],
+                      ),
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        SizedBox(
+                          width: 120,
+                          height: 44,
+                          child: CustomPaint(painter: _BarcodePainter(store.points + store.checkins.length * 7)),
+                        ),
+                        const SizedBox(height: 6),
+                        const Text('Obrigado por viajar!', style: TextStyle(color: MP.onBlueMuted, fontSize: 13, fontWeight: FontWeight.w600)),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -286,93 +266,100 @@ class _Cover extends StatelessWidget {
   }
 }
 
-class _Ring extends CustomPainter {
-  _Ring(this.v);
-  final double v;
+class _Leg extends StatelessWidget {
+  const _Leg({required this.label, required this.value, this.end = false});
+  final String label, value;
+  final bool end;
   @override
-  void paint(Canvas canvas, Size size) {
-    final rect = Offset.zero & size;
-    const stroke = 10.0;
-    final r = rect.deflate(stroke / 2);
-    canvas.drawArc(
-      r,
-      0,
-      math.pi * 2,
-      false,
-      Paint()
-        ..color = Colors.white24
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = stroke,
-    );
-    canvas.drawArc(
-      r,
-      -math.pi / 2,
-      math.pi * 2 * v,
-      false,
-      Paint()
-        ..color = MP.yellow
-        ..style = PaintingStyle.stroke
-        ..strokeCap = StrokeCap.round
-        ..strokeWidth = stroke,
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant _Ring old) => old.v != v;
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: end ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+    children: [
+      Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: MP.textMuted, fontSize: 13, fontWeight: FontWeight.w700)),
+      Text(value, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: MP.ink, fontSize: 20, fontWeight: FontWeight.w800)),
+    ],
+  );
 }
 
-class _CoverPattern extends CustomPainter {
+class _Dashes extends StatelessWidget {
+  const _Dashes();
   @override
-  void paint(Canvas canvas, Size size) {
-    final c = size.center(Offset.zero);
-    final p = Paint()..color = Colors.white.withValues(alpha: .05);
-    for (var i = 0; i < 6; i++) {
-      final a = i * math.pi / 3;
-      final path = Path()
-        ..moveTo(c.dx, c.dy)
-        ..quadraticBezierTo(
-          c.dx + math.cos(a) * 90,
-          c.dy + math.sin(a) * 90,
-          c.dx + math.cos(a + .6) * 95,
-          c.dy + math.sin(a + .6) * 95,
-        )
-        ..close();
-      canvas.drawPath(path, p);
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (_, c) {
+      final n = (c.maxWidth / 8).floor().clamp(0, 40);
+      if (n == 0) return const SizedBox.shrink();
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: List.generate(n, (_) => Container(width: 4, height: 2, color: const Color(0xffb7c6e6))),
+      );
+    },
+  );
 }
 
-class _Mini extends StatelessWidget {
-  const _Mini({required this.label, required this.value});
-  final String label;
-  final String value;
+class _Stat extends StatelessWidget {
+  const _Stat({required this.label, required this.value});
+  final String label, value;
   @override
   Widget build(BuildContext context) => Expanded(
     child: Column(
       children: [
-        Text(
-          value,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.w800,
-          ),
-        ),
-        Text(
-          label,
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            color: Colors.white70,
-            fontSize: 12,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
+        Text(value, style: const TextStyle(color: MP.ink, fontSize: 20, fontWeight: FontWeight.w800)),
+        const SizedBox(height: 2),
+        Text(label, style: const TextStyle(color: MP.textMuted, fontSize: 13, fontWeight: FontWeight.w700)),
       ],
     ),
   );
+}
+
+class _StatDivider extends StatelessWidget {
+  const _StatDivider();
+  @override
+  Widget build(BuildContext context) => Container(width: 1, height: 32, color: MP.border);
+}
+
+/// Recorta o bilhete: cantos arredondados e meia-lua de cada lado na
+/// "picotagem" (base da parte branca / topo do canhoto).
+class _TicketClipper extends CustomClipper<Path> {
+  const _TicketClipper({required this.top});
+  final bool top;
+  @override
+  Path getClip(Size size) {
+    const r = 18.0, n = 10.0;
+    final rr = RRect.fromRectAndCorners(
+      Offset.zero & size,
+      topLeft: Radius.circular(top ? 0 : r),
+      topRight: Radius.circular(top ? 0 : r),
+      bottomLeft: Radius.circular(top ? r : 0),
+      bottomRight: Radius.circular(top ? r : 0),
+    );
+    final base = Path()..addRRect(rr);
+    final y = top ? 0.0 : size.height;
+    final cut = Path()
+      ..addOval(Rect.fromCircle(center: Offset(0, y), radius: n))
+      ..addOval(Rect.fromCircle(center: Offset(size.width, y), radius: n));
+    return Path.combine(PathOperation.difference, base, cut);
+  }
+
+  @override
+  bool shouldReclip(covariant _TicketClipper old) => old.top != top;
+}
+
+class _BarcodePainter extends CustomPainter {
+  _BarcodePainter(this.seed);
+  final int seed;
+  @override
+  void paint(Canvas canvas, Size size) {
+    final p = Paint()..color = Colors.white;
+    var x = 0.0, s = seed * 2654435761 % 4294967296;
+    while (x < size.width) {
+      s = (s * 1103515245 + 12345) % 2147483648;
+      final w = 1.0 + (s % 3);
+      canvas.drawRect(Rect.fromLTWH(x, 0, w, size.height), p);
+      x += w + 1.5 + (s >> 4) % 3;
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _BarcodePainter old) => old.seed != seed;
 }
 
 /// Carimbo vetorial: anel duplo tracejado, ícone do polo e data da visita.
@@ -412,7 +399,7 @@ class Stamp extends StatelessWidget {
                             '${date!.day.toString().padLeft(2, '0')}/${date!.month.toString().padLeft(2, '0')}',
                             style: TextStyle(
                               color: color,
-                              fontSize: 11,
+                              fontSize: 13,
                               fontWeight: FontWeight.w800,
                             ),
                           ),
@@ -665,7 +652,7 @@ class _Achievements extends StatelessWidget {
                                 ? const LinearGradient(
                                     colors: [
                                       Color(0xfff6d365),
-                                      Color(0xffd4a017),
+                                      MP.gold,
                                     ],
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
@@ -742,7 +729,7 @@ class _HistoryState extends State<_History> {
       final polo = Content.polo(c.polo).nome;
       out.add(_Entry(c.at, Icons.verified_rounded, MP.success, 'Visita: ${Content.item(c.itemId)?.titulo ?? 'Local'}', '${c.cidade} · $polo', 50, 'CK-${n.toString().padLeft(4, '0')}'));
       if (seenPolos.add(c.polo)) {
-        out.add(_Entry(c.at.add(const Duration(seconds: 1)), Icons.workspace_premium_rounded, const Color(0xffa87b00), 'Carimbo novo: $polo', 'Primeira visita no polo', 100, 'ST-${c.polo.toUpperCase()}'));
+        out.add(_Entry(c.at.add(const Duration(seconds: 1)), Icons.workspace_premium_rounded, MP.goldText, 'Carimbo novo: $polo', 'Primeira visita no polo', 100, 'ST-${c.polo.toUpperCase()}'));
       }
     }
     for (final e in store.commercialPoints) {
@@ -875,7 +862,7 @@ class _LedgerRow extends StatelessWidget {
               children: [
                 Text(e.title, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: MP.ink)),
                 Text('${fmtTime(e.at)} · ${e.detail}', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 14, color: MP.textSecondary)),
-                Text('Ref. ${e.ref}', style: const TextStyle(fontSize: 12, color: MP.textMuted, letterSpacing: .4)),
+                Text('Ref. ${e.ref}', style: const TextStyle(fontSize: 13, color: MP.textMuted, letterSpacing: .4)),
               ],
             ),
           ),
@@ -887,7 +874,7 @@ class _LedgerRow extends StatelessWidget {
                 MpBadge(e.status!, fg: MP.textSecondary)
               else
                 Text('+${e.points}', style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: MP.success)),
-              Text('Saldo $balance', style: const TextStyle(fontSize: 12, color: MP.textSecondary)),
+              Text('Saldo $balance', style: const TextStyle(fontSize: 13, color: MP.textSecondary)),
             ],
           ),
         ],

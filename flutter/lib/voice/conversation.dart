@@ -149,8 +149,9 @@ class MapConversation {
     if (other) {
       if (pendingRoute != null) {
         excluded.add(pendingRoute!.id);
-      } else if (candidates.length == 1)
+      } else if (candidates.length == 1) {
         excluded.add(candidates.single.id);
+      }
     } else {
       excluded = {};
     }

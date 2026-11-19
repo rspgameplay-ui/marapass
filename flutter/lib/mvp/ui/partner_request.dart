@@ -83,7 +83,7 @@ class _PartnerRequestState extends ConsumerState<PartnerRequestScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
               child: _loading
-                  ? const Padding(padding: EdgeInsets.all(MP.s8), child: MpLoading())
+                  ? const Padding(padding: EdgeInsets.all(MP.s8), child: MpSkeletonList())
                   : status == 'pendente'
                   ? MpNotice(
                       key: const Key('partner-pending'),

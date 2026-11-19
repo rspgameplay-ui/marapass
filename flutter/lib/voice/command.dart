@@ -172,10 +172,11 @@ MapCommand parseCommand(
     dateMatch = 'hoje';
   } else if (RegExp(
     r'\b(dia|janeiro|fevereiro|marco|abril|maio|junho|julho|agosto|setembro|outubro|novembro|dezembro)\b',
-  ).hasMatch(raw))
+  ).hasMatch(raw)) {
     return const MapCommand(
       error: 'Não entendi a data. Diga, por exemplo, 20 de janeiro de 2027.',
     );
+  }
   if (day != null &&
       (day.isBefore(today) || day.difference(today).inDays > 366)) {
     return const MapCommand(

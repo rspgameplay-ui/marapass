@@ -9,8 +9,6 @@ import 'package:marapass_mapa/application/map_state.dart';
 import 'package:marapass_mapa/data/tourism_repository.dart';
 import 'package:marapass_mapa/domain/tourism.dart';
 import 'package:marapass_mapa/presentation/municipal_visit_guide.dart';
-import 'package:marapass_mapa/presentation/map_screen.dart';
-import 'package:marapass_mapa/recording/recording_screen.dart';
 
 void main() {
   test('catálogo e painel preservam os mesmos registros e corrigem lagoas', () {
@@ -82,70 +80,4 @@ void main() {
     });
   }
 
-  testWidgets('ficha natural mantém planejamento e não oferece Waze direto', (
-    tester,
-  ) async {
-    SharedPreferences.setMockInitialValues({});
-    final repo = TourismRepository(
-      await SharedPreferences.getInstance(),
-      apiUrl: '',
-      publishableKey: '',
-    );
-    await tester.runAsync(repo.initialize);
-    final map = MapCoordinator(repo)..engine(MapEngine.essential);
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          repositoryProvider.overrideWithValue(repo),
-          mapStateProvider.overrideWith((ref) => map),
-        ],
-        child: MaterialApp(
-          home: Scaffold(
-            body: PlaceDetails(
-              place: repo.seed.firstWhere((p) => p.id == 'osm:node:5201075226'),
-              onFocus: () {},
-              onNavigate: () {},
-            ),
-          ),
-        ),
-      ),
-    );
-    await tester.pumpAndSettle();
-    expect(find.text('Planejar visita'), findsOneWidget);
-    expect(find.text('Abrir Waze'), findsNothing);
-    expect(tester.takeException(), isNull);
-  });
-  testWidgets('gravador apresenta controles com texto ampliado no celular', (
-    tester,
-  ) async {
-    tester.view.physicalSize = const Size(320, 740);
-    tester.view.devicePixelRatio = 1;
-    tester.platformDispatcher.textScaleFactorTestValue = 1.6;
-    addTearDown(tester.view.resetPhysicalSize);
-    addTearDown(tester.view.resetDevicePixelRatio);
-    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
-    SharedPreferences.setMockInitialValues({});
-    final repo = TourismRepository(
-      await SharedPreferences.getInstance(),
-      apiUrl: '',
-      publishableKey: '',
-    );
-    await tester.runAsync(repo.initialize);
-    final map = MapCoordinator(repo)..engine(MapEngine.essential);
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          repositoryProvider.overrideWithValue(repo),
-          mapStateProvider.overrideWith((ref) => map),
-        ],
-        child: const MaterialApp(home: RecordingScreen()),
-      ),
-    );
-    await tester.pumpAndSettle();
-    await tester.scrollUntilVisible(find.text('Iniciar gravação'), 200);
-    expect(find.text('Iniciar gravação'), findsOneWidget);
-    expect(tester.takeException(), isNull);
-    await tester.pumpWidget(const SizedBox());
-    await tester.pump();
-  });
 }

@@ -13,6 +13,11 @@ final mvpRepositoryProvider = Provider<MvpRepository>(
 /// provider só muda quando texto ou categoria mudam.
 typedef ExploreQuery = ({String query, String category});
 
+// LEGADO: os providers de experiences/offers/slots/cupons/reservas/passaporte abaixo
+// leem as tabelas canônicas e NÃO são usados por nenhuma tela (as telas usam
+// appStoreProvider -> mvp/data/remote.dart -> RPCs mvp_*). Só profileProvider
+// (excluir conta) está em uso. Não construir telas novas sobre eles.
+
 final experiencesProvider = FutureProvider.autoDispose
     .family<List<Experience>, ExploreQuery>(
       (ref, q) => ref

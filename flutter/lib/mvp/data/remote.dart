@@ -1,7 +1,9 @@
 import 'dart:typed_data';
 
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'catalog_cache.dart';
 import 'repository.dart';
 import 'supabase_repository.dart' show translateError;
 
@@ -9,8 +11,9 @@ import 'supabase_repository.dart' show translateError;
 /// check-ins do app web). Regras de uso único, idempotência e permissão do
 /// parceiro ficam no banco; aqui só chamamos e traduzimos os erros.
 class MvpRemote {
-  MvpRemote(this._c);
+  MvpRemote(this._c, [SharedPreferences? prefs]) : _cache = CatalogCache(prefs);
   final SupabaseClient _c;
+  final CatalogCache _cache;
 
   String? get userId => _c.auth.currentUser?.id;
   bool get signedIn =>
@@ -178,12 +181,17 @@ class MvpRemote {
       _g(() async => (await _c.rpc('mvp_is_partner')) == true);
 
   // ---------- Ofertas do parceiro
+  /// Ofertas publicadas: sem internet, mostra a última lista guardada desta
+  /// conta (a chave inclui o usuário, para nunca misturar contas).
   Future<List<Map<String, dynamic>>> offers() => _g(
-    () async => List<Map<String, dynamic>>.from(
-      await _c
-          .from('mvp_partner_offers')
-          .select()
-          .order('created_at', ascending: false),
+    () => _cache.rows(
+      'pof:${userId ?? ''}',
+      () async => List<Map<String, dynamic>>.from(
+        await _c
+            .from('mvp_partner_offers')
+            .select()
+            .order('created_at', ascending: false),
+      ),
     ),
   );
 

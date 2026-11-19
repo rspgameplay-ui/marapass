@@ -55,7 +55,7 @@ class SupportCenterScreen extends ConsumerWidget {
                     title: 'Sugestões e avaliações',
                     subtitle: 'Ajude a melhorar o programa',
                     tint: MP.tintYellow,
-                    color: const Color(0xffa87b00),
+                    color: MP.goldText,
                     onTap: () => push<void>(
                       context,
                       const ComposeScreen(
