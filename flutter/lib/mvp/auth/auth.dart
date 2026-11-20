@@ -1,3 +1,4 @@
+import '../i18n.dart';
 import 'dart:async';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -113,8 +114,8 @@ class DemoAuthGateway implements AuthGateway {
   @override
   Future<void> verifyCode(String email, String code) async {
     if (code.trim() != demoCode) {
-      throw const MvpException(
-        'Código inválido ou vencido. Peça um novo código.',
+      throw MvpException(
+        tr('Código inválido ou vencido. Peça um novo código.'),
       );
     }
     _user = AuthUser(id: 'demo-user', email: email.trim());

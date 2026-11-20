@@ -9,9 +9,9 @@ class _OffersTab extends ConsumerWidget {
       child: ListView(
         padding: const EdgeInsets.only(bottom: MP.s8),
         children: [
-          const _PartnerHeader(
+          _PartnerHeader(
             'Gestão de cupons',
-            subtitle: 'Crie, pause e acompanhe suas ofertas.',
+            subtitle: tr('Crie, pause e acompanhe suas ofertas.'),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
@@ -23,7 +23,7 @@ class _OffersTab extends ConsumerWidget {
                   onPressed: () =>
                       push<void>(context, const CreateOfferScreen()),
                   icon: const Icon(Icons.add_rounded),
-                  label: const Text('Criar nova oferta'),
+                  label: Text(tr('Criar nova oferta')),
                 ),
                 const SizedBox(height: MP.s4),
                 if (CatalogCache.servingStale) ...[
@@ -100,9 +100,9 @@ class _OfferStatus extends StatelessWidget {
   final String s;
   @override
   Widget build(BuildContext context) => switch (s) {
-    'Ativa' => const MpBadge('Ativa', fg: MP.success),
-    'Pausada' => const MpBadge('Pausada', fg: MP.warning, bg: MP.warningBg),
-    'Em análise' => const MpBadge('Em análise', fg: MP.info),
+    'Ativa' => MpBadge(tr('Ativa'), fg: MP.success),
+    'Pausada' => MpBadge(tr('Pausada'), fg: MP.warning, bg: MP.warningBg),
+    'Em análise' => MpBadge(tr('Em análise'), fg: MP.info),
     _ => MpBadge(s, fg: MP.textSecondary),
   };
 }
@@ -129,7 +129,7 @@ class OfferManageScreen extends ConsumerWidget {
                         SaleOfferForm(offerId: o.id, existing: o.saleTerms),
                   ),
                 ),
-                child: const Text('Configurar preço, desconto e pagamento'),
+                child: Text(tr('Configurar preço, desconto e pagamento')),
               ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
@@ -190,7 +190,7 @@ class OfferManageScreen extends ConsumerWidget {
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                const Padding(
+                                Padding(
                                   padding: EdgeInsets.fromLTRB(
                                     MP.pageH,
                                     0,
@@ -198,7 +198,7 @@ class OfferManageScreen extends ConsumerWidget {
                                     MP.s2,
                                   ),
                                   child: Text(
-                                    'Por que pausar?',
+                                    tr('Por que pausar?'),
                                     style: TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.w800,
@@ -239,7 +239,7 @@ class OfferManageScreen extends ConsumerWidget {
                         }
                       },
                       icon: const Icon(Icons.pause_rounded),
-                      label: const Text('Pausar oferta'),
+                      label: Text(tr('Pausar oferta')),
                     ),
                   if (o.status == 'Pausada')
                     FilledButton.icon(
@@ -248,18 +248,18 @@ class OfferManageScreen extends ConsumerWidget {
                         try {
                           await s.setOfferStatusAsync(o.id, 'Ativa');
                           if (context.mounted) {
-                            showMpSnack(context, 'Oferta ativa de novo.');
+                            showMpSnack(context, tr('Oferta ativa de novo.'));
                           }
                         } on MvpException catch (e) {
                           if (context.mounted) showMpSnack(context, e.message);
                         }
                       },
                       icon: const Icon(Icons.play_arrow_rounded),
-                      label: const Text('Retomar oferta'),
+                      label: Text(tr('Retomar oferta')),
                     ),
                   if (o.status == 'Em análise') ...[
-                    const MpNotice(
-                      'A equipe MaraPass confere a oferta antes de publicar. Você recebe um aviso.',
+                    MpNotice(
+                      tr('A equipe MaraPass confere a oferta antes de publicar. Você recebe um aviso.'),
                     ),
                     if (s.online) ...[
                       const SizedBox(height: MP.s3),
@@ -284,7 +284,7 @@ class OfferManageScreen extends ConsumerWidget {
                           }
                         },
                         icon: const Icon(Icons.verified_rounded),
-                        label: const Text('Aprovar (demonstração)'),
+                        label: Text(tr('Aprovar (demonstração)')),
                       ),
                     ],
                   ],

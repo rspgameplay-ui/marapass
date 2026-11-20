@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../i18n.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -26,17 +27,17 @@ class MyRoutesScreen extends ConsumerWidget {
         key: const Key('route-new'),
         onPressed: () => push<void>(context, const RouteBuilderScreen()),
         icon: const Icon(Icons.add_rounded),
-        label: const Text('Nova rota'),
+        label: Text(tr('Nova rota')),
       ),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.only(bottom: 96),
           children: [
-            const MpHeader('Defina sua Rota', subtitle: 'Monte seu passeio do seu jeito.'),
+            MpHeader(tr('Defina sua Rota'), subtitle: tr('Monte seu passeio do seu jeito.')),
             if (store.trips.isEmpty)
-              const Padding(
+              Padding(
                 padding: EdgeInsets.symmetric(horizontal: MP.pageH),
-                child: MpNotice('Você ainda não montou nenhuma rota. Escolha as datas, os lugares e os horários; o app só dá dicas.'),
+                child: MpNotice(tr('Você ainda não montou nenhuma rota. Escolha as datas, os lugares e os horários; o app só dá dicas.')),
               ),
             for (final t in store.trips)
               Padding(
@@ -58,7 +59,7 @@ class MyRoutesScreen extends ConsumerWidget {
 
 String _dm(DateTime d) => '${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}';
 const _wd = ['seg', 'ter', 'qua', 'qui', 'sex', 'sáb', 'dom'];
-String _dayLabel(DateTime d) => '${_wd[d.weekday - 1]}, ${_dm(d)}';
+String _dayLabel(DateTime d) => '${(appLang == 'en' ? const ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] : _wd)[d.weekday - 1]}, ${appLang == 'en' ? '${d.month.toString().padLeft(2, '0')}/${d.day.toString().padLeft(2, '0')}' : _dm(d)}';
 
 /// "Defina sua Rota": Quando, Onde, Horários e Extras, e o resumo final com
 /// linha do tempo, conflitos e custo estimado. O app não monta o roteiro.
@@ -118,7 +119,7 @@ class _RouteBuilderScreenState extends ConsumerState<RouteBuilderScreen> {
     _t.name = name;
     await ref.read(appStoreProvider).saveTrip(_t);
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Rota salva em Meu passaporte.')));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(tr('Rota salva em Meu passaporte.'))));
   }
 
   Future<String?> _askName() {
@@ -126,11 +127,11 @@ class _RouteBuilderScreenState extends ConsumerState<RouteBuilderScreen> {
     return showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Nome da rota'),
+        title: Text(tr('Nome da rota')),
         content: TextField(key: const Key('route-name'), controller: c, autofocus: true),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancelar')),
-          FilledButton(key: const Key('route-name-ok'), onPressed: () => Navigator.pop(ctx, c.text.trim().isEmpty ? 'Minha rota' : c.text.trim()), child: const Text('Salvar')),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(tr('Cancelar'))),
+          FilledButton(key: const Key('route-name-ok'), onPressed: () => Navigator.pop(ctx, c.text.trim().isEmpty ? tr('Minha rota') : c.text.trim()), child: Text(tr('Salvar'))),
         ],
       ),
     );
@@ -143,20 +144,20 @@ class _RouteBuilderScreenState extends ConsumerState<RouteBuilderScreen> {
     final go = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Reservar tudo'),
+        title: Text(tr('Reservar tudo')),
         content: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
           for (final r in reqs) Padding(padding: const EdgeInsets.only(bottom: 6), child: Text('• ${r.item.titulo}: ${_dm(r.day)}, ${r.period}')),
           const SizedBox(height: MP.s2),
-          const Text('Cada parceiro confirma a vaga e combina o pagamento com você. Nada é cobrado no app.', style: TextStyle(fontSize: 13, color: MP.textSecondary)),
+          Text(tr('Cada parceiro confirma a vaga e combina o pagamento com você. Nada é cobrado no app.'), style: TextStyle(fontSize: 13, color: MP.textSecondary)),
         ]),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancelar')),
-          FilledButton(key: const Key('route-reserve-ok'), onPressed: () => Navigator.pop(ctx, true), child: const Text('Enviar pedidos')),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(tr('Cancelar'))),
+          FilledButton(key: const Key('route-reserve-ok'), onPressed: () => Navigator.pop(ctx, true), child: Text(tr('Enviar pedidos'))),
         ],
       ),
     );
     if (go != true || !mounted) return;
-    final ok = await requireLogin(context, ref, reason: 'Entre para enviar os pedidos de reserva. Você volta direto para cá.');
+    final ok = await requireLogin(context, ref, reason: tr('Entre para enviar os pedidos de reserva. Você volta direto para cá.'));
     if (!ok || !mounted) return;
     setState(() => _busy = true);
     final store = ref.read(appStoreProvider);
@@ -201,7 +202,7 @@ class _RouteBuilderScreenState extends ConsumerState<RouteBuilderScreen> {
   Future<void> _share() async {
     await Clipboard.setData(ClipboardData(text: _shareText()));
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Roteiro copiado. Cole no WhatsApp ou onde quiser.')));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(tr('Roteiro copiado. Cole no WhatsApp ou onde quiser.'))));
   }
 
   void _showOnMap(DateTime d) {
@@ -222,12 +223,12 @@ class _RouteBuilderScreenState extends ConsumerState<RouteBuilderScreen> {
   @override
   Widget build(BuildContext context) {
     ref.watch(appStoreProvider);
-    const titles = ['Quando', 'Onde', 'Horários', 'Extras', 'Sua rota'];
+    final titles = [tr('Quando'), tr('Onde'), tr('Horários'), tr('Extras'), tr('Sua rota')];
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
-            MpHeader('Defina sua Rota', subtitle: '${_step < 4 ? 'Passo ${_step + 1} de 4 · ' : ''}${titles[_step]}'),
+            MpHeader(tr('Defina sua Rota'), subtitle: '${_step < 4 ? '${tr('Passo')} ${_step + 1} ${tr('de')} 4 · ' : ''}${titles[_step]}'),
             if (_step < 4)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
@@ -265,9 +266,9 @@ class _RouteBuilderScreenState extends ConsumerState<RouteBuilderScreen> {
       return Padding(
         padding: const EdgeInsets.fromLTRB(MP.pageH, MP.s2, MP.pageH, MP.s3),
         child: Row(children: [
-          Expanded(child: OutlinedButton.icon(key: const Key('route-share'), onPressed: _share, icon: const Icon(Icons.ios_share_rounded), label: const FittedBox(child: Text('Compartilhar')))),
+          Expanded(child: OutlinedButton.icon(key: const Key('route-share'), onPressed: _share, icon: const Icon(Icons.ios_share_rounded), label: FittedBox(child: Text(tr('Compartilhar'))))),
           const SizedBox(width: MP.s2),
-          Expanded(child: FilledButton.icon(key: const Key('route-save'), onPressed: _save, icon: const Icon(Icons.bookmark_add_rounded), label: const FittedBox(child: Text('Salvar rota')))),
+          Expanded(child: FilledButton.icon(key: const Key('route-save'), onPressed: _save, icon: const Icon(Icons.bookmark_add_rounded), label: FittedBox(child: Text(tr('Salvar rota'))))),
         ]).withReserve(
           tripRequests(_t).isEmpty
               ? null
@@ -275,7 +276,7 @@ class _RouteBuilderScreenState extends ConsumerState<RouteBuilderScreen> {
                   key: const Key('route-reserve'),
                   onPressed: _busy ? null : _reserveAll,
                   icon: const Icon(Icons.event_available_rounded),
-                  label: Text(_busy ? 'Enviando…' : 'Reservar tudo (${tripRequests(_t).length})'),
+                  label: Text(_busy ? tr('Enviando…') : 'Reservar tudo (${tripRequests(_t).length})'),
                   style: FilledButton.styleFrom(backgroundColor: MP.green, minimumSize: const Size(0, 52)),
                 ),
         ),
@@ -286,7 +287,7 @@ class _RouteBuilderScreenState extends ConsumerState<RouteBuilderScreen> {
       padding: const EdgeInsets.fromLTRB(MP.pageH, MP.s2, MP.pageH, MP.s3),
       child: Row(children: [
         if (_step > 0) ...[
-          Expanded(child: OutlinedButton(onPressed: () => _set(() => _step--), child: const Text('Voltar'))),
+          Expanded(child: OutlinedButton(onPressed: () => _set(() => _step--), child: Text(tr('Voltar')))),
           const SizedBox(width: MP.s2),
         ],
         Expanded(
@@ -294,7 +295,7 @@ class _RouteBuilderScreenState extends ConsumerState<RouteBuilderScreen> {
           child: FilledButton(
             key: const Key('route-next'),
             onPressed: ok && _hasDates ? () => _set(() => _step++) : null,
-            child: Text(_step == 3 ? 'Ver minha rota' : (ok ? 'Continuar' : 'Adicione um lugar')),
+            child: Text(_step == 3 ? tr('Ver minha rota') : (ok ? tr('Continuar') : tr('Adicione um lugar'))),
           ),
         ),
       ]),
@@ -305,7 +306,7 @@ class _RouteBuilderScreenState extends ConsumerState<RouteBuilderScreen> {
   Widget _when() => ListView(
     padding: const EdgeInsets.all(MP.pageH),
     children: [
-      const Text('Toque no dia de ida e depois no de volta. Para um dia só, toque duas vezes no mesmo dia ou siga em frente.', style: TextStyle(fontSize: 15, color: MP.textSecondary)),
+      Text(tr('Toque no dia de ida e depois no de volta. Para um dia só, toque duas vezes no mesmo dia ou siga em frente.'), style: TextStyle(fontSize: 15, color: MP.textSecondary)),
       const SizedBox(height: MP.s3),
       MpMonthCalendar(
         start: _t.start,
@@ -325,7 +326,7 @@ class _RouteBuilderScreenState extends ConsumerState<RouteBuilderScreen> {
       for (final e in _t.days.expand(_eventsOn)) _tip(Icons.event_rounded, 'Evento nesta data: ${e.titulo} (${_dm(e.data!)})'),
       const SizedBox(height: MP.s3),
       Row(children: [
-        const Expanded(child: Text('Pessoas', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700))),
+        Expanded(child: Text(tr('Pessoas'), style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700))),
         IconButton(onPressed: _t.people > 1 ? () => _set(() => _t.people--) : null, icon: const Icon(Icons.remove_circle_outline_rounded)),
         Text('${_t.people}', key: const Key('route-people'), style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
         IconButton(onPressed: () => _set(() => _t.people++), icon: const Icon(Icons.add_circle_outline_rounded)),
@@ -349,9 +350,9 @@ class _RouteBuilderScreenState extends ConsumerState<RouteBuilderScreen> {
       children: [
         Row(children: [
           Expanded(child: Text('Sua ordem em ${_dayLabel(_day)}', style: Theme.of(context).textTheme.titleMedium)),
-          TextButton.icon(onPressed: () => _showOnMap(_day), icon: const Icon(Icons.map_rounded), label: const Text('Mapa')),
+          TextButton.icon(onPressed: () => _showOnMap(_day), icon: const Icon(Icons.map_rounded), label: Text(tr('Mapa'))),
         ]),
-        if (day.isEmpty) const MpNotice('Adicione lugares da lista abaixo. Depois arraste para mudar a ordem.'),
+        if (day.isEmpty) MpNotice(tr('Adicione lugares da lista abaixo. Depois arraste para mudar a ordem.')),
         ReorderableListView(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -364,15 +365,15 @@ class _RouteBuilderScreenState extends ConsumerState<RouteBuilderScreen> {
                 contentPadding: EdgeInsets.zero,
                 leading: ReorderableDragStartListener(index: k, child: const Icon(Icons.drag_indicator_rounded)),
                 title: Text(s.label),
-                subtitle: Text(s.item?.cidade ?? 'Parada'),
-                trailing: IconButton(tooltip: 'Remover', onPressed: () => _set(() => _t.stops.remove(s)), icon: const Icon(Icons.close_rounded)),
+                subtitle: Text(s.item?.cidade ?? tr('Parada')),
+                trailing: IconButton(tooltip: tr('Remover'), onPressed: () => _set(() => _t.stops.remove(s)), icon: const Icon(Icons.close_rounded)),
               ),
           ],
         ),
         const SizedBox(height: MP.s4),
         TextField(
           key: const Key('route-search'),
-          decoration: const InputDecoration(prefixIcon: Icon(Icons.search_rounded), hintText: 'Buscar lugar ou cidade'),
+          decoration: InputDecoration(prefixIcon: Icon(Icons.search_rounded), hintText: tr('Buscar lugar ou cidade')),
           onChanged: (v) => _set(() => _q = v),
         ),
         const SizedBox(height: MP.s2),
@@ -432,7 +433,7 @@ class _RouteBuilderScreenState extends ConsumerState<RouteBuilderScreen> {
         const SizedBox(height: MP.s2),
         Wrap(spacing: MP.s2, children: [
           for (final e in pauseKinds.entries)
-            ActionChip(key: Key('route-pause-${e.key}'), avatar: const Icon(Icons.add_rounded, size: 18), label: Text(e.value), onPressed: () => _addPause(e.key)),
+            ActionChip(key: Key('route-pause-${e.key}'), avatar: const Icon(Icons.add_rounded, size: 18), label: Text(tr(e.value)), onPressed: () => _addPause(e.key)),
         ]),
       ],
     );
@@ -459,7 +460,7 @@ class _RouteBuilderScreenState extends ConsumerState<RouteBuilderScreen> {
           value: _t.extras.contains(i.id),
           onChanged: (v) => _set(() => v == true ? _t.extras.add(i.id) : _t.extras.remove(i.id)),
           title: Text(i.titulo),
-          subtitle: Text([i.cidade, if (i.precoCents != null) '${formatBrl(i.precoCents!)}${i.cat == Cat.hospedagem ? ' por noite' : ' por pessoa'}'].join(' · ')),
+          subtitle: Text([i.cidade, if (i.precoCents != null) '${formatBrl(i.precoCents!)}${i.cat == Cat.hospedagem ? tr(' por noite') : tr(' por pessoa')}'].join(' · ')),
         ),
     ]);
     // Mesmo polo turístico das paradas (a pousada pode ficar na cidade vizinha).
@@ -469,12 +470,12 @@ class _RouteBuilderScreenState extends ConsumerState<RouteBuilderScreen> {
     return ListView(
       padding: const EdgeInsets.all(MP.pageH),
       children: [
-        const Text('Inclua reservas e eventos do período. Eles entram no custo estimado.', style: TextStyle(fontSize: 15, color: MP.textSecondary)),
+        Text(tr('Inclua reservas e eventos do período. Eles entram no custo estimado.'), style: TextStyle(fontSize: 15, color: MP.textSecondary)),
         group('Hospedagem', near(Cat.hospedagem)),
         group('Passeios', near(Cat.passeio).where((i) => !_t.stops.any((s) => s.itemId == i.id)).toList()),
         if (events.isNotEmpty) group('Eventos no período', events) else ...[
           const SizedBox(height: MP.s3),
-          const MpNotice('Nenhum evento cadastrado nessas datas.'),
+          MpNotice(tr('Nenhum evento cadastrado nessas datas.')),
         ],
       ],
     );
@@ -492,25 +493,25 @@ class _RouteBuilderScreenState extends ConsumerState<RouteBuilderScreen> {
           Row(children: [
             Expanded(child: Text(_dayLabel(d), style: Theme.of(context).textTheme.titleLarge)),
             if (_t.stopsOn(d).any((s) => s.item?.lat != null))
-              TextButton.icon(onPressed: () => _showOnMap(d), icon: const Icon(Icons.map_rounded), label: const Text('Ver no mapa')),
-            IconButton(tooltip: 'Editar', onPressed: () => _set(() { _day = d; _step = 1; }), icon: const Icon(Icons.edit_rounded)),
+              TextButton.icon(onPressed: () => _showOnMap(d), icon: const Icon(Icons.map_rounded), label: Text(tr('Ver no mapa'))),
+            IconButton(tooltip: tr('Editar'), onPressed: () => _set(() { _day = d; _step = 1; }), icon: const Icon(Icons.edit_rounded)),
           ]),
-          if (_t.stopsOn(d).isEmpty) const Text('Dia livre.', style: TextStyle(color: MP.textSecondary)),
+          if (_t.stopsOn(d).isEmpty) Text(tr('Dia livre.'), style: TextStyle(color: MP.textSecondary)),
           for (final s in _t.stopsOn(d)) _timelineRow(s, tripConflicts(_t, d)[s.id]),
           const SizedBox(height: MP.s4),
         ],
         MpCard(
           key: const Key('route-cost'),
           child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-            Text('Custo estimado', style: Theme.of(context).textTheme.titleMedium),
+            Text(tr('Custo estimado'), style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: MP.s2),
             for (final c in cost.where((c) => c.cents > 0)) ...[
-              _costRow(c.label, formatBrl(c.cents)),
+              _costRow(tr(c.label.split(' (').first) + (c.label.contains(' (') ? ' (${c.label.split(' (').last}' : ''), formatBrl(c.cents)),
               if (c.discountCents > 0) _costRow('Cupons em ${c.label.split(' ').first.toLowerCase()}', '− ${formatBrl(c.discountCents)}', color: MP.green),
             ],
             const Divider(),
             _costRow('Total do grupo (${_t.people} ${_t.people == 1 ? 'pessoa' : 'pessoas'})', formatBrl(total), bold: true),
-            _costRow('Por pessoa', formatBrl((total / _t.people).round())),
+            _costRow(tr('Por pessoa'), formatBrl((total / _t.people).round())),
             const SizedBox(height: MP.s2),
             const Text('Valores aproximados. Alimentação estimada em R\$ 70 por pessoa por dia.', style: TextStyle(fontSize: 13, color: MP.textSecondary)),
           ]),

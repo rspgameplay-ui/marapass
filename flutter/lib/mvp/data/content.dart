@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../i18n.dart';
+
 part 'content_importado.dart';
 
 /// Catálogo editorial da versão de demonstração.
@@ -18,8 +20,9 @@ enum Cat {
   fotografia('Fotografia', Icons.photo_camera_rounded, MP_Tint.purple),
   transporte('Transporte', Icons.airport_shuttle_rounded, MP_Tint.blue);
 
-  const Cat(this.label, this.icon, this.tint);
-  final String label;
+  const Cat(this._label, this.icon, this.tint);
+  final String _label;
+  String get label => tr(_label);
   final IconData icon;
   final MP_Tint tint;
 
@@ -83,9 +86,12 @@ class Item {
   const Item({
     required this.id,
     required this.cat,
-    required this.titulo,
-    required this.resumo,
-    required this.descricao,
+    required String titulo,
+    required String resumo,
+    required String descricao,
+    this.tituloEn,
+    this.resumoEn,
+    this.descricaoEn,
     required this.polo,
     required this.cidade,
     this.foto,
@@ -114,12 +120,21 @@ class Item {
     this.lat,
     this.lng,
     this.loc = Loc.aproximado,
-  });
+    // ignore: prefer_initializing_formals
+  }) : _titulo = titulo,
+    // ignore: prefer_initializing_formals
+       _resumo = resumo,
+    // ignore: prefer_initializing_formals
+       _descricao = descricao;
   final String id;
   final Cat cat;
-  final String titulo;
-  final String resumo;
-  final String descricao;
+  final String _titulo, _resumo, _descricao;
+
+  /// Versão em inglês vinda da planilha do parceiro (opcional).
+  final String? tituloEn, resumoEn, descricaoEn;
+  String get titulo => appLang == 'en' ? (tituloEn ?? _titulo) : _titulo;
+  String get resumo => appLang == 'en' ? (resumoEn ?? _resumo) : _resumo;
+  String get descricao => appLang == 'en' ? (descricaoEn ?? _descricao) : _descricao;
   final String polo;
   final String cidade;
   final String? foto;

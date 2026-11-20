@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import '../i18n.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 
@@ -55,7 +56,7 @@ class _AnimatedSplashState extends State<AnimatedSplash> with SingleTickerProvid
     final size = MediaQuery.sizeOf(context);
     final w = math.min(size.width * .72, 330.0);
     return Semantics(
-      label: 'MaraPass, carregando',
+      label: tr('MaraPass, carregando'),
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: _finish,
@@ -119,15 +120,15 @@ class _AnimatedSplashState extends State<AnimatedSplash> with SingleTickerProvid
                         const SizedBox(height: 14),
                         Opacity(
                           opacity: tag,
-                          child: const Column(
+                          child: Column(
                             children: [
                               Text(
-                                'DESCUBRA · VIVA · VALORIZE',
+                                tr('DESCUBRA · VIVA · VALORIZE'),
                                 style: TextStyle(fontFamily: 'Jakarta', fontWeight: FontWeight.w800, fontSize: 13, letterSpacing: 4.6, color: Colors.white),
                               ),
                               SizedBox(height: 8),
                               Text(
-                                'MARANHÃO 2026',
+                                tr('MARANHÃO 2026'),
                                 style: TextStyle(fontFamily: 'Jakarta', fontWeight: FontWeight.w600, fontSize: 11, letterSpacing: 5, color: Color(0x9effffff)),
                               ),
                             ],

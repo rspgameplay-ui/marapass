@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import '../i18n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/content.dart';
@@ -55,10 +56,10 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
       child: ListView(
         padding: const EdgeInsets.only(bottom: MP.s10),
         children: [
-          const MpHeader(
-            'Explorar',
+          MpHeader(
+            tr('Explorar'),
             back: true,
-            subtitle: 'Busque por lugar, passeio, comida ou cidade.',
+            subtitle: tr('Busque por lugar, passeio, comida ou cidade.'),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
@@ -69,12 +70,12 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
               textInputAction: TextInputAction.search,
               style: const TextStyle(fontSize: 18),
               decoration: InputDecoration(
-                hintText: 'Digite um lugar ou passeio',
+                hintText: tr('Digite um lugar ou passeio'),
                 prefixIcon: const Icon(Icons.search_rounded, size: 26),
                 suffixIcon: _ctrl.text.isEmpty
                     ? null
                     : IconButton(
-                        tooltip: 'Limpar busca',
+                        tooltip: tr('Limpar busca'),
                         icon: const Icon(Icons.close_rounded),
                         onPressed: () {
                           _ctrl.clear();
@@ -111,8 +112,8 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                   MpListTile(
                     key: const Key('explore-map'),
                     icon: Icons.map_rounded,
-                    title: 'Mapa turístico',
-                    subtitle: '217 municípios, rotas e navegação com voz',
+                    title: tr('Mapa turístico'),
+                    subtitle: tr('217 municípios, rotas e navegação com voz'),
                     tint: MP.tintBlue,
                     onTap: () => openMap(context),
                   ),
@@ -120,8 +121,8 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                   MpListTile(
                     key: const Key('explore-authentic'),
                     icon: Icons.handshake_rounded,
-                    title: 'Experiências autênticas',
-                    subtitle: 'Vivências com comunidades locais',
+                    title: tr('Experiências autênticas'),
+                    subtitle: tr('Vivências com comunidades locais'),
                     tint: MP.tintGreen,
                     color: MP.green,
                     onTap: () => push<void>(context, const AuthenticScreen()),
@@ -130,9 +131,9 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
               ),
             ),
             const SizedBox(height: MP.sectionGap),
-            const Padding(
+            Padding(
               padding: EdgeInsets.symmetric(horizontal: MP.pageH),
-              child: MpSectionTitle('Categorias'),
+              child: MpSectionTitle(tr('Categorias')),
             ),
             const SizedBox(height: MP.s3),
             for (final c in Cat.values)
@@ -157,8 +158,8 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
               child: MpSectionTitle(
-                'Polos turísticos',
-                action: 'Ver os 11',
+                tr('Polos turísticos'),
+                action: tr('Ver os 11'),
                 onAction: () => push<void>(context, const PolosScreen()),
               ),
             ),
@@ -220,8 +221,8 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                 icon: Icons.search_off_rounded,
                 title: 'Nada encontrado para "$_q"',
                 message:
-                    'Tente outra palavra, como o nome da cidade ou do prato.',
-                actionLabel: 'Limpar busca',
+                    tr('Tente outra palavra, como o nome da cidade ou do prato.'),
+                actionLabel: tr('Limpar busca'),
                 onAction: () {
                   _ctrl.clear();
                   setState(() => _q = '');
@@ -250,7 +251,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                 child: MpListTile(
                   icon: Icons.place_rounded,
                   title: p.nome,
-                  subtitle: 'Polo turístico',
+                  subtitle: tr('Polo turístico'),
                   onTap: () => openPolo(context, p),
                 ),
               ),

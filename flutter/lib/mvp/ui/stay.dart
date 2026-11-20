@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../i18n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/content.dart';
@@ -88,7 +89,7 @@ class StayFacts extends StatelessWidget {
               Text.rich(
                 TextSpan(
                   children: [
-                    const TextSpan(text: 'a partir de '),
+                    TextSpan(text: tr('a partir de ')),
                     TextSpan(text: formatBrl(i.precoCents!), style: const TextStyle(fontWeight: FontWeight.w800, color: MP.ink)),
                     const TextSpan(text: '/noite'),
                   ],
@@ -180,7 +181,7 @@ class _StayState extends ConsumerState<StayAvailabilityScreen> {
   int get _nights => _range.duration.inDays;
 
   Future<void> _request() async {
-    final ok = await requireLogin(context, ref, reason: 'Entre para enviar o pedido de reserva. Você volta direto para cá.');
+    final ok = await requireLogin(context, ref, reason: tr('Entre para enviar o pedido de reserva. Você volta direto para cá.'));
     if (!ok || !mounted) return;
     final room = _rooms[_room];
     setState(() => _busy = true);
@@ -205,8 +206,8 @@ class _StayState extends ConsumerState<StayAvailabilityScreen> {
     await Navigator.of(context).pushReplacement(
       MaterialPageRoute<void>(
         builder: (_) => MpStatusScreen(
-          title: 'Pedido enviado à hospedagem',
-          message: 'O parceiro confirma a disponibilidade e combina o pagamento com você. Acompanhe em Minhas reservas.',
+          title: tr('Pedido enviado à hospedagem'),
+          message: tr('O parceiro confirma a disponibilidade e combina o pagamento com você. Acompanhe em Minhas reservas.'),
           details: MpCard(
             color: MP.soft,
             border: false,
@@ -221,11 +222,11 @@ class _StayState extends ConsumerState<StayAvailabilityScreen> {
               ],
             ),
           ),
-          primaryLabel: 'Ver minhas reservas',
+          primaryLabel: tr('Ver minhas reservas'),
           onPrimary: () => Navigator.of(context).pushReplacement(
             MaterialPageRoute<void>(builder: (_) => const ReservationsScreen()),
           ),
-          secondaryLabel: 'Voltar ao início',
+          secondaryLabel: tr('Voltar ao início'),
           onSecondary: () {
             ref.read(shellTabProvider.notifier).go(0);
             Navigator.of(context).popUntil((r) => r.isFirst);
@@ -259,7 +260,7 @@ class _StayState extends ConsumerState<StayAvailabilityScreen> {
               ),
               const SizedBox(width: MP.s3),
               Expanded(
-                child: MpPrimaryButton(key: const Key('stay-request'), label: 'Solicitar', busy: _busy, onPressed: _request),
+                child: MpPrimaryButton(key: const Key('stay-request'), label: tr('Solicitar'), busy: _busy, onPressed: _request),
               ),
             ],
           ),
@@ -270,7 +271,7 @@ class _StayState extends ConsumerState<StayAvailabilityScreen> {
         child: ListView(
           padding: const EdgeInsets.only(bottom: MP.s8),
           children: [
-            MpHeader('Ver disponibilidade', subtitle: i.titulo),
+            MpHeader(tr('Ver disponibilidade'), subtitle: i.titulo),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
               child: Column(
@@ -282,7 +283,7 @@ class _StayState extends ConsumerState<StayAvailabilityScreen> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Text('Check-in ${fmtDate(_range.start)} → check-out ${fmtDate(_range.end)}', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
-                        const Text('Toque na entrada e depois na saída.', style: TextStyle(fontSize: 13, color: MP.textSecondary)),
+                        Text(tr('Toque na entrada e depois na saída.'), style: TextStyle(fontSize: 13, color: MP.textSecondary)),
                         const SizedBox(height: MP.s2),
                         MpMonthCalendar(
                           range: true,
@@ -308,13 +309,13 @@ class _StayState extends ConsumerState<StayAvailabilityScreen> {
                       children: [
                         const Icon(Icons.group_rounded, color: MP.navy),
                         const SizedBox(width: MP.s3),
-                        const Expanded(child: Text('Hóspedes', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700))),
+                        Expanded(child: Text(tr('Hóspedes'), style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700))),
                         MpStepper(value: _guests, min: 1, max: 6, keyPrefix: 'stay-guests', onChanged: (v) => setState(() => _guests = v)),
                       ],
                     ),
                   ),
                   const SizedBox(height: MP.sectionGap),
-                  const MpSectionTitle('Quartos disponíveis'),
+                  MpSectionTitle(tr('Quartos disponíveis')),
                   const SizedBox(height: MP.s3),
                   for (var k = 0; k < rooms.length; k++) ...[
                     _RoomCard(
@@ -327,7 +328,7 @@ class _StayState extends ConsumerState<StayAvailabilityScreen> {
                     ),
                     const SizedBox(height: MP.s3),
                   ],
-                  const MpNotice.demo('Tarifas de demonstração. Nesta versão o pagamento é combinado direto com a hospedagem; o app não cobra nada.'),
+                  MpNotice.demo(tr('Tarifas de demonstração. Nesta versão o pagamento é combinado direto com a hospedagem; o app não cobra nada.')),
                 ],
               ),
             ),

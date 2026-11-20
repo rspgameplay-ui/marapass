@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import '../i18n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -26,8 +27,9 @@ class MvpApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final big = ref.watch(appStoreProvider.select((s) => s.bigText));
     final english = ref.watch(appStoreProvider.select((s) => s.language == 'en'));
+    appLang = english ? 'en' : 'pt';
     return MaterialApp(
-      title: 'MaraPass',
+      title: tr('MaraPass'),
       debugShowCheckedModeBanner: false,
       locale: english ? const Locale('en') : const Locale('pt', 'BR'),
       supportedLocales: const [Locale('pt', 'BR'), Locale('en')],
@@ -47,7 +49,8 @@ class MvpApp extends ConsumerWidget {
               // No computador, o app fica com largura de celular.
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 520),
-                child: child,
+                // Troca de idioma remonta as telas com os textos novos.
+                child: KeyedSubtree(key: ValueKey(appLang), child: child ?? const SizedBox()),
               ),
             ),
           ),
@@ -142,7 +145,7 @@ class _GateState extends State<_Gate> {
 class _Splash extends StatelessWidget {
   const _Splash();
   @override
-  Widget build(BuildContext context) => const Scaffold(
+  Widget build(BuildContext context) => Scaffold(
     backgroundColor: maraNight,
     body: Center(
       child: Column(
@@ -151,7 +154,7 @@ class _Splash extends StatelessWidget {
           MpLogo(width: 150, white: true),
           SizedBox(height: MP.s3),
           Text(
-            'DESCUBRA · VIVA · VALORIZE',
+            tr('DESCUBRA · VIVA · VALORIZE'),
             style: TextStyle(
               color: Colors.white70,
               fontWeight: FontWeight.w800,
@@ -187,27 +190,27 @@ class _Welcome extends ConsumerWidget {
               Align(
                 alignment: Alignment.centerRight,
                 child: IconButton(
-                  tooltip: 'Fechar',
+                  tooltip: tr('Fechar'),
                   onPressed: onDone,
                   icon: const Icon(Icons.close_rounded, color: MP.ink, size: 28),
                 ),
               ),
               const SizedBox(height: MP.s4),
-              const Text(
-                'Bem-vindo! Bora\nconhecer o Maranhão.',
+              Text(
+                tr('Bem-vindo! Bora\nconhecer o Maranhão.'),
                 style: TextStyle(fontSize: 30, fontWeight: FontWeight.w800, color: MP.ink, height: 1.12, letterSpacing: -.6),
               ),
               const Expanded(child: Center(child: _WelcomeArt())),
-              _PillButton(key: const Key('onb-login'), icon: Icons.mail_outline_rounded, label: 'Continuar com e-mail', onTap: login),
+              _PillButton(key: const Key('onb-login'), icon: Icons.mail_outline_rounded, label: tr('Continuar com e-mail'), onTap: login),
               const SizedBox(height: MP.s3),
-              _PillButton(key: const Key('onb-social'), icon: Icons.account_circle_outlined, label: 'Continuar com Google ou Apple', onTap: login),
+              _PillButton(key: const Key('onb-social'), icon: Icons.account_circle_outlined, label: tr('Continuar com Google ou Apple'), onTap: login),
               const SizedBox(height: MP.s5),
               Center(
                 child: TextButton(
                   key: const Key('onb-visitor'),
                   onPressed: onDone,
                   style: TextButton.styleFrom(foregroundColor: MP.ink),
-                  child: const Text('Explorar sem cadastro',
+                  child: Text(tr('Explorar sem cadastro'),
                       style: TextStyle(fontSize: 15.5, fontWeight: FontWeight.w600, decoration: TextDecoration.underline)),
                 ),
               ),

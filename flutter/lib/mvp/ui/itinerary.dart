@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../i18n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/tourism.dart';
@@ -216,9 +217,9 @@ class ItineraryShortcut extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Defina sua Rota', style: Theme.of(context).textTheme.titleMedium),
+              Text(tr('Defina sua Rota'), style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 2),
-              const Text('Monte seu passeio do seu jeito', style: TextStyle(fontSize: 15, color: MP.textSecondary)),
+              Text(tr('Monte seu passeio do seu jeito'), style: TextStyle(fontSize: 15, color: MP.textSecondary)),
             ],
           ),
         ),
@@ -253,7 +254,7 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
           decoration: const BoxDecoration(color: MP.page, border: Border(top: BorderSide(color: MP.border))),
           child: MpPrimaryButton(
             key: const Key('itinerary-trace'),
-            label: 'Traçar roteiro no mapa',
+            label: tr('Traçar roteiro no mapa'),
             icon: Icons.map_rounded,
             onPressed: _trace,
           ),
@@ -264,7 +265,7 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
         child: ListView(
           padding: const EdgeInsets.only(bottom: MP.s8),
           children: [
-            const MpHeader('Roteiro do dia', subtitle: 'Um dia bem aproveitado, com pausa e plano B.'),
+            MpHeader(tr('Roteiro do dia'), subtitle: tr('Um dia bem aproveitado, com pausa e plano B.')),
             SizedBox(
               height: 48,
               child: ListView.separated(
@@ -312,7 +313,7 @@ class _ItineraryScreenState extends ConsumerState<ItineraryScreen> {
                   const SizedBox(height: MP.s4),
                   MpNotice(plan.tip, icon: Icons.backpack_rounded, fg: MP.info, bg: MP.infoBg),
                   const SizedBox(height: MP.s3),
-                  const MpNotice.demo('Horários sugeridos. Confirme o funcionamento com o parceiro antes de sair.'),
+                  MpNotice.demo(tr('Horários sugeridos. Confirme o funcionamento com o parceiro antes de sair.')),
                 ],
               ),
             ),
@@ -374,7 +375,7 @@ class _StopTile extends StatelessWidget {
                                   Text(stop.slot.toUpperCase(), style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800, letterSpacing: .8, color: MP.textSecondary)),
                                   if (stop.anchor) ...[
                                     const SizedBox(width: MP.s2),
-                                    const MpBadge('Destaque do dia', fg: MP.goldText, bg: MP.goldBg),
+                                    MpBadge(tr('Destaque do dia'), fg: MP.goldText, bg: MP.goldBg),
                                   ],
                                 ],
                               ),

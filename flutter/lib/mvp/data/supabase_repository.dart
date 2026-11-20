@@ -1,3 +1,4 @@
+import '../i18n.dart';
 import 'dart:async';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -13,7 +14,7 @@ class SupabaseMvpRepository implements MvpRepository {
   @override
   Future<void> deleteMyAccount() async {
     if (_client.auth.currentUser == null) {
-      throw const MvpException('Entre na sua conta para continuar.');
+      throw MvpException(tr('Entre na sua conta para continuar.'));
     }
     try {
       await _client.rpc('delete_my_account');
@@ -72,21 +73,21 @@ MvpException translateError(Object e) {
     );
   }
   if (raw.contains('issue limit')) {
-    return const MvpException('Os cupons desta oferta esgotaram.');
+    return MvpException(tr('Os cupons desta oferta esgotaram.'));
   }
   if (raw.contains('limit') || raw.contains('already')) {
-    return const MvpException('Você já atingiu o limite desta oferta.');
+    return MvpException(tr('Você já atingiu o limite desta oferta.'));
   }
   if (raw.contains('expired') ||
       raw.contains('ended') ||
       raw.contains('window')) {
-    return const MvpException('Esta oferta já terminou.');
+    return MvpException(tr('Esta oferta já terminou.'));
   }
   if (raw.contains('not published') ||
       raw.contains('unavailable') ||
       raw.contains('paused') ||
       raw.contains('not found')) {
-    return const MvpException('Esta oferta não está mais disponível.');
+    return MvpException(tr('Esta oferta não está mais disponível.'));
   }
   if (e is TimeoutException ||
       raw.contains('socket') ||

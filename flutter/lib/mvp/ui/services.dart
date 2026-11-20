@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../i18n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/content.dart';
@@ -26,7 +27,7 @@ class _CraftState extends ConsumerState<CraftPurchaseScreen> {
     final ok = await requireLogin(
       context,
       ref,
-      reason: 'Entre para enviar o pedido ao artesão.',
+      reason: tr('Entre para enviar o pedido ao artesão.'),
     );
     if (!ok || !mounted) return;
     final i = widget.item;
@@ -41,16 +42,16 @@ class _CraftState extends ConsumerState<CraftPurchaseScreen> {
     await Navigator.of(context).pushReplacement(
       MaterialPageRoute<void>(
         builder: (_) => MpStatusScreen(
-          title: 'Solicitação enviada',
+          title: tr('Solicitação enviada'),
           message:
               '${i.artesao ?? 'O artesão'} recebeu o seu interesse e vai combinar entrega e pagamento com você. Protocolo ${t.id}.',
-          primaryLabel: 'Falar com o artesão',
+          primaryLabel: tr('Falar com o artesão'),
           onPrimary: () => openWhatsApp(
             context,
             i.telefone ?? '',
             'Olá! Vi ${i.titulo} no MaraPass e quero $_qty ${_qty == 1 ? 'peça' : 'peças'}. Protocolo ${t.id}.',
           ),
-          secondaryLabel: 'Voltar',
+          secondaryLabel: tr('Voltar'),
           onSecondary: () => Navigator.of(context).pop(),
         ),
       ),
@@ -66,7 +67,7 @@ class _CraftState extends ConsumerState<CraftPurchaseScreen> {
         child: ListView(
           padding: const EdgeInsets.only(bottom: MP.s8),
           children: [
-            MpHeader('Quero comprar', subtitle: i.titulo),
+            MpHeader(tr('Quero comprar'), subtitle: i.titulo),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
               child: Column(
@@ -83,7 +84,7 @@ class _CraftState extends ConsumerState<CraftPurchaseScreen> {
                     children: [
                       Expanded(
                         child: Text(
-                          'Quantidade',
+                          tr('Quantidade'),
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                       ),
@@ -97,8 +98,8 @@ class _CraftState extends ConsumerState<CraftPurchaseScreen> {
                     ],
                   ),
                   const SizedBox(height: MP.s2),
-                  const Text(
-                    'Até 3 peças por pedido. As peças são feitas à mão e podem variar um pouco.',
+                  Text(
+                    tr('Até 3 peças por pedido. As peças são feitas à mão e podem variar um pouco.'),
                     style: TextStyle(color: MP.textSecondary, fontSize: 15),
                   ),
                   const SizedBox(height: MP.s4),
@@ -106,9 +107,9 @@ class _CraftState extends ConsumerState<CraftPurchaseScreen> {
                     color: MP.soft,
                     child: Row(
                       children: [
-                        const Expanded(
+                        Expanded(
                           child: Text(
-                            'Valor estimado',
+                            tr('Valor estimado'),
                             style: TextStyle(
                               fontSize: 17,
                               fontWeight: FontWeight.w700,
@@ -127,13 +128,13 @@ class _CraftState extends ConsumerState<CraftPurchaseScreen> {
                     ),
                   ),
                   const SizedBox(height: MP.s4),
-                  const MpNotice(
-                    'O MaraPass não cobra nem guarda estoque. Você combina entrega e pagamento direto com o artesão.',
+                  MpNotice(
+                    tr('O MaraPass não cobra nem guarda estoque. Você combina entrega e pagamento direto com o artesão.'),
                   ),
                   const SizedBox(height: MP.s5),
                   MpCtaButton(
                     key: const Key('craft-send'),
-                    label: 'Enviar pedido ao artesão',
+                    label: tr('Enviar pedido ao artesão'),
                     onPressed: _send,
                   ),
                   if (i.telefone != null) ...[
@@ -141,7 +142,7 @@ class _CraftState extends ConsumerState<CraftPurchaseScreen> {
                     OutlinedButton.icon(
                       onPressed: () => callPhone(context, i.telefone!),
                       icon: const Icon(Icons.call_rounded),
-                      label: const Text('Ligar para o artesão'),
+                      label: Text(tr('Ligar para o artesão')),
                     ),
                   ],
                 ],
@@ -171,7 +172,7 @@ class _PhotoHireState extends ConsumerState<PhotoHireScreen> {
     final ok = await requireLogin(
       context,
       ref,
-      reason: 'Entre para contratar o fotógrafo.',
+      reason: tr('Entre para contratar o fotógrafo.'),
     );
     if (!ok || !mounted || _day == null) return;
     final t = await ref
@@ -185,14 +186,14 @@ class _PhotoHireState extends ConsumerState<PhotoHireScreen> {
     await Navigator.of(context).pushReplacement(
       MaterialPageRoute<void>(
         builder: (_) => MpStatusScreen(
-          title: 'Pedido enviado ao fotógrafo',
+          title: tr('Pedido enviado ao fotógrafo'),
           message:
               'Ele confirma o horário e o ponto de encontro. As fotos chegam em Minhas galerias. Protocolo ${t.id}.',
-          primaryLabel: 'Ver minhas galerias',
+          primaryLabel: tr('Ver minhas galerias'),
           onPrimary: () => Navigator.of(context).pushReplacement(
             MaterialPageRoute<void>(builder: (_) => const GalleriesScreen()),
           ),
-          secondaryLabel: 'Voltar',
+          secondaryLabel: tr('Voltar'),
           onSecondary: () => Navigator.of(context).pop(),
         ),
       ),
@@ -210,13 +211,13 @@ class _PhotoHireState extends ConsumerState<PhotoHireScreen> {
         child: ListView(
           padding: const EdgeInsets.only(bottom: MP.s8),
           children: [
-            MpHeader('Contratar fotógrafo', subtitle: widget.item.titulo),
+            MpHeader(tr('Contratar fotógrafo'), subtitle: widget.item.titulo),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text('Dia', style: Theme.of(context).textTheme.titleLarge),
+                  Text(tr('Dia'), style: Theme.of(context).textTheme.titleLarge),
                   const SizedBox(height: MP.s2),
                   Wrap(
                     spacing: MP.s2,
@@ -237,7 +238,7 @@ class _PhotoHireState extends ConsumerState<PhotoHireScreen> {
                   ),
                   const SizedBox(height: MP.s5),
                   Text(
-                    'Momento',
+                    tr('Momento'),
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   const SizedBox(height: MP.s2),
@@ -266,7 +267,7 @@ class _PhotoHireState extends ConsumerState<PhotoHireScreen> {
                     children: [
                       Expanded(
                         child: Text(
-                          'Pessoas na foto',
+                          tr('Pessoas na foto'),
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                       ),
@@ -281,7 +282,7 @@ class _PhotoHireState extends ConsumerState<PhotoHireScreen> {
                   ),
                   const SizedBox(height: MP.s5),
                   MpCtaButton(
-                    label: _day == null ? 'Escolha o dia' : 'Enviar pedido',
+                    label: _day == null ? tr('Escolha o dia') : tr('Enviar pedido'),
                     onPressed: _day == null ? null : _send,
                   ),
                 ],
@@ -306,9 +307,9 @@ class GalleriesScreen extends ConsumerWidget {
         child: ListView(
           padding: const EdgeInsets.only(bottom: MP.s8),
           children: [
-            const MpHeader(
-              'Minhas galerias',
-              subtitle: 'Fotos dos seus ensaios e o álbum da viagem.',
+            MpHeader(
+              tr('Minhas galerias'),
+              subtitle: tr('Fotos dos seus ensaios e o álbum da viagem.'),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
@@ -316,10 +317,10 @@ class GalleriesScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   if (orders.isEmpty)
-                    const MpCard(
+                    MpCard(
                       color: MP.soft,
                       child: Text(
-                        'Quando você contratar um fotógrafo, a galeria aparece aqui.',
+                        tr('Quando você contratar um fotógrafo, a galeria aparece aqui.'),
                         style: TextStyle(fontSize: 16, color: MP.textSecondary),
                       ),
                     ),
@@ -339,20 +340,20 @@ class GalleriesScreen extends ConsumerWidget {
                     value: store.fotoAlbum,
                     onChanged: store.setFotoAlbum,
                     contentPadding: EdgeInsets.zero,
-                    title: const Text(
-                      'Guardar na minha nuvem',
+                    title: Text(
+                      tr('Guardar na minha nuvem'),
                       style: TextStyle(
                         fontWeight: FontWeight.w800,
                         fontSize: 17,
                       ),
                     ),
-                    subtitle: const Text(
-                      'Envia as fotos para o Google Fotos ou iCloud que você escolher.',
+                    subtitle: Text(
+                      tr('Envia as fotos para o Google Fotos ou iCloud que você escolher.'),
                     ),
                   ),
                   const SizedBox(height: MP.s4),
                   Text(
-                    'Álbum da viagem',
+                    tr('Álbum da viagem'),
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   const SizedBox(height: MP.s2),
@@ -375,13 +376,13 @@ class GalleriesScreen extends ConsumerWidget {
                     ],
                   ),
                   const SizedBox(height: MP.s2),
-                  const MpNotice.demo('Fotos de demonstração.'),
+                  MpNotice.demo(tr('Fotos de demonstração.')),
                   const SizedBox(height: MP.s5),
                   MpListTile(
                     key: const Key('print-photos'),
                     icon: Icons.print_rounded,
-                    title: 'Fotografias impressas',
-                    subtitle: 'Receba no hotel ou em casa',
+                    title: tr('Fotografias impressas'),
+                    subtitle: tr('Receba no hotel ou em casa'),
                     onTap: () => push<void>(
                       context,
                       const ComposeScreen(
@@ -426,7 +427,7 @@ class _TransferState extends ConsumerState<TransferQuoteScreen> {
     final ok = await requireLogin(
       context,
       ref,
-      reason: 'Entre para pedir a cotação.',
+      reason: tr('Entre para pedir a cotação.'),
     );
     if (!ok || !mounted) return;
     final where = _from == 'Endereço' ? _addr.text.trim() : _from;
@@ -441,16 +442,16 @@ class _TransferState extends ConsumerState<TransferQuoteScreen> {
     await Navigator.of(context).pushReplacement(
       MaterialPageRoute<void>(
         builder: (_) => MpStatusScreen(
-          title: 'Cotação pedida',
+          title: tr('Cotação pedida'),
           message:
               'A empresa responde com valor e horário. Você acompanha em Atendimento. Protocolo ${t.id}.',
-          primaryLabel: 'Ver atendimento',
+          primaryLabel: tr('Ver atendimento'),
           onPrimary: () => Navigator.of(context).pushReplacement(
             MaterialPageRoute<void>(
               builder: (_) => const SupportCenterScreen(),
             ),
           ),
-          secondaryLabel: 'Voltar',
+          secondaryLabel: tr('Voltar'),
           onSecondary: () => Navigator.of(context).pop(),
         ),
       ),
@@ -468,7 +469,7 @@ class _TransferState extends ConsumerState<TransferQuoteScreen> {
           child: ListView(
             padding: const EdgeInsets.only(bottom: MP.s8),
             children: [
-              MpHeader('Revise o pedido', subtitle: i.titulo),
+              MpHeader(tr('Revise o pedido'), subtitle: i.titulo),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
                 child: Column(
@@ -492,19 +493,19 @@ class _TransferState extends ConsumerState<TransferQuoteScreen> {
                       ),
                     ),
                     const SizedBox(height: MP.s3),
-                    const MpNotice.demo(
-                      'Revisão demonstrativa: o valor final vem na resposta da empresa.',
+                    MpNotice.demo(
+                      tr('Revisão demonstrativa: o valor final vem na resposta da empresa.'),
                     ),
                     const SizedBox(height: MP.s5),
                     MpCtaButton(
                       key: const Key('transfer-send'),
-                      label: 'Pedir cotação',
+                      label: tr('Pedir cotação'),
                       onPressed: _send,
                     ),
                     const SizedBox(height: MP.s3),
                     OutlinedButton(
                       onPressed: () => setState(() => _review = false),
-                      child: const Text('Corrigir'),
+                      child: Text(tr('Corrigir')),
                     ),
                   ],
                 ),
@@ -520,14 +521,14 @@ class _TransferState extends ConsumerState<TransferQuoteScreen> {
         child: ListView(
           padding: const EdgeInsets.only(bottom: MP.s8),
           children: [
-            MpHeader('Pedir cotação', subtitle: i.titulo),
+            MpHeader(tr('Pedir cotação'), subtitle: i.titulo),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    'Onde você embarca?',
+                    tr('Onde você embarca?'),
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   const SizedBox(height: MP.s2),
@@ -559,8 +560,8 @@ RadioGroup<String>(
                     TextField(
                       controller: _addr,
                       onChanged: (_) => setState(() {}),
-                      decoration: const InputDecoration(
-                        labelText: 'Endereço de embarque',
+                      decoration: InputDecoration(
+                        labelText: tr('Endereço de embarque'),
                       ),
                     ),
                   const SizedBox(height: MP.s4),
@@ -585,7 +586,7 @@ RadioGroup<String>(
                     children: [
                       Expanded(
                         child: Text(
-                          'Passageiros',
+                          tr('Passageiros'),
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                       ),
@@ -600,7 +601,7 @@ RadioGroup<String>(
                   ),
                   const SizedBox(height: MP.s5),
                   MpCtaButton(
-                    label: 'Revisar pedido',
+                    label: tr('Revisar pedido'),
                     onPressed: ready
                         ? () => setState(() => _review = true)
                         : null,

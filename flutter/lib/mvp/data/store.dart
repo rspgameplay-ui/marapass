@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import '../i18n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -511,7 +512,7 @@ class AppStore extends ChangeNotifier {
   /// Ativa (aprova), pausa com motivo ou encerra uma oferta.
   /// Foto da oferta (só com conta de parceiro, pelo servidor).
   Future<void> setOfferImageAsync(String id, Uint8List bytes, String mime) async {
-    if (!online) throw const MvpException('Entre na conta de parceiro para enviar fotos.');
+    if (!online) throw MvpException(tr('Entre na conta de parceiro para enviar fotos.'));
     final row = await remote!.uploadOfferImage(id, bytes, mime);
     final i = partnerOffers.indexWhere((e) => e.id == id);
     if (i >= 0) partnerOffers[i].imageUrl = row['image_url'] as String?;
@@ -573,10 +574,10 @@ class AppStore extends ChangeNotifier {
     final local = reservations.where((r) => r.id.toLowerCase().startsWith(code)).toList();
     final item = local.length == 1 ? local.first.item : null;
     if (!online) {
-      if (local.length != 1) throw const MvpException('Reserva não encontrada nesta conta.');
+      if (local.length != 1) throw MvpException(tr('Reserva não encontrada nesta conta.'));
       final r = local.first;
-      if (r.status == ResStatus.concluida) throw const MvpException('Esta reserva já foi utilizada.');
-      if (r.status != ResStatus.confirmada) throw const MvpException('A reserva precisa estar confirmada.');
+      if (r.status == ResStatus.concluida) throw MvpException(tr('Esta reserva já foi utilizada.'));
+      if (r.status != ResStatus.confirmada) throw MvpException(tr('A reserva precisa estar confirmada.'));
       r.status = ResStatus.concluida;
       r.history.add('Utilizada');
       await _save();
@@ -608,7 +609,7 @@ class AppStore extends ChangeNotifier {
       0,
       Validation(
         code: code,
-        title: cupom?.parceiro ?? (ok ? 'Cupom' : 'Código não encontrado'),
+        title: cupom?.parceiro ?? (ok ? tr('Cupom') : tr('Código não encontrado')),
         at: DateTime.now(),
         amountCents: amountCents,
         ok: ok,
@@ -702,7 +703,7 @@ class AppStore extends ChangeNotifier {
       ..addAll([
         PartnerOffer(
           id: 'po1',
-          title: 'Desconto no passeio às lagoas',
+          title: tr('Desconto no passeio às lagoas'),
           benefit: r'R$ 50 de desconto',
           rules: 'Por pessoa, em passeios regulares.',
           limit: 200,
@@ -713,7 +714,7 @@ class AppStore extends ChangeNotifier {
         ),
         PartnerOffer(
           id: 'po2',
-          title: 'Kitesurf: aula experimental',
+          title: tr('Kitesurf: aula experimental'),
           benefit: r'R$ 40 de desconto',
           rules: 'Na primeira aula.',
           limit: 50,
@@ -1140,11 +1141,11 @@ class AppStore extends ChangeNotifier {
     if (found == null) {
       final v = Validation(
         code: code,
-        title: 'Código não encontrado',
+        title: tr('Código não encontrado'),
         at: DateTime.now(),
         amountCents: amountCents,
         ok: false,
-        reason: 'Código inválido',
+        reason: tr('Código inválido'),
       );
       validations.insert(0, v);
       _save();
@@ -1155,11 +1156,11 @@ class AppStore extends ChangeNotifier {
         0,
         Validation(
           code: code,
-          title: found.cupom?.parceiro ?? 'Cupom',
+          title: found.cupom?.parceiro ?? tr('Cupom'),
           at: DateTime.now(),
           amountCents: amountCents,
           ok: false,
-          reason: 'Já utilizado',
+          reason: tr('Já utilizado'),
         ),
       );
       _save();
@@ -1170,11 +1171,11 @@ class AppStore extends ChangeNotifier {
         0,
         Validation(
           code: code,
-          title: found.cupom?.parceiro ?? 'Cupom',
+          title: found.cupom?.parceiro ?? tr('Cupom'),
           at: DateTime.now(),
           amountCents: amountCents,
           ok: false,
-          reason: 'Expirado',
+          reason: tr('Expirado'),
         ),
       );
       _save();
@@ -1188,7 +1189,7 @@ class AppStore extends ChangeNotifier {
       0,
       Validation(
         code: code,
-        title: found.cupom?.parceiro ?? 'Cupom',
+        title: found.cupom?.parceiro ?? tr('Cupom'),
         at: DateTime.now(),
         amountCents: amountCents,
         ok: true,

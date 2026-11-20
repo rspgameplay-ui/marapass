@@ -1,3 +1,4 @@
+import '../i18n.dart';
 import 'content.dart';
 
 class LocalCoupon {
@@ -60,8 +61,9 @@ enum ResStatus {
   cancelada('Cancelada'),
   concluida('Utilizada');
 
-  const ResStatus(this.label);
-  final String label;
+  const ResStatus(this._label);
+  final String _label;
+  String get label => tr(_label);
 }
 
 class LocalReservation {

@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import '../i18n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/content.dart';
@@ -50,8 +51,8 @@ class _PassportScreenState extends ConsumerState<PassportScreen> {
         padding: const EdgeInsets.only(bottom: MP.s10),
         children: [
           MpHero(
-            title: 'Meu passaporte',
-            subtitle: 'Visite lugares, ganhe carimbos e pontos.',
+            title: tr('Meu passaporte'),
+            subtitle: tr('Visite lugares, ganhe carimbos e pontos.'),
             child: _Cover(store: store, progress: progress),
           ),
           const SizedBox(height: MP.s4),
@@ -62,7 +63,7 @@ class _PassportScreenState extends ConsumerState<PassportScreen> {
               children: [
                 MpCtaButton(
                   key: const Key('pass-checkin'),
-                  label: 'Registrar visita',
+                  label: tr('Registrar visita'),
                   icon: Icons.qr_code_scanner_rounded,
                   onPressed: () => push<void>(context, const ScanScreen()),
                 ),
@@ -70,8 +71,8 @@ class _PassportScreenState extends ConsumerState<PassportScreen> {
                 MpListTile(
                   key: const Key('pass-routes'),
                   icon: Icons.route_rounded,
-                  title: 'Minhas rotas',
-                  subtitle: store.trips.isEmpty ? 'Monte seu passeio do seu jeito' : '${store.trips.length} ${store.trips.length == 1 ? 'rota salva' : 'rotas salvas'}',
+                  title: tr('Minhas rotas'),
+                  subtitle: store.trips.isEmpty ? tr('Monte seu passeio do seu jeito') : '${store.trips.length} ${store.trips.length == 1 ? tr('rota salva') : tr('rotas salvas')}',
                   tint: MP.tintGreen,
                   onTap: () => push<void>(context, const MyRoutesScreen()),
                 ),
@@ -142,9 +143,9 @@ class _Cover extends StatelessWidget {
                       children: [
                         const Icon(Icons.explore_rounded, color: _blue, size: MP.iconLg),
                         const SizedBox(width: MP.s2),
-                        const Expanded(
+                        Expanded(
                           child: Text(
-                            'PASSAPORTE\nMARAPASS',
+                            tr('PASSAPORTE\nMARAPASS'),
                             style: TextStyle(color: MP.ink, fontSize: 13, fontWeight: FontWeight.w800, letterSpacing: 1.2, height: 1.2),
                           ),
                         ),
@@ -159,7 +160,7 @@ class _Cover extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: MP.s5),
-                    const Text('Viajante', style: TextStyle(color: MP.textMuted, fontSize: 13, fontWeight: FontWeight.w700)),
+                    Text(tr('Viajante'), style: TextStyle(color: MP.textMuted, fontSize: 13, fontWeight: FontWeight.w700)),
                     Text(
                       name,
                       maxLines: 1,
@@ -171,7 +172,7 @@ class _Cover extends StatelessWidget {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Flexible(flex: 3, child: _Leg(label: 'Nível atual', value: lv.$1)),
+                        Flexible(flex: 3, child: _Leg(label: tr('Nível atual'), value: lv.$1)),
                         Expanded(
                           child: Padding(
                             padding: const EdgeInsets.fromLTRB(MP.s2, 0, MP.s2, 6),
@@ -192,7 +193,7 @@ class _Cover extends StatelessWidget {
                             ),
                           ),
                         ),
-                        Flexible(flex: 3, child: _Leg(label: 'Próximo nível', value: lv.$4 == null ? 'Máximo' : lv.$3 ?? '', end: true)),
+                        Flexible(flex: 3, child: _Leg(label: tr('Próximo nível'), value: lv.$4 == null ? tr('Máximo') : lv.$3 ?? '', end: true)),
                       ],
                     ),
                     const SizedBox(height: MP.s3),
@@ -220,11 +221,11 @@ class _Cover extends StatelessWidget {
                     const SizedBox(height: MP.s3),
                     Row(
                       children: [
-                        _Stat(label: 'Visitas', value: '${store.checkins.length}'),
+                        _Stat(label: tr('Visitas'), value: '${store.checkins.length}'),
                         const _StatDivider(),
-                        _Stat(label: 'Carimbos', value: '$stamped/${Content.polos.length}'),
+                        _Stat(label: tr('Carimbos'), value: '$stamped/${Content.polos.length}'),
                         const _StatDivider(),
-                        _Stat(label: 'Cupons', value: '$used'),
+                        _Stat(label: tr('Cupons'), value: '$used'),
                       ],
                     ),
                   ],
@@ -244,12 +245,12 @@ class _Cover extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Seus pontos', style: TextStyle(color: MP.onBlueMuted, fontSize: 13, fontWeight: FontWeight.w700)),
+                          Text(tr('Seus pontos'), style: TextStyle(color: MP.onBlueMuted, fontSize: 13, fontWeight: FontWeight.w700)),
                           Text(
                             '${store.points}',
                             style: const TextStyle(color: Colors.white, fontSize: 40, fontWeight: FontWeight.w800, height: 1.1),
                           ),
-                          const Text('pts acumulados', style: TextStyle(color: MP.onBlueMuted, fontSize: 13, fontWeight: FontWeight.w600)),
+                          Text(tr('pts acumulados'), style: TextStyle(color: MP.onBlueMuted, fontSize: 13, fontWeight: FontWeight.w600)),
                         ],
                       ),
                     ),
@@ -262,7 +263,7 @@ class _Cover extends StatelessWidget {
                           child: CustomPaint(painter: _BarcodePainter(store.points + store.checkins.length * 7)),
                         ),
                         const SizedBox(height: 6),
-                        const Text('Obrigado por viajar!', style: TextStyle(color: MP.onBlueMuted, fontSize: 13, fontWeight: FontWeight.w600)),
+                        Text(tr('Obrigado por viajar!'), style: TextStyle(color: MP.onBlueMuted, fontSize: 13, fontWeight: FontWeight.w600)),
                       ],
                     ),
                   ],
@@ -572,8 +573,8 @@ class _Achievements extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (store.missions.isNotEmpty) ...[
-          const Text(
-            'Próximas missões',
+          Text(
+            tr('Próximas missões'),
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: MP.s2),
@@ -794,7 +795,7 @@ class _HistoryState extends State<_History> {
             for (final d in const [7, 30, 0]) ...[
               ChoiceChip(
                 key: Key('ledger-$d'),
-                label: Text(d == 0 ? 'Tudo' : '$d dias'),
+                label: Text(d == 0 ? tr('Tudo') : '$d dias'),
                 selected: _days == d,
                 showCheckmark: false,
                 selectedColor: MP.navy,
@@ -815,7 +816,7 @@ class _HistoryState extends State<_History> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(_days == 0 ? 'Ganhos no total' : 'Ganhos em $_days dias', style: const TextStyle(fontSize: 13, color: MP.textSecondary)),
+                    Text(_days == 0 ? tr('Ganhos no total') : 'Ganhos em $_days dias', style: const TextStyle(fontSize: 13, color: MP.textSecondary)),
                     Text('+$earned pts', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: MP.success)),
                   ],
                 ),
@@ -823,7 +824,7 @@ class _HistoryState extends State<_History> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  const Text('Saldo atual', style: TextStyle(fontSize: 13, color: MP.textSecondary)),
+                  Text(tr('Saldo atual'), style: TextStyle(fontSize: 13, color: MP.textSecondary)),
                   Text('${widget.store.points} pts', key: const Key('ledger-balance'), style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: MP.ink)),
                 ],
               ),
@@ -832,10 +833,10 @@ class _HistoryState extends State<_History> {
         ),
         const SizedBox(height: MP.s3),
         if (rows.isEmpty)
-          const MpEmpty(
+          MpEmpty(
             icon: Icons.receipt_long_rounded,
-            title: 'Nenhum lançamento no período',
-            message: 'Seu extrato mostra visitas, carimbos e cupons usados.',
+            title: tr('Nenhum lançamento no período'),
+            message: tr('Seu extrato mostra visitas, carimbos e cupons usados.'),
           ),
         for (var k = 0; k < rows.length; k++) ...[
           if (k == 0 || !_sameDay(rows[k - 1].$1.at, rows[k].$1.at))

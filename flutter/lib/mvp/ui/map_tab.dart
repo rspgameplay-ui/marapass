@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import '../i18n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart' show Position;
 import 'package:maplibre_gl/maplibre_gl.dart';
@@ -648,7 +649,7 @@ class _MapTabState extends ConsumerState<MapTab> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  'Camadas do mapa',
+                  tr('Camadas do mapa'),
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
                 const SizedBox(height: MP.s2),
@@ -659,8 +660,8 @@ class _MapTabState extends ConsumerState<MapTab> {
                     Icons.landscape_rounded,
                     color: MP.poiIsland,
                   ),
-                  title: const Text(
-                    'Ilhas do litoral',
+                  title: Text(
+                    tr('Ilhas do litoral'),
                     style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
                   ),
                   subtitle: Text(
@@ -680,8 +681,8 @@ class _MapTabState extends ConsumerState<MapTab> {
                     Icons.directions_boat_rounded,
                     color: Color(0xff0b6e99),
                   ),
-                  title: const Text(
-                    'Travessias de barco',
+                  title: Text(
+                    tr('Travessias de barco'),
                     style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
                   ),
                   subtitle: Text(
@@ -703,12 +704,12 @@ class _MapTabState extends ConsumerState<MapTab> {
                     Icons.beach_access_rounded,
                     color: MP.poiBeach,
                   ),
-                  title: const Text(
-                    'Praias',
+                  title: Text(
+                    tr('Praias'),
                     style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
                   ),
-                  subtitle: const Text(
-                    'Com planejamento de visita, maré e acesso',
+                  subtitle: Text(
+                    tr('Com planejamento de visita, maré e acesso'),
                   ),
                   value: _kinds.contains(PoiKind.praias),
                   onChanged: (v) {
@@ -947,7 +948,7 @@ class _MapTabState extends ConsumerState<MapTab> {
     if (choice == 'gps') return _findOrigin();
     if (choice == 'map') {
       setState(() => _pickingOrigin = true);
-      if (mounted) showMpSnack(context, 'Toque no mapa no ponto de partida.');
+      if (mounted) showMpSnack(context, tr('Toque no mapa no ponto de partida.'));
       return null;
     }
     if (choice is MapEntry<String, GeoPoint>) {
@@ -1193,8 +1194,8 @@ class _MapTabState extends ConsumerState<MapTab> {
                             onChanged: (_) => setState(() {}),
                             textInputAction: TextInputAction.search,
                             style: const TextStyle(fontSize: 17),
-                            decoration: const InputDecoration(
-                              hintText: 'Buscar parceiros, cupons e passeios',
+                            decoration: InputDecoration(
+                              hintText: tr('Buscar parceiros, cupons e passeios'),
                               border: InputBorder.none,
                               enabledBorder: InputBorder.none,
                               focusedBorder: InputBorder.none,
@@ -1206,14 +1207,14 @@ class _MapTabState extends ConsumerState<MapTab> {
                         if (_searchCtl.text.isNotEmpty || _selected != null)
                           IconButton(
                             key: const Key('map-search-clear'),
-                            tooltip: 'Limpar busca',
+                            tooltip: tr('Limpar busca'),
                             onPressed: _clearSearch,
                             icon: const Icon(Icons.close_rounded, color: MP.textSecondary),
                           )
                         else
                           IconButton(
                             key: const Key('map-voice'),
-                            tooltip: 'Buscar falando',
+                            tooltip: tr('Buscar falando'),
                             onPressed: _openVoice,
                             icon: const Icon(Icons.mic_rounded, color: MP.navy),
                           ),
@@ -1254,21 +1255,21 @@ class _MapTabState extends ConsumerState<MapTab> {
               const SizedBox(height: MP.s2),
               _MapButton(
                 icon: Icons.explore_rounded,
-                tooltip: 'Apontar para o norte',
+                tooltip: tr('Apontar para o norte'),
                 onTap: _resetNorth,
               ),
               const SizedBox(height: MP.s2),
               _MapButton(
                 key: const Key('map-locate'),
                 icon: Icons.my_location_rounded,
-                tooltip: 'Minha localização',
+                tooltip: tr('Minha localização'),
                 onTap: _locate,
               ),
               const SizedBox(height: MP.s2),
               _MapButton(
                 key: const Key('map-layers'),
                 icon: Icons.layers_rounded,
-                tooltip: 'Camadas: ilhas, travessias e praias',
+                tooltip: tr('Camadas: ilhas, travessias e praias'),
                 onTap: _openLayers,
               ),
             ],
@@ -1331,8 +1332,8 @@ class _MapTabState extends ConsumerState<MapTab> {
                 color: Colors.white.withValues(alpha: .85),
                 borderRadius: BorderRadius.circular(4),
               ),
-              child: const Text(
-                '© OpenStreetMap · OpenFreeMap',
+              child: Text(
+                tr('© OpenStreetMap · OpenFreeMap'),
                 style: TextStyle(fontSize: 13, color: MP.textSecondary),
               ),
             ),

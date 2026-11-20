@@ -41,6 +41,9 @@ COLUNAS = [
     ("cidade", True, "Município", "Barreirinhas"),
     ("resumo", True, "Uma frase, até 90 caracteres", "Lagoas Azul e Bonita, com banho e fotos."),
     ("descricao", True, "Texto completo para a página do item", "Visita às lagoas Azul e Bonita com guia local."),
+    ("nome_en", False, "Nome em inglês (aparece quando o app está em inglês)", "Lagoons Tour"),
+    ("resumo_en", False, "Resumo em inglês", "Blue and Bonita lagoons, with swimming and photos."),
+    ("descricao_en", False, "Descrição em inglês", "Visit to the Blue and Bonita lagoons with a local guide."),
     ("preco_reais", False, "Preço por pessoa (hospedagem: por noite). Só números", "120"),
     ("duracao", False, "Ex.: 4 horas", "4 horas"),
     ("horario_funcionamento", False, "Ex.: Todos os dias, 8h às 18h", "Todos os dias, 8h às 18h"),
@@ -205,6 +208,9 @@ def importar(xlsx: Path, fotos: Path | None) -> int:
         f = [f"id: {dart_str(it['id'])}", f"cat: Cat.{it['categoria']}", f"titulo: {dart_str(it['nome'])}",
              f"resumo: {dart_str(it['resumo'])}", f"descricao: {dart_str(it['descricao'])}",
              f"polo: {dart_str(it['polo'])}", f"cidade: {dart_str(it['cidade'])}"]
+        for k, dk in (("nome_en", "tituloEn"), ("resumo_en", "resumoEn"), ("descricao_en", "descricaoEn")):
+            if it[k]:
+                f.append(f"{dk}: {dart_str(it[k])}")
         if it["foto_key"]:
             f.append(f"foto: {dart_str(it['foto_key'])}")
         if it["preco"] is not None:

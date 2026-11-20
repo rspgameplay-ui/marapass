@@ -1,6 +1,7 @@
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import '../i18n.dart';
 import 'package:flutter/rendering.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
@@ -60,12 +61,12 @@ class PlateArt extends StatelessWidget {
               borderRadius: BorderRadius.vertical(top: Radius.circular(17)),
             ),
             padding: const EdgeInsets.symmetric(horizontal: 18),
-            child: const Row(
+            child: Row(
               children: [
                 MpLogo(width: 64, white: true),
                 Spacer(),
                 Text(
-                  'Registre\nsua visita',
+                  tr('Registre\nsua visita'),
                   textAlign: TextAlign.right,
                   style: TextStyle(color: MP.yellow, fontWeight: FontWeight.w800, fontSize: 15, height: 1.15),
                 ),
@@ -108,8 +109,8 @@ class PlateArt extends StatelessWidget {
                   color: MP.soft,
                   borderRadius: BorderRadius.vertical(bottom: Radius.circular(17)),
                 ),
-                child: const Text(
-                  'Abra o app MaraPass › Registrar visita e aponte a câmera para o QR. Ganhe pontos e o carimbo do polo.',
+                child: Text(
+                  tr('Abra o app MaraPass › Registrar visita e aponte a câmera para o QR. Ganhe pontos e o carimbo do polo.'),
                   textAlign: TextAlign.center,
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
@@ -146,12 +147,12 @@ class _PlatesScreenState extends State<PlatesScreen> {
         child: ListView(
           padding: const EdgeInsets.only(bottom: MP.s8),
           children: [
-            const MpHeader('Placas MaraPass', subtitle: 'QR para o turista registrar a visita no seu local.'),
+            MpHeader(tr('Placas MaraPass'), subtitle: tr('QR para o turista registrar a visita no seu local.')),
             Padding(
               padding: const EdgeInsets.fromLTRB(MP.pageH, 0, MP.pageH, MP.s3),
               child: TextField(
                 key: const Key('plates-search'),
-                decoration: const InputDecoration(prefixIcon: Icon(Icons.search_rounded), hintText: 'Buscar local'),
+                decoration: InputDecoration(prefixIcon: Icon(Icons.search_rounded), hintText: tr('Buscar local')),
                 onChanged: (v) => setState(() => _q = v),
               ),
             ),
@@ -196,7 +197,7 @@ class _PlatePreviewState extends State<PlatePreviewScreen> {
           padding: const EdgeInsets.fromLTRB(MP.pageH, MP.s3, MP.pageH, MP.s3),
           child: MpPrimaryButton(
             key: const Key('plate-download'),
-            label: 'Baixar placa (PNG)',
+            label: tr('Baixar placa (PNG)'),
             icon: Icons.download_rounded,
             busy: _busy,
             onPressed: () async {
@@ -211,13 +212,13 @@ class _PlatePreviewState extends State<PlatePreviewScreen> {
         child: ListView(
           padding: const EdgeInsets.only(bottom: MP.s6),
           children: [
-            MpHeader('Placa do local', subtitle: i.titulo),
+            MpHeader(tr('Placa do local'), subtitle: i.titulo),
             Center(child: RepaintBoundary(key: _key, child: PlateArt(item: i))),
             const SizedBox(height: MP.s4),
-            const Padding(
+            Padding(
               padding: EdgeInsets.symmetric(horizontal: MP.pageH),
               child: MpNotice(
-                'Imprima em tamanho A6 (10,5 × 14,8 cm), de preferência plastificada, e fixe no balcão ou na entrada, em altura de leitura. O código embaixo do QR serve para quem não conseguir usar a câmera.',
+                tr('Imprima em tamanho A6 (10,5 × 14,8 cm), de preferência plastificada, e fixe no balcão ou na entrada, em altura de leitura. O código embaixo do QR serve para quem não conseguir usar a câmera.'),
                 icon: Icons.print_rounded,
                 fg: MP.info,
                 bg: MP.infoBg,
@@ -245,10 +246,10 @@ class _OfferQrCardState extends State<OfferQrCard> {
     key: const Key('offer-qr'),
     child: Column(
       children: [
-        const Text('QR da oferta para o balcão', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+        Text(tr('QR da oferta para o balcão'), style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
         const SizedBox(height: MP.s1),
-        const Text(
-          'O turista lê no app e ativa o cupom na hora.',
+        Text(
+          tr('O turista lê no app e ativa o cupom na hora.'),
           textAlign: TextAlign.center,
           style: TextStyle(fontSize: 14, color: MP.textSecondary),
         ),
@@ -279,7 +280,7 @@ class _OfferQrCardState extends State<OfferQrCard> {
           key: const Key('offer-qr-download'),
           onPressed: () => savePng(context, _key, 'oferta-${widget.cupomId.replaceAll(':', '-')}.png'),
           icon: const Icon(Icons.download_rounded),
-          label: const Text('Baixar QR (PNG)'),
+          label: Text(tr('Baixar QR (PNG)')),
         ),
       ],
     ),

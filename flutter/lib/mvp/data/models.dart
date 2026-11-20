@@ -1,6 +1,8 @@
 /// Modelos do MVP, alinhados às tabelas reais do Supabase.
 library;
 
+import '../i18n.dart';
+
 DateTime? _dt(Object? v) =>
     v == null ? null : DateTime.tryParse('$v')?.toLocal();
 int _int(Object? v, [int d = 0]) =>
@@ -367,8 +369,9 @@ const _months = [
   'dez',
 ];
 
-String formatDay(DateTime d) =>
-    '${_weekdays[d.weekday - 1]}, ${d.day} ${_months[d.month - 1]}';
+String formatDay(DateTime d) => appLang == 'en'
+    ? '${const ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][d.weekday - 1]}, ${const ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][d.month - 1]} ${d.day}'
+    : '${_weekdays[d.weekday - 1]}, ${d.day} ${_months[d.month - 1]}';
 String formatTime(DateTime d) =>
     '${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
 String formatDate(DateTime d) =>

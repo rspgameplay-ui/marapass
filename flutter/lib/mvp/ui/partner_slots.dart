@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../i18n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/content.dart';
@@ -86,7 +87,7 @@ class _PartnerSlotsState extends ConsumerState<PartnerSlotsScreen> {
         child: ListView(
           padding: const EdgeInsets.only(bottom: MP.s8),
           children: [
-            const MpHeader('Horários e vagas', subtitle: 'O turista só consegue reservar dentro do que você definir aqui.'),
+            MpHeader(tr('Horários e vagas'), subtitle: tr('O turista só consegue reservar dentro do que você definir aqui.')),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
               child: Column(
@@ -95,7 +96,7 @@ class _PartnerSlotsState extends ConsumerState<PartnerSlotsScreen> {
                   if (_error != null) MpNotice(_error!),
                   if (forms == null && _error == null) const Center(child: CircularProgressIndicator()),
                   if (forms != null && forms.isEmpty)
-                    const MpNotice('Nenhum item ligado à sua conta ainda. A equipe MaraPass faz essa ligação ao aprovar o seu cadastro.'),
+                    MpNotice(tr('Nenhum item ligado à sua conta ainda. A equipe MaraPass faz essa ligação ao aprovar o seu cadastro.')),
                   for (final f in forms ?? const <_SlotForm>[]) ...[
                     if (f.period == 'Manhã') ...[
                       const SizedBox(height: MP.s3),
@@ -112,12 +113,12 @@ class _PartnerSlotsState extends ConsumerState<PartnerSlotsScreen> {
                             value: f.active,
                             onChanged: (v) => setState(() => f.active = v),
                             title: Text(f.period, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 17)),
-                            subtitle: Text(f.active ? 'Aceita reservas' : 'Fechado'),
+                            subtitle: Text(f.active ? tr('Aceita reservas') : tr('Fechado')),
                           ),
-                          TextField(controller: f.hours, decoration: const InputDecoration(labelText: 'Horário (ex.: 8h às 12h)')),
+                          TextField(controller: f.hours, decoration: InputDecoration(labelText: tr('Horário (ex.: 8h às 12h)'))),
                           const SizedBox(height: MP.s3),
                           Row(children: [
-                            const Expanded(child: Text('Vagas por dia (pessoas)', style: TextStyle(fontWeight: FontWeight.w700))),
+                            Expanded(child: Text(tr('Vagas por dia (pessoas)'), style: TextStyle(fontWeight: FontWeight.w700))),
                             MpStepper(value: f.capacity, min: 1, max: 500, keyPrefix: 'slot-cap', onChanged: (v) => setState(() => f.capacity = v)),
                           ]),
                           const SizedBox(height: MP.s2),
@@ -132,7 +133,7 @@ class _PartnerSlotsState extends ConsumerState<PartnerSlotsScreen> {
                           const SizedBox(height: MP.s3),
                           FilledButton(
                             onPressed: _saving != null ? null : () => _save(f),
-                            child: Text(_saving == '${f.item}|${f.period}' ? 'Salvando…' : (f.saved ? 'Salvar alterações' : 'Ativar ${f.period.toLowerCase()}')),
+                            child: Text(_saving == '${f.item}|${f.period}' ? tr('Salvando…') : (f.saved ? tr('Salvar alterações') : 'Ativar ${f.period.toLowerCase()}')),
                           ),
                         ],
                       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../i18n.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -8,10 +9,14 @@ import '../data/trip.dart';
 import '../data/store.dart' show appStoreProvider;
 import '../theme/tokens.dart';
 
-const _monthNames = [
+const _monthNamesPt = [
   'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
   'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro',
 ];
+
+List<String> get _monthNames => appLang == 'en'
+    ? const ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+    : _monthNamesPt;
 
 /// Feriados nacionais de data fixa (mês, dia).
 const _feriados = {(1, 1), (4, 21), (5, 1), (9, 7), (10, 12), (11, 2), (11, 15), (11, 20), (12, 25)};
@@ -90,13 +95,13 @@ class _MpMonthCalendarState extends State<MpMonthCalendar> {
             ),
             IconButton(
               key: const Key('cal-prev'),
-              tooltip: 'Mês anterior',
+              tooltip: tr('Mês anterior'),
               onPressed: canBack ? () => setState(() => _month = DateTime(_month.year, _month.month - 1)) : null,
               icon: const Icon(Icons.chevron_left_rounded),
             ),
             IconButton(
               key: const Key('cal-next'),
-              tooltip: 'Próximo mês',
+              tooltip: tr('Próximo mês'),
               onPressed: () => setState(() => _month = DateTime(_month.year, _month.month + 1)),
               icon: const Icon(Icons.chevron_right_rounded),
             ),
@@ -104,7 +109,7 @@ class _MpMonthCalendarState extends State<MpMonthCalendar> {
         ),
         Row(
           children: [
-            for (final (k, l) in const ['S', 'T', 'Q', 'Q', 'S', 'S', 'D'].indexed)
+            for (final (k, l) in (appLang == 'en' ? const ['M', 'T', 'W', 'T', 'F', 'S', 'S'] : const ['S', 'T', 'Q', 'Q', 'S', 'S', 'D']).indexed)
               Expanded(
                 child: Center(
                   child: Text(l, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13, color: k >= 5 ? MP.goldText : MP.textSecondary)),
@@ -148,7 +153,7 @@ class _MpMonthCalendarState extends State<MpMonthCalendar> {
           child: Semantics(
             button: on,
             selected: isEdge,
-            label: '$n de ${_monthNames[d.month - 1]}${dot ? ', com evento' : ''}',
+            label: appLang == 'en' ? '${_monthNames[d.month - 1]} $n${dot ? tr(', com evento') : ''}' : '$n de ${_monthNames[d.month - 1]}${dot ? tr(', com evento') : ''}',
             child: InkWell(
               key: offset >= 0 ? Key('day-$offset') : null,
               customBorder: const CircleBorder(),
@@ -204,9 +209,9 @@ class DayAgenda extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('${day.day} de ${_monthNames[day.month - 1].toLowerCase()}', style: Theme.of(context).textTheme.titleMedium),
+          Text(appLang == 'en' ? '${_monthNames[day.month - 1]} ${day.day}' : '${day.day} de ${_monthNames[day.month - 1].toLowerCase()}', style: Theme.of(context).textTheme.titleMedium),
           if (rows.isEmpty)
-            const Padding(padding: EdgeInsets.only(top: 4), child: Text('Nada marcado neste dia.', style: TextStyle(color: MP.textSecondary))),
+            Padding(padding: EdgeInsets.only(top: 4), child: Text(tr('Nada marcado neste dia.'), style: TextStyle(color: MP.textSecondary))),
           for (final (icon, color, title, sub) in rows)
             Padding(
               padding: const EdgeInsets.only(top: MP.s2),

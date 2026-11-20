@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../i18n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/coupon_commerce.dart';
@@ -183,7 +184,7 @@ class _SaleOfferFormState extends ConsumerState<SaleOfferForm> {
             field('rules', 'Condições de uso', lines: 2),
             DropdownButtonFormField<String>(
               initialValue: category,
-              decoration: const InputDecoration(labelText: 'Categoria'),
+              decoration: InputDecoration(labelText: tr('Categoria')),
               items: [
                 for (final e in const {
                   'hospedagem': 'Hospedagem',
@@ -231,10 +232,10 @@ class _SaleOfferFormState extends ConsumerState<SaleOfferForm> {
             keyboard: const TextInputType.numberWithOptions(decimal: true),
           ),
           SegmentedButton(
-            segments: const [
-              ButtonSegment(value: 'percent', label: Text('Percentual')),
-              ButtonSegment(value: 'fixed', label: Text('Valor fixo')),
-              ButtonSegment(value: 'promo', label: Text('Preço final')),
+            segments: [
+              ButtonSegment(value: 'percent', label: Text(tr('Percentual'))),
+              ButtonSegment(value: 'fixed', label: Text(tr('Valor fixo'))),
+              ButtonSegment(value: 'promo', label: Text(tr('Preço final'))),
             ],
             selected: {kind},
             onSelectionChanged: (v) => setState(() => kind = v.first),
@@ -280,18 +281,18 @@ class _SaleOfferFormState extends ConsumerState<SaleOfferForm> {
           field('payment', 'Instruções de pagamento direto', lines: 2),
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
-            title: const Text('Compra elegível a pontos'),
+            title: Text(tr('Compra elegível a pontos')),
             value: points,
             onChanged: (v) => setState(() => points = v),
           ),
           if (widget.offerId == null)
             TextButton(
               onPressed: busy ? null : () => submit(draft: true),
-              child: const Text('Salvar rascunho'),
+              child: Text(tr('Salvar rascunho')),
             ),
           FilledButton(
             onPressed: busy ? null : () => submit(),
-            child: const Text('Enviar para aprovação'),
+            child: Text(tr('Enviar para aprovação')),
           ),
         ],
       ),
