@@ -1,17 +1,8 @@
--- Corrige os avisos de desempenho do Supabase:
---  * auth_rls_initplan: auth.jwt() passa a ser chamado como (select auth.jwt()), avaliado uma vez por consulta.
---  * multiple_permissive_policies: a policy de leitura de admin (aal2) é fundida por OR na policy de leitura
---    existente; policies ALL de admin viram INSERT/UPDATE/DELETE; catálogos públicos ganham cópia só para anon
---    (o anon não tem acesso a staff_members, então a condição de admin só vale para authenticated).
---  * unindexed_foreign_keys: índices nas 12 FKs restantes.
--- O comportamento de acesso não muda.
-
 do $$
 declare
   admin_cond constant text := $a$((((select auth.jwt()) ->> 'aal') = 'aal2') and exists(select 1 from public.staff_members s
     where s.user_id = (select auth.uid()) and s.staff_role = 'admin' and s.is_active))$a$;
   r record; q text; w text; stmt text;
-  -- (tabela, policy de leitura existente, policy de admin a remover, true = manter cópia anon)
   merges constant text[] := array[
     'coupon_instances|coupons_read_owner_or_partner|admin_read_coupon_instances_aal2|f',
     'establishments|establishments_authenticated|admin_read_establishments_aal2|f',
@@ -31,7 +22,7 @@ begin
     p := string_to_array(m, '|');
     select qual into q from pg_policies where schemaname='public' and tablename=p[1] and policyname=p[2];
     if q is null then raise exception 'Policy % não encontrada em %', p[2], p[1]; end if;
-    if q like '%staff_members%' then continue; end if; -- já aplicada
+    if q like '%staff_members%' then continue; end if;
 
     if p[4] = 't' then
       execute format('create policy %I on public.%I for select to anon using (%s)', p[2] || '_anon', p[1], q);
@@ -49,7 +40,6 @@ begin
     end if;
   end loop;
 
-  -- Reescreve chamadas auth.jwt() soltas ou embrulhadas de forma que o linter não reconhece.
   for r in select tablename, policyname, qual, with_check from pg_policies
            where schemaname='public' and (coalesce(qual,'')||coalesce(with_check,'')) ~ 'auth\.jwt\(\)'
              and (coalesce(qual,'')||coalesce(with_check,'')) !~ '\(select auth\.jwt\(\)\)' loop
@@ -76,4 +66,4 @@ create index if not exists passport_incidents_reported_by_idx on public.passport
 create index if not exists passport_cancellations_buyer_idx on public.passport_cancellation_requests(buyer_user_id);
 create index if not exists passport_entitlements_product_idx on public.passport_entitlements(product_id);
 create index if not exists passport_entitlements_user_idx on public.passport_entitlements(user_id);
-create index if not exists passport_orders_product_idx on public.passport_orders(product_id);
+create index if not exists passport_orders_product_idx on public.passport_orders(product_id);;

@@ -1,5 +1,6 @@
 -- MaraPass. Replay das migrações registradas no Supabase do projeto.
 -- Requer os schemas gerenciados e os papéis padrão do Supabase.
+-- Gerado de supabase/migrations (histórico idêntico ao banco). Não edite à mão.
 
 -- 20261021214753 marapass_mvp_initial_core
 
@@ -526,9 +527,11 @@ revoke all on function public.redeem_coupon(uuid,uuid,text,integer) from public,
 grant execute on function public.issue_coupon(uuid,uuid,text,uuid) to service_role;
 grant execute on function public.redeem_coupon(uuid,uuid,text,integer) to service_role;
 revoke all on all functions in schema private from public,anon,authenticated;
+;
 
 -- 20261021214821 restrict_rls_auto_enable_execution
-revoke execute on function public.rls_auto_enable() from public, anon, authenticated;
+
+revoke execute on function public.rls_auto_enable() from public, anon, authenticated;;
 
 -- 20261021215600 marapass_partner_catalog_reservation_foundation
 
@@ -629,6 +632,7 @@ for select to authenticated using (
 -- Don't expose administrative functions by default.
 alter default privileges for role postgres in schema public
   revoke execute on functions from public;
+;
 
 -- 20261021215748 marapass_partner_catalog_operational_rpcs
 
@@ -945,6 +949,7 @@ begin
     execute format('grant execute on function %s to service_role', fn);
   end loop;
 end $$;
+;
 
 -- 20261021215851 marapass_reservations_atomic_capacity_lifecycle
 
@@ -1125,6 +1130,7 @@ grant execute on function public.request_reservation(uuid,uuid,integer,text)
  to service_role;
 grant execute on function public.decide_reservation(uuid,uuid,text)
  to service_role;
+;
 
 -- 20261021220014 marapass_catalog_visibility_and_fk_indexes
 
@@ -1171,6 +1177,7 @@ to anon,authenticated using (
     where e.id=establishment_id and e.is_active and e.is_public
       and p.status='approved')
 );
+;
 
 -- 20261021220159 fix_reissued_coupon_after_reservation_cancel
 
@@ -1242,6 +1249,7 @@ begin
 end $$;
 revoke all on function public.issue_coupon(uuid,uuid,text,uuid) from public,anon,authenticated;
 grant execute on function public.issue_coupon(uuid,uuid,text,uuid) to service_role;
+;
 
 -- 20261021220429 marapass_guest_catalog_and_partner_privacy
 
@@ -1356,6 +1364,7 @@ after update of status on public.partners
 for each row execute function private.hide_catalog_for_suspended_partner();
 grant execute on function private.hide_catalog_for_suspended_partner() to service_role;
 revoke execute on function private.hide_catalog_for_suspended_partner() from public,anon,authenticated;
+;
 
 -- 20261022143040 marapass_auth_profile_and_manual_admin_bootstrap
 
@@ -1518,6 +1527,7 @@ is 'One-time manual bootstrap; verified email required. Not executable via API, 
 
 comment on function public.my_access_context()
 is 'Reads the current session access status without assigning roles. admin_console_ready requires MFA aal2, and privileged backend operations must verify MFA independently.';
+;
 
 -- 20261023005108 marapass_admin_dashboard_readonly_aal2_rls
 
@@ -1594,6 +1604,7 @@ revoke all on function public.marapass_admin_overview() from public,anon,authent
 grant execute on function public.marapass_admin_overview() to authenticated;
 comment on function public.marapass_admin_overview() is
   'Leitura restrita a staff.admin ativo com JWT aal2; sem direitos de escrita.';
+;
 
 -- 20261027175726 marapass_admin_direct_company_registration
 
@@ -1654,6 +1665,7 @@ END $$;
 REVOKE ALL ON FUNCTION public.admin_register_direct_company(uuid,text,text,text,text,text,text,text) FROM public,anon,authenticated;
 GRANT EXECUTE ON FUNCTION public.admin_register_direct_company(uuid,text,text,text,text,text,text,text) TO service_role;
 CREATE INDEX partner_direct_registrations_actor ON public.partner_direct_registrations(registered_by_user_id);
+;
 
 -- 20261027181622 marapass_admin_company_idempotent_registration
 
@@ -1717,6 +1729,7 @@ REVOKE ALL ON FUNCTION public.admin_register_direct_company_once(uuid,text,text,
  FROM public,anon,authenticated;
 GRANT EXECUTE ON FUNCTION public.admin_register_direct_company_once(uuid,text,text,text,text,text,text,text,uuid)
  TO service_role;
+;
 
 -- 20261027185402 marapass_partner_verified_invitations_lifecycle
 
@@ -1910,6 +1923,7 @@ GRANT EXECUTE ON FUNCTION public.admin_record_partner_invitation_dispatch(uuid,u
 GRANT EXECUTE ON FUNCTION public.partner_list_my_invitations(uuid) TO service_role;
 GRANT EXECUTE ON FUNCTION public.partner_accept_invitation(uuid,uuid) TO service_role;
 GRANT EXECUTE ON FUNCTION public.admin_activate_invited_partner(uuid,uuid) TO service_role;
+;
 
 -- 20261027185901 marapass_partner_invitation_live_activation_status
 
@@ -1932,6 +1946,7 @@ BEGIN
 END $$;
 REVOKE ALL ON FUNCTION public.partner_list_my_invitations(uuid) FROM PUBLIC,anon,authenticated;
 GRANT EXECUTE ON FUNCTION public.partner_list_my_invitations(uuid) TO service_role;
+;
 
 -- 20261027190155 marapass_private_verified_auth_email_service_bridge
 
@@ -2021,8 +2036,10 @@ REVOKE ALL ON FUNCTION public.admin_activate_invited_partner(uuid,uuid) FROM PUB
 GRANT EXECUTE ON FUNCTION public.partner_list_my_invitations(uuid) TO service_role;
 GRANT EXECUTE ON FUNCTION public.partner_accept_invitation(uuid,uuid) TO service_role;
 GRANT EXECUTE ON FUNCTION public.admin_activate_invited_partner(uuid,uuid) TO service_role;
+;
 
 -- 20261029000339 marapass_tourism_territory_foundation
+
 begin;
 
 create extension if not exists postgis with schema extensions;
@@ -2224,9 +2241,10 @@ create policy pole_municipalities_admin_manage
     )
   );
 
-commit;
+commit;;
 
 -- 20261030181803 marapass_map_shared_editorial_workflow
+
 insert into public.municipalities(ibge_code,name,state_code,is_published) values
 ('2100105','Afonso Cunha','MA',false),
 ('2100204','Alcântara','MA',false),
@@ -2656,8 +2674,10 @@ returns jsonb language sql security invoker set search_path='' as $$select priva
 revoke all on function public.map_content_command(text,jsonb) from public,anon,authenticated;
 grant execute on function public.map_content_command(text,jsonb) to authenticated;
 notify pgrst,'reload schema';
+;
 
 -- 20261030181932 marapass_map_command_scope_fix
+
 create or replace function private.map_command(p_action text, p_args jsonb default '{}'::jsonb)
 returns jsonb language plpgsql security definer set search_path='' as $$
 <<map_ctx>>
@@ -2803,8 +2823,10 @@ begin
  insert into private.map_requests(actor,request_id,fingerprint,response) values(actor,request_key,fingerprint,response);
  return response;
 end $$;
+;
 
 -- 20261030182501 marapass_map_team_labels_and_private_policies
+
 create policy map_private_no_direct_access on private.map_members for all to anon,authenticated using(false) with check(false);
 create policy map_private_no_direct_access on private.map_documents for all to anon,authenticated using(false) with check(false);
 create policy map_private_no_direct_access on private.map_versions for all to anon,authenticated using(false) with check(false);
@@ -2957,8 +2979,10 @@ begin
  insert into private.map_requests(actor,request_id,fingerprint,response) values(actor,request_key,fingerprint,response);
  return response;
 end $$;
+;
 
 -- 20261030182517 marapass_map_history_actor_label_fix
+
 create or replace function private.map_command(p_action text, p_args jsonb default '{}'::jsonb)
 returns jsonb language plpgsql security definer set search_path='' as $$
 <<map_ctx>>
@@ -3105,8 +3129,10 @@ begin
  insert into private.map_requests(actor,request_id,fingerprint,response) values(actor,request_key,fingerprint,response);
  return response;
 end $$;
+;
 
 -- 20261102223629 map_editorial_google_place_id
+
 DO $guard$ BEGIN IF md5(pg_get_functiondef('private.map_command(text,jsonb)'::regprocedure)) <> '1e5bbff9d9a2478e5746a93801aec9b1' THEN RAISE EXCEPTION 'Map function changed; review before updating'; END IF; END $guard$;
 CREATE OR REPLACE FUNCTION private.map_command(p_action text, p_args jsonb DEFAULT '{}'::jsonb)
  RETURNS jsonb
@@ -3259,13 +3285,15 @@ begin
  insert into private.map_requests(actor,request_id,fingerprint,response) values(actor,request_key,fingerprint,response);
  return response;
 end $function$;
-NOTIFY pgrst, 'reload schema';
+NOTIFY pgrst, 'reload schema';;
 
 -- 20261103002152 assistant_chat_foundation
-create table if not exists public.assistant_conversations (id uuid primary key default gen_random_uuid(), user_id uuid not null references auth.users(id) on delete cascade, destination text, created_at timestamptz not null default now(), updated_at timestamptz not null default now()); create table if not exists public.assistant_messages (id uuid primary key default gen_random_uuid(), conversation_id uuid not null references public.assistant_conversations(id) on delete cascade, sender text not null check(sender in ('user','assistant','system')), body text not null check(char_length(body)<=12000), created_at timestamptz not null default now()); create index if not exists assistant_messages_conversation_created_idx on public.assistant_messages(conversation_id,created_at); alter table public.assistant_conversations enable row level security; alter table public.assistant_messages enable row level security; create policy assistant_conversations_read on public.assistant_conversations for select to authenticated using (user_id=(select auth.uid())); create policy assistant_conversations_create on public.assistant_conversations for insert to authenticated with check (user_id=(select auth.uid())); create policy assistant_conversations_update on public.assistant_conversations for update to authenticated using (user_id=(select auth.uid())) with check(user_id=(select auth.uid())); create policy assistant_messages_read on public.assistant_messages for select to authenticated using (exists(select 1 from public.assistant_conversations c where c.id=conversation_id and c.user_id=(select auth.uid()))); create policy assistant_messages_user_insert on public.assistant_messages for insert to authenticated with check(sender='user' and exists(select 1 from public.assistant_conversations c where c.id=conversation_id and c.user_id=(select auth.uid())));
+
+create table if not exists public.assistant_conversations (id uuid primary key default gen_random_uuid(), user_id uuid not null references auth.users(id) on delete cascade, destination text, created_at timestamptz not null default now(), updated_at timestamptz not null default now()); create table if not exists public.assistant_messages (id uuid primary key default gen_random_uuid(), conversation_id uuid not null references public.assistant_conversations(id) on delete cascade, sender text not null check(sender in ('user','assistant','system')), body text not null check(char_length(body)<=12000), created_at timestamptz not null default now()); create index if not exists assistant_messages_conversation_created_idx on public.assistant_messages(conversation_id,created_at); alter table public.assistant_conversations enable row level security; alter table public.assistant_messages enable row level security; create policy assistant_conversations_read on public.assistant_conversations for select to authenticated using (user_id=(select auth.uid())); create policy assistant_conversations_create on public.assistant_conversations for insert to authenticated with check (user_id=(select auth.uid())); create policy assistant_conversations_update on public.assistant_conversations for update to authenticated using (user_id=(select auth.uid())) with check(user_id=(select auth.uid())); create policy assistant_messages_read on public.assistant_messages for select to authenticated using (exists(select 1 from public.assistant_conversations c where c.id=conversation_id and c.user_id=(select auth.uid()))); create policy assistant_messages_user_insert on public.assistant_messages for insert to authenticated with check(sender='user' and exists(select 1 from public.assistant_conversations c where c.id=conversation_id and c.user_id=(select auth.uid())));;
 
 -- 20261103002203 assistant_restrict_anonymous_sessions
-alter policy assistant_conversations_read on public.assistant_conversations using (user_id=(select auth.uid()) and coalesce((select auth.jwt()->>'is_anonymous')::boolean,false)=false); alter policy assistant_conversations_create on public.assistant_conversations with check (user_id=(select auth.uid()) and coalesce((select auth.jwt()->>'is_anonymous')::boolean,false)=false); alter policy assistant_conversations_update on public.assistant_conversations using (user_id=(select auth.uid()) and coalesce((select auth.jwt()->>'is_anonymous')::boolean,false)=false) with check(user_id=(select auth.uid()) and coalesce((select auth.jwt()->>'is_anonymous')::boolean,false)=false); alter policy assistant_messages_read on public.assistant_messages using (coalesce((select auth.jwt()->>'is_anonymous')::boolean,false)=false and exists(select 1 from public.assistant_conversations c where c.id=conversation_id and c.user_id=(select auth.uid()))); alter policy assistant_messages_user_insert on public.assistant_messages with check (sender='user' and coalesce((select auth.jwt()->>'is_anonymous')::boolean,false)=false and exists(select 1 from public.assistant_conversations c where c.id=conversation_id and c.user_id=(select auth.uid())));
+
+alter policy assistant_conversations_read on public.assistant_conversations using (user_id=(select auth.uid()) and coalesce((select auth.jwt()->>'is_anonymous')::boolean,false)=false); alter policy assistant_conversations_create on public.assistant_conversations with check (user_id=(select auth.uid()) and coalesce((select auth.jwt()->>'is_anonymous')::boolean,false)=false); alter policy assistant_conversations_update on public.assistant_conversations using (user_id=(select auth.uid()) and coalesce((select auth.jwt()->>'is_anonymous')::boolean,false)=false) with check(user_id=(select auth.uid()) and coalesce((select auth.jwt()->>'is_anonymous')::boolean,false)=false); alter policy assistant_messages_read on public.assistant_messages using (coalesce((select auth.jwt()->>'is_anonymous')::boolean,false)=false and exists(select 1 from public.assistant_conversations c where c.id=conversation_id and c.user_id=(select auth.uid()))); alter policy assistant_messages_user_insert on public.assistant_messages with check (sender='user' and coalesce((select auth.jwt()->>'is_anonymous')::boolean,false)=false and exists(select 1 from public.assistant_conversations c where c.id=conversation_id and c.user_id=(select auth.uid())));;
 
 -- 20261103111443 map_tourism_attractions_and_partner_read_model
 
@@ -3297,6 +3325,7 @@ from public.establishments e
 where e.is_active=true and e.is_public=true and e.latitude is not null and e.longitude is not null;
 revoke all on public.map_partner_points from public,anon,authenticated;
 grant select on public.map_partner_points to anon,authenticated;
+;
 
 -- 20261103183635 barreirinhas_map_pilot_safe_fields_and_demo_offers
 
@@ -3331,8 +3360,10 @@ create policy map_demo_offers_public_read on public.map_demo_offers for select t
  select 1 from public.map_attractions a where a.id=attraction_id
  and a.publication_status='published' and a.verified_at is not null
  ));
+;
 
 -- 20261106013340 coupon_idempotency_serialization_and_payload
+
 do $patch$
 declare d text;
 begin
@@ -3345,9 +3376,10 @@ begin
  d := replace(d,'  select * into v_old from public.coupon_redemptions where idempotency_key=p_idempotency_key;', E'  perform pg_catalog.pg_advisory_xact_lock(pg_catalog.hashtextextended(''coupon-redeem:'' || p_idempotency_key, 0));\n  select * into v_old from public.coupon_redemptions where idempotency_key=p_idempotency_key;');
  d := replace(d,'or v_old.validated_by_user_id<>p_validator_user_id then',E'or v_old.validated_by_user_id<>p_validator_user_id\n      or v_old.transaction_amount_cents is distinct from p_transaction_amount_cents then');
  execute d;
-end $patch$;
+end $patch$;;
 
 -- 20261106094736 coupon_offer_creation_once
+
 alter table public.offers add column if not exists creation_key uuid;
 alter table public.offers add column if not exists created_by_user_id uuid references auth.users(id);
 create unique index if not exists offers_creation_request on public.offers(created_by_user_id,creation_key);
@@ -3384,9 +3416,10 @@ begin
  return v_id;
 end $f$;
 revoke all on function public.create_partner_offer_once(uuid,uuid,uuid,text,text,numeric,text,timestamptz,timestamptz,integer,integer) from public,anon,authenticated;
-grant execute on function public.create_partner_offer_once(uuid,uuid,uuid,text,text,numeric,text,timestamptz,timestamptz,integer,integer) to service_role;
+grant execute on function public.create_partner_offer_once(uuid,uuid,uuid,text,text,numeric,text,timestamptz,timestamptz,integer,integer) to service_role;;
 
 -- 20261106095508 coupon_offer_request_private_metadata
+
 create table if not exists private.offer_creation_requests(
  actor_user_id uuid not null references auth.users(id), request_key uuid not null,
  offer_id uuid not null references public.offers(id), payload jsonb not null,
@@ -3432,8 +3465,10 @@ grant execute on function public.create_partner_offer_once(uuid,uuid,uuid,text,t
 do $guard$ begin if exists(select 1 from public.offers where creation_key is not null or created_by_user_id is not null) then raise exception 'public creation metadata requires review';end if;end $guard$;
 drop index if exists public.offers_creation_request;
 alter table public.offers drop column creation_key, drop column created_by_user_id;
+;
 
 -- 20261107090856 partner_profiles_custom_coupons
+
 alter table public.establishments add column public_profile jsonb not null default '{}'::jsonb check (jsonb_typeof(public_profile)='object' and octet_length(public_profile::text)<=12000);
 alter table public.partner_applications add column business_profile jsonb not null default '{}'::jsonb check (jsonb_typeof(business_profile)='object' and octet_length(business_profile::text)<=12000);
 alter table public.offers add column presentation jsonb not null default '{}'::jsonb check (jsonb_typeof(presentation)='object' and octet_length(presentation::text)<=12000);
@@ -3507,8 +3542,10 @@ create function public.reserve_coupon_media(p_actor uuid) returns boolean langua
  insert into private.coupon_media_uploads(actor_user_id) values(p_actor);return true;end $$;
 revoke all on function public.reserve_coupon_media(uuid) from public,anon,authenticated;
 grant execute on function public.reserve_coupon_media(uuid) to service_role;
+;
 
 -- 20261107091056 business_profile_category_mapping
+
 create or replace function public.save_business_profile(p_actor uuid,p_partner_id uuid,p_establishment_id uuid,p_profile jsonb) returns uuid language plpgsql security invoker set search_path='' as $$
 declare v_id uuid:=p_establishment_id;begin
  perform private.assert_partner_manager(p_partner_id,p_actor);
@@ -3516,9 +3553,10 @@ declare v_id uuid:=p_establishment_id;begin
  if v_id is null then v_id:=public.create_partner_establishment(p_partner_id,p_actor,p_profile->>'name',case p_profile->>'category' when 'Passeios' then 'tours' when 'Gastronomia' then 'gastronomy' when 'Hospedagem' then 'lodging' when 'Cultura' then 'culture' when 'Natureza' then 'nature' when 'Artesanato' then 'crafts' when 'Transporte turístico' then 'tourist_transport' when 'Eventos' then 'events' when 'Fotografia' then 'photography' else 'services' end,p_profile->>'city',p_profile->>'description');
  elsif not exists(select 1 from public.establishments where id=v_id and partner_id=p_partner_id and is_active) then raise exception 'establishment denied';end if;
  update public.establishments set name=p_profile->>'name',city=p_profile->>'city',category=case p_profile->>'category' when 'Passeios' then 'tours' when 'Gastronomia' then 'gastronomy' when 'Hospedagem' then 'lodging' when 'Cultura' then 'culture' when 'Natureza' then 'nature' when 'Artesanato' then 'crafts' when 'Transporte turístico' then 'tourist_transport' when 'Eventos' then 'events' when 'Fotografia' then 'photography' else 'services' end,description=p_profile->>'description',street_address=p_profile->>'address',public_profile=p_profile where id=v_id;
- return v_id;end $$;
+ return v_id;end $$;;
 
 -- 20261107181827 map_environment_cache
+
 create table public.map_environment_cache(city_code text primary key check(city_code ~ '^21[0-9]{5}$'),payload jsonb,expires_at timestamptz not null default '-infinity',locked_until timestamptz not null default '-infinity',fetched_at timestamptz);
 alter table public.map_environment_cache enable row level security;
 revoke all on public.map_environment_cache from public,anon,authenticated;
@@ -3528,8 +3566,10 @@ create function public.claim_map_environment(p_code text) returns boolean langua
 $$;
 revoke all on function public.claim_map_environment(text) from public,anon,authenticated;
 grant execute on function public.claim_map_environment(text) to service_role;
+;
 
 -- 20261108134340 map_residential_category
+
 -- Extend only the editorial category allowlist. Preserve function body, ACL and search_path.
 do $migration$
 declare definition text;
@@ -3538,9 +3578,10 @@ begin
  if position('''residential''' in definition)>0 then return; end if;
  if position('''crafts'',''photography'',''tourist_transport''' in definition)=0 then raise exception 'Unexpected category validation; no change applied.'; end if;
  execute replace(definition,'''crafts'',''photography'',''tourist_transport''','''crafts'',''photography'',''residential'',''tourist_transport''');
-end $migration$;
+end $migration$;;
 
 -- 20261108165320 map_public_offer_calendar
+
 create or replace function private.map_offer_calendar(p_day date,p_city text)
 returns jsonb language plpgsql security definer set search_path='' as $fn$
 declare day_start timestamptz; day_end timestamptz; result jsonb;
@@ -3566,9 +3607,10 @@ create or replace function public.map_offer_calendar(p_day date,p_city text)
 returns jsonb language sql security invoker set search_path='' as $fn$select private.map_offer_calendar(p_day,p_city)$fn$;
 revoke all on function public.map_offer_calendar(date,text) from public;
 grant execute on function public.map_offer_calendar(date,text) to anon,authenticated;
-notify pgrst,'reload schema';
+notify pgrst,'reload schema';;
 
 -- 20261108165543 map_offer_calendar_filters
+
 create or replace function private.map_offer_calendar(p_day date,p_city text,p_category text default null,p_term text default '')
 returns jsonb language plpgsql security definer set search_path='' as $fn$
 declare day_start timestamptz; day_end timestamptz; result jsonb;
@@ -3595,7 +3637,7 @@ create or replace function public.map_offer_calendar(p_day date,p_city text,p_ca
 returns jsonb language sql security invoker set search_path='' as $fn$select private.map_offer_calendar(p_day,p_city,p_category,p_term)$fn$;
 revoke all on function public.map_offer_calendar(date,text,text,text) from public;
 grant execute on function public.map_offer_calendar(date,text,text,text) to anon,authenticated;
-notify pgrst,'reload schema';
+notify pgrst,'reload schema';;
 
 -- 20261111002950 marapass_v10_commercial_disclosures_passport_contracts
 
@@ -3793,6 +3835,7 @@ CREATE INDEX passport_orders_buyer ON public.passport_orders(buyer_user_id,creat
 CREATE INDEX passport_benefits_offer ON public.passport_product_benefits(offer_id);
 CREATE INDEX passport_entitlement_benefits_offer ON public.passport_entitlement_benefits(offer_id);
 CREATE INDEX coupon_passport_entitlement_idx ON public.coupon_instances(passport_entitlement_id);
+;
 
 -- 20261111003059 marapass_v10_offer_immutable_terms_and_discount_engine
 
@@ -3931,6 +3974,7 @@ REVOKE ALL ON FUNCTION public.mp_calculate_coupon_discount(text,numeric,integer,
  FROM PUBLIC,anon,authenticated;
 GRANT EXECUTE ON FUNCTION public.mp_calculate_coupon_discount(text,numeric,integer,integer,integer)
  TO service_role;
+;
 
 -- 20261111003215 marapass_v10_coupon_issuance_and_redemption_rules
 
@@ -4134,6 +4178,7 @@ BEGIN
 END $$;
 REVOKE ALL ON FUNCTION public.redeem_coupon(uuid,uuid,text,integer) FROM PUBLIC,anon,authenticated;
 GRANT EXECUTE ON FUNCTION public.redeem_coupon(uuid,uuid,text,integer) TO service_role;
+;
 
 -- 20261111003412 marapass_v10_admin_commercial_config_rpc
 
@@ -4303,6 +4348,7 @@ GRANT EXECUTE ON FUNCTION public.mp_admin_create_offer(uuid,jsonb) TO service_ro
 GRANT EXECUTE ON FUNCTION public.mp_admin_create_passport_draft(uuid,jsonb) TO service_role;
 GRANT EXECUTE ON FUNCTION public.mp_admin_attach_passport_benefit(uuid,uuid,uuid,integer,integer,integer,integer,boolean) TO service_role;
 GRANT EXECUTE ON FUNCTION public.mp_admin_publish_passport(uuid,uuid) TO service_role;
+;
 
 -- 20261111003616 marapass_v10_passport_checkout_rights_refund_requests
 
@@ -4525,6 +4571,7 @@ BEGIN
  EXECUTE format('GRANT EXECUTE ON FUNCTION public.%s TO service_role',f);
  END LOOP;
 END $b$;
+;
 
 -- 20261111003920 marapass_v10_fix_coupon_snapshot_trigger_collision
 
@@ -4567,8 +4614,10 @@ END $$;
 CREATE TRIGGER mp_guard_coupon_snapshot_before_update
 BEFORE UPDATE ON public.coupon_instances FOR EACH ROW
 EXECUTE FUNCTION private.mp_guard_coupon_snapshot();
+;
 
 -- 20261111005321 marapass_v10_precheckout_guarantee_all_benefits
+
 CREATE OR REPLACE FUNCTION public.mp_admin_publish_passport(p_admin_user_id uuid, p_product_id uuid)
  RETURNS jsonb
  LANGUAGE plpgsql
@@ -4659,7 +4708,7 @@ BEGIN
  RETURN jsonb_build_object('order_id',v_order,'status','pending_payment',
   'price_cents',v_product.price_cents,'terms_snapshot',v_snapshot,
   'payment_enabled',false,'already_prepared',false);
-END $function$;
+END $function$;;
 
 -- 20261111014810 marapass_v11_developer_read_only_role_and_revocation
 
@@ -4716,8 +4765,10 @@ REVOKE ALL ON FUNCTION public.mp_admin_revoke_developer(uuid,uuid)
 FROM PUBLIC,anon,authenticated;
 GRANT EXECUTE ON FUNCTION public.mp_admin_revoke_developer(uuid,uuid)
 TO service_role;
+;
 
 -- 20261111014919 marapass_v11_deactivated_developer_block_context
+
 CREATE OR REPLACE FUNCTION public.my_access_context()
  RETURNS TABLE(user_id uuid, staff_role text, admin_role boolean, partner_owner boolean, partner_manager boolean, partner_validator boolean, mfa_verified boolean, admin_console_ready boolean)
  LANGUAGE sql
@@ -4745,7 +4796,7 @@ from (select 1) base
 left join public.staff_members s
   on s.user_id=(select auth.uid())
 where (select auth.uid()) is not null;
-$function$;
+$function$;;
 
 -- 20261111014941 marapass_v11_admin_list_developer_access
 
@@ -4767,6 +4818,7 @@ END $$;
 REVOKE ALL ON FUNCTION public.mp_admin_list_developers(uuid)
  FROM PUBLIC,anon,authenticated;
 GRANT EXECUTE ON FUNCTION public.mp_admin_list_developers(uuid) TO service_role;
+;
 
 -- 20261111015010 marapass_v11_private_account_lookup_for_developer_grants
 
@@ -4821,4 +4873,1642 @@ REVOKE ALL ON FUNCTION public.mp_admin_list_developers(uuid)
 GRANT EXECUTE ON FUNCTION public.mp_admin_authorize_developer(uuid,uuid,text)
  TO service_role;
 GRANT EXECUTE ON FUNCTION public.mp_admin_list_developers(uuid) TO service_role;
+;
 
+-- 20261116011430 mvp_app_web_demo
+
+-- App web do turista (homologação). Tabelas e funções isoladas com prefixo mvp_:
+-- não alteram o catálogo público lido pelo app de mapa. Remover com DROP ... mvp_*.
+
+create table public.mvp_partner_members (
+  user_id uuid primary key references auth.users(id) on delete cascade,
+  created_at timestamptz not null default now()
+);
+
+create table public.mvp_coupons (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  cupom_key text not null check (length(cupom_key) between 1 and 40),
+  code text not null unique,
+  issued_at timestamptz not null default now(),
+  used_at timestamptz,
+  used_by uuid references auth.users(id) on delete set null,
+  amount_cents integer check (amount_cents is null or amount_cents >= 0)
+);
+create unique index mvp_coupons_one_active on public.mvp_coupons (user_id, cupom_key) where used_at is null;
+
+create table public.mvp_reservations (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  item_key text not null check (length(item_key) between 1 and 60),
+  item_title text not null check (length(item_title) between 1 and 160),
+  day date not null,
+  period text not null check (period in ('Manhã','Tarde')),
+  people integer not null check (people between 1 and 20),
+  status text not null default 'solicitada' check (status in ('solicitada','confirmada','recusada','cancelada','concluida')),
+  cupom_key text,
+  customer_name text,
+  request_key text not null unique,
+  history jsonb not null default '[]'::jsonb,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table public.mvp_checkins (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  item_key text not null check (length(item_key) between 1 and 60),
+  polo text not null check (length(polo) between 1 and 40),
+  cidade text not null check (length(cidade) between 1 and 80),
+  day date not null default ((now() at time zone 'America/Fortaleza')::date),
+  rating smallint check (rating between 1 and 5),
+  created_at timestamptz not null default now(),
+  unique (user_id, item_key, day)
+);
+
+alter table public.mvp_partner_members enable row level security;
+alter table public.mvp_coupons enable row level security;
+alter table public.mvp_reservations enable row level security;
+alter table public.mvp_checkins enable row level security;
+
+create or replace function public.mvp_is_partner() returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.mvp_partner_members m where m.user_id = (select auth.uid()));
+$$;
+
+create policy mvp_members_own on public.mvp_partner_members for select to authenticated
+  using (user_id = (select auth.uid()));
+create policy mvp_coupons_read on public.mvp_coupons for select to authenticated
+  using (user_id = (select auth.uid()) or public.mvp_is_partner());
+create policy mvp_reservations_read on public.mvp_reservations for select to authenticated
+  using (user_id = (select auth.uid()) or public.mvp_is_partner());
+create policy mvp_checkins_read on public.mvp_checkins for select to authenticated
+  using (user_id = (select auth.uid()));
+-- Escritas só pelas funções abaixo (nenhuma policy de insert/update/delete).
+
+create or replace function public.mvp_require_user() returns uuid
+language plpgsql stable security definer set search_path = public as $$
+declare uid uuid := auth.uid();
+begin
+  if uid is null or coalesce((auth.jwt() ->> 'is_anonymous')::boolean, false) then
+    raise exception 'not authenticated' using errcode = '42501';
+  end if;
+  return uid;
+end $$;
+
+create or replace function public.mvp_activate_coupon(p_cupom_key text) returns public.mvp_coupons
+language plpgsql security definer set search_path = public as $$
+declare uid uuid := public.mvp_require_user(); r public.mvp_coupons; c text; tries int := 0;
+begin
+  select * into r from public.mvp_coupons where user_id = uid and cupom_key = p_cupom_key and used_at is null;
+  if found then return r; end if;
+  loop
+    tries := tries + 1;
+    c := 'MP-' || upper(substr(translate(encode(gen_random_bytes(6), 'base64'), '+/=0O1Il', ''), 1, 4));
+    begin
+      insert into public.mvp_coupons (user_id, cupom_key, code) values (uid, p_cupom_key, c) returning * into r;
+      return r;
+    exception when unique_violation then
+      select * into r from public.mvp_coupons where user_id = uid and cupom_key = p_cupom_key and used_at is null;
+      if found then return r; end if;
+      if tries > 8 then raise; end if;
+    end;
+  end loop;
+end $$;
+
+create or replace function public.mvp_join_demo_partner() returns void
+language plpgsql security definer set search_path = public as $$
+declare uid uuid := public.mvp_require_user();
+begin
+  insert into public.mvp_partner_members (user_id) values (uid) on conflict do nothing;
+end $$;
+
+-- Validação atômica de uso único: dois atendentes ao mesmo tempo geram um só uso.
+create or replace function public.mvp_validate_coupon(p_code text, p_amount_cents integer default null) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare uid uuid := public.mvp_require_user(); r public.mvp_coupons;
+begin
+  if not public.mvp_is_partner() then raise exception 'not a partner' using errcode = '42501'; end if;
+  select * into r from public.mvp_coupons where code = upper(trim(p_code)) for update;
+  if not found then return jsonb_build_object('ok', false, 'reason', 'not_found'); end if;
+  if r.used_at is not null then return jsonb_build_object('ok', false, 'reason', 'used', 'cupom_key', r.cupom_key, 'used_at', r.used_at); end if;
+  update public.mvp_coupons set used_at = now(), used_by = uid, amount_cents = p_amount_cents where id = r.id;
+  return jsonb_build_object('ok', true, 'cupom_key', r.cupom_key);
+end $$;
+
+create or replace function public.mvp_request_reservation(p_item_key text, p_item_title text, p_day date, p_period text, p_people integer, p_request_key text, p_cupom_key text default null, p_customer_name text default null)
+returns public.mvp_reservations
+language plpgsql security definer set search_path = public as $$
+declare uid uuid := public.mvp_require_user(); r public.mvp_reservations;
+begin
+  if p_day <= (now() at time zone 'America/Fortaleza')::date then raise exception 'day must be in the future' using errcode = '22023'; end if;
+  select * into r from public.mvp_reservations where request_key = p_request_key;
+  if found then
+    if r.user_id <> uid then raise exception 'request key in use' using errcode = '42501'; end if;
+    return r;
+  end if;
+  insert into public.mvp_reservations (user_id, item_key, item_title, day, period, people, cupom_key, customer_name, request_key, history)
+  values (uid, p_item_key, p_item_title, p_day, p_period, p_people, p_cupom_key, left(p_customer_name, 60), p_request_key,
+          jsonb_build_array('Pedido enviado em ' || to_char(now() at time zone 'America/Fortaleza', 'DD/MM')))
+  returning * into r;
+  return r;
+end $$;
+
+create or replace function public.mvp_update_reservation(p_id uuid, p_action text, p_day date default null, p_period text default null, p_people integer default null, p_reason text default null)
+returns public.mvp_reservations
+language plpgsql security definer set search_path = public as $$
+declare uid uuid := public.mvp_require_user(); r public.mvp_reservations;
+begin
+  select * into r from public.mvp_reservations where id = p_id and user_id = uid for update;
+  if not found then raise exception 'not found' using errcode = '42501'; end if;
+  if r.status not in ('solicitada','confirmada') then raise exception 'reservation closed' using errcode = '22023'; end if;
+  if p_action = 'reschedule' then
+    if p_day is null or p_day <= (now() at time zone 'America/Fortaleza')::date then raise exception 'day must be in the future' using errcode = '22023'; end if;
+    update public.mvp_reservations set day = p_day, period = p_period, status = 'solicitada', updated_at = now(),
+      history = history || jsonb_build_array('Novo dia pedido: ' || to_char(p_day, 'DD/MM') || ' (' || p_period || ')') where id = p_id returning * into r;
+  elsif p_action = 'people' then
+    update public.mvp_reservations set people = p_people, updated_at = now(),
+      history = history || jsonb_build_array('Participantes alterados para ' || p_people) where id = p_id returning * into r;
+  elsif p_action = 'cancel' then
+    update public.mvp_reservations set status = 'cancelada', updated_at = now(),
+      history = history || jsonb_build_array('Cancelada: ' || left(coalesce(p_reason, 'sem motivo'), 120)) where id = p_id returning * into r;
+  else
+    raise exception 'invalid action' using errcode = '22023';
+  end if;
+  return r;
+end $$;
+
+create or replace function public.mvp_decide_reservation(p_id uuid, p_accept boolean) returns public.mvp_reservations
+language plpgsql security definer set search_path = public as $$
+declare uid uuid := public.mvp_require_user(); r public.mvp_reservations;
+begin
+  if not public.mvp_is_partner() then raise exception 'not a partner' using errcode = '42501'; end if;
+  update public.mvp_reservations
+     set status = case when p_accept then 'confirmada' else 'recusada' end, updated_at = now(),
+         history = history || jsonb_build_array(case when p_accept then 'Confirmada pelo parceiro' else 'Recusada pelo parceiro' end)
+   where id = p_id and status = 'solicitada' returning * into r;
+  if not found then raise exception 'not pending' using errcode = '22023'; end if;
+  return r;
+end $$;
+
+create or replace function public.mvp_checkin(p_item_key text, p_polo text, p_cidade text) returns public.mvp_checkins
+language plpgsql security definer set search_path = public as $$
+declare uid uuid := public.mvp_require_user(); r public.mvp_checkins;
+begin
+  insert into public.mvp_checkins (user_id, item_key, polo, cidade) values (uid, p_item_key, p_polo, p_cidade)
+  on conflict (user_id, item_key, day) do nothing returning * into r;
+  if r.id is null then
+    select * into r from public.mvp_checkins where user_id = uid and item_key = p_item_key and day = (now() at time zone 'America/Fortaleza')::date;
+  end if;
+  return r;
+end $$;
+
+create or replace function public.mvp_rate_checkin(p_id uuid, p_rating smallint) returns void
+language plpgsql security definer set search_path = public as $$
+declare uid uuid := public.mvp_require_user();
+begin
+  update public.mvp_checkins set rating = p_rating where id = p_id and user_id = uid;
+end $$;
+
+revoke all on function public.mvp_is_partner(), public.mvp_require_user(), public.mvp_activate_coupon(text), public.mvp_join_demo_partner(),
+  public.mvp_validate_coupon(text, integer), public.mvp_request_reservation(text, text, date, text, integer, text, text, text),
+  public.mvp_update_reservation(uuid, text, date, text, integer, text), public.mvp_decide_reservation(uuid, boolean),
+  public.mvp_checkin(text, text, text), public.mvp_rate_checkin(uuid, smallint) from public, anon;
+grant execute on function public.mvp_is_partner(), public.mvp_require_user(), public.mvp_activate_coupon(text), public.mvp_join_demo_partner(),
+  public.mvp_validate_coupon(text, integer), public.mvp_request_reservation(text, text, date, text, integer, text, text, text),
+  public.mvp_update_reservation(uuid, text, date, text, integer, text), public.mvp_decide_reservation(uuid, boolean),
+  public.mvp_checkin(text, text, text), public.mvp_rate_checkin(uuid, smallint) to authenticated;
+grant select on public.mvp_partner_members, public.mvp_coupons, public.mvp_reservations, public.mvp_checkins to authenticated;
+revoke all on public.mvp_partner_members, public.mvp_coupons, public.mvp_reservations, public.mvp_checkins from anon;;
+
+-- 20261116011452 mvp_hide_internal_helper
+
+revoke execute on function public.mvp_require_user() from authenticated;;
+
+-- 20261116011826 mvp_fix_coupon_code_random
+
+create or replace function public.mvp_activate_coupon(p_cupom_key text) returns public.mvp_coupons
+language plpgsql security definer set search_path = public as $$
+declare uid uuid := public.mvp_require_user(); r public.mvp_coupons; c text; tries int := 0;
+  alphabet constant text := 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+begin
+  if p_cupom_key is null or length(p_cupom_key) not between 1 and 40 then
+    raise exception 'invalid coupon' using errcode = '22023';
+  end if;
+  select * into r from public.mvp_coupons where user_id = uid and cupom_key = p_cupom_key and used_at is null;
+  if found then return r; end if;
+  loop
+    tries := tries + 1;
+    c := 'MP-' || (select string_agg(substr(alphabet, 1 + (get_byte(b, i) % 32), 1), '')
+                   from (select extensions.gen_random_bytes(4) b) x, generate_series(0, 3) i);
+    begin
+      insert into public.mvp_coupons (user_id, cupom_key, code) values (uid, p_cupom_key, c) returning * into r;
+      return r;
+    exception when unique_violation then
+      select * into r from public.mvp_coupons where user_id = uid and cupom_key = p_cupom_key and used_at is null;
+      if found then return r; end if;
+      if tries > 8 then raise; end if;
+    end;
+  end loop;
+end $$;;
+
+-- 20261116012949 mvp_offers_and_tickets
+
+-- Ofertas criadas na área do parceiro (demonstração) e atendimento com protocolo.
+create table public.mvp_partner_offers (
+  id uuid primary key default gen_random_uuid(),
+  created_by uuid not null references auth.users(id) on delete cascade,
+  title text not null check (length(title) between 4 and 80),
+  benefit text not null check (length(benefit) between 2 and 60),
+  rules text not null default '' check (length(rules) <= 400),
+  category text not null default 'passeio' check (category in ('passeio','gastronomia','hospedagem','cultura','natureza','evento','artesanato','fotografia','transporte')),
+  issue_limit integer not null check (issue_limit between 1 and 10000),
+  valid_until date not null,
+  status text not null default 'Em análise' check (status in ('Em análise','Ativa','Pausada','Encerrada')),
+  pause_reason text check (length(pause_reason) <= 120),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table public.mvp_tickets (
+  id uuid primary key default gen_random_uuid(),
+  protocol text not null unique,
+  user_id uuid not null references auth.users(id) on delete cascade,
+  kind text not null check (kind in ('Suporte','Sugestão','Avaliação','Reserva','Artesanato','Fotografia','Transfer')),
+  subject text not null check (length(subject) between 1 and 120),
+  body text not null check (length(body) between 1 and 1000),
+  status text not null default 'Aberta' check (status in ('Aberta','Respondida','Encerrada')),
+  replies jsonb not null default '[]'::jsonb,
+  created_at timestamptz not null default now()
+);
+
+alter table public.mvp_partner_offers enable row level security;
+alter table public.mvp_tickets enable row level security;
+
+-- Turistas logados veem ofertas ativas e válidas; parceiros veem todas.
+create policy mvp_offers_read on public.mvp_partner_offers for select to authenticated
+  using ((status = 'Ativa' and valid_until >= current_date) or public.mvp_is_partner());
+create policy mvp_tickets_read on public.mvp_tickets for select to authenticated
+  using (user_id = (select auth.uid()));
+
+-- Cupons de ofertas do banco usam a chave 'po:<uuid>'.
+alter table public.mvp_coupons drop constraint if exists mvp_coupons_cupom_key_check;
+alter table public.mvp_coupons add constraint mvp_coupons_cupom_key_check check (length(cupom_key) between 1 and 45);
+
+create or replace function public.mvp_create_offer(p_title text, p_benefit text, p_rules text, p_limit integer, p_until date, p_category text default 'passeio')
+returns public.mvp_partner_offers language plpgsql security definer set search_path = public as $$
+declare uid uuid := public.mvp_require_user(); r public.mvp_partner_offers;
+begin
+  if not public.mvp_is_partner() then raise exception 'not a partner' using errcode = '42501'; end if;
+  if p_until < current_date then raise exception 'date in the past' using errcode = '22023'; end if;
+  insert into public.mvp_partner_offers (created_by, title, benefit, rules, issue_limit, valid_until, category)
+  values (uid, trim(p_title), trim(p_benefit), coalesce(trim(p_rules), ''), p_limit, p_until, coalesce(p_category, 'passeio'))
+  returning * into r;
+  return r;
+end $$;
+
+-- Na homologação, o próprio parceiro de demonstração aprova (em produção: gestão MaraPass).
+create or replace function public.mvp_set_offer_status(p_id uuid, p_status text, p_reason text default null)
+returns public.mvp_partner_offers language plpgsql security definer set search_path = public as $$
+declare uid uuid := public.mvp_require_user(); r public.mvp_partner_offers;
+begin
+  if not public.mvp_is_partner() then raise exception 'not a partner' using errcode = '42501'; end if;
+  if p_status not in ('Ativa','Pausada','Encerrada') then raise exception 'invalid status' using errcode = '22023'; end if;
+  update public.mvp_partner_offers
+     set status = p_status, pause_reason = case when p_status = 'Pausada' then left(p_reason, 120) else null end, updated_at = now()
+   where id = p_id returning * into r;
+  if not found then raise exception 'not found' using errcode = '22023'; end if;
+  return r;
+end $$;
+
+-- Estatística de cada oferta (emitidos e usados), visível ao parceiro.
+create or replace function public.mvp_offer_stats()
+returns table (offer_id uuid, issued bigint, used bigint) language sql stable security definer set search_path = public as $$
+  select o.id, count(c.id), count(c.used_at)
+    from public.mvp_partner_offers o
+    left join public.mvp_coupons c on c.cupom_key = 'po:' || o.id::text
+   where public.mvp_is_partner()
+   group by o.id;
+$$;
+
+-- Ativar cupom de oferta do banco: respeita status, validade e limite.
+create or replace function public.mvp_activate_offer_coupon(p_offer_id uuid) returns public.mvp_coupons
+language plpgsql security definer set search_path = public as $$
+declare uid uuid := public.mvp_require_user(); o public.mvp_partner_offers; n bigint;
+begin
+  select * into o from public.mvp_partner_offers where id = p_offer_id for update;
+  if not found or o.status <> 'Ativa' or o.valid_until < current_date then
+    raise exception 'offer unavailable' using errcode = '22023';
+  end if;
+  if not exists (select 1 from public.mvp_coupons where user_id = uid and cupom_key = 'po:' || o.id::text and used_at is null) then
+    select count(*) into n from public.mvp_coupons where cupom_key = 'po:' || o.id::text;
+    if n >= o.issue_limit then raise exception 'issue limit reached' using errcode = '22023'; end if;
+  end if;
+  return public.mvp_activate_coupon('po:' || o.id::text);
+end $$;
+
+create or replace function public.mvp_open_ticket(p_kind text, p_subject text, p_body text) returns public.mvp_tickets
+language plpgsql security definer set search_path = public as $$
+declare uid uuid := public.mvp_require_user(); r public.mvp_tickets; tries int := 0;
+begin
+  loop
+    tries := tries + 1;
+    begin
+      insert into public.mvp_tickets (protocol, user_id, kind, subject, body)
+      values ('P' || lpad(((get_byte(extensions.gen_random_bytes(3), 0) * 65536 + get_byte(extensions.gen_random_bytes(3), 1) * 256 + get_byte(extensions.gen_random_bytes(3), 2)) % 900000 + 100000)::text, 6, '0'),
+              uid, p_kind, left(p_subject, 120), left(p_body, 1000))
+      returning * into r;
+      return r;
+    exception when unique_violation then
+      if tries > 8 then raise; end if;
+    end;
+  end loop;
+end $$;
+
+create or replace function public.mvp_reply_ticket(p_id uuid, p_text text) returns public.mvp_tickets
+language plpgsql security definer set search_path = public as $$
+declare uid uuid := public.mvp_require_user(); r public.mvp_tickets;
+begin
+  update public.mvp_tickets set replies = replies || jsonb_build_array(left(p_text, 1000))
+   where id = p_id and user_id = uid returning * into r;
+  if not found then raise exception 'not found' using errcode = '42501'; end if;
+  return r;
+end $$;
+
+revoke all on function public.mvp_create_offer(text,text,text,integer,date,text), public.mvp_set_offer_status(uuid,text,text),
+  public.mvp_offer_stats(), public.mvp_activate_offer_coupon(uuid), public.mvp_open_ticket(text,text,text),
+  public.mvp_reply_ticket(uuid,text) from public, anon;
+grant execute on function public.mvp_create_offer(text,text,text,integer,date,text), public.mvp_set_offer_status(uuid,text,text),
+  public.mvp_offer_stats(), public.mvp_activate_offer_coupon(uuid), public.mvp_open_ticket(text,text,text),
+  public.mvp_reply_ticket(uuid,text) to authenticated;
+grant select on public.mvp_partner_offers, public.mvp_tickets to authenticated;
+revoke all on public.mvp_partner_offers, public.mvp_tickets from anon;;
+
+-- 20261116094054 mvp_checkin_server_validation
+
+create table if not exists public.mvp_places (
+  item_key text primary key,
+  code text not null unique,
+  token text not null default encode(extensions.gen_random_bytes(9), 'hex'),
+  lat double precision not null,
+  lng double precision not null,
+  radius_m integer not null check (radius_m between 50 and 20000),
+  created_at timestamptz not null default now()
+);
+alter table public.mvp_places enable row level security;
+-- sem políticas: ninguém lê o token pelo app; só as funções abaixo.
+revoke all on public.mvp_places from anon, authenticated;
+
+alter table public.mvp_checkins add column if not exists method text not null default 'legado';
+alter table public.mvp_checkins add column if not exists distance_m integer;
+
+create or replace function public.mvp_distance_m(lat1 double precision, lng1 double precision, lat2 double precision, lng2 double precision)
+returns double precision language sql immutable set search_path = '' as $$
+  select 2 * 6371000 * asin(sqrt(
+    power(sin(radians(lat2 - lat1) / 2), 2) +
+    cos(radians(lat1)) * cos(radians(lat2)) * power(sin(radians(lng2 - lng1) / 2), 2)))
+$$;
+
+drop function if exists public.mvp_checkin(text, text, text);
+
+create or replace function public.mvp_checkin(
+  p_item_key text, p_polo text, p_cidade text,
+  p_method text, p_token text default null,
+  p_lat double precision default null, p_lng double precision default null)
+returns public.mvp_checkins
+language plpgsql security definer set search_path to 'public' as $$
+declare
+  uid uuid := public.mvp_require_user();
+  pl public.mvp_places;
+  dist double precision;
+  today date := (now() at time zone 'America/Fortaleza')::date;
+  r public.mvp_checkins;
+begin
+  select * into pl from public.mvp_places where item_key = p_item_key;
+  if pl.item_key is null then
+    raise exception 'Local sem placa MaraPass cadastrada.' using errcode = 'P0001';
+  end if;
+  if p_lat is not null and p_lng is not null then
+    dist := public.mvp_distance_m(p_lat, p_lng, pl.lat, pl.lng);
+  end if;
+  if p_method = 'placa' then
+    if p_token is null or p_token <> pl.token then
+      raise exception 'QR da placa inválido. Leia a placa original no local.' using errcode = 'P0001';
+    end if;
+  elsif p_method in ('gps', 'codigo') then
+    if dist is null then
+      raise exception 'Precisamos da sua localização para confirmar a visita.' using errcode = 'P0001';
+    end if;
+    if dist > pl.radius_m then
+      raise exception 'Você está a % m do local. Chegue mais perto ou leia o QR da placa.', round(dist)::int using errcode = 'P0001';
+    end if;
+  else
+    raise exception 'Forma de check-in desconhecida.' using errcode = 'P0001';
+  end if;
+  if (select count(*) from public.mvp_checkins where user_id = uid and day = today) >= 20 then
+    raise exception 'Limite de 20 visitas por dia atingido.' using errcode = 'P0001';
+  end if;
+  insert into public.mvp_checkins (user_id, item_key, polo, cidade, method, distance_m)
+  values (uid, p_item_key, p_polo, p_cidade, p_method, round(dist)::int)
+  on conflict (user_id, item_key, day) do nothing returning * into r;
+  if r.id is null then
+    select * into r from public.mvp_checkins where user_id = uid and item_key = p_item_key and day = today;
+  end if;
+  return r;
+end $$;
+
+revoke all on function public.mvp_checkin(text, text, text, text, text, double precision, double precision) from public, anon;
+grant execute on function public.mvp_checkin(text, text, text, text, text, double precision, double precision) to authenticated;;
+
+-- 20261116095402 mvp_delete_account_and_partner_approval
+
+-- 1) Exclusão da própria conta (Apple/Google/LGPD)
+create or replace function public.delete_my_account()
+returns void language plpgsql security definer set search_path = public, auth as $$
+declare uid uuid := auth.uid();
+begin
+  if uid is null or coalesce((auth.jwt() ->> 'is_anonymous')::boolean, false) then
+    raise exception 'not authenticated' using errcode = '42501';
+  end if;
+  if exists (select 1 from public.staff_members s where s.user_id = uid and s.is_active)
+     or exists (select 1 from public.partner_members m where m.user_id = uid and m.is_active)
+     or exists (select 1 from public.partners p where p.owner_user_id = uid)
+     or exists (select 1 from public.mvp_partner_members m where m.user_id = uid) then
+    raise exception 'Contas de parceiro são excluídas pelo suporte, para não apagar ofertas ativas.' using errcode = 'P0001';
+  end if;
+  delete from public.assistant_messages
+    where conversation_id in (select id from public.assistant_conversations where user_id = uid);
+  delete from public.assistant_conversations where user_id = uid;
+  delete from public.mvp_partner_requests where user_id = uid;
+  -- Cupons já usados ficam no histórico do parceiro, sem identificar a pessoa.
+  update public.mvp_coupons set used_by = null where used_by = uid;
+  delete from public.profiles where id = uid;
+  begin
+    delete from auth.users where id = uid;
+  exception when foreign_key_violation then
+    raise exception 'Sua conta tem registros do sistema anterior. Peça a exclusão pelo suporte.' using errcode = 'P0001';
+  end;
+end $$;
+
+-- 2) Parceiro real: pedido + aprovação pela equipe MaraPass
+create table if not exists public.mvp_partner_requests (
+  user_id uuid primary key references auth.users(id) on delete cascade,
+  business text not null check (length(trim(business)) between 2 and 120),
+  cadastur text,
+  city text not null,
+  phone text not null,
+  status text not null default 'pendente' check (status in ('pendente','aprovado','recusado')),
+  note text,
+  created_at timestamptz not null default now(),
+  decided_at timestamptz
+);
+alter table public.mvp_partner_requests enable row level security;
+revoke all on public.mvp_partner_requests from anon, authenticated;
+grant select on public.mvp_partner_requests to authenticated;
+drop policy if exists "dono le o proprio pedido" on public.mvp_partner_requests;
+create policy "dono le o proprio pedido" on public.mvp_partner_requests
+  for select to authenticated using (user_id = (select auth.uid()));
+
+create or replace function public.mvp_request_partner(p_business text, p_cadastur text, p_city text, p_phone text)
+returns public.mvp_partner_requests language plpgsql security definer set search_path = public as $$
+declare uid uuid := public.mvp_require_user(); r public.mvp_partner_requests;
+begin
+  insert into public.mvp_partner_requests (user_id, business, cadastur, city, phone)
+  values (uid, trim(p_business), nullif(trim(p_cadastur), ''), trim(p_city), trim(p_phone))
+  on conflict (user_id) do update set business = excluded.business, cadastur = excluded.cadastur,
+    city = excluded.city, phone = excluded.phone,
+    status = case when public.mvp_partner_requests.status = 'aprovado' then 'aprovado' else 'pendente' end,
+    created_at = now()
+  returning * into r;
+  return r;
+end $$;
+
+-- Só a equipe (service role / SQL) aprova.
+create or replace function public.mvp_decide_partner(p_user uuid, p_approve boolean, p_note text default null)
+returns void language plpgsql security definer set search_path = public as $$
+begin
+  update public.mvp_partner_requests set status = case when p_approve then 'aprovado' else 'recusado' end,
+    note = p_note, decided_at = now() where user_id = p_user;
+  if p_approve then
+    insert into public.mvp_partner_members (user_id) values (p_user) on conflict do nothing;
+  else
+    delete from public.mvp_partner_members where user_id = p_user;
+  end if;
+end $$;
+
+-- Fim do atalho de demonstração (qualquer logado virava parceiro).
+create or replace function public.mvp_join_demo_partner()
+returns void language plpgsql security definer set search_path = public as $$
+begin
+  raise exception 'A área do parceiro agora exige cadastro aprovado pela equipe MaraPass.' using errcode = 'P0001';
+end $$;
+
+revoke all on function public.delete_my_account() from public, anon;
+grant execute on function public.delete_my_account() to authenticated;
+revoke all on function public.mvp_request_partner(text, text, text, text) from public, anon;
+grant execute on function public.mvp_request_partner(text, text, text, text) to authenticated;
+revoke all on function public.mvp_decide_partner(uuid, boolean, text) from public, anon, authenticated;;
+
+-- 20261116095702 mvp_revoke_demo_partner
+
+revoke all on function public.mvp_join_demo_partner() from public, anon, authenticated;;
+
+-- 20261116101224 mvp_admin_command
+
+-- Gestão do app MaraPass (MVP) pela Central Administrativa:
+-- só administrador ativo com segundo fator (aal2).
+create or replace function public.mvp_admin_command(p_action text, p_args jsonb default '{}'::jsonb)
+returns jsonb language plpgsql security definer set search_path = public, auth as $$
+declare uid uuid := auth.uid(); res jsonb;
+begin
+  perform private.assert_admin(uid);
+  if coalesce(auth.jwt() ->> 'aal', '') <> 'aal2' then
+    raise exception 'Confirme o segundo fator (MFA) para gerenciar o app.' using errcode = 'P0001';
+  end if;
+
+  if p_action = 'overview' then
+    return jsonb_build_object(
+      'pedidos_parceiro', (select count(*) from mvp_partner_requests where status = 'pendente'),
+      'parceiros', (select count(*) from mvp_partner_members),
+      'ofertas_analise', (select count(*) from mvp_partner_offers where status = 'Em análise'),
+      'ofertas_ativas', (select count(*) from mvp_partner_offers where status = 'Ativa'),
+      'checkins_hoje', (select count(*) from mvp_checkins where day = (now() at time zone 'America/Fortaleza')::date),
+      'checkins_total', (select count(*) from mvp_checkins),
+      'cupons_ativados', (select count(*) from mvp_coupons),
+      'cupons_usados', (select count(*) from mvp_coupons where used_at is not null),
+      'reservas_pendentes', (select count(*) from mvp_reservations where status in ('pendente','Pendente','Aguardando')),
+      'atendimentos_abertos', (select count(*) from mvp_tickets where status not in ('Resolvido','Fechado')),
+      'usuarios', (select count(*) from auth.users where coalesce(is_anonymous,false) = false));
+  elsif p_action = 'partner_requests' then
+    select coalesce(jsonb_agg(x order by x->>'created_at' desc), '[]') into res from (
+      select jsonb_build_object('user_id', r.user_id, 'email', u.email, 'business', r.business, 'cadastur', r.cadastur,
+        'city', r.city, 'phone', r.phone, 'status', r.status, 'note', r.note, 'created_at', r.created_at) x
+      from mvp_partner_requests r join auth.users u on u.id = r.user_id) s;
+    return res;
+  elsif p_action = 'decide_partner' then
+    perform public.mvp_decide_partner((p_args->>'user_id')::uuid, (p_args->>'approve')::boolean, nullif(p_args->>'note', ''));
+    return jsonb_build_object('ok', true);
+  elsif p_action = 'offers' then
+    select coalesce(jsonb_agg(x order by x->>'created_at' desc), '[]') into res from (
+      select jsonb_build_object('id', o.id, 'title', o.title, 'benefit', o.benefit, 'rules', o.rules, 'category', o.category,
+        'limit', o.issue_limit, 'valid_until', o.valid_until, 'status', o.status, 'email', u.email, 'created_at', o.created_at,
+        'issued', (select count(*) from mvp_coupons c where c.cupom_key = 'po:' || o.id),
+        'used', (select count(*) from mvp_coupons c where c.cupom_key = 'po:' || o.id and c.used_at is not null)) x
+      from mvp_partner_offers o left join auth.users u on u.id = o.created_by) s;
+    return res;
+  elsif p_action = 'set_offer' then
+    if p_args->>'status' not in ('Ativa', 'Recusada', 'Pausada', 'Em análise') then
+      raise exception 'Status de oferta inválido.' using errcode = 'P0001';
+    end if;
+    update mvp_partner_offers set status = p_args->>'status', pause_reason = nullif(p_args->>'reason', ''), updated_at = now()
+      where id = (p_args->>'id')::uuid;
+    return jsonb_build_object('ok', true);
+  elsif p_action = 'places' then
+    select coalesce(jsonb_agg(jsonb_build_object('item_key', p.item_key, 'code', p.code, 'token', p.token,
+      'lat', p.lat, 'lng', p.lng, 'radius_m', p.radius_m,
+      'checkins', (select count(*) from mvp_checkins c where c.item_key = p.item_key)) order by p.code), '[]') into res
+      from mvp_places p;
+    return res;
+  elsif p_action = 'set_radius' then
+    update mvp_places set radius_m = (p_args->>'radius_m')::int where item_key = p_args->>'item_key';
+    return jsonb_build_object('ok', true);
+  elsif p_action = 'checkins' then
+    select coalesce(jsonb_agg(x order by x->>'created_at' desc), '[]') into res from (
+      select jsonb_build_object('item_key', c.item_key, 'cidade', c.cidade, 'method', c.method, 'distance_m', c.distance_m,
+        'rating', c.rating, 'created_at', c.created_at) x
+      from mvp_checkins c order by c.created_at desc limit 100) s;
+    return res;
+  end if;
+  raise exception 'Ação desconhecida.' using errcode = 'P0001';
+end $$;
+revoke all on function public.mvp_admin_command(text, jsonb) from public, anon;
+grant execute on function public.mvp_admin_command(text, jsonb) to authenticated;;
+
+-- 20261116102515 mvp_reservations_lodging_period
+
+alter table public.mvp_reservations drop constraint mvp_reservations_period_check;
+alter table public.mvp_reservations add constraint mvp_reservations_period_check
+  check (period in ('Manhã', 'Tarde') or period ~ '^[0-9]{1,2} noites? · .{1,80}$');
+do $$
+declare d text;
+begin
+  select pg_get_functiondef('public.mvp_admin_command(text,jsonb)'::regprocedure) into d;
+  d := replace(d, $q$status in ('pendente','Pendente','Aguardando')$q$, $q$status = 'solicitada'$q$);
+  execute d;
+end $$;;
+
+-- 20261116145501 mvp_media_and_indexes
+
+-- Mídia dinâmica
+alter table public.mvp_partner_offers add column if not exists image_url text check (image_url is null or image_url ~ '^https://');
+alter table public.mvp_partner_offers add column if not exists banner_url text check (banner_url is null or banner_url ~ '^https://');
+alter table public.mvp_places add column if not exists image_url text check (image_url is null or image_url ~ '^https://');
+alter table public.mvp_places add column if not exists banner_url text check (banner_url is null or banner_url ~ '^https://');
+
+-- Bucket público de imagens (leitura por URL pública; 5 MB; só imagens)
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('marapass-assets', 'marapass-assets', true, 5242880, array['image/jpeg','image/png','image/webp'])
+on conflict (id) do update set public = true, file_size_limit = excluded.file_size_limit, allowed_mime_types = excluded.allowed_mime_types;
+
+-- Parceiro aprovado envia e gerencia só a própria pasta: <user_id>/arquivo
+drop policy if exists "marapass_assets_partner_insert" on storage.objects;
+create policy "marapass_assets_partner_insert" on storage.objects for insert to authenticated
+  with check (bucket_id = 'marapass-assets' and (storage.foldername(name))[1] = (select auth.uid())::text and (select public.mvp_is_partner()));
+drop policy if exists "marapass_assets_partner_update" on storage.objects;
+create policy "marapass_assets_partner_update" on storage.objects for update to authenticated
+  using (bucket_id = 'marapass-assets' and (storage.foldername(name))[1] = (select auth.uid())::text);
+drop policy if exists "marapass_assets_partner_delete" on storage.objects;
+create policy "marapass_assets_partner_delete" on storage.objects for delete to authenticated
+  using (bucket_id = 'marapass-assets' and (storage.foldername(name))[1] = (select auth.uid())::text);
+
+-- Índices das consultas do app e do painel
+create index if not exists mvp_checkins_user_created_idx on public.mvp_checkins (user_id, created_at desc);
+create index if not exists mvp_checkins_day_idx on public.mvp_checkins (day);
+create index if not exists mvp_checkins_item_idx on public.mvp_checkins (item_key);
+create index if not exists mvp_coupons_user_idx on public.mvp_coupons (user_id, issued_at desc);
+create index if not exists mvp_coupons_key_idx on public.mvp_coupons (cupom_key);
+create index if not exists mvp_reservations_user_idx on public.mvp_reservations (user_id, day);
+create index if not exists mvp_reservations_status_day_idx on public.mvp_reservations (status, day);
+create index if not exists mvp_offers_status_until_idx on public.mvp_partner_offers (status, valid_until);
+create index if not exists mvp_offers_creator_idx on public.mvp_partner_offers (created_by);
+create index if not exists mvp_tickets_user_idx on public.mvp_tickets (user_id, created_at desc);
+create index if not exists mvp_partner_requests_status_idx on public.mvp_partner_requests (status);;
+
+-- 20261116150918 mvp_set_offer_image
+
+create or replace function public.mvp_set_offer_image(p_id uuid, p_url text)
+returns public.mvp_partner_offers language plpgsql security definer set search_path = public as $$
+declare uid uuid := public.mvp_require_user(); o public.mvp_partner_offers;
+begin
+  if p_url is not null and p_url not like 'https://nwwxobiqynawxxnbvubz.supabase.co/storage/v1/object/public/marapass-assets/' || uid::text || '/%' then
+    raise exception 'A foto precisa ser enviada pelo app.' using errcode = 'P0001';
+  end if;
+  update public.mvp_partner_offers set image_url = p_url, updated_at = now()
+    where id = p_id and created_by = uid returning * into o;
+  if o.id is null then
+    raise exception 'Oferta não encontrada nesta conta.' using errcode = 'P0001';
+  end if;
+  return o;
+end $$;
+revoke all on function public.mvp_set_offer_image(uuid, text) from public, anon;
+grant execute on function public.mvp_set_offer_image(uuid, text) to authenticated;;
+
+-- 20261117231908 mvp_coupon_commerce
+
+-- Requer as tabelas e RPCs mvp_* da migração mvp_app_web_demo.
+-- O parceiro do MVP é identificado pelo titular aprovado da oferta (created_by).
+begin;
+alter table public.mvp_partner_offers
+  add column sale_terms jsonb,
+  add column sale_approved boolean not null default false;
+alter table public.mvp_coupons
+  alter column user_id drop not null,
+  add column sale jsonb,
+  add column payment_reported_at timestamptz,
+  add column sale_stage text not null default 'issued',
+  add column fee_state text;
+-- A checagem antiga não incluía o estado Recusada já utilizado pelo painel.
+do $$ declare c name; begin
+  select conname into c from pg_constraint where conrelid='public.mvp_partner_offers'::regclass and contype='c'
+    and conkey=array[(select attnum from pg_attribute where attrelid='public.mvp_partner_offers'::regclass and attname='status')];
+  if c is not null then execute format('alter table public.mvp_partner_offers drop constraint %I',c); end if;
+end $$;
+alter table public.mvp_partner_offers add constraint mvp_sale_offer_status check(status in
+  ('Rascunho','Em análise','Ativa','Pausada','Encerrada','Recusada'));
+create index if not exists mvp_coupon_offer_usage on public.mvp_coupons(cupom_key,user_id);
+
+create table private.mvp_coupon_entries (
+  id uuid primary key default gen_random_uuid(),
+  coupon_id uuid not null references public.mvp_coupons(id) on delete restrict,
+  kind text not null check (kind in ('conversion','refund')),
+  reference text not null,
+  paid_cents integer not null,
+  fee_cents integer not null,
+  points integer not null,
+  reason text,
+  actor uuid not null,
+  at timestamptz not null default clock_timestamp(),
+  unique(coupon_id,kind,reference),
+  check ((kind='conversion' and paid_cents>=0 and fee_cents>=0 and points>=0)
+      or (kind='refund' and paid_cents<0 and fee_cents<=0 and points<=0))
+);
+create unique index mvp_one_conversion on private.mvp_coupon_entries(coupon_id) where kind='conversion';
+create table private.mvp_coupon_events (
+  id bigint generated always as identity primary key,
+  coupon_id uuid not null references public.mvp_coupons(id) on delete restrict,
+  kind text not null, actor uuid, detail jsonb not null default '{}',
+  at timestamptz not null default clock_timestamp()
+);
+create index mvp_coupon_events_timeline on private.mvp_coupon_events(coupon_id,id);
+alter table private.mvp_coupon_entries enable row level security;
+alter table private.mvp_coupon_events enable row level security;
+revoke all on private.mvp_coupon_entries,private.mvp_coupon_events from public,anon,authenticated;
+revoke insert,update,delete,truncate on public.mvp_coupons,public.mvp_partner_offers from public,anon,authenticated;
+
+create function private.mvp_sale_fee(amount integer) returns integer language sql immutable strict
+set search_path='' as $$ select ((amount::bigint * 5 + 50) / 100)::integer $$;
+
+-- Percentuais usam pontos-base (10% = 1000). Nominais e preços usam centavos.
+create function public.mvp_set_sale_terms(p_offer_id uuid,p_price integer,p_kind text,p_discount integer,
+  p_payment text,p_url text,p_points boolean default true,p_per_user integer default 1,p_window jsonb default '{}')
+returns public.mvp_partner_offers language plpgsql security definer set search_path='' as $$
+declare u uuid := public.mvp_require_user(); o public.mvp_partner_offers; cut integer; starts date; label text;
+begin
+  if not public.mvp_is_partner() then raise exception 'Parceiro sem autorização.' using errcode='42501'; end if;
+  if p_price is null or p_price not between 1 and 1000000000 or p_discount is null or p_discount<0 or
+     p_kind is null or p_kind not in ('percent','fixed','promo') or (p_kind='percent' and p_discount>10000) or
+     (p_kind in ('fixed','promo') and p_discount>p_price) or p_per_user is null or p_per_user not between 1 and 10000 or
+     p_points is null or length(coalesce(trim(p_payment),''))>400 or length(coalesce(trim(p_url),''))>1000 or
+     (nullif(trim(p_url),'') is not null and p_url !~ '^https://[A-Za-z0-9.-]+(:[0-9]+)?([/?#][^[:space:]]*)?$') or
+     (nullif(trim(p_payment),'') is null and nullif(trim(p_url),'') is null)
+    then raise exception 'Confira preço, desconto, limite e instruções de pagamento.'; end if;
+  starts:=coalesce(nullif(p_window->>'from','')::date,(now() at time zone 'America/Fortaleza')::date);
+  if length(coalesce(p_window->>'hours',''))>160 or (nullif(p_window->>'contact','') is not null and
+      p_window->>'contact' !~ '^[1-9][0-9]{7,14}$') then raise exception 'Confira os horários e o contato.'; end if;
+  cut := case when p_kind='promo' then p_price-p_discount when p_kind='fixed' then p_discount else ((p_price::bigint*p_discount+5000)/10000)::integer end;
+  label:=case when p_kind='percent' then replace(trim_scale(p_discount::numeric/100)::text,'.',',')||'% de desconto'
+    when p_kind='promo' then 'Preço promocional de R$ '||replace(to_char(p_discount::numeric/100,'FM999999990.00'),'.',',')
+    else 'R$ '||replace(to_char(p_discount::numeric/100,'FM999999990.00'),'.',',')||' de desconto' end;
+  update public.mvp_partner_offers set benefit=label,sale_terms=jsonb_build_object('price',p_price,'kind',p_kind,
+    'discount',p_discount,'discount_cents',cut,'due',p_price-cut,'payment',trim(p_payment),'url',nullif(trim(p_url),''),
+    'points',p_points,'per_user',p_per_user,'from',starts,'hours',p_window->>'hours','contact',p_window->>'contact'),sale_approved=false,status='Em análise',updated_at=now()
+    where id=p_offer_id and created_by=u and valid_until>=starts returning * into o;
+  if not found then raise exception 'Oferta indisponível.' using errcode='42501'; end if;
+  return o;
+end $$;
+
+-- Cadastro e envio para aprovação devem ser uma única transação.
+create function public.mvp_create_sale_offer(p_offer jsonb,p_terms jsonb) returns public.mvp_partner_offers
+language plpgsql security definer set search_path='' as $$
+declare o public.mvp_partner_offers; benefit text;
+begin
+  benefit:=case when p_terms->>'kind'='percent' then trim_scale((p_terms->>'discount')::numeric/100)::text||'% de desconto'
+    else 'R$ '||replace(to_char((p_terms->>'discount')::numeric/100,'FM999999990.00'),'.',',')||' de desconto' end;
+  o:=public.mvp_create_offer(p_offer->>'title',replace(benefit,'.',','),p_offer->>'rules',(p_offer->>'limit')::int,
+    (p_offer->>'until')::date,p_offer->>'category');
+  o:=public.mvp_set_sale_terms(o.id,(p_terms->>'price')::int,p_terms->>'kind',(p_terms->>'discount')::int,
+    p_terms->>'payment',p_terms->>'url',(p_terms->>'points')::boolean,(p_terms->>'per_user')::int,coalesce(p_terms->'window','{}'));
+  if coalesce((p_offer->>'draft')::boolean,false) then
+    update public.mvp_partner_offers set status='Rascunho' where id=o.id returning * into o; end if;
+  return o;
+end $$;
+
+-- Reutiliza o comando de aprovação da administração e o MFA já exigido por ele.
+create function private.mvp_certify_sale() returns trigger language plpgsql set search_path='' as $$
+begin
+  if new.status='Ativa' and new.sale_terms is not null and not old.sale_approved then
+    perform private.assert_admin(auth.uid());
+    if coalesce(auth.jwt()->>'aal','')<>'aal2' then raise exception 'Confirme o segundo fator.'; end if;
+    new.sale_approved:=true;
+  end if;
+  if new.status in ('Em análise','Recusada') then new.sale_approved:=false; end if;
+  return new;
+end $$;
+create trigger mvp_certify_sale before update of status,sale_terms on public.mvp_partner_offers
+  for each row execute function private.mvp_certify_sale();
+
+create or replace function public.mvp_set_offer_status(p_id uuid,p_status text,p_reason text default null)
+returns public.mvp_partner_offers language plpgsql security definer set search_path='' as $$
+declare u uuid:=public.mvp_require_user(); o public.mvp_partner_offers;
+begin
+  if not public.mvp_is_partner() or p_status is null or p_status not in ('Ativa','Pausada','Encerrada') then
+    raise exception 'Ação indisponível.' using errcode='42501'; end if;
+  update public.mvp_partner_offers set status=p_status,pause_reason=case when p_status='Pausada' then left(p_reason,120) end,updated_at=now()
+    where id=p_id and created_by=u and (p_status<>'Ativa' or (sale_approved and status='Pausada')) returning * into o;
+  if not found then raise exception 'A oferta precisa de aprovação administrativa.'; end if;
+  return o;
+end $$;
+drop policy if exists mvp_offers_read on public.mvp_partner_offers;
+create policy mvp_offers_read on public.mvp_partner_offers for select using (
+  (status='Ativa' and valid_until >= (now() at time zone 'America/Fortaleza')::date)
+  or (created_by=(select auth.uid()) and (select public.mvp_is_partner())));
+drop policy if exists mvp_coupons_read on public.mvp_coupons;
+create policy mvp_coupons_read on public.mvp_coupons for select using (user_id=(select auth.uid()));
+create or replace function public.mvp_offer_stats() returns table(offer_id uuid,issued bigint,used bigint)
+language sql stable security definer set search_path='' as $$
+  select o.id,count(c.id),count(c.used_at) from public.mvp_partner_offers o left join public.mvp_coupons c on c.cupom_key='po:'||o.id
+  where o.created_by=(select auth.uid()) and (select public.mvp_is_partner()) group by o.id
+$$;
+
+create or replace function public.mvp_activate_offer_coupon(p_offer_id uuid) returns public.mvp_coupons
+language plpgsql security definer set search_path='' as $$
+declare u uuid:=public.mvp_require_user(); o public.mvp_partner_offers; c public.mvp_coupons;
+  key text:='po:'||p_offer_id; total bigint; mine bigint; expiry timestamptz;
+begin
+  select * into o from public.mvp_partner_offers where id=p_offer_id for update;
+  if not found then raise exception 'Oferta indisponível.'; end if;
+  if u=o.created_by then raise exception 'O parceiro não pode emitir cupom da própria oferta.'; end if;
+  select * into c from public.mvp_coupons where user_id=u and cupom_key=key and used_at is null and sale_stage not in ('cancelled','declined');
+  if found then return c; end if;
+  expiry:=(o.valid_until+1)::timestamp at time zone 'America/Fortaleza';
+  if (now() at time zone 'America/Fortaleza')::date<(o.sale_terms->>'from')::date or o.status<>'Ativa' or not o.sale_approved or o.sale_terms is null or clock_timestamp()>=expiry or
+     not exists(select 1 from public.mvp_partner_members where user_id=o.created_by)
+    then raise exception 'Oferta indisponível.'; end if;
+  select count(*),count(*) filter(where user_id=u) into total,mine from public.mvp_coupons where cupom_key=key and sale_stage not in ('cancelled','declined');
+  if total>=o.issue_limit or mine>=(o.sale_terms->>'per_user')::int then raise exception 'Limite de emissão atingido.'; end if;
+  insert into public.mvp_coupons(user_id,cupom_key,code,sale) values(u,key,'MP-'||upper(replace(gen_random_uuid()::text,'-','')),
+    o.sale_terms||jsonb_build_object('offer',o.id,'owner',o.created_by,'title',o.title,'benefit',o.benefit,
+      'rules',o.rules,'city',(select city from public.mvp_partner_requests where user_id=o.created_by),'category',o.category,'expires',expiry,'rate_bps',500)) returning * into c;
+  insert into private.mvp_coupon_events(coupon_id,kind,actor) values(c.id,'issued',u);
+  return c;
+end $$;
+create or replace function public.mvp_activate_coupon(p_cupom_key text) returns public.mvp_coupons
+language plpgsql security definer set search_path='' as $$
+begin
+  if p_cupom_key ~ '^po:[0-9a-fA-F-]{36}$' then
+    return public.mvp_activate_offer_coupon(substr(p_cupom_key,4)::uuid); end if;
+  raise exception 'Cupom editorial de demonstração. Escolha uma oferta comercial aprovada.';
+end $$;
+
+create function public.mvp_report_payment(p_code text) returns void
+language plpgsql security definer set search_path='' as $$
+declare u uuid:=public.mvp_require_user(); c public.mvp_coupons;
+begin
+  select * into c from public.mvp_coupons where code=upper(trim(p_code)) and user_id=u and sale is not null for update;
+  if not found then raise exception 'Cupom indisponível.'; end if;
+  if c.sale_stage in ('cancelled','declined','disputed') then raise exception 'Cupom indisponível para informar pagamento.'; end if;
+  if c.used_at is not null or c.payment_reported_at is not null then return; end if;
+  if clock_timestamp()>=(c.sale->>'expires')::timestamptz then raise exception 'Cupom vencido.'; end if;
+  update public.mvp_coupons set payment_reported_at=clock_timestamp() where id=c.id;
+  insert into private.mvp_coupon_events(coupon_id,kind,actor) values(c.id,'payment_reported',u);
+end $$;
+-- O mesmo RPC recebe o código emitido pelo servidor nas telas de QR, link e painel.
+create table private.mvp_coupon_lookup_limit(actor uuid primary key,minute timestamptz not null,n integer not null);
+alter table private.mvp_coupon_lookup_limit enable row level security;
+revoke all on private.mvp_coupon_lookup_limit from public,anon,authenticated;
+create function public.mvp_confirm_receipt(p_code text,p_amount_cents integer,p_channel text) returns jsonb
+language plpgsql security definer set search_path='' as $$
+declare u uuid:=public.mvp_require_user(); c public.mvp_coupons; fee integer; pts integer; attempts integer;
+begin
+  if not public.mvp_is_partner() then raise exception 'Parceiro sem autorização.' using errcode='42501'; end if;
+  if p_channel is null or p_channel not in ('panel','whatsapp','qr') then raise exception 'Canal inválido.'; end if;
+  insert into private.mvp_coupon_lookup_limit values(u,date_trunc('minute',clock_timestamp()),1) on conflict(actor) do update
+    set minute=excluded.minute,n=case when excluded.minute=mvp_coupon_lookup_limit.minute then mvp_coupon_lookup_limit.n+1 else 1 end
+    returning n into attempts;
+  if attempts>30 then return jsonb_build_object('ok',false,'reason','rate_limited'); end if;
+  select * into c from public.mvp_coupons where code=upper(trim(p_code)) and sale->>'owner'=u::text for update;
+  if not found then return jsonb_build_object('ok',false,'reason','unavailable'); end if;
+  if c.user_id is null and c.used_at is null then return jsonb_build_object('ok',false,'reason','unavailable'); end if;
+  if c.user_id=u then raise exception 'O titular do cupom não pode confirmar o próprio pagamento.'; end if;
+  if p_amount_cents is null or p_amount_cents<0 then raise exception 'Informe o valor recebido.'; end if;
+  if c.used_at is null and clock_timestamp()>=(c.sale->>'expires')::timestamptz then return jsonb_build_object('ok',false,'reason','expired'); end if;
+  if c.sale_stage in ('cancelled','declined','disputed') then return jsonb_build_object('ok',false,'reason',c.sale_stage); end if;
+  if p_amount_cents<>(c.sale->>'due')::integer then
+    if c.used_at is null then
+      update public.mvp_coupons set sale_stage='disputed' where id=c.id;
+      insert into private.mvp_coupon_events(coupon_id,kind,actor,detail) values(c.id,'amount_mismatch',u,
+        jsonb_build_object('received',p_amount_cents,'from',c.sale_stage,'to','disputed','channel',p_channel)); end if;
+    return jsonb_build_object('ok',false,'reason','amount_mismatch'); end if;
+  if c.used_at is not null then return jsonb_build_object('ok',true,'already',true,'cupom_key',c.cupom_key); end if;
+  if clock_timestamp()>=(c.sale->>'expires')::timestamptz then return jsonb_build_object('ok',false,'reason','expired'); end if;
+  fee:=private.mvp_sale_fee(p_amount_cents);
+  pts:=case when (c.sale->>'points')::boolean then p_amount_cents/100 else 0 end;
+  insert into private.mvp_coupon_entries(coupon_id,kind,reference,paid_cents,fee_cents,points,actor)
+    values(c.id,'conversion','original',p_amount_cents,fee,pts,u);
+  update public.mvp_coupons set used_at=clock_timestamp(),used_by=u,amount_cents=p_amount_cents,fee_state='pending',sale_stage='converted' where id=c.id;
+  insert into private.mvp_coupon_events(coupon_id,kind,actor,detail) values(c.id,'converted',u,
+    jsonb_build_object('from',c.sale_stage,'to','converted','channel',p_channel));
+  return jsonb_build_object('ok',true,'cupom_key',c.cupom_key,'fee_cents',fee,'points',pts);
+end $$;
+
+create or replace function public.mvp_validate_coupon(p_code text,p_amount_cents integer default null) returns jsonb
+language sql security definer set search_path='' as $$select public.mvp_confirm_receipt(p_code,p_amount_cents,'panel')$$;
+
+create function public.mvp_refund_coupon(p_code text,p_amount integer,p_reference text,p_reason text)
+returns void language plpgsql security definer set search_path='' as $$
+declare u uuid:=public.mvp_require_user(); c public.mvp_coupons; old private.mvp_coupon_entries;
+  balance integer; fee integer; pts integer; remaining integer;
+begin
+  if not public.mvp_is_partner() then raise exception 'Parceiro sem autorização.' using errcode='42501'; end if;
+  select * into c from public.mvp_coupons where code=upper(trim(p_code)) and sale->>'owner'=u::text and used_at is not null for update;
+  if not found then raise exception 'Conversão indisponível.'; end if;
+  if p_amount is null or p_amount<=0 or length(coalesce(trim(p_reference),'')) not between 1 and 100
+    or length(coalesce(trim(p_reason),'')) not between 1 and 300 then raise exception 'Confira valor, referência e motivo do estorno.'; end if;
+  select * into old from private.mvp_coupon_entries where coupon_id=c.id and kind='refund' and reference=trim(p_reference);
+  if found then
+    if old.paid_cents<>-p_amount or old.reason<>trim(p_reason) then raise exception 'Referência já usada com outros dados.'; end if;
+    return; end if;
+  select sum(paid_cents),sum(fee_cents),sum(points) into balance,fee,pts from private.mvp_coupon_entries where coupon_id=c.id;
+  remaining:=balance-p_amount;
+  if remaining<0 then raise exception 'Estorno superior ao saldo.'; end if;
+  insert into private.mvp_coupon_entries(coupon_id,kind,reference,paid_cents,fee_cents,points,reason,actor)
+    values(c.id,'refund',trim(p_reference),-p_amount,private.mvp_sale_fee(remaining)-fee,
+      (case when (c.sale->>'points')::boolean then remaining/100 else 0 end)-pts,trim(p_reason),u);
+  insert into private.mvp_coupon_events(coupon_id,kind,actor,detail)
+    values(c.id,'refunded',u,jsonb_build_object('reference',trim(p_reference),'amount',p_amount));
+end $$;
+
+create function private.mvp_sale_match(c public.mvp_coupons,f jsonb) returns boolean language sql stable set search_path='' as $$
+  select (nullif(f->>'from','') is null or c.issued_at>=((f->>'from')::date::timestamp at time zone 'America/Fortaleza')) and
+    (nullif(f->>'until','') is null or c.issued_at<(((f->>'until')::date+1)::timestamp at time zone 'America/Fortaleza')) and
+    (nullif(f->>'owner','') is null or c.sale->>'owner'=f->>'owner') and
+    (nullif(f->>'city','') is null or lower(c.sale->>'city')=lower(f->>'city')) and
+    (nullif(f->>'category','') is null or c.sale->>'category'=f->>'category')
+$$;
+revoke all on function private.mvp_sale_match(public.mvp_coupons,jsonb) from public,anon,authenticated;
+-- Cada página leva o estado e os lançamentos. Consultas da carteira nunca escutam outra conta.
+create function public.mvp_coupon_statement(p_scope text default 'tourist',p_code text default null,
+  p_before timestamptz default null,p_before_id uuid default null,p_limit integer default 50,p_filters jsonb default '{}')
+returns setof jsonb language plpgsql stable security definer set search_path='' as $$
+declare u uuid:=public.mvp_require_user();
+begin
+  if p_scope='admin' then
+    perform private.assert_admin(u);
+    if coalesce(auth.jwt()->>'aal','')<>'aal2' then raise exception 'Confirme o segundo fator.'; end if;
+  elsif p_scope='partner' then
+    if not public.mvp_is_partner() then raise exception 'Parceiro sem autorização.' using errcode='42501'; end if;
+  elsif p_scope is distinct from 'tourist' then raise exception 'Perfil inválido.'; end if;
+  return query select jsonb_build_object('id',c.id,'code',c.code,'issued_at',c.issued_at,'sale',c.sale,
+    'fee_state',c.fee_state,'stage',c.sale_stage,'state',case when c.sale_stage in ('cancelled','declined','disputed') then c.sale_stage
+      when c.used_at is not null then case when coalesce(e.refunds,0)=0 then c.sale_stage
+        when e.paid=0 then 'refunded' else 'partial_refund' end
+      when c.user_id is null then 'cancelled'
+      when (c.sale->>'expires')::timestamptz<=now() then 'expired'
+      when c.payment_reported_at is not null then 'payment_reported' else c.sale_stage end,
+    'paid',coalesce(e.paid,0),'fee',coalesce(e.fee,0),'points',coalesce(e.points,0),
+    'entries',coalesce(e.items,'[]'::jsonb),'events',coalesce(h.items,'[]'::jsonb))
+    from public.mvp_coupons c
+    left join lateral (select sum(x.paid_cents) paid,sum(x.fee_cents) fee,sum(x.points) points,
+      count(*) filter(where x.kind='refund') refunds,jsonb_agg(case when p_scope='tourist' then to_jsonb(x)-'actor'-'fee_cents' else to_jsonb(x) end order by x.at,x.id) items
+      from private.mvp_coupon_entries x where x.coupon_id=c.id) e on true
+    left join lateral (select jsonb_agg(case when p_scope='tourist' then jsonb_build_object('kind',x.kind,'at',x.at) else to_jsonb(x)-'coupon_id' end order by x.id) items
+      from private.mvp_coupon_events x where x.coupon_id=c.id and (p_scope<>'tourist' or x.kind not like 'fee_%')) h on true
+    where c.sale is not null and (p_scope='admin' or (p_scope='tourist' and c.user_id=u)
+      or (p_scope='partner' and c.sale->>'owner'=u::text))
+    and private.mvp_sale_match(c,p_filters) and (p_code is null or c.code=upper(trim(p_code)))
+    and (p_before is null or (c.issued_at,c.id)<(p_before,p_before_id))
+    order by c.issued_at desc,c.id desc limit greatest(1,least(coalesce(p_limit,50),100));
+end $$;
+create index mvp_coupon_sales_owner on public.mvp_coupons((sale->>'owner'),issued_at desc,id desc) where sale is not null;
+create index mvp_coupon_sales_wallet on public.mvp_coupons(user_id,issued_at desc,id desc) where sale is not null;
+create function public.mvp_coupon_points() returns table(coupon_id uuid,at timestamptz,points integer,kind text,reference text,title text,paid_cents integer)
+language sql stable security definer set search_path='' as $$
+  select c.id,e.at,e.points,e.kind,e.reference,c.sale->>'title',e.paid_cents from private.mvp_coupon_entries e
+  join public.mvp_coupons c on c.id=e.coupon_id where c.user_id=public.mvp_require_user() order by e.at,e.id
+$$;
+-- O catálogo público mostra só as condições necessárias para escolher a oferta.
+create function public.mvp_public_sales() returns setof jsonb language sql stable security definer set search_path='' as $$
+  select jsonb_build_object('id',o.id,'title',o.title,'benefit',o.benefit,'rules',o.rules,'category',o.category,
+    'valid_until',o.valid_until,'image_url',o.image_url,'status',o.status,'sale_approved',true,
+    'sale_terms',o.sale_terms-'payment'-'url')
+  from public.mvp_partner_offers o join public.mvp_partner_members m on m.user_id=o.created_by
+  where o.status='Ativa' and o.sale_approved and (o.sale_terms->>'from')::date<=(now() at time zone 'America/Fortaleza')::date and o.valid_until>=(now() at time zone 'America/Fortaleza')::date
+  order by o.created_at desc,o.id
+$$;
+revoke all on function public.mvp_public_sales() from public;
+grant execute on function public.mvp_public_sales() to anon,authenticated;
+
+-- A exclusão de conta já existente preserva a conversão e desvincula o turista.
+create function private.mvp_anonymize_coupon() returns trigger language plpgsql security definer set search_path='' as $$
+begin
+  update public.mvp_coupons set user_id=null where user_id=old.id and sale is not null;
+  update private.mvp_coupon_events set actor=null where actor=old.id and kind in ('issued','payment_reported');
+  return old;
+end $$;
+create trigger mvp_anonymize_coupon before delete on auth.users for each row execute function private.mvp_anonymize_coupon();
+revoke all on function private.mvp_anonymize_coupon() from public,anon,authenticated;
+create function public.mvp_admin_sale_terms() returns setof jsonb
+language plpgsql stable security definer set search_path='' as $$
+begin
+  perform private.assert_admin(public.mvp_require_user());
+  if coalesce(auth.jwt()->>'aal','')<>'aal2' then raise exception 'Confirme o segundo fator.'; end if;
+  return query select jsonb_build_object('id',o.id,'owner',o.created_by,'partner',(select business from public.mvp_partner_requests where user_id=o.created_by),'terms',o.sale_terms) from public.mvp_partner_offers o where o.sale_terms is not null;
+end $$;
+do $$ declare f regprocedure; begin
+  for f in select oid::regprocedure from pg_proc where pronamespace='public'::regnamespace and proname in
+    ('mvp_admin_sale_terms','mvp_create_sale_offer','mvp_set_sale_terms','mvp_set_offer_status','mvp_offer_stats','mvp_activate_offer_coupon','mvp_activate_coupon',
+     'mvp_report_payment','mvp_confirm_receipt','mvp_validate_coupon','mvp_refund_coupon','mvp_coupon_statement','mvp_coupon_points') loop
+    execute format('revoke all on function %s from public,anon,authenticated',f);
+    execute format('grant execute on function %s to authenticated',f);
+  end loop;
+end $$;
+revoke all on function private.mvp_sale_fee(integer),private.mvp_certify_sale() from public,anon,authenticated;
+commit;
+
+-- 20261117232129 mvp_coupon_whatsapp
+
+begin;
+create table private.mvp_wa_consent (
+  user_id uuid primary key references auth.users(id) on delete cascade, phone text not null,
+  enabled boolean not null, changed_at timestamptz not null default now()
+);
+create table private.mvp_wa_permissions (
+  id bigint generated always as identity primary key, user_id uuid,
+  enabled boolean not null, source text not null, version text not null default 'cupom-v1', at timestamptz not null default now()
+);
+create table private.mvp_wa_queue (
+  id uuid primary key default gen_random_uuid(), coupon_id uuid not null references public.mvp_coupons(id) on delete restrict,
+  user_id uuid, audience text not null check(audience in ('tourist','partner')),
+  event text not null check(event in ('issued','converted')), consent_at timestamptz not null, state text not null default 'queued',
+  attempts int not null default 0, next_at timestamptz not null default now(), lease uuid, lease_until timestamptz,
+  provider_id text, last_error text, unique(coupon_id,event,audience)
+);
+create index mvp_wa_ready on private.mvp_wa_queue(next_at) where state in ('queued','sending','retry');
+create table private.mvp_wa_callbacks (
+  message_id text not null, status text not null, at timestamptz not null default now(), primary key(message_id,status)
+);
+alter table private.mvp_wa_consent enable row level security;
+alter table private.mvp_wa_permissions enable row level security;
+alter table private.mvp_wa_queue enable row level security;
+alter table private.mvp_wa_callbacks enable row level security;
+revoke all on private.mvp_wa_consent,private.mvp_wa_permissions,private.mvp_wa_queue,private.mvp_wa_callbacks from public,anon,authenticated;
+
+create function private.mvp_forget_wa_contact() returns trigger language plpgsql security definer set search_path='' as $$
+begin
+  update private.mvp_wa_queue set user_id=null,state=case when state in ('queued','retry','sending') then 'skipped' else state end,
+    lease=null,lease_until=null where user_id=old.id;
+  update private.mvp_wa_permissions set user_id=null where user_id=old.id;
+  return old;
+end $$;
+create trigger mvp_forget_wa_contact before delete on auth.users for each row execute function private.mvp_forget_wa_contact();
+revoke all on function private.mvp_forget_wa_contact() from public,anon,authenticated;
+create function public.mvp_wa_opt(p_enabled boolean) returns boolean language plpgsql security definer set search_path='' as $$
+declare u uuid:=public.mvp_require_user(); number text;
+begin
+  if p_enabled is null then raise exception 'Informe a preferência.'; end if;
+  if p_enabled then
+    select ltrim(phone,'+') into number from auth.users where id=u and phone_confirmed_at is not null;
+    if number is null or number !~ '^[1-9][0-9]{7,14}$' then raise exception 'Confirme o telefone antes de autorizar.'; end if;
+    insert into private.mvp_wa_consent(user_id,phone,enabled) values(u,number,true)
+      on conflict(user_id) do update set phone=excluded.phone,enabled=true,changed_at=clock_timestamp()
+      where not mvp_wa_consent.enabled or mvp_wa_consent.phone<>excluded.phone;
+  else
+    update private.mvp_wa_consent set enabled=false,changed_at=clock_timestamp() where user_id=u and enabled;
+  end if;
+  if found then insert into private.mvp_wa_permissions(user_id,enabled,source) values(u,p_enabled,'app'); end if;
+  return p_enabled;
+end $$;
+create function public.mvp_wa_preference() returns boolean language sql stable security definer set search_path='' as $$
+  select exists(select 1 from private.mvp_wa_consent w join auth.users u on u.id=w.user_id
+    where u.id=public.mvp_require_user() and w.enabled and u.phone_confirmed_at is not null and ltrim(u.phone,'+')=w.phone)
+$$;
+create function private.mvp_queue_coupon() returns trigger language plpgsql security definer set search_path='' as $$
+begin
+  if new.sale is not null then
+    insert into private.mvp_wa_queue(coupon_id,user_id,audience,consent_at,event)
+      select new.id,x.uid,x.role,w.changed_at,case when tg_op='INSERT' then 'issued' else 'converted' end from (values(new.user_id,'tourist'),((new.sale->>'owner')::uuid,'partner')) x(uid,role)
+      join private.mvp_wa_consent w on w.user_id=x.uid and w.enabled
+      join auth.users u on u.id=x.uid and u.phone_confirmed_at is not null and ltrim(u.phone,'+')=w.phone;
+  end if;
+  return new;
+end $$;
+create trigger mvp_queue_coupon after insert on public.mvp_coupons for each row execute function private.mvp_queue_coupon();
+
+create trigger mvp_queue_conversion after update of used_at on public.mvp_coupons for each row
+when (old.used_at is null and new.used_at is not null) execute function private.mvp_queue_coupon();
+create function public.mvp_wa_claim() returns jsonb language plpgsql security definer set search_path='' as $$
+declare job private.mvp_wa_queue; number text; c public.mvp_coupons; jobs jsonb:='[]';
+begin
+  for job in select * from private.mvp_wa_queue where state in ('queued','retry','sending') and next_at<=now()
+    and (lease_until is null or lease_until<now()) order by next_at limit 10 for update skip locked loop
+    select w.phone into number from private.mvp_wa_consent w join auth.users u on u.id=w.user_id
+      where w.user_id=job.user_id and w.enabled and w.changed_at=job.consent_at
+      and u.phone_confirmed_at is not null and ltrim(u.phone,'+')=w.phone;
+    select * into c from public.mvp_coupons where id=job.coupon_id;
+    if number is null or (job.audience='partner' and not exists(select 1 from public.mvp_partner_members where user_id=job.user_id))
+       or (job.event='issued' and (now()>=(c.sale->>'expires')::timestamptz or c.used_at is not null or c.sale_stage in ('cancelled','declined'))) then
+      update private.mvp_wa_queue set state='skipped',lease=null,lease_until=null where id=job.id;
+    elsif job.attempts>=6 then
+      update private.mvp_wa_queue set state='failed',lease=null,lease_until=null where id=job.id;
+    else
+      update private.mvp_wa_queue set state='sending',lease=gen_random_uuid(),lease_until=now()+interval '5 minutes',attempts=attempts+1
+        where id=job.id returning * into job;
+      jobs:=jobs||jsonb_build_array(jsonb_build_object('id',job.id,'lease',job.lease,'to',number,'role',job.audience,'event',job.event,
+        'title',c.sale->>'title','due',c.sale->'due','code',c.code));
+    end if;
+  end loop;
+  return jobs;
+end $$;
+
+create function public.mvp_wa_finish(p_id uuid,p_lease uuid,p_status text,p_provider text,p_error text) returns void
+language sql security definer set search_path='' as $$
+  update private.mvp_wa_queue set state=case when p_status='accepted' then 'accepted'
+    when p_status='retry' and attempts<6 then 'retry' else 'failed' end,
+    provider_id=coalesce(p_provider,provider_id), last_error=left(p_error,100),
+    next_at=now()+make_interval(secs=>least(3600,30*(2^attempts)::integer)),lease=null,lease_until=null
+    where id=p_id and lease=p_lease and state='sending'
+$$;
+create function public.mvp_wa_callback(p_id uuid,p_message text,p_status text,p_retry boolean default false) returns void
+language plpgsql security definer set search_path='' as $$
+declare job private.mvp_wa_queue;
+begin
+  if p_status not in ('sent','delivered','read','failed') or p_message is null then return; end if;
+  select * into job from private.mvp_wa_queue where id=p_id or (p_id is null and provider_id=p_message) for update;
+  if not found then return; end if;
+  insert into private.mvp_wa_callbacks(message_id,status) values(p_message,p_status) on conflict do nothing;
+  if not found then return; end if;
+  if job.state='read' or (job.state='delivered' and p_status<>'read') then return; end if;
+  if p_status='failed' and (job.provider_id is not null and job.provider_id<>p_message or job.state in ('retry','skipped','failed')) then return; end if;
+  update private.mvp_wa_queue set state=case when p_status='failed' and p_retry and attempts<6 then 'retry' else p_status end,
+    last_error=case when p_status='failed' then 'meta_delivery' end,provider_id=p_message,
+    next_at=now()+make_interval(secs=>least(3600,30*(2^attempts)::integer)),lease=null,lease_until=null where id=job.id;
+end $$;
+create function public.mvp_wa_stop(p_phone text,p_message text) returns void language plpgsql security definer set search_path='' as $$
+declare u uuid;
+begin
+  insert into private.mvp_wa_callbacks(message_id,status) values(p_message,'stop') on conflict do nothing;
+  if not found then return; end if;
+  for u in update private.mvp_wa_consent set enabled=false,changed_at=clock_timestamp() where enabled and phone=p_phone returning user_id loop
+    insert into private.mvp_wa_permissions(user_id,enabled,source) values(u,false,'whatsapp');
+  end loop;
+end $$;
+create function public.mvp_coupon_deliveries(p_code text,p_scope text) returns setof jsonb
+language plpgsql stable security definer set search_path='' as $$
+declare receipt jsonb;
+begin
+  select * into receipt from public.mvp_coupon_statement(p_scope,p_code);
+  return query select jsonb_build_object('audience',audience,'event',event,'state',state,'attempts',attempts) from private.mvp_wa_queue
+    where coupon_id=(receipt->>'id')::uuid and (p_scope='admin' or audience=p_scope);
+end $$;
+do $$ declare f regprocedure; begin
+  for f in select oid::regprocedure from pg_proc where pronamespace='public'::regnamespace and proname in
+    ('mvp_wa_opt','mvp_wa_preference','mvp_coupon_deliveries','mvp_wa_claim','mvp_wa_finish','mvp_wa_callback','mvp_wa_stop') loop
+    execute format('revoke all on function %s from public,anon,authenticated,service_role',f);
+    if f::text ~ '(mvp_wa_opt|mvp_wa_preference|mvp_coupon_deliveries)' then
+      execute format('grant execute on function %s to authenticated',f);
+    else execute format('grant execute on function %s to service_role',f); end if;
+  end loop;
+end $$;
+revoke all on function private.mvp_queue_coupon() from public,anon,authenticated;
+commit;
+
+-- 20261117234134 mvp_coupon_operations
+
+begin;
+-- Um cancelamento sem conversão libera a unidade e a reserva de emissão.
+drop index if exists public.mvp_coupons_one_active;
+create unique index mvp_coupons_one_active on public.mvp_coupons(user_id,cupom_key)
+  where used_at is null and sale_stage not in ('cancelled','declined');
+
+create function public.mvp_coupon_action(p_code text,p_action text,p_reason text default null,p_channel text default 'app')
+returns void language plpgsql security definer set search_path='' as $$
+declare u uuid:=public.mvp_require_user(); c public.mvp_coupons; partner boolean; tourist boolean;
+  previous text; target text; financial boolean:=p_action like 'fee_%';
+begin
+  if p_channel is null or p_channel not in ('app','panel','qr','whatsapp','admin') then raise exception 'Canal inválido.'; end if;
+  if p_channel='admin' or financial then
+    perform private.assert_admin(u);
+    if coalesce(auth.jwt()->>'aal','')<>'aal2' then raise exception 'Confirme o segundo fator.'; end if;
+  end if;
+  select * into c from public.mvp_coupons where code=upper(trim(p_code)) and sale is not null
+    and (user_id=u or (sale->>'owner'=u::text and public.mvp_is_partner()) or p_channel='admin') for update;
+  if not found then raise exception 'Cupom indisponível.'; end if;
+  partner:=(c.sale->>'owner'=u::text and public.mvp_is_partner()) or p_channel='admin';
+  tourist:=coalesce(c.user_id=u,false);
+  if p_action in ('cancel','decline','dispute','resolve','fee_disputed','fee_pending','fee_invoiced','fee_paid')
+    and length(coalesce(trim(p_reason),'')) not between 1 and 300 then raise exception 'Registre o motivo ou a referência.'; end if;
+  previous:=case when financial then c.fee_state else c.sale_stage end;
+  target:=case p_action when 'interest' then 'interested' when 'cancel' then 'cancelled' when 'decline' then 'declined'
+    when 'dispute' then 'disputed' when 'utilize' then 'utilized' when 'complete' then 'completed'
+    when 'fee_invoiced' then 'invoiced' when 'fee_paid' then 'paid' when 'fee_disputed' then 'disputed' when 'fee_pending' then 'pending'
+    when 'resolve' then coalesce((select detail->>'from' from private.mvp_coupon_events where coupon_id=c.id
+      and kind in ('amount_mismatch','dispute') order by id desc limit 1),'issued') end;
+  if target is null then raise exception 'Ação desconhecida.'; end if;
+  if (p_action in ('decline','resolve','utilize','complete') and not partner) or
+     (p_action='interest' and not tourist) then raise exception 'Ação não autorizada.' using errcode='42501'; end if;
+  if previous=target then return; end if;
+  if financial then
+    if c.used_at is null or not ((target='invoiced' and previous='pending') or (target='paid' and previous='invoiced')
+      or (target='disputed' and previous in ('pending','invoiced','paid')) or (target='pending' and previous='disputed')) then
+      raise exception 'Transição financeira indisponível.'; end if;
+    update public.mvp_coupons set fee_state=target where id=c.id;
+  else
+    if not ((p_action in ('interest','cancel','decline') and c.used_at is null and previous in ('issued','interested')
+          and now()<(c.sale->>'expires')::timestamptz)
+      or (p_action='dispute' and previous not in ('cancelled','declined','disputed') and (c.used_at is not null or now()<(c.sale->>'expires')::timestamptz))
+      or (p_action='resolve' and previous='disputed')
+      or (p_action='utilize' and previous='converted' and coalesce((select sum(paid_cents) from private.mvp_coupon_entries where coupon_id=c.id),0)>0)
+      or (p_action='utilize' and previous='converted' and c.amount_cents=0)
+      or (p_action='complete' and previous='utilized')) then raise exception 'Transição indisponível para este cupom.'; end if;
+    update public.mvp_coupons set sale_stage=target where id=c.id;
+  end if;
+  insert into private.mvp_coupon_events(coupon_id,kind,actor,detail) values(c.id,p_action,u,
+    jsonb_build_object('from',previous,'to',target,'channel',p_channel,'reason',nullif(trim(p_reason),'')));
+end $$;
+
+create function public.mvp_admin_sale_status(p_id uuid,p_status text,p_reason text default null) returns void
+language plpgsql security definer set search_path='' as $$
+declare u uuid:=public.mvp_require_user();
+begin
+  perform private.assert_admin(u);
+  if coalesce(auth.jwt()->>'aal','')<>'aal2' then raise exception 'Confirme o segundo fator.'; end if;
+  if p_status not in ('Ativa','Em análise','Recusada','Pausada','Encerrada') or p_status is null then raise exception 'Estado inválido.'; end if;
+  if p_status in ('Recusada','Em análise') and length(coalesce(trim(p_reason),'')) not between 1 and 120 then raise exception 'Registre o motivo.'; end if;
+  update public.mvp_partner_offers set status=p_status,pause_reason=nullif(trim(p_reason),''),updated_at=now()
+    where id=p_id and status<>'Rascunho' and (p_status<>'Ativa' or
+      (sale_terms is not null and valid_until>=(now() at time zone 'America/Fortaleza')::date and
+       exists(select 1 from public.mvp_partner_members m where m.user_id=created_by)));
+  if not found then raise exception 'Revise as condições, o parceiro e a vigência antes de publicar.'; end if;
+end $$;
+create function public.mvp_coupon_overview(p_scope text,p_filters jsonb default '{}') returns jsonb
+language plpgsql stable security definer set search_path='' as $$
+declare u uuid:=public.mvp_require_user(); summary jsonb;
+begin
+  if p_scope='admin' then
+    perform private.assert_admin(u);
+    if coalesce(auth.jwt()->>'aal','')<>'aal2' then raise exception 'Confirme o segundo fator.'; end if;
+  elsif p_scope is distinct from 'partner' or not public.mvp_is_partner() then raise exception 'Perfil indisponível.'; end if;
+  select jsonb_build_object('issued',count(*),'converted',count(c.used_at),'paid',coalesce(sum(e.paid),0),
+    'discount',coalesce(sum((c.sale->>'discount_cents')::bigint) filter(where c.used_at is not null),0),
+    'fee',coalesce(sum(e.fee),0),'ticket',coalesce(round(sum(e.paid)::numeric/nullif(count(c.used_at),0)),0),
+    'conversion_pct',coalesce(round(100.0*count(c.used_at)/nullif(count(*),0),1),0))
+    into summary from public.mvp_coupons c left join lateral
+      (select sum(x.paid_cents) paid,sum(x.fee_cents) fee from private.mvp_coupon_entries x where x.coupon_id=c.id)e on true
+    where c.sale is not null and (p_scope='admin' or c.sale->>'owner'=u::text) and private.mvp_sale_match(c,p_filters);
+  return summary;
+end $$;
+revoke all on function public.mvp_coupon_action(text,text,text,text),public.mvp_admin_sale_status(uuid,text,text),
+  public.mvp_coupon_overview(text,jsonb) from public,anon,authenticated;
+grant execute on function public.mvp_coupon_action(text,text,text,text),public.mvp_admin_sale_status(uuid,text,text),
+  public.mvp_coupon_overview(text,jsonb) to authenticated;
+commit;
+
+-- 20261118022026 mvp_scale_guards
+
+create table if not exists private.mvp_rate_limit(
+  actor uuid not null, action text not null, minute timestamptz not null, n integer not null,
+  primary key(actor, action));
+alter table private.mvp_rate_limit enable row level security;
+revoke all on private.mvp_rate_limit from public, anon, authenticated;
+
+create or replace function private.mvp_rate_check(p_actor uuid, p_action text, p_max integer)
+returns void language plpgsql security definer set search_path='' as $$
+declare cnt integer;
+begin
+  insert into private.mvp_rate_limit as r(actor, action, minute, n)
+  values(p_actor, p_action, date_trunc('minute', clock_timestamp()), 1)
+  on conflict(actor, action) do update
+    set minute = excluded.minute,
+        n = case when excluded.minute = r.minute then r.n + 1 else 1 end
+  returning n into cnt;
+  if cnt > p_max then
+    raise exception 'Muitas tentativas. Aguarde um minuto.' using errcode = 'P0001';
+  end if;
+end $$;
+revoke all on function private.mvp_rate_check(uuid, text, integer) from public, anon, authenticated;
+
+create or replace function public.mvp_request_reservation(p_item_key text, p_item_title text, p_day date, p_period text, p_people integer, p_request_key text, p_cupom_key text default null, p_customer_name text default null)
+returns public.mvp_reservations language plpgsql security definer set search_path='public' as $$
+declare uid uuid := public.mvp_require_user(); r public.mvp_reservations;
+begin
+  if p_day <= (now() at time zone 'America/Fortaleza')::date then raise exception 'day must be in the future' using errcode = '22023'; end if;
+  select * into r from public.mvp_reservations where request_key = p_request_key;
+  if found then
+    if r.user_id <> uid then raise exception 'request key in use' using errcode = '42501'; end if;
+    return r;
+  end if;
+  perform private.mvp_rate_check(uid, 'reservation', 10);
+  insert into public.mvp_reservations (user_id, item_key, item_title, day, period, people, cupom_key, customer_name, request_key, history)
+  values (uid, p_item_key, p_item_title, p_day, p_period, p_people, p_cupom_key, left(p_customer_name, 60), p_request_key,
+          jsonb_build_array('Pedido enviado em ' || to_char(now() at time zone 'America/Fortaleza', 'DD/MM')))
+  on conflict (request_key) do nothing returning * into r;
+  if r.id is null then
+    select * into r from public.mvp_reservations where request_key = p_request_key and user_id = uid;
+  end if;
+  return r;
+end $$;
+
+create index if not exists mvp_coupons_used_by_idx on public.mvp_coupons(used_by) where used_by is not null;;
+
+-- 20261118024050 mvp_rls_and_fk_indexes
+
+do $$
+declare
+  admin_cond constant text := $a$((((select auth.jwt()) ->> 'aal') = 'aal2') and exists(select 1 from public.staff_members s
+    where s.user_id = (select auth.uid()) and s.staff_role = 'admin' and s.is_active))$a$;
+  r record; q text; w text; stmt text;
+  merges constant text[] := array[
+    'coupon_instances|coupons_read_owner_or_partner|admin_read_coupon_instances_aal2|f',
+    'establishments|establishments_authenticated|admin_read_establishments_aal2|f',
+    'experiences|experiences_authenticated|admin_read_experiences_aal2|f',
+    'offers|offers_authenticated|admin_read_offers_aal2|f',
+    'partner_applications|partner_applications_read_own|admin_read_applications_aal2|f',
+    'partners|partner_read_associated|admin_read_partners_aal2|f',
+    'reservations|reservations_read_user_or_partner|admin_read_reservations_aal2|f',
+    'municipalities|municipalities_public_read|municipalities_admin_manage|t',
+    'pole_municipalities|pole_municipalities_public_read|pole_municipalities_admin_manage|t',
+    'tourism_poles|tourism_poles_public_read|tourism_poles_admin_manage|t',
+    'passport_products|mp_passports_public_catalog|mp_admin_read_all_passports|t',
+    'passport_product_benefits|mp_passport_benefits_public_catalog|mp_admin_read_all_passport_benefits|t'];
+  m text; p text[];
+begin
+  foreach m in array merges loop
+    p := string_to_array(m, '|');
+    select qual into q from pg_policies where schemaname='public' and tablename=p[1] and policyname=p[2];
+    if q is null then raise exception 'Policy % não encontrada em %', p[2], p[1]; end if;
+    if q like '%staff_members%' then continue; end if;
+
+    if p[4] = 't' then
+      execute format('create policy %I on public.%I for select to anon using (%s)', p[2] || '_anon', p[1], q);
+      execute format('alter policy %I on public.%I to authenticated', p[2], p[1]);
+    end if;
+    execute format('alter policy %I on public.%I using ((%s) or %s)', p[2], p[1], q, admin_cond);
+
+    if p[3] like '%\_manage' then
+      execute format('drop policy %I on public.%I', p[3], p[1]);
+      execute format('create policy %I on public.%I for insert to authenticated with check (%s)', p[1] || '_admin_insert', p[1], admin_cond);
+      execute format('create policy %I on public.%I for update to authenticated using (%s) with check (%s)', p[1] || '_admin_update', p[1], admin_cond, admin_cond);
+      execute format('create policy %I on public.%I for delete to authenticated using (%s)', p[1] || '_admin_delete', p[1], admin_cond);
+    else
+      execute format('drop policy %I on public.%I', p[3], p[1]);
+    end if;
+  end loop;
+
+  for r in select tablename, policyname, qual, with_check from pg_policies
+           where schemaname='public' and (coalesce(qual,'')||coalesce(with_check,'')) ~ 'auth\.jwt\(\)'
+             and (coalesce(qual,'')||coalesce(with_check,'')) !~ '\(select auth\.jwt\(\)\)' loop
+    q := r.qual; w := r.with_check;
+    foreach stmt in array array['aal','is_anonymous'] loop
+      q := replace(replace(q, format('( SELECT (auth.jwt() ->> %L::text))', stmt), format('((select auth.jwt()) ->> %L)', stmt)),
+                   format('(auth.jwt() ->> %L::text)', stmt), format('((select auth.jwt()) ->> %L)', stmt));
+      w := replace(replace(w, format('( SELECT (auth.jwt() ->> %L::text))', stmt), format('((select auth.jwt()) ->> %L)', stmt)),
+                   format('(auth.jwt() ->> %L::text)', stmt), format('((select auth.jwt()) ->> %L)', stmt));
+    end loop;
+    if q is not null then execute format('alter policy %I on public.%I using (%s)', r.policyname, r.tablename, q); end if;
+    if w is not null then execute format('alter policy %I on public.%I with check (%s)', r.policyname, r.tablename, w); end if;
+  end loop;
+end $$;
+
+create index if not exists custom_offer_requests_offer_idx on private.custom_offer_requests(offer_id);
+create index if not exists offer_creation_requests_offer_idx on private.offer_creation_requests(offer_id);
+create index if not exists assistant_conversations_user_idx on public.assistant_conversations(user_id);
+create index if not exists partner_invitations_accepted_by_idx on public.partner_invitations(accepted_by);
+create index if not exists partner_invitations_requested_by_idx on public.partner_invitations(requested_by);
+create index if not exists passport_incidents_entitlement_idx on public.passport_benefit_incidents(entitlement_id);
+create index if not exists passport_incidents_offer_idx on public.passport_benefit_incidents(offer_id);
+create index if not exists passport_incidents_reported_by_idx on public.passport_benefit_incidents(reported_by);
+create index if not exists passport_cancellations_buyer_idx on public.passport_cancellation_requests(buyer_user_id);
+create index if not exists passport_entitlements_product_idx on public.passport_entitlements(product_id);
+create index if not exists passport_entitlements_user_idx on public.passport_entitlements(user_id);
+create index if not exists passport_orders_product_idx on public.passport_orders(product_id);;
+
+-- 20261118040539 mvp_demo_seed
+
+insert into public.partners (id, legal_name, trade_name, status)
+values ('00000000-0000-4000-8000-0000000000de', 'Parceiro Exemplo Marapass', 'Parceiro Exemplo', 'approved')
+on conflict (id) do nothing;
+
+insert into public.establishments (id, partner_id, name, description, category, city, state_code, is_active, is_public)
+values
+ ('00000000-0000-4000-8000-0000000000e1', '00000000-0000-4000-8000-0000000000de', 'Lençóis Tur (exemplo)', 'Agência de passeios nos Lençóis Maranhenses.', 'tours', 'Barreirinhas', 'MA', true, true),
+ ('00000000-0000-4000-8000-0000000000e2', '00000000-0000-4000-8000-0000000000de', 'Sabor da Ilha (exemplo)', 'Culinária maranhense no centro histórico.', 'gastronomy', 'São Luís', 'MA', true, true)
+on conflict (id) do nothing;
+
+insert into public.experiences (id, establishment_id, title, description, category, price_from_cents, duration_minutes, capacity, booking_required, status)
+values
+ ('00000000-0000-4000-8000-0000000000a1', '00000000-0000-4000-8000-0000000000e1', 'Circuito Lagoa Azul (exemplo)', 'Passeio de 4x4 às lagoas com parada para banho.', 'tours', 15000, 240, 12, true, 'published'),
+ ('00000000-0000-4000-8000-0000000000a2', '00000000-0000-4000-8000-0000000000e1', 'Pôr do sol nas dunas (exemplo)', 'Caminhada guiada ao entardecer.', 'nature', 9000, 150, 15, true, 'published'),
+ ('00000000-0000-4000-8000-0000000000a3', '00000000-0000-4000-8000-0000000000e2', 'Degustação de arroz de cuxá (exemplo)', 'Menu degustação com pratos típicos.', 'gastronomy', 6000, 90, 20, false, 'published')
+on conflict (id) do nothing;
+
+insert into public.experience_slots (experience_id, starts_at, ends_at, capacity)
+select e.id, d + time '08:00', d + time '08:00' + make_interval(mins => e.duration_minutes), e.capacity
+from public.experiences e
+cross join generate_series(current_date + 1, current_date + 14, interval '1 day') d
+where e.id in ('00000000-0000-4000-8000-0000000000a1','00000000-0000-4000-8000-0000000000a2')
+  and not exists (select 1 from public.experience_slots s where s.experience_id = e.id);
+
+insert into public.offers (id, establishment_id, experience_id, title, description, discount_type, discount_value,
+  max_issuances, per_user_limit, is_published, access_scope, eligible_items, calculation_base,
+  issue_until, convert_until, use_until)
+values
+ ('00000000-0000-4000-8000-0000000000f1', '00000000-0000-4000-8000-0000000000e1', '00000000-0000-4000-8000-0000000000a1',
+  '10% no Circuito Lagoa Azul (exemplo)', 'Desconto para quem tem o app.', 'percent', 10, 200, 1, true, 'public',
+  'Circuito Lagoa Azul', 'Valor do passeio por pessoa', now() + interval '60 days', now() + interval '75 days', now() + interval '90 days'),
+ ('00000000-0000-4000-8000-0000000000f2', '00000000-0000-4000-8000-0000000000e2', '00000000-0000-4000-8000-0000000000a3',
+  'R$ 15 na degustação (exemplo)', 'Válido para portadores do passaporte.', 'fixed', 15, 100, 1, true, 'passport',
+  'Degustação de arroz de cuxá', 'Valor total da conta', now() + interval '60 days', now() + interval '75 days', now() + interval '90 days')
+on conflict (id) do nothing;
+
+insert into public.passport_products (id, name, description, price_cents, currency, validity_start_rule,
+  duration_days, activation_deadline_days, booking_explanation, included_benefits_explanation, is_published)
+values ('00000000-0000-4000-8000-0000000000b1', 'Passaporte Lençóis 7 dias (exemplo)',
+  'Passaporte de exemplo com benefícios em parceiros de Barreirinhas e São Luís.', 4990, 'BRL', 'activation',
+  7, 30, 'Passeios com horário exigem reserva pelo app.', 'Inclui o desconto na degustação.', false)
+on conflict (id) do nothing;
+
+insert into public.passport_product_benefits (product_id, offer_id, issue_window_days, convert_window_days, use_window_days, max_per_holder, booking_required)
+select '00000000-0000-4000-8000-0000000000b1', '00000000-0000-4000-8000-0000000000f2', 7, 7, 7, 1, false
+where not exists (select 1 from public.passport_product_benefits where product_id = '00000000-0000-4000-8000-0000000000b1');;
+
+-- 20261119183558 delete_my_account_v2_turista
+
+create or replace function public.delete_my_account()
+ returns void
+ language plpgsql
+ security definer
+ set search_path to 'public', 'auth'
+as $function$
+declare uid uuid := auth.uid();
+begin
+  if uid is null or coalesce((auth.jwt() ->> 'is_anonymous')::boolean, false) then
+    raise exception 'not authenticated' using errcode = '42501';
+  end if;
+  if exists (select 1 from public.staff_members s where s.user_id = uid and s.is_active)
+     or exists (select 1 from public.partner_members m where m.user_id = uid and m.is_active)
+     or exists (select 1 from public.partners p where p.owner_user_id = uid)
+     or exists (select 1 from public.mvp_partner_members m where m.user_id = uid) then
+    raise exception 'Contas de parceiro são excluídas pelo suporte, para não apagar ofertas ativas.' using errcode = 'P0001';
+  end if;
+  -- Pedido pago é registro fiscal: não some pela própria conta.
+  if exists (select 1 from public.passport_orders o where o.buyer_user_id = uid and o.status in ('paid','cancel_requested','refunded')) then
+    raise exception 'Sua conta tem uma compra registrada. Peça a exclusão pelo suporte.' using errcode = 'P0001';
+  end if;
+
+  -- Atividade do turista: reservas, cupons, check-ins e passaporte gratuito.
+  delete from public.checkins
+    where user_id = uid or reservation_id in (select id from public.reservations where user_id = uid);
+  delete from public.coupon_redemptions
+    where coupon_instance_id in (select id from public.coupon_instances where beneficiary_user_id = uid
+                                 or reservation_id in (select id from public.reservations where user_id = uid));
+  delete from public.coupon_instances
+    where beneficiary_user_id = uid or reservation_id in (select id from public.reservations where user_id = uid)
+       or passport_entitlement_id in (select id from public.passport_entitlements where user_id = uid);
+  delete from public.reservations where user_id = uid;
+  delete from public.passport_benefit_incidents
+    where reported_by = uid or entitlement_id in (select id from public.passport_entitlements where user_id = uid);
+  delete from public.passport_entitlement_benefits
+    where entitlement_id in (select id from public.passport_entitlements where user_id = uid);
+  delete from public.passport_entitlements where user_id = uid;
+  delete from public.passport_cancellation_requests where buyer_user_id = uid;
+  delete from public.passport_orders where buyer_user_id = uid;
+
+  delete from public.assistant_messages
+    where conversation_id in (select id from public.assistant_conversations where user_id = uid);
+  delete from public.assistant_conversations where user_id = uid;
+  delete from public.mvp_partner_requests where user_id = uid;
+  update public.mvp_coupons set used_by = null where used_by = uid;
+  delete from public.profiles where id = uid;
+  begin
+    delete from auth.users where id = uid;
+  exception when foreign_key_violation then
+    raise exception 'Sua conta tem registros do sistema anterior. Peça a exclusão pelo suporte.' using errcode = 'P0001';
+  end;
+end $function$;
+revoke execute on function public.delete_my_account() from public, anon;
+grant execute on function public.delete_my_account() to authenticated;;
+
+-- 20261119184441 revoke_anon_write_assistant
+
+revoke insert, update, delete on public.assistant_conversations, public.assistant_messages from anon;;
+
+-- 20261119184630 my_reservation_and_coupon_wrappers
+
+-- Versões para o app: o usuário vem do login (auth.uid()), nunca de parâmetro.
+create or replace function public.my_request_reservation(p_slot_id uuid, p_participants integer, p_request_key text)
+returns uuid language plpgsql security definer set search_path = public as $$
+declare uid uuid := auth.uid();
+begin
+  if uid is null or coalesce((auth.jwt() ->> 'is_anonymous')::boolean, false) then
+    raise exception 'not authenticated' using errcode = '42501';
+  end if;
+  return public.request_reservation(p_slot_id, uid, p_participants, p_request_key);
+end $$;
+
+create or replace function public.my_issue_coupon(p_offer_id uuid, p_idempotency_key text, p_reservation_id uuid default null)
+returns uuid language plpgsql security definer set search_path = public as $$
+declare uid uuid := auth.uid();
+begin
+  if uid is null or coalesce((auth.jwt() ->> 'is_anonymous')::boolean, false) then
+    raise exception 'not authenticated' using errcode = '42501';
+  end if;
+  if p_reservation_id is not null and not exists (select 1 from public.reservations where id = p_reservation_id and user_id = uid) then
+    raise exception 'reservation not found' using errcode = '42501';
+  end if;
+  return public.issue_coupon(p_offer_id, uid, p_idempotency_key, p_reservation_id);
+end $$;
+
+revoke execute on function public.my_request_reservation(uuid, integer, text) from public, anon;
+revoke execute on function public.my_issue_coupon(uuid, text, uuid) from public, anon;
+grant execute on function public.my_request_reservation(uuid, integer, text) to authenticated;
+grant execute on function public.my_issue_coupon(uuid, text, uuid) to authenticated;;
+
+-- 20261119191136 mvp_reservations_owner_scope
+
+-- Cada item do catálogo pertence a um parceiro; só ele vê e decide as reservas desse item.
+create table if not exists public.mvp_item_owners (
+  item_key text primary key,
+  user_id uuid not null references auth.users(id) on delete cascade,
+  created_at timestamptz not null default now()
+);
+alter table public.mvp_item_owners enable row level security;
+revoke all on public.mvp_item_owners from anon, authenticated;
+grant select on public.mvp_item_owners to authenticated;
+create policy mvp_item_owners_read_own on public.mvp_item_owners for select to authenticated
+  using (user_id = (select auth.uid()));
+
+-- Dono da reserva: o parceiro do item ou o parceiro da oferta do cupom usado.
+create or replace function public.mvp_owns_reservation(p_item_key text, p_cupom_key text)
+returns boolean language sql stable security definer set search_path = public as $$
+  select (select auth.uid()) is not null and public.mvp_is_partner() and (
+    exists (select 1 from public.mvp_item_owners o where o.item_key = p_item_key and o.user_id = (select auth.uid()))
+    or (p_cupom_key ~ '^po:[0-9a-fA-F-]{36}$' and exists (
+          select 1 from public.mvp_partner_offers po
+          where po.id = substr(p_cupom_key, 4)::uuid and po.created_by = (select auth.uid())))
+  );
+$$;
+revoke execute on function public.mvp_owns_reservation(text, text) from public, anon;
+grant execute on function public.mvp_owns_reservation(text, text) to authenticated;
+
+drop policy if exists mvp_reservations_read on public.mvp_reservations;
+create policy mvp_reservations_read on public.mvp_reservations for select
+  using (user_id = (select auth.uid()) or public.mvp_owns_reservation(item_key, cupom_key));
+
+create or replace function public.mvp_decide_reservation(p_id uuid, p_accept boolean)
+returns public.mvp_reservations language plpgsql security definer set search_path = public as $$
+declare uid uuid := public.mvp_require_user(); r public.mvp_reservations;
+begin
+  if not public.mvp_is_partner() then raise exception 'not a partner' using errcode = '42501'; end if;
+  select * into r from public.mvp_reservations where id = p_id;
+  if not found or not public.mvp_owns_reservation(r.item_key, r.cupom_key) then
+    raise exception 'Reserva de outro parceiro.' using errcode = '42501';
+  end if;
+  update public.mvp_reservations set status = case when p_accept then 'confirmada' else 'recusada' end, updated_at = now(),
+    history = history || jsonb_build_array(case when p_accept then 'Confirmada pelo parceiro' else 'Recusada pelo parceiro' end)
+  where id = p_id and status = 'solicitada' returning * into r;
+  if not found then raise exception 'not pending' using errcode = '22023'; end if;
+  return r;
+end $$;
+
+-- Demo: itens dos 3 polos para os parceiros de teste.
+insert into public.mvp_item_owners(item_key, user_id)
+select k, u.id from (values
+  ('parceiro-lencois@demo.marapass.test', array['lagoas','rio','por','4x4','kite','marcelino','mangue','buriti','juja','vila','atins-hotel','ev-sabores','ev-regata','buriti-bolsa','foto-dunas','transfer-slz','transfer-atins']),
+  ('parceiro-saoluis@demo.marapass.test', array['centro','boi','quilombo','cozinha','conchas','slz-hotel','ev-boi','foto-centro','barco','ceramica']),
+  ('parceiro-chapada@demo.marapass.test', array['cach','mirante','biojoia'])
+) t(email, keys) join auth.users u on u.email = t.email, unnest(t.keys) k
+on conflict (item_key) do nothing;;
+
+-- 20261120014114 admin_company_profile
+
+-- Perfil do cadastro administrativo. Imagens pequenas, privadas e transacionais.
+create table private.company_profile_photos (
+  partner_id uuid primary key references public.partners(id) on delete cascade,
+  jpeg bytea not null check (octet_length(jpeg) between 4 and 131072)
+);
+revoke all on private.company_profile_photos from public, anon, authenticated;
+
+create function private.require_direct_company_phone() returns trigger
+language plpgsql security definer set search_path = '' as $$
+begin
+  if not exists (select 1 from public.partners p where p.id = new.partner_id
+    and regexp_replace(coalesce(p.contact_phone,''),'[ ()-]','','g') ~ '^\+?[1-9][0-9]{9,14}$') then
+    raise exception 'Informe um WhatsApp válido com DDD.';
+  end if;
+  return new;
+end $$;
+create trigger require_direct_company_phone before insert on public.partner_direct_registrations
+for each row execute function private.require_direct_company_phone();
+
+create function public.admin_register_company_profile(
+  p_request_key uuid, p_legal_name text, p_trade_name text, p_contact_email text,
+  p_city text, p_category text, p_whatsapp text, p_tax_id text,
+  p_latitude numeric, p_longitude numeric, p_photo text
+) returns jsonb language plpgsql security definer set search_path = '' as $$
+declare
+  registration jsonb;
+  photo bytea;
+begin
+  perform private.assert_admin(auth.uid());
+  if (auth.jwt()->>'aal') is distinct from 'aal2' then raise exception 'Confirme o segundo fator.'; end if;
+  if p_whatsapp is null or p_whatsapp !~ '^\+[1-9][0-9]{9,14}$' then raise exception 'WhatsApp inválido.'; end if;
+  if p_latitude is null or p_longitude is null or p_latitude not between -90 and 90
+    or p_longitude not between -180 and 180 then raise exception 'Coordenadas inválidas.'; end if;
+  if p_photo is null or length(p_photo) not between 8 and 174764 then raise exception 'Foto inválida.'; end if;
+  photo := decode(p_photo,'base64');
+  if octet_length(photo) > 131072 or substring(photo from 1 for 3) <> decode('ffd8ff','hex')
+    or right(encode(substring(photo from greatest(1,octet_length(photo)-1)),'hex'),4) <> 'ffd9'
+    then raise exception 'A foto deve ser JPEG.'; end if;
+  registration := public.admin_register_direct_company_once(auth.uid(),p_legal_name,p_trade_name,
+    p_contact_email,p_city,p_category,p_whatsapp,p_tax_id,p_request_key);
+  if not (registration->>'already_registered')::boolean then
+    update public.establishments set latitude=p_latitude, longitude=p_longitude
+      where id=(registration->>'establishment_id')::uuid;
+    insert into private.company_profile_photos values ((registration->>'partner_id')::uuid,photo);
+  end if;
+  return registration;
+end $$;
+
+create function public.admin_company_photo(p_partner_id uuid) returns text
+language plpgsql security definer stable set search_path = '' as $$
+begin
+  perform private.assert_admin(auth.uid());
+  if (auth.jwt()->>'aal') is distinct from 'aal2' then raise exception 'Confirme o segundo fator.'; end if;
+  return (select encode(jpeg,'base64') from private.company_profile_photos where partner_id=p_partner_id);
+end $$;
+revoke all on function public.admin_register_company_profile(uuid,text,text,text,text,text,text,text,numeric,numeric,text),public.admin_company_photo(uuid) from public,anon,authenticated;
+grant execute on function public.admin_register_company_profile(uuid,text,text,text,text,text,text,text,numeric,numeric,text),public.admin_company_photo(uuid) to authenticated;
+;
+
+-- 20261120175508 lojas_limpeza_legado
+
+drop function if exists public.my_request_reservation(uuid, integer, text);
+drop function if exists public.my_issue_coupon(uuid, text, uuid);
+create index if not exists mvp_item_owners_user_id_idx on public.mvp_item_owners (user_id);
+alter table private.coupon_media_uploads add column if not exists id bigint generated always as identity;
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conrelid = 'private.coupon_media_uploads'::regclass and contype = 'p') then
+    alter table private.coupon_media_uploads add constraint coupon_media_uploads_pkey primary key (id);
+  end if;
+end $$;;

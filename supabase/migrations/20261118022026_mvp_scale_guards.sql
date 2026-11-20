@@ -1,8 +1,3 @@
--- Proteções de escala (NÃO aplicada ainda; aplicar primeiro em staging).
--- 1) Rate limit genérico por usuário/ação em janela de 1 minuto.
--- 2) Limite de pedidos de reserva por usuário (anti-abuso/bot).
--- 3) Índice na FK mais quente que estava sem cobertura (mvp_coupons.used_by).
-
 create table if not exists private.mvp_rate_limit(
   actor uuid not null, action text not null, minute timestamptz not null, n integer not null,
   primary key(actor, action));
@@ -25,8 +20,6 @@ begin
 end $$;
 revoke all on function private.mvp_rate_check(uuid, text, integer) from public, anon, authenticated;
 
--- Reserva: mesmo corpo da versão em produção, com limite de 10 pedidos/minuto.
--- A idempotência por request_key continua antes do limite (reenvio não conta).
 create or replace function public.mvp_request_reservation(p_item_key text, p_item_title text, p_day date, p_period text, p_people integer, p_request_key text, p_cupom_key text default null, p_customer_name text default null)
 returns public.mvp_reservations language plpgsql security definer set search_path='public' as $$
 declare uid uuid := public.mvp_require_user(); r public.mvp_reservations;
@@ -48,4 +41,4 @@ begin
   return r;
 end $$;
 
-create index if not exists mvp_coupons_used_by_idx on public.mvp_coupons(used_by) where used_by is not null;
+create index if not exists mvp_coupons_used_by_idx on public.mvp_coupons(used_by) where used_by is not null;;

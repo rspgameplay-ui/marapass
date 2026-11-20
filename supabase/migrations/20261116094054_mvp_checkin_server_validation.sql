@@ -1,7 +1,3 @@
--- Check-in validado no servidor: token secreto da placa ou GPS no raio do local.
--- Aplicada no projeto em 2026-11-16 (nome: mvp_checkin_server_validation).
--- Cadastro dos locais: placas/seed_places.sql (gerado por tool/gen_plates_test.dart).
-
 create table if not exists public.mvp_places (
   item_key text primary key,
   code text not null unique,
@@ -74,4 +70,4 @@ begin
 end $$;
 
 revoke all on function public.mvp_checkin(text, text, text, text, text, double precision, double precision) from public, anon;
-grant execute on function public.mvp_checkin(text, text, text, text, text, double precision, double precision) to authenticated;
+grant execute on function public.mvp_checkin(text, text, text, text, text, double precision, double precision) to authenticated;;
