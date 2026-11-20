@@ -72,7 +72,7 @@ Future<(MvpRepository, AuthGateway)> _initBackend() async {
         publishableKey: AppConfig.publishableKey,
       );
       final client = Supabase.instance.client;
-      return (SupabaseMvpRepository(client, await SharedPreferences.getInstance()), SupabaseAuthGateway(client));
+      return (SupabaseMvpRepository(client), SupabaseAuthGateway(client));
     } catch (_) {
       // cai para a demonstração em vez de abrir uma tela quebrada
     }

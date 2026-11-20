@@ -1,4 +1,4 @@
-package com.marapass.marapass_mapa
+package com.marapass.app
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.EventChannel

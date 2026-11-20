@@ -1,221 +1,20 @@
 import 'dart:async';
 
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'catalog_cache.dart';
-import 'models.dart';
 import 'repository.dart';
 
-/// Implementação real. Toda regra de negócio (vagas, limites, idempotência,
-/// elegibilidade) é decidida no servidor pelas RPCs; o app só chama e traduz erros.
+/// Implementação real. As telas falam com o servidor pela camada mvp_*
+/// (remote.dart); aqui fica só a exclusão de conta.
 class SupabaseMvpRepository implements MvpRepository {
-  SupabaseMvpRepository(this._client, [SharedPreferences? prefs]) : _cache = CatalogCache(prefs);
+  SupabaseMvpRepository(this._client);
   final SupabaseClient _client;
-  final CatalogCache _cache;
 
-  String get _uid {
-    final u = _client.auth.currentUser;
-    if (u == null) {
+  @override
+  Future<void> deleteMyAccount() async {
+    if (_client.auth.currentUser == null) {
       throw const MvpException('Entre na sua conta para continuar.');
     }
-    return u.id;
-  }
-
-  Future<T> _guard<T>(Future<T> Function() body) async {
-    try {
-      return await body();
-    } on MvpException {
-      rethrow;
-    } catch (e) {
-      throw translateError(e);
-    }
-  }
-
-  @override
-  Future<List<Experience>> experiences({String? query, String? category}) =>
-      _guard(() async {
-        var q = _client
-            .from('experiences')
-            .select('*, establishments(name, city, category)')
-            .eq('status', 'published');
-        if (category != null && category.isNotEmpty) {
-          q = q.eq('category', category);
-        }
-        if (query != null && query.trim().isNotEmpty) {
-          q = q.ilike('title', '%${_escape(query)}%');
-        }
-        final rows = await _cache.rows(
-          'exp:${category ?? ''}:${query?.trim() ?? ''}',
-          () async => List<Map<String, dynamic>>.from(await q.order('created_at', ascending: false).limit(60)),
-        );
-        return rows.map(Experience.fromJson).toList();
-      });
-
-  @override
-  Future<List<Slot>> slots(String experienceId) => _guard(() async {
-    final rows = await _client
-        .from('experience_slots')
-        .select()
-        .eq('experience_id', experienceId)
-        .eq('is_open', true)
-        .gt('starts_at', DateTime.now().toUtc().toIso8601String())
-        .order('starts_at')
-        .limit(40);
-    return rows.map(Slot.fromJson).toList();
-  });
-
-  @override
-  Future<List<Offer>> offers({String? query}) => _guard(() async {
-    var q = _client
-        .from('offers')
-        .select('*, establishments(name, city, category)');
-    if (query != null && query.trim().isNotEmpty) {
-      q = q.ilike('title', '%${_escape(query)}%');
-    }
-    final rows = await _cache.rows(
-      'off:${query?.trim() ?? ''}',
-      () async => List<Map<String, dynamic>>.from(await q.order('created_at', ascending: false).limit(60)),
-    );
-    return rows.map(Offer.fromJson).toList();
-  });
-
-  @override
-  Future<List<Establishment>> establishments({String? query}) =>
-      _guard(() async {
-        var q = _client.from('establishments').select();
-        if (query != null && query.trim().isNotEmpty) {
-          q = q.ilike('name', '%${_escape(query)}%');
-        }
-        final rows = await _cache.rows(
-          'est:${query?.trim() ?? ''}',
-          () async => List<Map<String, dynamic>>.from(await q.order('name').limit(60)),
-        );
-        return rows.map(Establishment.fromJson).toList();
-      });
-
-  @override
-  Future<String> requestReservation({
-    required String slotId,
-    required int participants,
-    required String requestKey,
-  }) => _guard(() async {
-    final r = await _client.rpc(
-      // A versão "my_" pega o usuário do login; a original é só do servidor.
-      'my_request_reservation',
-      params: {
-        'p_slot_id': slotId,
-        'p_participants': participants,
-        'p_request_key': requestKey,
-      },
-    );
-    return _idOf(r);
-  });
-
-  @override
-  Future<List<Reservation>> myReservations() => _guard(() async {
-    final rows = await _client
-        .from('reservations')
-        .select('*, experiences(title)')
-        .eq('user_id', _uid)
-        .order('scheduled_at', ascending: false)
-        .limit(60);
-    return rows.map(Reservation.fromJson).toList();
-  });
-
-  @override
-  Future<String> issueCoupon({
-    required String offerId,
-    required String idempotencyKey,
-    String? reservationId,
-  }) => _guard(() async {
-    final r = await _client.rpc(
-      'my_issue_coupon',
-      params: {
-        'p_offer_id': offerId,
-        'p_idempotency_key': idempotencyKey,
-        'p_reservation_id': ?reservationId,
-      },
-    );
-    return _idOf(r);
-  });
-
-  @override
-  Future<List<CouponInstance>> myCoupons() => _guard(() async {
-    final rows = await _client
-        .from('coupon_instances')
-        .select()
-        .eq('beneficiary_user_id', _uid)
-        .order('issued_at', ascending: false)
-        .limit(100);
-    return rows.map(CouponInstance.fromJson).toList();
-  });
-
-  @override
-  Future<List<PassportProduct>> passportProducts() => _guard(() async {
-    final rows = await _cache.rows(
-      'pass',
-      () async => List<Map<String, dynamic>>.from(
-        await _client.from('passport_products').select().eq('is_published', true).order('price_cents'),
-      ),
-    );
-    return rows.map(PassportProduct.fromJson).toList();
-  });
-
-  @override
-  Future<List<PassportEntitlement>> myEntitlements() => _guard(() async {
-    final rows = await _client
-        .from('passport_entitlements')
-        .select()
-        .eq('user_id', _uid)
-        .order('purchased_at', ascending: false);
-    return rows.map(PassportEntitlement.fromJson).toList();
-  });
-
-  @override
-  Future<String> prepareOrder({
-    required String productId,
-    required String requestKey,
-  }) => _guard(() async {
-    final r = await _client.rpc(
-      'mp_prepare_passport_order',
-      params: {
-        'p_user_id': _uid,
-        'p_product_id': productId,
-        'p_request_key': requestKey,
-      },
-    );
-    return _idOf(r);
-  });
-
-  @override
-  Future<void> activatePassport(String entitlementId) => _guard(() async {
-    await _client.rpc(
-      'mp_activate_passport',
-      params: {'p_user_id': _uid, 'p_entitlement_id': entitlementId},
-    );
-  });
-
-  @override
-  Future<Profile?> myProfile() => _guard(() async {
-    final row = await _client
-        .from('profiles')
-        .select()
-        .eq('id', _uid)
-        .maybeSingle();
-    return row == null ? null : Profile.fromJson(row);
-  });
-
-  @override
-  Future<void> updateDisplayName(String name) => _guard(() async {
-    await _client.from('profiles').upsert({
-      'id': _uid,
-      'display_name': name.trim(),
-    });
-  });
-
-  @override
-  Future<void> deleteMyAccount() => _guard(() async {
     try {
       await _client.rpc('delete_my_account');
     } on PostgrestException catch (e) {
@@ -224,23 +23,12 @@ class SupabaseMvpRepository implements MvpRepository {
           'A exclusão automática ainda não está ativa. Escreva para o suporte e removemos seus dados.',
         );
       }
-      rethrow;
+      throw translateError(e);
+    } catch (e) {
+      throw translateError(e);
     }
     await _client.auth.signOut();
-  });
-}
-
-String _escape(String q) => q
-    .trim()
-    .replaceAll(RegExp(r'[%_,()\\]'), ' ')
-    .replaceAll(RegExp(r'\s+'), ' ');
-
-/// As RPCs podem devolver o id, uma linha ou uma lista de linhas.
-String _idOf(Object? r) {
-  if (r is String) return r;
-  if (r is Map && r['id'] != null) return '${r['id']}';
-  if (r is List && r.isNotEmpty) return _idOf(r.first);
-  return '';
+  }
 }
 
 /// Converte falhas técnicas em mensagens que dizem o que aconteceu e o que fazer.

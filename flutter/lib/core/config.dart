@@ -23,6 +23,12 @@ abstract final class AppConfig {
   );
   /// WhatsApp do atendimento humano do MaraPass (DDD + número, só dígitos).
   /// Defina com --dart-define=SUPPORT_WHATSAPP=98999999999.
+  /// Site público com as páginas legais (/legal/...). No lançamento, passar
+  /// `--dart-define=SITE_URL=https://marapass.com`.
+  static const siteUrl = String.fromEnvironment(
+    'SITE_URL',
+    defaultValue: 'https://teste.marapass.com',
+  );
   static const supportWhatsapp = String.fromEnvironment(
     'SUPPORT_WHATSAPP',
     defaultValue: '98984334256',
