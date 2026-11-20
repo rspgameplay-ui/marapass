@@ -265,9 +265,9 @@ class _RouteBuilderScreenState extends ConsumerState<RouteBuilderScreen> {
       return Padding(
         padding: const EdgeInsets.fromLTRB(MP.pageH, MP.s2, MP.pageH, MP.s3),
         child: Row(children: [
-          Expanded(child: OutlinedButton.icon(key: const Key('route-share'), onPressed: _share, icon: const Icon(Icons.ios_share_rounded), label: const Text('Compartilhar'))),
+          Expanded(child: OutlinedButton.icon(key: const Key('route-share'), onPressed: _share, icon: const Icon(Icons.ios_share_rounded), label: const FittedBox(child: Text('Compartilhar')))),
           const SizedBox(width: MP.s2),
-          Expanded(child: FilledButton.icon(key: const Key('route-save'), onPressed: _save, icon: const Icon(Icons.bookmark_add_rounded), label: const Text('Salvar rota'))),
+          Expanded(child: FilledButton.icon(key: const Key('route-save'), onPressed: _save, icon: const Icon(Icons.bookmark_add_rounded), label: const FittedBox(child: Text('Salvar rota')))),
         ]).withReserve(
           tripRequests(_t).isEmpty
               ? null
@@ -462,8 +462,9 @@ class _RouteBuilderScreenState extends ConsumerState<RouteBuilderScreen> {
           subtitle: Text([i.cidade, if (i.precoCents != null) '${formatBrl(i.precoCents!)}${i.cat == Cat.hospedagem ? ' por noite' : ' por pessoa'}'].join(' · ')),
         ),
     ]);
-    final cities = {for (final s in _t.stops) if (s.item != null) s.item!.cidade};
-    List<Item> near(Cat c) => Content.byCat(c).where((i) => cities.isEmpty || cities.contains(i.cidade)).toList();
+    // Mesmo polo turístico das paradas (a pousada pode ficar na cidade vizinha).
+    final polos = {for (final s in _t.stops) if (s.item != null) s.item!.polo};
+    List<Item> near(Cat c) => Content.byCat(c).where((i) => polos.isEmpty || polos.contains(i.polo)).toList();
     final events = _t.days.expand(_eventsOn).toList();
     return ListView(
       padding: const EdgeInsets.all(MP.pageH),
@@ -503,7 +504,7 @@ class _RouteBuilderScreenState extends ConsumerState<RouteBuilderScreen> {
           child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             Text('Custo estimado', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: MP.s2),
-            for (final c in cost) ...[
+            for (final c in cost.where((c) => c.cents > 0)) ...[
               _costRow(c.label, formatBrl(c.cents)),
               if (c.discountCents > 0) _costRow('Cupons em ${c.label.split(' ').first.toLowerCase()}', '− ${formatBrl(c.discountCents)}', color: MP.green),
             ],

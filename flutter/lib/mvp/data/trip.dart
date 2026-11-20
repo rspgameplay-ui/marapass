@@ -144,12 +144,12 @@ List<CostLine> tripCost(Trip t) {
         stayOff += off;
       case Cat.evento:
         events += p * t.people;
-        eventsOff += off;
+        eventsOff += off * t.people;
       case Cat.gastronomia:
         continue; // entra na alimentação estimada
       default:
         tours += p * t.people;
-        toursOff += off;
+        toursOff += off * t.people; // cupom vale por pessoa, como na reserva
     }
   }
   return [

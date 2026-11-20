@@ -8,7 +8,6 @@ class PartnerReservationsScreen extends ConsumerStatefulWidget {
 }
 
 class _PartnerResState extends ConsumerState<PartnerReservationsScreen> {
-  int _capacity = 12;
 
   Future<void> _useVoucher(String code) async {
     try {
@@ -102,47 +101,12 @@ class _PartnerResState extends ConsumerState<PartnerReservationsScreen> {
                     ),
                   ),
                   const SizedBox(height: MP.s3),
-                  MpCard(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            const Expanded(
-                              child: Text(
-                                'Capacidade por saída',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w800,
-                                ),
-                              ),
-                            ),
-                            MpStepper(
-                              value: _capacity,
-                              min: 2,
-                              max: 30,
-                              keyPrefix: 'cap',
-                              onChanged: (v) => setState(() => _capacity = v),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: MP.s2),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(MP.rPill),
-                          child: LinearProgressIndicator(
-                            value: (people / _capacity).clamp(0, 1),
-                            minHeight: 10,
-                            color: people > _capacity ? MP.error : MP.green,
-                            backgroundColor: MP.soft,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '$people de $_capacity lugares ocupados nas confirmadas',
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                      ],
-                    ),
+                  MpListTile(
+                    key: const Key('res-slots'),
+                    icon: Icons.schedule_rounded,
+                    title: 'Horários e vagas',
+                    subtitle: '$people ${people == 1 ? 'pessoa confirmada' : 'pessoas confirmadas'} · defina turnos e limite por dia',
+                    onTap: () => push<void>(context, const PartnerSlotsScreen()),
                   ),
                   const SizedBox(height: MP.s4),
                   MpSectionTitle('Aguardando resposta (${pending.length})'),

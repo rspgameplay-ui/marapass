@@ -52,11 +52,37 @@ class AppStore extends ChangeNotifier {
     trips.removeWhere((x) => x.id == t.id);
     trips.insert(0, t);
     await _save();
+    if (online) {
+      try {
+        await remote!.saveTrip(t.id, t.toJson());
+      } catch (_) {} // fica no aparelho e sobe na próxima sincronização
+    }
   }
 
   Future<void> deleteTrip(String id) async {
     trips.removeWhere((x) => x.id == id);
     await _save();
+    if (online) {
+      try {
+        await remote!.deleteTrip(id);
+      } catch (_) {}
+    }
+  }
+
+  /// Junta as rotas da conta com as do aparelho e sobe as que só existem aqui.
+  Future<void> _syncTrips(MvpRemote r) async {
+    try {
+      final rows = await r.myTrips();
+      final server = {for (final x in rows) '${x['id']}': Trip.fromJson(Map<String, dynamic>.from(x['data'] as Map))};
+      for (final t in trips.where((t) => !server.containsKey(t.id)).toList()) {
+        await r.saveTrip(t.id, t.toJson());
+      }
+      final local = {for (final t in trips) t.id};
+      trips.insertAll(0, server.values.where((t) => !local.contains(t.id)));
+      for (var k = 0; k < trips.length; k++) {
+        trips[k] = server[trips[k].id] ?? trips[k];
+      }
+    } catch (_) {}
   }
 
   bool fotoAlbum = false;
@@ -188,6 +214,7 @@ class AppStore extends ChangeNotifier {
           ),
         );
       await _syncExtras(r);
+      await _syncTrips(r);
     } catch (_) {
       // sem rede: mantém o que está no aparelho
     } finally {

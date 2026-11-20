@@ -165,6 +165,16 @@ class MvpRemote {
     () async => _row(await _c.rpc('mvp_use_reservation', params: {'p_code': code, 'p_polo': polo, 'p_cidade': cidade})),
   );
 
+  Future<List<Map<String, dynamic>>> myTrips() => _g(
+    () async => List<Map<String, dynamic>>.from(await _c.from('mvp_trips').select('id, data').eq('user_id', userId!).limit(100)),
+  );
+
+  Future<void> saveTrip(String id, Map<String, dynamic> data) => _g(
+    () async => await _c.from('mvp_trips').upsert({'user_id': userId, 'id': id, 'data': data, 'updated_at': DateTime.now().toUtc().toIso8601String()}),
+  );
+
+  Future<void> deleteTrip(String id) => _g(() async => await _c.from('mvp_trips').delete().eq('user_id', userId!).eq('id', id));
+
   /// Vagas por dia e turno de um item (vazio se o parceiro não cadastrou turnos).
   Future<List<SlotDay>> slotAvailability(String itemKey, DateTime from, DateTime to) => _g(() async {
     final rows = await _c.rpc('mvp_slot_availability', params: {'p_item_key': itemKey, 'p_from': _date(from), 'p_to': _date(to)});
