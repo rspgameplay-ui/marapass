@@ -159,3 +159,37 @@ List<CostLine> tripCost(Trip t) {
     CostLine('Alimentação estimada', 7000 * t.people * t.days.length),
   ];
 }
+
+/// Pedido de reserva que sai da rota ("Reservar tudo").
+class TripRequest {
+  const TripRequest(this.item, this.day, this.period, this.people);
+  final Item item;
+  final DateTime day;
+  final String period;
+  final int people;
+}
+
+/// Monta os pedidos da rota: passeios e experiências pelo turno da chegada
+/// e hospedagens marcadas pelo período inteiro. Restaurantes, eventos e
+/// paradas livres não viram reserva.
+List<TripRequest> tripRequests(Trip t) {
+  const bookable = {Cat.passeio, Cat.natureza, Cat.cultura, Cat.fotografia, Cat.transporte};
+  final out = <TripRequest>[];
+  for (final id in t.extras) {
+    final i = Content.item(id);
+    if (i?.cat == Cat.hospedagem) {
+      out.add(TripRequest(i!, t.start, '${t.nights} ${t.nights == 1 ? 'noite' : 'noites'} · Quarto Standard', t.people));
+    }
+  }
+  final seen = <String>{};
+  for (final s in [...t.stops]..sort((a, b) => a.day.compareTo(b.day) != 0 ? a.day.compareTo(b.day) : a.startMin.compareTo(b.startMin))) {
+    final i = s.item;
+    if (i == null || !bookable.contains(i.cat) || !seen.add(i.id)) continue;
+    out.add(TripRequest(i, s.day, s.startMin < 13 * 60 ? 'Manhã' : 'Tarde', t.people));
+  }
+  for (final id in t.extras) {
+    final i = Content.item(id);
+    if (i != null && bookable.contains(i.cat) && seen.add(i.id)) out.add(TripRequest(i, t.start, 'Manhã', t.people));
+  }
+  return out;
+}

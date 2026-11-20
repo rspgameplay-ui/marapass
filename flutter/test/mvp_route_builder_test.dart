@@ -36,6 +36,19 @@ void main() {
       expect(c[3].cents, 7000 * 2 * 3); // 3 dias
     });
 
+    test('reservar tudo: hospedagem pelo período e passeio pelo turno da chegada', () {
+      final t = Trip(id: 't', name: 'x', start: d, end: DateTime(2027, 1, 12), people: 3, extras: {'vila'}, stops: [
+        TripStop(id: 'a', day: d, itemId: 'lagoas', startMin: 14 * 60, stayMin: 120),
+        TripStop(id: 'b', day: d, itemId: 'mangue', startMin: 19 * 60, stayMin: 60),
+        TripStop(id: 'c', day: d, pause: 'almoco', startMin: 12 * 60, stayMin: 60),
+      ]);
+      final r = tripRequests(t);
+      expect(r.map((e) => e.item.id), ['vila', 'lagoas']);
+      expect(r[0].period, '2 noites · Quarto Standard');
+      expect(r[1].period, 'Tarde');
+      expect(r.every((e) => e.people == 3), isTrue);
+    });
+
     test('rota salva volta igual do JSON', () {
       final t = Trip(id: 't', name: 'Lençóis', start: d, end: d, people: 3, extras: {'vila'}, stops: [
         TripStop(id: 'p', day: d, pause: 'almoco', startMin: 720, stayMin: 90),

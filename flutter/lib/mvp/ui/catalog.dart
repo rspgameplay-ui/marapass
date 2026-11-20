@@ -6,6 +6,7 @@ import '../data/store.dart';
 import '../theme/tokens.dart';
 import '../theme/widgets.dart';
 import 'common.dart';
+import 'month_calendar.dart';
 
 /// Lista de uma categoria (Passeios, Gastronomia, Hospedagem, Cultura,
 /// Natureza, Eventos, Artesanato, Fotografia, Transporte) com os filtros do
@@ -21,6 +22,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
   int _faixa = 0; // 0 = todos
   String _cidade = 'Todas';
   String _tipo = 'Todos';
+  DateTime? _evDay;
   bool _perto = false;
   bool _acessivel = false;
   bool _soDestaque = false;
@@ -182,6 +184,10 @@ class _CategoryScreenState extends State<CategoryScreen> {
         (a, b) => (a.distanciaKm ?? 9999).compareTo(b.distanciaKm ?? 9999),
       );
     }
+    if (widget.cat == Cat.evento && _evDay != null) {
+      final d = _evDay!;
+      list = list.where((i) => i.data != null && i.data!.year == d.year && i.data!.month == d.month && i.data!.day == d.day).toList();
+    }
     if (widget.cat == Cat.evento) {
       // Destaques primeiro; dentro de cada grupo, em ordem de data.
       list.sort((a, b) {
@@ -235,6 +241,29 @@ class _CategoryScreenState extends State<CategoryScreen> {
                 padding: EdgeInsets.fromLTRB(MP.pageH, MP.s3, MP.pageH, 0),
                 child: MpNotice(
                   'Distâncias calculadas a partir de Barreirinhas nesta demonstração. A sua localização não é enviada.',
+                ),
+              ),
+            if (widget.cat == Cat.evento)
+              Padding(
+                key: const Key('events-calendar'),
+                padding: const EdgeInsets.fromLTRB(MP.pageH, MP.s3, MP.pageH, 0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    MpMonthCalendar(
+                      start: _evDay,
+                      allowToday: true,
+                      hasEvent: (d) => all.any((e) => e.data != null && e.data!.year == d.year && e.data!.month == d.month && e.data!.day == d.day),
+                      onChanged: (d, _) => setState(() => _evDay = d == null || (_evDay != null && d == _evDay) ? null : d),
+                    ),
+                    if (_evDay != null) ...[
+                      DayAgenda(day: _evDay!),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: TextButton(key: const Key('events-all'), onPressed: () => setState(() => _evDay = null), child: const Text('Ver todos os eventos')),
+                      ),
+                    ],
+                  ],
                 ),
               ),
             const SizedBox(height: MP.s4),

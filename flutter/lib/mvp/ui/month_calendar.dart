@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../data/content.dart';
+import '../data/store_models.dart' show ResStatus;
+import '../data/trip.dart';
+import '../data/store.dart' show appStoreProvider;
 import '../theme/tokens.dart';
 
 const _monthNames = [
@@ -167,6 +173,57 @@ class _MpMonthCalendarState extends State<MpMonthCalendar> {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Resumo de um dia, como a agenda da Apple: eventos, reservas e pontos das
+/// rotas salvas.
+class DayAgenda extends ConsumerWidget {
+  const DayAgenda({super.key, required this.day});
+  final DateTime day;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final store = ref.watch(appStoreProvider);
+    bool same(DateTime a) => a.year == day.year && a.month == day.month && a.day == day.day;
+    final rows = <(IconData, Color, String, String)>[
+      for (final e in Content.byCat(Cat.evento).where((e) => e.data != null && same(e.data!)))
+        (Icons.event_rounded, MP.error, e.titulo, '${hhmm(e.data!.hour * 60 + e.data!.minute)} · ${e.cidade}'),
+      for (final r in store.reservations.where((r) => same(r.date) && r.status != ResStatus.cancelada))
+        (Icons.event_available_rounded, MP.navy, r.item?.titulo ?? 'Reserva', '${r.period} · ${r.status.label}'),
+      for (final t in store.trips)
+        for (final s in t.stopsOn(day)) (Icons.route_rounded, MP.green, s.label, '${hhmm(s.startMin)} · ${t.name}'),
+    ];
+    return Container(
+      key: const Key('day-agenda'),
+      margin: const EdgeInsets.only(top: MP.s3),
+      padding: const EdgeInsets.all(MP.s3),
+      decoration: BoxDecoration(color: MP.soft, borderRadius: BorderRadius.circular(MP.rMedium)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('${day.day} de ${_monthNames[day.month - 1].toLowerCase()}', style: Theme.of(context).textTheme.titleMedium),
+          if (rows.isEmpty)
+            const Padding(padding: EdgeInsets.only(top: 4), child: Text('Nada marcado neste dia.', style: TextStyle(color: MP.textSecondary))),
+          for (final (icon, color, title, sub) in rows)
+            Padding(
+              padding: const EdgeInsets.only(top: MP.s2),
+              child: Row(children: [
+                Container(width: 4, height: 36, color: color),
+                const SizedBox(width: MP.s2),
+                Icon(icon, size: 20, color: color),
+                const SizedBox(width: MP.s2),
+                Expanded(
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text(title, style: const TextStyle(fontWeight: FontWeight.w800)),
+                    Text(sub, style: const TextStyle(fontSize: 13, color: MP.textSecondary)),
+                  ]),
+                ),
+              ]),
+            ),
+        ],
       ),
     );
   }

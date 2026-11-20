@@ -4,12 +4,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/content.dart';
 import '../data/models.dart' show formatBrl;
+import '../data/repository.dart' show MvpException;
 import '../data/store.dart';
 import '../data/trip.dart';
 import '../providers.dart';
 import '../theme/tokens.dart';
 import '../theme/widgets.dart';
 import 'itinerary.dart' show DayPlan, DayStop, itineraryRequestProvider;
+import 'login_screen.dart' show requireLogin;
 import 'month_calendar.dart';
 import 'shell.dart' show Tabs;
 
@@ -72,6 +74,7 @@ class _RouteBuilderScreenState extends ConsumerState<RouteBuilderScreen> {
   late int _step = widget.trip == null ? 0 : 4;
   late DateTime _day = _t.start;
   String _q = '';
+  bool _busy = false;
 
   static Trip _blank() {
     final n = DateTime.now();
@@ -130,6 +133,55 @@ class _RouteBuilderScreenState extends ConsumerState<RouteBuilderScreen> {
           FilledButton(key: const Key('route-name-ok'), onPressed: () => Navigator.pop(ctx, c.text.trim().isEmpty ? 'Minha rota' : c.text.trim()), child: const Text('Salvar')),
         ],
       ),
+    );
+  }
+
+  /// Envia um pedido de reserva por item. Sem pagamento: cada parceiro
+  /// confirma a disponibilidade e combina o valor.
+  Future<void> _reserveAll() async {
+    final reqs = tripRequests(_t);
+    final go = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Reservar tudo'),
+        content: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+          for (final r in reqs) Padding(padding: const EdgeInsets.only(bottom: 6), child: Text('• ${r.item.titulo}: ${_dm(r.day)}, ${r.period}')),
+          const SizedBox(height: MP.s2),
+          const Text('Cada parceiro confirma a vaga e combina o pagamento com você. Nada é cobrado no app.', style: TextStyle(fontSize: 13, color: MP.textSecondary)),
+        ]),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancelar')),
+          FilledButton(key: const Key('route-reserve-ok'), onPressed: () => Navigator.pop(ctx, true), child: const Text('Enviar pedidos')),
+        ],
+      ),
+    );
+    if (go != true || !mounted) return;
+    final ok = await requireLogin(context, ref, reason: 'Entre para enviar os pedidos de reserva. Você volta direto para cá.');
+    if (!ok || !mounted) return;
+    setState(() => _busy = true);
+    final store = ref.read(appStoreProvider);
+    final failed = <String>[];
+    for (final r in reqs) {
+      try {
+        await store.requestReservationAsync(
+          itemId: r.item.id,
+          date: r.day,
+          period: r.period,
+          people: r.people,
+          requestKey: '${_t.id}-${r.item.id}-${r.day.toIso8601String()}',
+        );
+      } on MvpException catch (e) {
+        failed.add('${r.item.titulo}: ${e.message}');
+      }
+    }
+    await store.saveTrip(_t);
+    if (!mounted) return;
+    setState(() => _busy = false);
+    showMpSnack(
+      context,
+      failed.isEmpty
+          ? '${reqs.length} pedidos enviados. Acompanhe em Minhas reservas.'
+          : 'Não foi possível enviar: ${failed.join('; ')}',
     );
   }
 
@@ -216,7 +268,17 @@ class _RouteBuilderScreenState extends ConsumerState<RouteBuilderScreen> {
           Expanded(child: OutlinedButton.icon(key: const Key('route-share'), onPressed: _share, icon: const Icon(Icons.ios_share_rounded), label: const Text('Compartilhar'))),
           const SizedBox(width: MP.s2),
           Expanded(child: FilledButton.icon(key: const Key('route-save'), onPressed: _save, icon: const Icon(Icons.bookmark_add_rounded), label: const Text('Salvar rota'))),
-        ]),
+        ]).withReserve(
+          tripRequests(_t).isEmpty
+              ? null
+              : FilledButton.icon(
+                  key: const Key('route-reserve'),
+                  onPressed: _busy ? null : _reserveAll,
+                  icon: const Icon(Icons.event_available_rounded),
+                  label: Text(_busy ? 'Enviando…' : 'Reservar tudo (${tripRequests(_t).length})'),
+                  style: FilledButton.styleFrom(backgroundColor: MP.green, minimumSize: const Size(0, 52)),
+                ),
+        ),
       );
     }
     final ok = _step != 1 || _t.stops.isNotEmpty;
@@ -498,4 +560,11 @@ class _RouteBuilderScreenState extends ConsumerState<RouteBuilderScreen> {
       Expanded(child: Text(text, style: const TextStyle(fontSize: 14, color: MP.error, fontWeight: FontWeight.w600))),
     ]),
   );
+}
+
+extension on Row {
+  /// Coloca o botão "Reservar tudo" acima de Compartilhar e Salvar.
+  Widget withReserve(Widget? reserve) => reserve == null
+      ? this
+      : Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [reserve, const SizedBox(height: MP.s2), this]);
 }
