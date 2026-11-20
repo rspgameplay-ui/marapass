@@ -17,6 +17,33 @@ abstract final class MP {
   static const yellow = Color(0xfffac61d);
   static const goldBg = Color(0xfffdf3d3);
 
+  static const goldText = Color(0xffa87b00); // dourado legível sobre branco
+  static const onDarkMuted = Color(0xffc9d6e3); // texto secundário sobre azul-escuro
+  static const onBlueMuted = Color(0xffc9d9f7); // texto secundário sobre azul vivo
+  static const scanBg = Color(0xff07121f); // fundo do leitor sem câmera
+  static const ticket = Color(0xff2b5fc4); // azul do bilhete do passaporte
+  static const ticketDark = Color(0xff1d46a0);
+  static const ticketTrack = Color(0xffdbe5f8);
+
+  // Paleta do calendário de temporadas e das categorias do mapa
+  static const seasonOrange = Color(0xffe8812f);
+  static const seasonRed = Color(0xffd9534f);
+  static const seasonPurple = Color(0xff7b3fa8);
+  static const seasonBlue = Color(0xff2f7fb8);
+  static const seasonTeal = Color(0xff2a9d8f);
+  static const seasonGreen = Color(0xff48a868);
+  static const seasonYellow = Color(0xfff5c428);
+  static const seasonSand = Color(0xffd9a441);
+  static const seasonNight = Color(0xff1b2a3b);
+  static const poiIsland = Color(0xff2e7d6f);
+  static const poiBeach = Color(0xff0f8fa8);
+  static const poiTour = Color(0xff1f6fd1);
+  static const poiStay = Color(0xff6a4fb3);
+  static const poiEvent = Color(0xffb0407e);
+  static const poiCraft = Color(0xffa87800);
+  static const poiCulture = Color(0xff8a5a2b);
+  static const routeBlue = Color(0xff1a73e8);
+
   // Superfícies
   static const page = Color(0xffffffff);
   static const soft = Color(0xfff3f5f7);

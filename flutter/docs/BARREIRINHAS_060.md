@@ -2,7 +2,7 @@
 
 ## Pronto nesta entrega
 
-- Tela Flutter dedicada, acessível por ?pilot=barreirinhas e pelo botão Explorar Barreirinhas no mapa.
+- (Removido na unificação de 2026-11-18) A tela dedicada ?pilot=barreirinhas deixou de existir: o app tem uma versão só.
 - 174 registros na base inicial do município, incluindo a referência da sede; 173 locais exploráveis, antes de publicações ou alterações locais. Busca por nome, categorias e salvos. A tela inicial destaca nove referências já existentes: Lagoa Azul, Lagoa Bonita, Caburé, Gran Lençóis Flat Residence, Porto Preguiças Resort, O Bambaê, Restaurante da Marina do Gran Lençóis Flat Residence, Guaratur Adventure e uma referência de artesanato.
 - A seleção usa dados anteriores OSM/editoriais e não concede parceria, certificação, desconto, funcionamento ou disponibilidade a nenhuma empresa. Nenhuma nota, foto, coordenada ou avaliação foi extraída do Google.
 - Orientações de acesso de Lagoa Azul e Lagoa Bonita ancoradas no ICMBio; Caburé mantém o conteúdo editorial anterior. O piloto não oferece rota de carro particular até esses três atrativos de acesso especial.

@@ -86,23 +86,16 @@ class _CouponsScreenState extends ConsumerState<CouponsScreen> {
             subtitle: 'Descontos em parceiros MaraPass.',
             trailing: PopupMenuButton<Object>(
               key: const Key('coupon-menu'),
-              tooltip: 'Mais opções',
+              tooltip: 'Filtrar por categoria',
               icon: const Icon(Icons.tune_rounded, color: Colors.white, size: 28),
               onSelected: (v) => setState(() {
-                if (v == 'expired') {
-                  _tab = 2;
-                } else if (v == 'all') {
+                if (v == 'all') {
                   _cat = null;
                 } else if (v is Cat) {
                   _cat = v;
                 }
               }),
               itemBuilder: (_) => [
-                PopupMenuItem(
-                  value: 'expired',
-                  child: Text('Ver expirados (${expired.length})'),
-                ),
-                const PopupMenuDivider(),
                 CheckedPopupMenuItem(
                   value: 'all',
                   checked: _cat == null,
@@ -128,9 +121,9 @@ class _CouponsScreenState extends ConsumerState<CouponsScreen> {
                   value: 0,
                   label: Text('Disponíveis (${active.length + offers.length})'),
                 ),
-                ButtonSegment(value: 1, label: Text('Usados (${used.length})')),
+                ButtonSegment(value: 1, label: Text('Histórico (${used.length + expired.length})')),
               ],
-              selected: {_tab == 2 ? 0 : _tab},
+              selected: {_tab},
               onSelectionChanged: (v) => setState(() => _tab = v.first),
               style: SegmentedButton.styleFrom(
                 minimumSize: const Size.fromHeight(52),
@@ -169,39 +162,15 @@ class _CouponsScreenState extends ConsumerState<CouponsScreen> {
                 onTap: () =>
                     push<void>(context, CouponActiveScreen(couponId: c.id)),
               ),
-          if (_tab == 2) ...[
-            Padding(
-              padding: const EdgeInsets.fromLTRB(MP.pageH, 0, MP.pageH, MP.s2),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      'Expirados',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () => setState(() => _tab = 0),
-                    child: const Text('Voltar'),
-                  ),
-                ],
-              ),
-            ),
-            if (expired.isEmpty)
-              const MpEmpty(
-                icon: Icons.event_busy_rounded,
-                title: 'Nenhum cupom expirado',
-                message: 'Quando um cupom vencer, ele aparece aqui.',
-              ),
-            for (final c in expired) ticket(c),
-          ] else if (_tab == 1) ...[
-            if (used.isEmpty)
+          if (_tab == 1) ...[
+            if (used.isEmpty && expired.isEmpty)
               const MpEmpty(
                 icon: Icons.confirmation_number_outlined,
-                title: 'Nenhum cupom usado',
-                message: 'Quando você usar um cupom, ele aparece aqui.',
+                title: 'Nenhum cupom no histórico',
+                message: 'Cupons usados ou vencidos aparecem aqui.',
               ),
             for (final c in used) ticket(c),
+            for (final c in expired) ticket(c),
           ] else ...[
             if (active.isNotEmpty) ...[
               const Padding(
@@ -367,7 +336,6 @@ class CouponReviewScreen extends ConsumerStatefulWidget {
 }
 
 class _ReviewState extends ConsumerState<CouponReviewScreen> {
-  bool _accepted = false;
   bool _busy = false;
 
   Future<void> _confirm() async {
@@ -417,29 +385,17 @@ class _ReviewState extends ConsumerState<CouponReviewScreen> {
                     bg: MP.warningBg,
                   ),
                   const SizedBox(height: MP.s3),
-                  CheckboxListTile(
-                    key: const Key('review-accept'),
-                    value: _accepted,
-                    onChanged: _busy
-                        ? null
-                        : (v) => setState(() => _accepted = v ?? false),
-                    controlAffinity: ListTileControlAffinity.leading,
-                    contentPadding: EdgeInsets.zero,
-                    activeColor: MP.green,
-                    title: const Text(
-                      'Li e aceito as condições desta oferta',
-                      style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
+                  const Text(
+                    'Ao ativar, você aceita as condições desta oferta.',
+                    key: Key('review-terms'),
+                    style: TextStyle(fontSize: 15, color: MP.textSecondary),
                   ),
                   const SizedBox(height: MP.s4),
                   MpPrimaryButton(
                     key: const Key('review-confirm'),
                     label: 'Confirmar ativação',
                     busy: _busy,
-                    onPressed: _accepted ? _confirm : null,
+                    onPressed: _confirm,
                   ),
                 ],
               ),
@@ -758,7 +714,7 @@ class WalletSummary extends StatelessWidget {
             store.remote == null
                 ? 'economia estimada com cupons usados'
                 : 'valor pago com cupons, após estornos',
-            style: const TextStyle(color: Color(0xffc9d6e3), fontSize: 14),
+            style: const TextStyle(color: MP.onDarkMuted, fontSize: 14),
           ),
           const SizedBox(height: MP.s4),
           Row(
@@ -808,7 +764,7 @@ class _WalletMetric extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(value, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w800)),
-        Text(label, maxLines: 2, style: const TextStyle(color: Color(0xffc9d6e3), fontSize: 12.5)),
+        Text(label, maxLines: 2, style: const TextStyle(color: MP.onDarkMuted, fontSize: 13)),
       ],
     ),
   );

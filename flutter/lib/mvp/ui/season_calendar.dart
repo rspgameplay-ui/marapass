@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import '../theme/tokens.dart';
 
 
 /// Uma época do ano no Maranhão: o que está acontecendo e o que vale a pena.
@@ -15,73 +16,73 @@ class Season {
 /// Calendário turístico do Maranhão, mês a mês.
 const List<Season> kSeasons = [
   Season('Verão e férias', 'Sol forte e praias cheias', Icons.wb_sunny_rounded,
-      [Color(0xffe8812f), Color(0xffd9534f)], [
+      [MP.seasonOrange, MP.seasonRed], [
     'Praias de São Luís e Raposa',
     'Passeios de barco no Delta do Parnaíba',
     'Lençóis com dunas firmes e pouca água',
   ]),
   Season('Carnaval e chuvas', 'Folia e início da estação chuvosa', Icons.celebration_rounded,
-      [Color(0xff7b3fa8), Color(0xffd9534f)], [
+      [MP.seasonPurple, MP.seasonRed], [
     'Carnaval de rua em São Luís e blocos tradicionais',
     'Tambor de crioula e fofão no Centro Histórico',
     'Chuvas começam a encher as lagoas',
   ]),
   Season('Tempo de chuvas', 'Natureza verde e cachoeiras cheias', Icons.water_drop_rounded,
-      [Color(0xff2f7fb8), Color(0xff2a9d8f)], [
+      [MP.seasonBlue, MP.seasonTeal], [
     'Cachoeiras da Chapada das Mesas no auge',
     'Rios e matas exuberantes',
     'Gastronomia: juçara e peixadas',
   ]),
   Season('Lagoas enchendo', 'Fim das chuvas nos Lençóis', Icons.waves_rounded,
-      [Color(0xff2f7fb8), Color(0xff48a868)], [
+      [MP.seasonBlue, MP.seasonGreen], [
     'Lagoas dos Lençóis começando a encher',
     'Chapada das Mesas com cachoeiras fortes',
     'Semana Santa no interior',
   ]),
   Season('Esquenta junino', 'Lagoas cheias e ensaios do boi', Icons.music_note_rounded,
-      [Color(0xff48a868), Color(0xfff5c428)], [
+      [MP.seasonGreen, MP.seasonYellow], [
     'Lagoas dos Lençóis cheias e cristalinas',
     'Ensaios de bumba meu boi pelos bairros',
     'Clima mais ameno para trilhas',
   ]),
   Season('São João do Maranhão', 'A maior festa do estado', Icons.local_fire_department_rounded,
-      [Color(0xffe8812f), Color(0xfff5c428)], [
+      [MP.seasonOrange, MP.seasonYellow], [
     'Arraiais e Bumba meu boi em São Luís',
     'Sotaques: matraca, zabumba, orquestra',
     'Lençóis no melhor momento',
   ]),
   Season('Alta temporada', 'Férias e lagoas no auge', Icons.beach_access_rounded,
-      [Color(0xff2f7fb8), Color(0xfff5c428)], [
+      [MP.seasonBlue, MP.seasonYellow], [
     'Melhor época para os Lençóis Maranhenses',
     'Festas do boi seguem até o fim do mês',
     'Atins e Caburé com ventos para kitesurf',
   ]),
   Season('Lagoas e ventos', 'Céu limpo e lagoas cheias', Icons.air_rounded,
-      [Color(0xff2a9d8f), Color(0xff2f7fb8)], [
+      [MP.seasonTeal, MP.seasonBlue], [
     'Lagoas ainda cheias nos Lençóis',
     'Temporada de kitesurf em Atins',
     'Festa de São Benedito (Alcântara e interior)',
   ]),
   Season('Céu aberto', 'Seco, ventoso e com pôr do sol incrível', Icons.wb_twilight_rounded,
-      [Color(0xffe8812f), Color(0xff2f7fb8)], [
+      [MP.seasonOrange, MP.seasonBlue], [
     'Lagoas começam a baixar: ainda vale ir',
     'Kitesurf no auge em Atins',
     'Alcântara e Centro Histórico sem chuva',
   ]),
   Season('Primavera seca', 'Calor e aventura', Icons.hiking_rounded,
-      [Color(0xffd9a441), Color(0xffe8812f)], [
+      [MP.seasonSand, MP.seasonOrange], [
     'Trilhas e mirantes da Chapada das Mesas',
     'Delta do Parnaíba e revoada dos guarás',
     'Círio e festas religiosas',
   ]),
   Season('Sol e cultura', 'Praias e eventos culturais', Icons.museum_rounded,
-      [Color(0xffd9534f), Color(0xffe8812f)], [
+      [MP.seasonRed, MP.seasonOrange], [
     'Praias de São José de Ribamar',
     'Feiras e museus do Centro Histórico',
     'Guarás no fim de tarde na Ilha',
   ]),
   Season('Fim de ano', 'Réveillon e férias', Icons.auto_awesome_rounded,
-      [Color(0xff1b2a3b), Color(0xfff5c428)], [
+      [MP.seasonNight, MP.seasonYellow], [
     'Réveillon na Litorânea e em Barreirinhas',
     'Natal e luzes no Centro Histórico',
     'Início das férias de verão',
@@ -100,7 +101,7 @@ const _photos = [
   'w_lencois', 'kite', 'hero_dunas', 'w_guaras', 'w_saoluis', 'saoluis',
 ];
 const _wd = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
-const _ink = Color(0xff1b2a3b);
+const _ink = MP.seasonNight;
 const _muted = Color(0xff8a94a3);
 
 String _cap(String s) => s[0].toUpperCase() + s.substring(1);
@@ -201,7 +202,7 @@ class _SeasonCalendarCardState extends State<SeasonCalendarCard> {
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               Text(_months[d.month - 1].substring(0, 3).toUpperCase(),
-                                  style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: 1.2)),
+                                  style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w800, letterSpacing: 1.2)),
                               Text('${d.day}',
                                   style: const TextStyle(color: Colors.white, fontSize: 34, height: 1, fontWeight: FontWeight.w800)),
                             ],
@@ -231,7 +232,7 @@ class _SeasonCalendarCardState extends State<SeasonCalendarCard> {
                       Text(s.highlights.first,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(color: _muted, fontSize: 12.5, fontWeight: FontWeight.w500)),
+                          style: const TextStyle(color: _muted, fontSize: 13, fontWeight: FontWeight.w500)),
                       const Spacer(),
                       // Semana atual: cada dia abre o calendário nele.
                       Row(children: [
@@ -383,7 +384,7 @@ class _SeasonCalendarScreenState extends State<SeasonCalendarScreen> {
                 Row(children: [
                   for (final w in _wd)
                     Expanded(
-                      child: Center(child: Text(w, style: const TextStyle(color: _muted, fontSize: 12, fontWeight: FontWeight.w700))),
+                      child: Center(child: Text(w, style: const TextStyle(color: _muted, fontSize: 13, fontWeight: FontWeight.w700))),
                     ),
                 ]),
                 const SizedBox(height: 6),
@@ -507,10 +508,10 @@ class _SeasonCalendarScreenState extends State<SeasonCalendarScreen> {
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
                                 Text(_cap(_months[k]).substring(0, 3),
-                                    style: const TextStyle(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.w800)),
+                                    style: const TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w800)),
                                 Text(kSeasons[k].title,
                                     maxLines: 2,
-                                    style: const TextStyle(color: Colors.white, fontSize: 12.5, height: 1.15, fontWeight: FontWeight.w800)),
+                                    style: const TextStyle(color: Colors.white, fontSize: 13, height: 1.15, fontWeight: FontWeight.w800)),
                               ],
                             ),
                           ),

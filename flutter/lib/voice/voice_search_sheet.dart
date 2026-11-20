@@ -4,7 +4,6 @@ import 'package:speech_to_text/speech_to_text.dart';
 
 import '../application/map_state.dart';
 import '../domain/tourism.dart';
-import '../presentation/navigation_screen.dart';
 import '../location/location_service.dart';
 import 'command.dart';
 import 'conversation.dart';
@@ -308,12 +307,7 @@ class _VoiceSearchState extends ConsumerState<VoiceSearchSheet>
 
   Future<void> openRoute(TourismPlace p) async {
     FocusScope.of(context).unfocus();
-    await Navigator.push(
-      context,
-      MaterialPageRoute<void>(
-        builder: (_) => NavigationScreen(destination: p, autoPlan: true),
-      ),
-    );
+    widget.onFocus(p);
   }
 
   @override

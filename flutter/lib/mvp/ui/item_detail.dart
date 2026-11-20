@@ -171,7 +171,7 @@ class ItemDetailScreen extends ConsumerWidget {
                   spacing: MP.s2,
                   runSpacing: MP.s2,
                   children: [
-                    if (i.acessivel)
+                    if (i.acessivel && !((i.cat == Cat.hospedagem || i.cat == Cat.gastronomia) && i.comodidades.contains('Acessível')))
                       const MpBadge(
                         'Acessível',
                         fg: MP.info,
@@ -283,7 +283,7 @@ class ItemDetailScreen extends ConsumerWidget {
                     onPressed: () =>
                         push<void>(context, CheckinFlowScreen(item: i)),
                     icon: const Icon(Icons.qr_code_scanner_rounded),
-                    label: const Text('Estou aqui: fazer check-in'),
+                    label: const Text('Registrar visita aqui'),
                   ),
                 const SizedBox(height: MP.s6),
               ],
@@ -328,30 +328,7 @@ class ItemDetailScreen extends ConsumerWidget {
             ),
           ],
           const SizedBox(height: MP.s3),
-          OutlinedButton.icon(
-            onPressed: () => openMaps(context, i.mapsQuery),
-            icon: const Icon(Icons.directions_rounded),
-            label: const Text('Como chegar'),
-          ),
-          if (i.telefone != null) ...[
-            const SizedBox(height: MP.s3),
-            OutlinedButton.icon(
-              onPressed: () => callPhone(context, i.telefone!),
-              icon: const Icon(Icons.call_rounded),
-              label: const Text('Ligar'),
-            ),
-            const SizedBox(height: MP.s3),
-            OutlinedButton.icon(
-              key: const Key('item-whatsapp'),
-              onPressed: () => openWhatsApp(
-                context,
-                i.telefone!,
-                'Olá! Vi ${i.titulo} no MaraPass e gostaria de mais informações.',
-              ),
-              icon: const Icon(Icons.chat_rounded),
-              label: const Text('Falar no WhatsApp'),
-            ),
-          ],
+          _ContactRow(item: i),
         ];
       case Cat.gastronomia:
         return [
@@ -365,37 +342,7 @@ class ItemDetailScreen extends ConsumerWidget {
             ),
             const SizedBox(height: MP.s3),
           ],
-          if (cupom == null)
-            FilledButton.icon(
-              onPressed: () => openMaps(context, i.mapsQuery),
-              icon: const Icon(Icons.directions_rounded),
-              label: const Text('Como chegar'),
-            )
-          else
-            OutlinedButton.icon(
-              onPressed: () => openMaps(context, i.mapsQuery),
-              icon: const Icon(Icons.directions_rounded),
-              label: const Text('Como chegar'),
-            ),
-          if (i.telefone != null) ...[
-            const SizedBox(height: MP.s3),
-            OutlinedButton.icon(
-              onPressed: () => callPhone(context, i.telefone!),
-              icon: const Icon(Icons.call_rounded),
-              label: const Text('Ligar'),
-            ),
-            const SizedBox(height: MP.s3),
-            OutlinedButton.icon(
-              key: const Key('item-whatsapp'),
-              onPressed: () => openWhatsApp(
-                context,
-                i.telefone!,
-                'Olá! Vi ${i.titulo} no MaraPass e gostaria de mais informações.',
-              ),
-              icon: const Icon(Icons.chat_rounded),
-              label: const Text('Falar no WhatsApp'),
-            ),
-          ],
+          _ContactRow(item: i),
         ];
       case Cat.evento:
         final saved = store.isSaved(i.id);
@@ -489,6 +436,82 @@ class _PackList extends ConsumerWidget {
             icon: Icons.celebration_rounded,
           ),
       ],
+    );
+  }
+}
+
+
+/// Ações de contato numa linha só (Como chegar · Ligar · WhatsApp), para não
+/// empilhar vários botões do mesmo peso abaixo da ação principal.
+class _ContactRow extends StatelessWidget {
+  const _ContactRow({required this.item});
+  final Item item;
+
+  @override
+  Widget build(BuildContext context) {
+    final i = item;
+    final tel = i.telefone;
+    return Row(
+      children: [
+        Expanded(
+          child: _ContactButton(
+            key: const Key('item-directions'),
+            icon: Icons.directions_rounded,
+            label: 'Como chegar',
+            onTap: () => openMaps(context, i.mapsQuery),
+          ),
+        ),
+        if (tel != null) ...[
+          const SizedBox(width: MP.s2),
+          Expanded(
+            child: _ContactButton(
+              key: const Key('item-call'),
+              icon: Icons.call_rounded,
+              label: 'Ligar',
+              onTap: () => callPhone(context, tel),
+            ),
+          ),
+          const SizedBox(width: MP.s2),
+          Expanded(
+            child: _ContactButton(
+              key: const Key('item-whatsapp'),
+              icon: Icons.chat_rounded,
+              label: 'WhatsApp',
+              onTap: () => openWhatsApp(
+                context,
+                tel,
+                'Olá! Vi ${i.titulo} no MaraPass e gostaria de mais informações.',
+              ),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class _ContactButton extends StatelessWidget {
+  const _ContactButton({super.key, required this.icon, required this.label, required this.onTap});
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return OutlinedButton(
+      onPressed: onTap,
+      style: OutlinedButton.styleFrom(
+        minimumSize: const Size(0, 64),
+        padding: const EdgeInsets.symmetric(horizontal: MP.s1, vertical: MP.s2),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 24),
+          const SizedBox(height: 4),
+          Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 14)),
+        ],
+      ),
     );
   }
 }

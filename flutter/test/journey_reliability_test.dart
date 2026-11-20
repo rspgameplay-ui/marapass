@@ -3,15 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:marapass_mapa/application/navigation_session.dart';
 import 'package:marapass_mapa/data/routing_repository.dart';
 import 'package:marapass_mapa/domain/navigation.dart';
 import 'package:marapass_mapa/domain/tourism.dart';
 import 'package:marapass_mapa/navigation/traveler_marker.dart';
-import 'package:marapass_mapa/navigation/google_traveler_icons.dart';
 
-import 'navigation_test.dart' show road;
+import 'helpers.dart' show road;
 
 void main() {
   testWidgets('mixed demo completes land-water-land offline without GPS', (
@@ -172,34 +170,4 @@ void main() {
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox());
   });
-  testWidgets(
-    'Google bitmaps are cached; marker uses flat central anchor and opacity',
-    (tester) async {
-      final first = GoogleTravelerIcons.forMode(TravelMode.land);
-      expect(
-        identical(first, GoogleTravelerIcons.forMode(TravelMode.land)),
-        isTrue,
-      );
-      await tester.runAsync(() async {
-        final icon = await first;
-        final weak = await GoogleTravelerIcons.forMode(
-          TravelMode.land,
-          imprecise: true,
-        );
-        final boat = await GoogleTravelerIcons.forMode(TravelMode.nautical);
-        expect(identical(icon, weak), isFalse);
-        expect(identical(icon, boat), isFalse);
-        final m = GoogleTravelerIcons.marker(
-          icon: icon,
-          position: const LatLng(-2.53, -44.3),
-          heading: 90,
-          imprecise: true,
-        );
-        expect(m.flat, isTrue);
-        expect(m.anchor, const Offset(.5, .5));
-        expect(m.rotation, 90);
-        expect(m.alpha, .55);
-      });
-    },
-  );
 }

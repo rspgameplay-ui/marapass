@@ -51,6 +51,118 @@ class _CategoryScreenState extends State<CategoryScreen> {
         i.titulo.toLowerCase().contains(t);
   }
 
+  int get _extraCount =>
+      (_faixa != 0 ? 1 : 0) +
+      (_tipo != 'Todos' ? 1 : 0) +
+      (_perto ? 1 : 0) +
+      (_acessivel ? 1 : 0) +
+      (_soDestaque ? 1 : 0);
+
+  void _clearExtra() {
+    _faixa = 0;
+    _tipo = 'Todos';
+    _perto = false;
+    _acessivel = false;
+    _soDestaque = false;
+  }
+
+  void _openFilters(BuildContext context, List<String>? tipos) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (sheetCtx) => StatefulBuilder(
+        builder: (sheetCtx, setSheet) {
+          void upd(VoidCallback f) {
+            setState(f);
+            setSheet(() {});
+          }
+
+          Widget toggle(Key key, IconData icon, String label, bool value, ValueChanged<bool> on) =>
+              SwitchListTile(
+                key: key,
+                secondary: Icon(icon),
+                title: Text(label, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
+                value: value,
+                onChanged: (v) => upd(() => on(v)),
+                contentPadding: EdgeInsets.zero,
+              );
+
+          return SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(0, 0, 0, MP.s4),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
+                    child: Text('Filtros', style: Theme.of(context).textTheme.titleLarge),
+                  ),
+                  const SizedBox(height: MP.s3),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: MP.pageH),
+                    child: Text('Preço', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+                  ),
+                  const SizedBox(height: MP.s1),
+                  FilterChips<int>(
+                    options: const [0, 1, 2, 3],
+                    selected: _faixa,
+                    label: (v) => v == 0 ? 'Todos' : r'$' * v,
+                    onSelect: (v) => upd(() => _faixa = v),
+                  ),
+                  if (tipos != null) ...[
+                    const SizedBox(height: MP.s2),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: MP.pageH),
+                      child: Text('Tipo', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+                    ),
+                    const SizedBox(height: MP.s1),
+                    FilterChips<String>(
+                      options: tipos,
+                      selected: _tipo,
+                      label: (v) => v,
+                      onSelect: (v) => upd(() => _tipo = v),
+                    ),
+                  ],
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
+                    child: Column(
+                      children: [
+                        toggle(const Key('filter-near'), Icons.near_me_rounded, 'Mais perto primeiro', _perto, (v) => _perto = v),
+                        toggle(const Key('filter-a11y'), Icons.accessible_rounded, 'Só lugares acessíveis', _acessivel, (v) => _acessivel = v),
+                        if (widget.cat == Cat.evento)
+                          toggle(const Key('filter-destaque'), Icons.star_rounded, 'Só em destaque', _soDestaque, (v) => _soDestaque = v),
+                        const SizedBox(height: MP.s3),
+                        Row(
+                          children: [
+                            TextButton(
+                              onPressed: () => upd(_clearExtra),
+                              child: const Text('Limpar'),
+                            ),
+                            const SizedBox(width: MP.s2),
+                            Expanded(
+                              child: FilledButton(
+                                key: const Key('filter-apply'),
+                                style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(MP.buttonHeight)),
+                                onPressed: () => Navigator.of(sheetCtx).pop(),
+                                child: const Text('Ver resultados'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final all = Content.byCat(widget.cat);
@@ -85,13 +197,8 @@ class _CategoryScreenState extends State<CategoryScreen> {
           padding: const EdgeInsets.only(bottom: MP.s10),
           children: [
             MpHeader(widget.cat.label, subtitle: _subtitles[widget.cat]),
-            FilterChips<int>(
-              options: const [0, 1, 2, 3],
-              selected: _faixa,
-              label: (v) => v == 0 ? 'Todos os preços' : r'$' * v,
-              onSelect: (v) => setState(() => _faixa = v),
-            ),
-            const SizedBox(height: MP.s2),
+            // Só a cidade fica à vista; o resto vai para "Filtros", para a
+            // lista aparecer logo (antes eram 4 fileiras de filtros).
             if (cidades.length > 2) ...[
               FilterChips<String>(
                 options: cidades,
@@ -101,72 +208,25 @@ class _CategoryScreenState extends State<CategoryScreen> {
               ),
               const SizedBox(height: MP.s2),
             ],
-            if (tipos != null) ...[
-              FilterChips<String>(
-                options: tipos,
-                selected: _tipo,
-                label: (v) => v,
-                onSelect: (v) => setState(() => _tipo = v),
-              ),
-              const SizedBox(height: MP.s2),
-            ],
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
-              child: Wrap(
-                spacing: MP.s2,
+              child: Row(
                 children: [
-                  FilterChip(
-                    key: const Key('filter-near'),
-                    avatar: Icon(
-                      Icons.near_me_rounded,
-                      size: 18,
-                      color: _perto ? Colors.white : MP.ink,
-                    ),
-                    label: const Text('Perto de mim'),
-                    selected: _perto,
-                    selectedColor: MP.green,
-                    labelStyle: TextStyle(
-                      color: _perto ? Colors.white : MP.ink,
-                      fontWeight: FontWeight.w800,
-                      fontFamily: mpFont,
-                    ),
-                    onSelected: (v) => setState(() => _perto = v),
+                  OutlinedButton.icon(
+                    key: const Key('filter-open'),
+                    onPressed: () => _openFilters(context, tipos),
+                    style: OutlinedButton.styleFrom(minimumSize: const Size(0, 48)),
+                    icon: const Icon(Icons.tune_rounded),
+                    label: Text(_extraCount == 0 ? 'Filtros' : 'Filtros ($_extraCount)'),
                   ),
-                  if (widget.cat == Cat.evento)
-                    FilterChip(
-                      key: const Key('filter-destaque'),
-                      avatar: Icon(
-                        Icons.star_rounded,
-                        size: 18,
-                        color: _soDestaque ? Colors.white : MP.ink,
-                      ),
-                      label: const Text('Em destaque'),
-                      selected: _soDestaque,
-                      selectedColor: MP.green,
-                      labelStyle: TextStyle(
-                        color: _soDestaque ? Colors.white : MP.ink,
-                        fontWeight: FontWeight.w800,
-                        fontFamily: mpFont,
-                      ),
-                      onSelected: (v) => setState(() => _soDestaque = v),
+                  if (_extraCount > 0) ...[
+                    const SizedBox(width: MP.s2),
+                    TextButton(
+                      key: const Key('filter-clear'),
+                      onPressed: () => setState(_clearExtra),
+                      child: const Text('Limpar'),
                     ),
-                  FilterChip(
-                    key: const Key('filter-a11y'),
-                    avatar: Icon(
-                      Icons.accessible_rounded,
-                      size: 18,
-                      color: _acessivel ? Colors.white : MP.ink,
-                    ),
-                    label: const Text('Acessível'),
-                    selected: _acessivel,
-                    selectedColor: MP.green,
-                    labelStyle: TextStyle(
-                      color: _acessivel ? Colors.white : MP.ink,
-                      fontWeight: FontWeight.w800,
-                      fontFamily: mpFont,
-                    ),
-                    onSelected: (v) => setState(() => _acessivel = v),
-                  ),
+                  ],
                 ],
               ),
             ),
@@ -190,15 +250,11 @@ class _CategoryScreenState extends State<CategoryScreen> {
               MpEmpty(
                 icon: Icons.search_off_rounded,
                 title: 'Nada com esses filtros',
-                message: 'Tente outra cidade ou outra faixa de preço.',
+                message: 'Tente outra cidade ou tire alguns filtros.',
                 actionLabel: 'Limpar filtros',
                 onAction: () => setState(() {
-                  _faixa = 0;
                   _cidade = 'Todas';
-                  _tipo = 'Todos';
-                  _perto = false;
-                  _acessivel = false;
-                  _soDestaque = false;
+                  _clearExtra();
                 }),
               ),
             for (final i in list)

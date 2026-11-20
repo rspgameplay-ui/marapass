@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:marapass_mapa/application/navigation_session.dart';
 import 'package:marapass_mapa/data/routing_repository.dart';
-import 'navigation_test.dart' show road;
+import 'helpers.dart' show road;
 void main(){test('simulação inicia sem GPS e parar cancela o avanço',()async{
  final repo=RoutingRepository();final n=NavigationSession(repo)..routes=[road()]..phase=NavigationPhase.preview;
  n.startSimulation();expect(n.simulating,isTrue);expect(n.active,isTrue);

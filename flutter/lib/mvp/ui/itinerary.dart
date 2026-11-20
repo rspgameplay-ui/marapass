@@ -370,10 +370,10 @@ class _StopTile extends StatelessWidget {
                                 crossAxisAlignment: WrapCrossAlignment.center,
                                 runSpacing: 4,
                                 children: [
-                                  Text(stop.slot.toUpperCase(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800, letterSpacing: .8, color: MP.textSecondary)),
+                                  Text(stop.slot.toUpperCase(), style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800, letterSpacing: .8, color: MP.textSecondary)),
                                   if (stop.anchor) ...[
                                     const SizedBox(width: MP.s2),
-                                    const MpBadge('Destaque do dia', fg: Color(0xffa87b00), bg: MP.goldBg),
+                                    const MpBadge('Destaque do dia', fg: MP.goldText, bg: MP.goldBg),
                                   ],
                                 ],
                               ),

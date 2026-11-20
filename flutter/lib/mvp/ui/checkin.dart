@@ -133,7 +133,7 @@ class CheckinScreen extends ConsumerWidget {
                   subtitle:
                       '${store.points} pontos · ${store.stampedPolos.length} de ${Content.polos.length} selos',
                   tint: MP.tintYellow,
-                  color: const Color(0xffa87b00),
+                  color: MP.goldText,
                   onTap: () =>
                       ref.read(shellTabProvider.notifier).go(Tabs.passaporte),
                 ),
@@ -433,7 +433,7 @@ class _FlowState extends ConsumerState<CheckinFlowScreen> {
                     if (_newStamp)
                       MpBadge(
                         'Novo selo: ${polo.nome} (+100)',
-                        fg: const Color(0xffa87b00),
+                        fg: MP.goldText,
                         bg: MP.goldBg,
                         icon: Icons.workspace_premium_rounded,
                       ),
