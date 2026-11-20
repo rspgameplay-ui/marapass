@@ -5,6 +5,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:geolocator/geolocator.dart' show Position;
 import 'package:maplibre_gl/maplibre_gl.dart';
 
 import '../../application/map_state.dart';
@@ -16,6 +17,7 @@ import '../../islands/coastal_island.dart';
 import '../../islands/island_directory.dart';
 import '../../islands/nautical_connections.dart';
 import '../../domain/tourism.dart';
+import '../../location/ahead_filter.dart';
 import '../../location/location_service.dart';
 import '../../presentation/legacy_theme.dart';
 import '../../presentation/municipal_visit_guide.dart';
@@ -56,12 +58,17 @@ class _MapTabState extends ConsumerState<MapTab> {
   PoiKind? _cat;
   final _searchCtl = TextEditingController();
   final _searchFocus = FocusNode();
+  StreamSubscription<Position>? _searchUpdates;
+  Timer? _searchExpiry;
+  int _searchSession = 0;
+  Position? _searchFix;
+  double? _searchCourse;
   List<Poi> _pois = const [];
 
   @override
   void initState() {
     super.initState();
-    _searchFocus.addListener(() => setState(() {}));
+    _searchFocus.addListener(_onSearchFocus);
     _pois = _buildPois();
     // Lugares e ilhas do catálogo chegam em segundo plano.
     TourismRepository? repo;
@@ -81,8 +88,53 @@ class _MapTabState extends ConsumerState<MapTab> {
       });
     }
   }
+  void _onSearchFocus() {
+    final session = ++_searchSession;
+    _searchUpdates?.cancel();
+    _searchUpdates = null;
+    _searchExpiry?.cancel();
+    setState(() {
+      _searchFix = null;
+      _searchCourse = null;
+    });
+    if (_searchFocus.hasFocus) unawaited(_watchSearchLocation(session));
+  }
+
+  Future<void> _watchSearchLocation(int session) async {
+    try {
+      final gateway = LocationService().gateway;
+      await gateway.authorize();
+      if (!mounted || session != _searchSession) return;
+      _searchUpdates = gateway.updates().listen((position) {
+        if (!mounted || session != _searchSession ||
+            !usablePosition(position, maximumAccuracy: 50)) return;
+        setState(() {
+          _searchCourse = travelCourse(position, _searchFix);
+          _searchFix = position;
+        });
+        _searchExpiry?.cancel();
+        _searchExpiry = Timer(
+          courseValidity - DateTime.now().difference(position.timestamp),
+          () {
+            if (!mounted || session != _searchSession) return;
+            setState(() {
+              _searchFix = null;
+              _searchCourse = null;
+            });
+          },
+        );
+      }, onError: (Object _) {});
+    } catch (_) {
+      // A pesquisa por texto continua disponível sem GPS.
+    }
+  }
+
   @override
   void dispose() {
+    _searchFocus.removeListener(_onSearchFocus);
+    _searchSession++;
+    _searchUpdates?.cancel();
+    _searchExpiry?.cancel();
     _searchCtl.dispose();
     _searchFocus.dispose();
     super.dispose();
@@ -1009,15 +1061,36 @@ class _MapTabState extends ConsumerState<MapTab> {
   /// Resultados da busca unificada, em três grupos, já filtrados pela categoria.
   List<(String, List<Poi>)> _results() {
     final q = _norm(_searchCtl.text.trim());
+    final fix = _searchFix;
     Iterable<Poi> base = _pois.where((p) => _cat == null || p.kind == _cat);
     if (q.length >= 2) {
       base = base.where(
-        (p) => _norm('${p.name} ${p.city} ${p.kind.label} ${p.item?.titulo ?? ''} ${p.place?.offerTitle ?? ''}').contains(q),
+        (p) => _norm('${p.name} ${p.city} ${p.kind.label} ${p.item?.titulo ?? ''} ${p.place?.offerTitle ?? ''} ${p.place?.searchAliases.join(' ') ?? ''}').contains(q),
       );
-    } else {
+    } else if (fix == null) {
       base = base.where((p) => p.hasCoupon || p.featured);
     }
     final all = base.toList();
+    if (fix != null) {
+      final origin = GeoPoint(fix.latitude, fix.longitude);
+      final course = _searchCourse;
+      final ranked = [
+        for (final poi in all)
+          (
+            poi: poi,
+            ahead: course != null && isAhead(origin, poi.point, course),
+            km: origin.distanceKm(poi.point),
+          ),
+      ]..sort((a, b) {
+          if (a.ahead != b.ahead) return a.ahead ? -1 : 1;
+          final distance = a.km.compareTo(b.km);
+          return distance != 0 ? distance : a.poi.name.compareTo(b.poi.name);
+        });
+      return [
+        if (ranked.isNotEmpty)
+          ('Lugares próximos', ranked.take(26).map((r) => r.poi).toList()),
+      ];
+    }
     final partners = all.where((p) => p.isPartner || p.hasCoupon).toList()
       ..sort((a, b) => (b.hasCoupon ? 1 : 0).compareTo(a.hasCoupon ? 1 : 0));
     final taken = {...partners.map((p) => p.id)};
