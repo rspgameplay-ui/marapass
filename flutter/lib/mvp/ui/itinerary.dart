@@ -215,9 +215,9 @@ class ItineraryShortcut extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Roteiro do dia', style: Theme.of(context).textTheme.titleMedium),
+              Text('Defina sua Rota', style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 2),
-              const Text('Manhã, tarde e noite com a rota pronta no mapa', style: TextStyle(fontSize: 15, color: MP.textSecondary)),
+              const Text('Monte seu passeio do seu jeito', style: TextStyle(fontSize: 15, color: MP.textSecondary)),
             ],
           ),
         ),
