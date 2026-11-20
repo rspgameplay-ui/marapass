@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'partner_slots.dart';
 import 'coupon_offer_form.dart';
 import 'coupon_commerce.dart';
 
@@ -678,6 +679,14 @@ class _AccountTab extends StatelessWidget {
                 title: 'Placas MaraPass (QR)',
                 subtitle: 'Baixe e imprima a placa de check-in',
                 onTap: () => push<void>(context, const PlatesScreen()),
+              ),
+              const SizedBox(height: MP.s2),
+              MpListTile(
+                key: const Key('partner-slots'),
+                icon: Icons.schedule_rounded,
+                title: 'Horários e vagas',
+                subtitle: 'Turnos, dias da semana e limite por dia',
+                onTap: () => push<void>(context, const PartnerSlotsScreen()),
               ),
               const SizedBox(height: MP.s2),
               MpListTile(

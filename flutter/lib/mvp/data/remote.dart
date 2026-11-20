@@ -160,6 +160,26 @@ class MvpRemote {
     ),
   );
 
+  /// Vagas por dia e turno de um item (vazio se o parceiro não cadastrou turnos).
+  Future<List<SlotDay>> slotAvailability(String itemKey, DateTime from, DateTime to) => _g(() async {
+    final rows = await _c.rpc('mvp_slot_availability', params: {'p_item_key': itemKey, 'p_from': _date(from), 'p_to': _date(to)});
+    return [for (final r in rows as List) SlotDay.fromJson(Map<String, dynamic>.from(r as Map))];
+  });
+
+  /// Itens do parceiro logado com os turnos já cadastrados.
+  Future<(List<String>, List<Map<String, dynamic>>)> mySlots() => _g(() async {
+    final owned = await _c.from('mvp_item_owners').select('item_key').eq('user_id', userId!);
+    final keys = [for (final r in owned) '${r['item_key']}'];
+    final slots = keys.isEmpty ? <Map<String, dynamic>>[] : List<Map<String, dynamic>>.from(await _c.from('mvp_item_slots').select().inFilter('item_key', keys));
+    return (keys, slots);
+  });
+
+  Future<void> setSlot({required String itemKey, required String period, required String hours, required int capacity, required List<int> weekdays, required bool active}) => _g(() async {
+    await _c.rpc('mvp_set_item_slot', params: {
+      'p_item_key': itemKey, 'p_period': period, 'p_hours': hours, 'p_capacity': capacity, 'p_weekdays': weekdays, 'p_active': active,
+    });
+  });
+
   /// Para o parceiro, a policy devolve todas as reservas; para o turista, só as dele.
   Future<List<Map<String, dynamic>>> reservations() => _g(
     () async => List<Map<String, dynamic>>.from(
@@ -433,4 +453,23 @@ class MvpRemote {
 
   static String _date(DateTime d) =>
       '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+}
+
+/// Um turno num dia: faixa de horário, vagas e se funciona.
+class SlotDay {
+  const SlotDay({required this.day, required this.period, required this.hours, required this.capacity, required this.booked, required this.open});
+  final DateTime day;
+  final String period, hours;
+  final int capacity, booked;
+  final bool open;
+  int get left => (capacity - booked).clamp(0, capacity);
+  bool get available => open && left > 0;
+  static SlotDay fromJson(Map<String, dynamic> j) => SlotDay(
+    day: DateTime.parse('${j['day']}'),
+    period: '${j['period']}',
+    hours: '${j['hours']}',
+    capacity: (j['capacity'] as num).toInt(),
+    booked: (j['booked'] as num).toInt(),
+    open: j['open'] == true,
+  );
 }

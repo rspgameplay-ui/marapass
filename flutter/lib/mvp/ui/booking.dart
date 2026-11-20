@@ -5,6 +5,7 @@ import 'month_calendar.dart';
 
 import '../data/content.dart';
 import '../data/models.dart' show formatBrl;
+import '../data/remote.dart' show SlotDay;
 import '../data/repository.dart';
 import '../data/store.dart';
 import '../providers.dart';
@@ -31,6 +32,31 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
   int _people = 2;
   late bool _useCoupon = Content.cupom(widget.item.cupom) != null;
   bool _busy = false;
+
+  /// Turnos do parceiro (vazio = horários padrão, sem limite cadastrado).
+  List<SlotDay> _slots = const [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSlots();
+  }
+
+  Future<void> _loadSlots() async {
+    final r = ref.read(appStoreProvider).remote;
+    if (r == null) return;
+    final n = DateTime.now();
+    try {
+      final list = await r.slotAvailability(widget.item.id, DateTime(n.year, n.month, n.day + 1), DateTime(n.year, n.month, n.day + 180));
+      if (mounted) setState(() => _slots = list);
+    } catch (_) {}
+  }
+
+  SlotDay? _slot(DateTime? d, String p) => d == null
+      ? null
+      : _slots.where((x) => x.period == p && x.day.year == d.year && x.day.month == d.month && x.day.day == d.day).firstOrNull;
+
+  bool _dayOpen(DateTime d) => _slots.isEmpty || _slots.any((x) => x.available && x.day.year == d.year && x.day.month == d.month && x.day.day == d.day);
 
   /// Mesma chave em toda nova tentativa: o banco não duplica o pedido.
   final String _requestKey =
@@ -152,8 +178,12 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
                     'Escolha o dia',
                     MpMonthCalendar(
                       start: _day,
-                      onChanged: (d, _) => setState(() => _day = d),
-                      isEnabled: (d) => d.difference(DateTime.now()).inDays < 180,
+                      onChanged: (d, _) => setState(() {
+                        _day = d;
+                        final cur = _period == null ? null : _slot(d, _period!);
+                        if (cur != null && !cur.available) _period = null;
+                      }),
+                      isEnabled: (d) => d.difference(DateTime.now()).inDays < 180 && _dayOpen(d),
                       hasEvent: (d) => Content.byCat(Cat.evento).any((e) => e.data != null && e.data!.year == d.year && e.data!.month == d.month && e.data!.day == d.day),
                     ),
                     done: _day != null,
@@ -163,15 +193,31 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
                     'Escolha o horário',
                     Row(
                       children: [
-                        for (final p in const [
-                          ('Manhã', '8h às 12h', Icons.wb_sunny_rounded),
-                          ('Tarde', '14h às 18h', Icons.wb_twilight_rounded),
+                        for (final p in [
+                          for (final (name, hours, icon) in const [
+                            ('Manhã', '8h às 12h', Icons.wb_sunny_rounded),
+                            ('Tarde', '14h às 18h', Icons.wb_twilight_rounded),
+                          ])
+                            if (_slots.isEmpty || _slot(_day, name) != null || _day == null)
+                              (
+                                name,
+                                switch (_slot(_day, name)) {
+                                  null => hours,
+                                  final x when !x.open => 'Não funciona',
+                                  final x => '${x.hours} · ${x.left == 0 ? 'esgotado' : '${x.left} vagas'}',
+                                },
+                                icon,
+                              ),
                         ]) ...[
                           Expanded(
                             child: InkWell(
                               key: Key('period-${p.$1}'),
                               borderRadius: BorderRadius.circular(MP.rMedium),
-                              onTap: () => setState(() => _period = p.$1),
+                              onTap: (_slot(_day, p.$1)?.available ?? true) ? () => setState(() {
+                                _period = p.$1;
+                                final left = _slot(_day, p.$1)?.left;
+                                if (left != null && _people > left) _people = left;
+                              }) : null,
                               child: Container(
                                 padding: const EdgeInsets.all(MP.s4),
                                 decoration: BoxDecoration(
@@ -234,7 +280,7 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
                         MpStepper(
                           value: _people,
                           min: 1,
-                          max: 12,
+                          max: _slot(_day, _period ?? '')?.left.clamp(1, 12) ?? 12,
                           keyPrefix: 'people',
                           onChanged: (v) => setState(() => _people = v),
                         ),
