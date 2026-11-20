@@ -54,11 +54,11 @@ class LocalCoupon {
 }
 
 enum ResStatus {
-  solicitada('Aguardando confirmação'),
+  solicitada('Pendente'),
   confirmada('Confirmada'),
   recusada('Não confirmada'),
   cancelada('Cancelada'),
-  concluida('Concluída');
+  concluida('Utilizada');
 
   const ResStatus(this.label);
   final String label;

@@ -537,6 +537,36 @@ class AppStore extends ChangeNotifier {
     await _save();
   }
 
+  /// Código curto do comprovante: R- e os 8 primeiros caracteres do id.
+  static String reservationCode(String id) => 'R-${id.replaceAll('-', '').substring(0, 8).toUpperCase()}';
+
+  /// Parceiro registra o uso do comprovante; o turista ganha o check-in.
+  Future<LocalReservation> useReservationAsync(String raw) async {
+    final code = raw.trim().replaceFirst(RegExp(r'^(MARAPASS-RES:|R-)', caseSensitive: false), '').toLowerCase();
+    final local = reservations.where((r) => r.id.toLowerCase().startsWith(code)).toList();
+    final item = local.length == 1 ? local.first.item : null;
+    if (!online) {
+      if (local.length != 1) throw const MvpException('Reserva não encontrada nesta conta.');
+      final r = local.first;
+      if (r.status == ResStatus.concluida) throw const MvpException('Esta reserva já foi utilizada.');
+      if (r.status != ResStatus.confirmada) throw const MvpException('A reserva precisa estar confirmada.');
+      r.status = ResStatus.concluida;
+      r.history.add('Utilizada');
+      await _save();
+      return r;
+    }
+    final row = await remote!.useReservation(raw, item?.polo ?? '', item?.cidade ?? '');
+    final r = _resFrom(row);
+    final i = reservations.indexWhere((e) => e.id == r.id);
+    if (i >= 0) {
+      reservations[i] = r;
+    } else {
+      reservations.add(r);
+    }
+    await _save();
+    return r;
+  }
+
   Future<(bool, String)> validateCodeAsync(String raw, int amountCents) async {
     if (!online) return validateCode(raw, amountCents);
     final code = raw.trim().toUpperCase();

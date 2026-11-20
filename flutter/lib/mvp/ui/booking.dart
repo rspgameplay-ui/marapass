@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 import 'month_calendar.dart';
 
@@ -598,6 +599,26 @@ class ReservationDetailScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   _ResSummary(res: r),
+                  if (r.status == ResStatus.confirmada) ...[
+                    const SizedBox(height: MP.s3),
+                    MpCard(
+                      key: const Key('res-voucher'),
+                      child: Column(
+                        children: [
+                          const Text('Comprovante', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                          const SizedBox(height: MP.s2),
+                          QrImageView(data: 'MARAPASS-RES:${r.id}', size: 200, backgroundColor: Colors.white),
+                          SelectableText(AppStore.reservationCode(r.id), style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, letterSpacing: 2)),
+                          const SizedBox(height: MP.s1),
+                          const Text('Mostre ao parceiro no dia. Ao ler o código, a visita entra no seu passaporte.', textAlign: TextAlign.center, style: TextStyle(color: MP.textSecondary)),
+                        ],
+                      ),
+                    ),
+                  ],
+                  if (r.status == ResStatus.concluida) ...[
+                    const SizedBox(height: MP.s3),
+                    const MpNotice('Reserva utilizada. A visita foi registrada no seu passaporte.'),
+                  ],
                   const SizedBox(height: MP.s4),
                   if (open) ...[
                     MpListTile(

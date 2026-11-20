@@ -15,6 +15,7 @@ import '../data/store.dart';
 import '../theme/tokens.dart';
 import '../theme/widgets.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mobile_scanner/mobile_scanner.dart' show MobileScanner;
 
 import 'common.dart';
 import 'plates.dart';

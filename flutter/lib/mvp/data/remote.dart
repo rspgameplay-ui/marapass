@@ -160,6 +160,11 @@ class MvpRemote {
     ),
   );
 
+  /// Parceiro registra o uso do comprovante (QR ou R-XXXXXXXX).
+  Future<Map<String, dynamic>> useReservation(String code, String polo, String cidade) => _g(
+    () async => _row(await _c.rpc('mvp_use_reservation', params: {'p_code': code, 'p_polo': polo, 'p_cidade': cidade})),
+  );
+
   /// Vagas por dia e turno de um item (vazio se o parceiro não cadastrou turnos).
   Future<List<SlotDay>> slotAvailability(String itemKey, DateTime from, DateTime to) => _g(() async {
     final rows = await _c.rpc('mvp_slot_availability', params: {'p_item_key': itemKey, 'p_from': _date(from), 'p_to': _date(to)});
