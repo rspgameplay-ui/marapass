@@ -1,3 +1,4 @@
+import { coordinates, whatsapp, mapUrl, profilePhoto } from './company-profile.js';
 import { createMapModule } from './map-content.js';
 import { createMvpModule } from './mvp-admin.js';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.95.0';
@@ -29,8 +30,8 @@ let fullTableNote = '';
 
 const tabs = {
   applications: { table:'partner_applications', heads:['Empresa', 'Contato', 'Cidade', 'Situação', 'Data'], keys:['business_name', 'contact_email', 'city', 'status', 'created_at'], select:'id,business_name,contact_email,city,status,created_at' },
-  partners: { table:'partners', heads:['Nome fantasia', 'Razão social', 'E-mail de contato', 'Responsável', 'Situação', 'Data'], keys:['trade_name', 'legal_name', 'contact_email', 'owner_user_id', 'status', 'created_at'], select:'id,trade_name,legal_name,contact_email,owner_user_id,status,created_at' },
-  establishments: { table:'establishments', heads:['Estabelecimento', 'Categoria', 'Cidade', 'Publicação', 'Data'], keys:['name', 'category', 'city', 'is_public', 'created_at'], select:'id,name,category,city,is_public,created_at' },
+  partners: { table:'partners', heads:['Nome fantasia', 'Razão social', 'E-mail de contato', 'WhatsApp', 'Responsável', 'Situação', 'Data'], keys:['trade_name', 'legal_name', 'contact_email', 'contact_phone', 'owner_user_id', 'status', 'created_at'], select:'id,trade_name,legal_name,contact_email,contact_phone,owner_user_id,status,created_at' },
+  establishments: { table:'establishments', heads:['Estabelecimento', 'Categoria', 'Cidade', 'Publicação', 'Data'], keys:['name', 'category', 'city', 'is_public', 'created_at'], select:'id,name,category,city,is_public,created_at,latitude,longitude' },
   experiences: { table:'experiences', heads:['Experiência', 'Categoria', 'Situação', 'Reserva obrigatória', 'Data'], keys:['title', 'category', 'status', 'booking_required', 'created_at'], select:'title,category,status,booking_required,created_at' },
   offers: { table:'offers', heads:['Oferta', 'Tipo', 'Desconto', 'Publicada', 'Data'], keys:['title', 'discount_type', 'discount_value', 'is_published', 'created_at'], select:'title,discount_type,discount_value,is_published,created_at' },
   reservations: { table:'reservations', heads:['Data da reserva', 'Participantes', 'Situação', 'Criada em'], keys:['scheduled_at', 'participants', 'status', 'created_at'], select:'scheduled_at,participants,status,created_at' },
@@ -241,6 +242,11 @@ async function loadTab(name) {
           const deny=actionButton('Rejeitar', 'outline', () => prepareAction({action:'review_partner_application',applicationId:item.id,decision:'rejected',label:item.business_name}));
           actions.append(approve,deny);
         } else if (name === 'establishments') {
+          if (item.latitude != null && item.longitude != null) {
+            const link=document.createElement('a');
+            link.href=mapUrl(item.latitude,item.longitude); link.target='_blank'; link.rel='noopener noreferrer';
+            link.textContent='Ver no mapa'; actions.append(link);
+          }
           const publish=!item.is_public;
           actions.append(actionButton(publish ? 'Publicar' : 'Ocultar', publish ? 'primary':'outline', () => prepareAction({action:'set_establishment_publication',establishmentId:item.id,publish,label:item.name})));
         } else if (name === 'partners') {
@@ -258,6 +264,7 @@ async function loadTab(name) {
           } else {
             actions.textContent='Aguardando validação';
           }
+          actions.append(actionButton('Ver foto','outline',()=>showPartnerPhoto(item)));
         } else actions.textContent='Decisão registrada';
         row.appendChild(actions);
       }
@@ -540,6 +547,8 @@ async function readOpsError(error,data) {
 $('createCompanyButton').addEventListener('click', () => {
   if (busy || companyDialog.open) return;
   $('companyForm').reset();
+  $('companyPreview').hidden=true;
+  $('companyMap').hidden=true;
   companyRequestId=crypto.randomUUID();
   $('companyCity').value='Barreirinhas';
   companyFeedback('');
@@ -549,18 +558,37 @@ $('createCompanyButton').addEventListener('click', () => {
 $('companyCancel').addEventListener('click',()=>{if(!busy)companyDialog.close();});
 companyDialog.addEventListener('cancel',event=>{if(busy)event.preventDefault();});
 companyDialog.addEventListener('close',()=>{if(!busy){companyRequestId=null;companyFeedback('');}});
+$('companyCoordinates').addEventListener('input',()=>{
+  const point=coordinates($('companyCoordinates').value);
+  $('companyMap').hidden=!point;
+  if(point) $('companyMap').href=mapUrl(...point);
+});
+$('companyPhoto').addEventListener('change', async ()=>{
+  const file=$('companyPhoto').files[0];
+  $('companyPreview').hidden=true;
+  if(!file) return;
+  try {
+    const src=await profilePhoto(file);
+    if($('companyPhoto').files[0]!==file) return;
+    $('companyPreview').src=src; $('companyPreview').hidden=false;
+  } catch { companyFeedback('Não foi possível abrir a foto. Selecione um JPG, PNG ou WebP de até 8 MB.'); }
+});
 $('companyForm').addEventListener('submit',async event=>{
   event.preventDefault();
   if (busy) return;
   const form=$('companyForm');
   if (!form.reportValidity()) return;
+  const file=$('companyPhoto').files[0];
+  const point=coordinates($('companyCoordinates').value);
+  const phone=whatsapp($('companyPhone').value);
+  if (!point) {companyFeedback('Confira a latitude e a longitude copiadas do Google Maps.');return;}
+  if (!phone) {companyFeedback('Informe o WhatsApp com DDD. Para outro país, inclua + e o código do país.');return;}
   const payload={
-    action:'register_direct_company',
     requestId: companyRequestId || (companyRequestId=crypto.randomUUID()),
     legalName:$('companyLegal').value.trim(),
     tradeName:$('companyTrade').value.trim(),
     contactEmail:$('companyEmail').value.trim().toLowerCase(),
-    contactPhone:$('companyPhone').value.trim()||null,
+    contactPhone:phone,
     taxId:$('companyTax').value.replace(/\D/g,'')||null,
     city:$('companyCity').value.trim(),
     category:$('companyCategory').value,
@@ -586,10 +614,13 @@ $('companyForm').addEventListener('submit',async event=>{
   try {
     const ctx=await accessContext();
     if (!ctx?.admin_console_ready) throw new Error('Sua sessão está sem MFA. Saia e entre novamente antes de salvar.');
-    const {data,error}=await supabase.functions.invoke('marapass-admin-ops',{body:payload,signal:AbortSignal.timeout(20000)});
-    if (error || !data?.success || !data?.registration?.partner_id) {
-      throw new Error(await readOpsError(error,data));
-    }
+    const photo=await profilePhoto(file);
+    const {data:registration,error}=await supabase.rpc('admin_register_company_profile',{
+      p_request_key:payload.requestId,p_legal_name:payload.legalName,p_trade_name:payload.tradeName,
+      p_contact_email:payload.contactEmail,p_city:payload.city,p_category:payload.category,
+      p_whatsapp:phone,p_tax_id:payload.taxId,p_latitude:point[0],p_longitude:point[1],p_photo:photo.split(',')[1]
+    }).abortSignal(AbortSignal.timeout(20000));
+    if (error || !registration?.partner_id) throw new Error(error?.message || 'Falha ao confirmar cadastro.');
     saved=true;
     companyDialog.close();
     companyRequestId=null;
@@ -600,7 +631,7 @@ $('companyForm').addEventListener('submit',async event=>{
     // A atualização da lista não faz parte da transação: se falhar, o cadastro
     // permanece salvo e não pode ser apresentado como erro de gravação.
     try { await loadDashboard();
-      status(data.registration.already_registered
+      status(registration.already_registered
         ? 'Esse cadastro já havia sido concluído. Reutilizamos o registro original sem duplicá-lo.'
         : 'Empresa cadastrada com sucesso! Estabelecimento privado criado e operação auditada.', 'success');
     } catch {
@@ -623,6 +654,23 @@ $('companyForm').addEventListener('submit',async event=>{
 // A alteração nunca é enviada diretamente a uma tabela: o backend revalida MFA
 // e associa a decisão ao auth.uid verificado pelo Supabase Auth.
 let queuedAction = null;
+let photoRequest=0;
+async function showPartnerPhoto(item) {
+  const request=++photoRequest, dialog=$('partnerPhotoDialog'), image=$('partnerPhotoImage');
+  image.hidden=true; image.removeAttribute('src');
+  $('partnerPhotoTitle').textContent=item.trade_name;
+  $('partnerPhotoStatus').textContent='Carregando foto…';
+  dialog.showModal();
+  try {
+    const {data,error}=await supabase.rpc('admin_company_photo',{p_partner_id:item.id});
+    if(request!==photoRequest || !dialog.open) return;
+    if(error) throw error;
+    $('partnerPhotoStatus').textContent=data?'':'Foto ainda não cadastrada.';
+    if(data){image.src='data:image/jpeg;base64,'+data.replace(/\s/g,''); image.hidden=false;}
+  } catch {
+    if(request===photoRequest) $('partnerPhotoStatus').textContent='Não foi possível carregar a foto.';
+  }
+}
 function actionButton(label, klass, onClick) {
   const button=document.createElement('button');
   button.type='button'; button.className=klass; button.textContent=label;
