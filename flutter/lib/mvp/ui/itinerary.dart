@@ -8,6 +8,7 @@ import '../theme/tokens.dart';
 import '../theme/widgets.dart';
 import 'common.dart';
 import 'map_tab.dart' show itemPoint;
+import 'route_builder.dart' show MyRoutesScreen;
 import 'shell.dart' show Tabs;
 
 /// Capa por categoria quando o item não tem foto própria.
@@ -200,7 +201,7 @@ class ItineraryShortcut extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MpCard(
     key: const Key('home-itinerary'),
-    onTap: () => push<void>(context, const ItineraryScreen()),
+    onTap: () => push<void>(context, const MyRoutesScreen()),
     padding: const EdgeInsets.all(MP.s4),
     child: Row(
       children: [
@@ -215,9 +216,9 @@ class ItineraryShortcut extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Roteiro do dia', style: Theme.of(context).textTheme.titleMedium),
+              Text('Defina sua Rota', style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 2),
-              const Text('Manhã, tarde e noite com a rota pronta no mapa', style: TextStyle(fontSize: 15, color: MP.textSecondary)),
+              const Text('Monte seu passeio do seu jeito', style: TextStyle(fontSize: 15, color: MP.textSecondary)),
             ],
           ),
         ),

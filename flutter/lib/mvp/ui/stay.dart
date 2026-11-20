@@ -10,6 +10,7 @@ import '../theme/tokens.dart';
 import '../theme/widgets.dart';
 import 'booking.dart' show ReservationsScreen;
 import 'common.dart';
+import 'month_calendar.dart';
 import 'login_screen.dart';
 
 /// Ícone de cada comodidade comum.
@@ -161,6 +162,7 @@ class _StayState extends ConsumerState<StayAvailabilityScreen> {
     final start = DateTime(t.year, t.month, t.day).add(const Duration(days: 7));
     return DateTimeRange(start: start, end: start.add(const Duration(days: 2)));
   }();
+  DateTime? _pickStart;
   int _guests = 2;
   int _room = 0;
   bool _busy = false;
@@ -176,19 +178,6 @@ class _StayState extends ConsumerState<StayAvailabilityScreen> {
   }
 
   int get _nights => _range.duration.inDays;
-
-  Future<void> _pickDates() async {
-    final now = DateTime.now();
-    final r = await showDateRangePicker(
-      context: context,
-      firstDate: DateTime(now.year, now.month, now.day),
-      lastDate: now.add(const Duration(days: 365)),
-      initialDateRange: _range,
-      helpText: 'Escolha entrada e saída',
-      saveText: 'Confirmar',
-    );
-    if (r != null && r.duration.inDays >= 1) setState(() => _range = r);
-  }
 
   Future<void> _request() async {
     final ok = await requireLogin(context, ref, reason: 'Entre para enviar o pedido de reserva. Você volta direto para cá.');
@@ -289,21 +278,27 @@ class _StayState extends ConsumerState<StayAvailabilityScreen> {
                 children: [
                   MpCard(
                     key: const Key('stay-dates'),
-                    onTap: _pickDates,
-                    child: Row(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        const Icon(Icons.date_range_rounded, color: MP.navy),
-                        const SizedBox(width: MP.s3),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text('Entrada e saída', style: TextStyle(fontSize: 13, color: MP.textSecondary)),
-                              Text('${fmtDate(_range.start)} → ${fmtDate(_range.end)}', style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
-                            ],
-                          ),
+                        Text('Check-in ${fmtDate(_range.start)} → check-out ${fmtDate(_range.end)}', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+                        const Text('Toque na entrada e depois na saída.', style: TextStyle(fontSize: 13, color: MP.textSecondary)),
+                        const SizedBox(height: MP.s2),
+                        MpMonthCalendar(
+                          range: true,
+                          allowToday: true,
+                          start: _pickStart ?? _range.start,
+                          end: _pickStart != null ? null : _range.end,
+                          isEnabled: (d) => d.difference(DateTime.now()).inDays < 365,
+                          onChanged: (s, e) => setState(() {
+                            if (s != null && e != null) {
+                              _range = DateTimeRange(start: s, end: e);
+                              _pickStart = null;
+                            } else {
+                              _pickStart = s;
+                            }
+                          }),
                         ),
-                        const Text('Alterar', style: TextStyle(color: MP.navy, fontWeight: FontWeight.w700)),
                       ],
                     ),
                   ),

@@ -9,6 +9,56 @@ class PartnerReservationsScreen extends ConsumerStatefulWidget {
 
 class _PartnerResState extends ConsumerState<PartnerReservationsScreen> {
   int _capacity = 12;
+
+  Future<void> _useVoucher(String code) async {
+    try {
+      final r = await ref.read(appStoreProvider).useReservationAsync(code);
+      if (mounted) showMpSnack(context, 'Comprovante validado: ${r.item?.titulo ?? 'reserva'}, ${r.people} ${r.people == 1 ? 'pessoa' : 'pessoas'}.');
+    } on MvpException catch (e) {
+      if (mounted) showMpSnack(context, e.message);
+    }
+  }
+
+  Future<void> _typeVoucher() async {
+    final c = TextEditingController();
+    final code = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Código do comprovante'),
+        content: TextField(key: const Key('res-code'), controller: c, autofocus: true, textCapitalization: TextCapitalization.characters, decoration: const InputDecoration(hintText: 'R-XXXXXXXX')),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancelar')),
+          FilledButton(key: const Key('res-code-ok'), onPressed: () => Navigator.pop(ctx, c.text), child: const Text('Validar')),
+        ],
+      ),
+    );
+    if (code != null && code.trim().isNotEmpty) await _useVoucher(code);
+  }
+
+  Future<void> _scanVoucher() async {
+    var read = false;
+    final code = await Navigator.of(context).push<String>(
+      MaterialPageRoute(
+        builder: (ctx) => Scaffold(
+          appBar: AppBar(title: const Text('Ler comprovante')),
+          body: MobileScanner(
+            onDetect: (capture) {
+              if (read) return;
+              for (final b in capture.barcodes) {
+                final v = b.rawValue ?? '';
+                if (v.startsWith('MARAPASS-RES:')) {
+                  read = true;
+                  Navigator.of(ctx).pop(v);
+                  break;
+                }
+              }
+            },
+          ),
+        ),
+      ),
+    );
+    if (code != null) await _useVoucher(code);
+  }
   @override
   Widget build(BuildContext context) {
     final s = ref.watch(appStoreProvider);
@@ -35,6 +85,23 @@ class _PartnerResState extends ConsumerState<PartnerReservationsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  MpCard(
+                    key: const Key('res-validate-card'),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const Text('Comprovante do turista', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                        const Text('Leia o QR ou digite o código R-XXXXXXXX no dia do passeio.', style: TextStyle(color: MP.textSecondary)),
+                        const SizedBox(height: MP.s2),
+                        Row(children: [
+                          Expanded(child: OutlinedButton.icon(key: const Key('res-scan'), onPressed: _scanVoucher, icon: const Icon(Icons.qr_code_scanner_rounded), label: const Text('Ler QR'))),
+                          const SizedBox(width: MP.s2),
+                          Expanded(child: OutlinedButton.icon(key: const Key('res-type'), onPressed: _typeVoucher, icon: const Icon(Icons.keyboard_rounded), label: const Text('Digitar'))),
+                        ]),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: MP.s3),
                   MpCard(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

@@ -7,6 +7,7 @@ import '../data/content.dart';
 import '../data/store.dart';
 import '../theme/tokens.dart';
 import '../theme/widgets.dart';
+import 'route_builder.dart' show MyRoutesScreen;
 import 'scan.dart';
 import 'common.dart';
 
@@ -64,6 +65,15 @@ class _PassportScreenState extends ConsumerState<PassportScreen> {
                   label: 'Registrar visita',
                   icon: Icons.qr_code_scanner_rounded,
                   onPressed: () => push<void>(context, const ScanScreen()),
+                ),
+                const SizedBox(height: MP.s3),
+                MpListTile(
+                  key: const Key('pass-routes'),
+                  icon: Icons.route_rounded,
+                  title: 'Minhas rotas',
+                  subtitle: store.trips.isEmpty ? 'Monte seu passeio do seu jeito' : '${store.trips.length} ${store.trips.length == 1 ? 'rota salva' : 'rotas salvas'}',
+                  tint: MP.tintGreen,
+                  onTap: () => push<void>(context, const MyRoutesScreen()),
                 ),
               ],
             ),

@@ -15,6 +15,8 @@ import 'common.dart';
 import 'itinerary.dart';
 import 'explore.dart';
 import 'profile.dart';
+import 'passport.dart';
+import 'route_builder.dart';
 import 'season_calendar.dart';
 import 'shell.dart' show Tabs;
 
@@ -198,34 +200,61 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               children: [
                 Row(
                   children: [
-                    Expanded(
-                      child: MpShortcut(
-                        key: const Key('qa-checkin'),
-                        icon: Icons.qr_code_2_rounded,
-                        label: 'Registrar visita',
-                        tint: MP.tintGreen,
-                        color: MP.green,
-                        onTap: () => push<void>(context, const ScanScreen()),
+                    for (final (k, icon, label, tint, color, go) in <(String, IconData, String, Color, Color, Widget Function())>[
+                      ('qa-rota', Icons.route_rounded, 'Sua Rota', MP.tintGreen, MP.green, () => const MyRoutesScreen()),
+                      ('qa-hospedagem', Icons.hotel_rounded, 'Hospedagem', MP.tintBlue, MP.navy, () => const CategoryScreen(cat: Cat.hospedagem)),
+                      ('qa-passeios', Icons.hiking_rounded, 'Passeios', MP.tintYellow, MP.goldText, () => const CategoryScreen(cat: Cat.passeio)),
+                      ('qa-eventos', Icons.event_rounded, 'Eventos', MP.tintPurple, const Color(0xff5b3fa8), () => const CategoryScreen(cat: Cat.evento)),
+                    ]) ...[
+                      if (k != 'qa-rota') const SizedBox(width: MP.s2),
+                      Expanded(
+                        child: MpShortcut(
+                          key: Key(k),
+                          icon: icon,
+                          label: label,
+                          tint: tint,
+                          color: color,
+                          onTap: () => push<void>(context, go()),
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: MP.s2),
-                    Expanded(
-                      child: MpShortcut(
-                        key: const Key('qa-reservas'),
-                        icon: Icons.event_note_outlined,
-                        label: 'Reservas',
-                        tint: MP.tintPurple,
-                        color: const Color(0xff5b3fa8),
-                        onTap: () =>
-                            push<void>(context, const ReservationsScreen()),
-                      ),
-                    ),
+                    ],
                   ],
                 ),
                 const SizedBox(height: MP.s4),
-                const SeasonCalendarCard(),
-                const SizedBox(height: MP.s3),
                 const ItineraryShortcut(),
+                const SizedBox(height: MP.s3),
+                MpCard(
+                  key: const Key('home-passport'),
+                  onTap: () => push<void>(context, const PassportScreen()),
+                  padding: const EdgeInsets.all(MP.s4),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.badge_rounded, color: MP.navy, size: 34),
+                      const SizedBox(width: MP.s3),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Meu passaporte', style: Theme.of(context).textTheme.titleMedium),
+                            Text(
+                              '${store.points} pontos · ${store.stampedPolos.length} carimbos',
+                              style: const TextStyle(fontSize: 15, color: MP.textSecondary),
+                            ),
+                          ],
+                        ),
+                      ),
+                      FilledButton.icon(
+                        key: const Key('qa-checkin'),
+                        onPressed: () => push<void>(context, const ScanScreen()),
+                        icon: const Icon(Icons.qr_code_2_rounded),
+                        label: const Text('Check-in'),
+                        style: FilledButton.styleFrom(minimumSize: const Size(0, 48)),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: MP.s3),
+                const SeasonCalendarCard(),
               ],
             ),
           ),
