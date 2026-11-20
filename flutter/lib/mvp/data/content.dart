@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+part 'content_importado.dart';
+
 /// Catálogo editorial da versão de demonstração.
 ///
 /// Textos e fotos vêm do protótipo aprovado; módulos e categorias seguem o
@@ -1025,6 +1027,8 @@ abstract final class Content {
       faixa: 1,
       distanciaKm: 1,
     ),
+    // Parceiros importados da planilha do cliente (tools/catalogo).
+    ...importedItems,
   ];
 
   static final cupons = <Cupom>[
