@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'month_calendar.dart';
+
 import '../data/content.dart';
 import '../data/models.dart' show formatBrl;
 import '../data/repository.dart';
@@ -34,10 +36,6 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
   final String _requestKey =
       '${DateTime.now().microsecondsSinceEpoch}-${identityHashCode(Object())}';
 
-  List<DateTime> get _days {
-    final n = DateTime.now();
-    return [for (var d = 1; d <= 14; d++) DateTime(n.year, n.month, n.day + d)];
-  }
 
   Future<void> _submit() async {
     final ok = await requireLogin(
@@ -152,62 +150,11 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
                   step(
                     1,
                     'Escolha o dia',
-                    SizedBox(
-                      height: 96,
-                      child: ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: _days.length,
-                        separatorBuilder: (_, _) =>
-                            const SizedBox(width: MP.s2),
-                        itemBuilder: (_, k) {
-                          final d = _days[k];
-                          final on = _day == d;
-                          const wd = [
-                            'SEG',
-                            'TER',
-                            'QUA',
-                            'QUI',
-                            'SEX',
-                            'SÁB',
-                            'DOM',
-                          ];
-                          return InkWell(
-                            key: Key('day-$k'),
-                            borderRadius: BorderRadius.circular(MP.rMedium),
-                            onTap: () => setState(() => _day = d),
-                            child: Container(
-                              width: 76,
-                              decoration: BoxDecoration(
-                                color: on ? MP.navy : MP.soft,
-                                borderRadius: BorderRadius.circular(MP.rMedium),
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    wd[d.weekday - 1],
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w800,
-                                      fontSize: 14,
-                                      color: on
-                                          ? Colors.white70
-                                          : MP.textSecondary,
-                                    ),
-                                  ),
-                                  Text(
-                                    '${d.day}',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w800,
-                                      fontSize: 28,
-                                      color: on ? Colors.white : MP.ink,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      ),
+                    MpMonthCalendar(
+                      start: _day,
+                      onChanged: (d, _) => setState(() => _day = d),
+                      isEnabled: (d) => d.difference(DateTime.now()).inDays < 180,
+                      hasEvent: (d) => Content.byCat(Cat.evento).any((e) => e.data != null && e.data!.year == d.year && e.data!.month == d.month && e.data!.day == d.day),
                     ),
                     done: _day != null,
                   ),
