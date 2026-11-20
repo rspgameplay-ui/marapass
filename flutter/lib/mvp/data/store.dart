@@ -14,6 +14,7 @@ import 'repository.dart' show MvpException;
 
 export 'store_models.dart';
 import 'store_models.dart';
+import 'trip.dart';
 
 /// Estado local do aparelho para a versão de demonstração: favoritos,
 /// preferências, cupons, reservas, check-ins, pedidos e a área do parceiro.
@@ -43,6 +44,21 @@ class AppStore extends ChangeNotifier {
   final tickets = <Ticket>[];
   int invites = 0;
   int routesDone = 0;
+
+  /// Rotas montadas em "Defina sua Rota" (ficam no aparelho).
+  final trips = <Trip>[];
+
+  Future<void> saveTrip(Trip t) async {
+    trips.removeWhere((x) => x.id == t.id);
+    trips.insert(0, t);
+    await _save();
+  }
+
+  Future<void> deleteTrip(String id) async {
+    trips.removeWhere((x) => x.id == id);
+    await _save();
+  }
+
   bool fotoAlbum = false;
 
   // Parceiro (demonstração)
@@ -602,6 +618,9 @@ class AppStore extends ChangeNotifier {
       );
       invites = j['inv'] as int? ?? 0;
       routesDone = j['rt'] as int? ?? 0;
+      trips
+        ..clear()
+        ..addAll([for (final t in (j['trips'] as List? ?? const [])) Trip.fromJson(t as Map<String, dynamic>)]);
       fotoAlbum = j['fa'] as bool? ?? false;
       partnerOffers.addAll(
         ((remote == null ? j['po'] as List? : null) ?? []).map(
@@ -697,6 +716,7 @@ class AppStore extends ChangeNotifier {
           'tk': remote != null ? [] : tickets.map((e) => e.toJson()).toList(),
           'inv': invites,
           'rt': routesDone,
+          'trips': [for (final t in trips) t.toJson()],
           'fa': fotoAlbum,
           'po': remote != null
               ? []

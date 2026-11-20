@@ -16,6 +16,7 @@ import 'itinerary.dart';
 import 'explore.dart';
 import 'profile.dart';
 import 'passport.dart';
+import 'route_builder.dart';
 import 'season_calendar.dart';
 import 'shell.dart' show Tabs;
 
@@ -200,7 +201,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 Row(
                   children: [
                     for (final (k, icon, label, tint, color, go) in <(String, IconData, String, Color, Color, Widget Function())>[
-                      ('qa-rota', Icons.route_rounded, 'Sua Rota', MP.tintGreen, MP.green, () => const ItineraryScreen()),
+                      ('qa-rota', Icons.route_rounded, 'Sua Rota', MP.tintGreen, MP.green, () => const MyRoutesScreen()),
                       ('qa-hospedagem', Icons.hotel_rounded, 'Hospedagem', MP.tintBlue, MP.navy, () => const CategoryScreen(cat: Cat.hospedagem)),
                       ('qa-passeios', Icons.hiking_rounded, 'Passeios', MP.tintYellow, MP.goldText, () => const CategoryScreen(cat: Cat.passeio)),
                       ('qa-eventos', Icons.event_rounded, 'Eventos', MP.tintPurple, const Color(0xff5b3fa8), () => const CategoryScreen(cat: Cat.evento)),
