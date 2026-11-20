@@ -66,7 +66,8 @@ class TourismRepository {
     final raw = jsonDecode(
       await rootBundle.loadString('assets/data/places.json'),
     ) as List;
-    seed = raw
+    final local = jsonDecode(await rootBundle.loadString('assets/data/local_gastronomy.json')) as List;
+    seed = [...raw, ...local]
         .map((j) => TourismPlace.fromJson(Map<String, dynamic>.from(j)))
         .toList();
     final residential = jsonDecode(
