@@ -107,7 +107,9 @@ class _MapTabState extends ConsumerState<MapTab> {
       if (!mounted || session != _searchSession) return;
       _searchUpdates = gateway.updates().listen((position) {
         if (!mounted || session != _searchSession ||
-            !usablePosition(position, maximumAccuracy: 50)) return;
+            !usablePosition(position, maximumAccuracy: 50)) {
+          return;
+        }
         setState(() {
           _searchCourse = travelCourse(position, _searchFix);
           _searchFix = position;
