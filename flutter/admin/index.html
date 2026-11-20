@@ -167,7 +167,7 @@
           <div class="span-2"><label for="companyLegal">Razão social *</label><input id="companyLegal" name="legalName" required minlength="2" maxlength="160" autocomplete="organization" placeholder="Nome empresarial"></div>
           <div class="span-2"><label for="companyTrade">Nome fantasia *</label><input id="companyTrade" name="tradeName" required minlength="2" maxlength="160" placeholder="Como a empresa aparecerá no MaraPass"></div>
           <div><label for="companyTax">CNPJ (opcional)</label><input id="companyTax" name="taxId" inputmode="numeric" maxlength="18" placeholder="00.000.000/0000-00"></div>
-          <div><label for="companyPhone">Telefone / WhatsApp</label><input id="companyPhone" name="contactPhone" type="tel" maxlength="32" placeholder="(98) 99999-9999"></div>
+          <div><label for="companyPhone">WhatsApp com DDD *</label><input id="companyPhone" name="contactPhone" type="tel" required autocomplete="tel" maxlength="32" placeholder="(98) 99999-9999"></div>
           <div class="span-2"><label for="companyEmail">E-mail para contato *</label><input id="companyEmail" name="contactEmail" type="email" required maxlength="254" autocomplete="email" placeholder="responsavel@empresa.com.br"></div>
           <div><label for="companyCity">Cidade *</label><input id="companyCity" name="city" required minlength="2" maxlength="120" placeholder="Barreirinhas"></div>
           <div><label for="companyCategory">Categoria inicial *</label>
@@ -176,6 +176,16 @@
             </select>
           </div>
         </div>
+        <fieldset class="company-fields"><legend>Perfil do estabelecimento</legend>
+          <div class="span-2"><label for="companyCoordinates">Coordenadas do Google Maps *</label>
+            <input id="companyCoordinates" required maxlength="60" placeholder="-2.530700, -44.306800" aria-describedby="coordHelp">
+            <small id="coordHelp">Cole a latitude e a longitude do ponto de entrada, separadas por vírgula.</small>
+            <a id="companyMap" hidden target="_blank" rel="noopener noreferrer">Conferir ponto no Google Maps</a></div>
+          <div class="span-2"><label for="companyPhoto">Foto de perfil *</label>
+            <input id="companyPhoto" type="file" accept="image/jpeg,image/png,image/webp" required aria-describedby="photoHelp">
+            <small id="photoHelp">Prefira a mesma foto usada no Instagram da empresa. JPG, PNG ou WebP, até 8 MB.</small>
+            <img id="companyPreview" hidden width="80" height="80" alt="Prévia da foto do parceiro"></div>
+        </fieldset>
         <label class="company-ack"><input id="companyAcknowledge" type="checkbox" required> <span>Entendi que o cadastro <strong>não cria automaticamente a conta do responsável</strong>, não publica o estabelecimento e não envia convite automaticamente. O administrador poderá enviar o convite após conferir os dados, e só ativará a empresa quando a pessoa confirmar o e-mail e aceitar o vínculo.</span></label>
         <div id="companyInlineStatus" class="form-status" role="status" aria-live="polite"></div>
         <div class="action-row dialog-actions">
@@ -202,6 +212,9 @@
         </div>
       </form>
     </dialog>
+    <dialog id="partnerPhotoDialog" aria-labelledby="partnerPhotoTitle"><h2 id="partnerPhotoTitle">Foto do parceiro</h2>
+      <p id="partnerPhotoStatus" role="status"></p><img id="partnerPhotoImage" width="192" height="192" hidden alt="Foto de perfil do parceiro">
+      <form method="dialog"><button type="submit">Fechar</button></form></dialog>
     <footer>MaraPass V10 · Ambiente de desenvolvimento · Supabase Auth, JWT, MFA AAL2 e RLS. O painel não utiliza chave administrativa no navegador.</footer>
   </main>
 </body>
