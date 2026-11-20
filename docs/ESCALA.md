@@ -16,7 +16,7 @@ Estado verificado em 18/11/2026 (código + advisors do Supabase; sem teste de ca
 Já existe fila (`private.mvp_wa_queue`) com lease de 5 min, `FOR UPDATE SKIP LOCKED`, até 6 tentativas com backoff exponencial e consentimento. O envio roda no `pg_cron` (1/min, 10 jobs por rodada), fora da requisição do usuário. Capacidade ≈ 600 mensagens/hora; para mais, aumente o `limit 10` ou agende mais vezes.
 
 ## 4. Rate limiting
-- Banco: migration `20261118_mvp_scale_guards.sql` cria `private.mvp_rate_check` e limita pedidos de reserva a 10/min por usuário (confirmação de cupom já tinha 30/min; check-in, 20/dia). **Ainda não aplicada.**
+- Banco: migration `20261118022026_mvp_scale_guards.sql` (aplicada) cria `private.mvp_rate_check` e limita pedidos de reserva a 10/min por usuário (confirmação de cupom já tinha 30/min; check-in, 20/dia).
 - Borda (Cloudflare, plano Free): *Security > WAF > Rate limiting rules*, por exemplo 100 req/10 s por IP em `/auth/v1/*` e `/rest/v1/rpc/*` do domínio do Supabase, se ele passar pelo Cloudflare. Ative Bot Fight Mode no site.
 - Auth: em *Authentication > Rate Limits* do Supabase, reduza e-mail/OTP por hora e ative CAPTCHA (Turnstile).
 
@@ -34,7 +34,7 @@ Homologação aponta para o banco de produção. Antes de teste de carga: criar 
 - Fila WhatsApp: alerta se `select count(*) from private.mvp_wa_queue where state in ('failed','retry')` passar de um limite.
 
 ## 8. Desempenho (advisors)
-Corrigido em 18/11/2026 (`20261118_mvp_rls_and_fk_indexes.sql`, aplicada): policies com `(select auth.jwt())`, policies de leitura de admin fundidas por OR, policies ALL de admin separadas em INSERT/UPDATE/DELETE, e índices nas 13 FKs. O advisor de desempenho só mostra mais `unused_index` (esperado, tráfego baixo) e `private.coupon_media_uploads` sem chave primária.
+Corrigido em 18/11/2026 (`20261118024050_mvp_rls_and_fk_indexes.sql`, aplicada): policies com `(select auth.jwt())`, policies de leitura de admin fundidas por OR, policies ALL de admin separadas em INSERT/UPDATE/DELETE, e índices nas 13 FKs. O advisor de desempenho só mostra mais `unused_index` (esperado, tráfego baixo) e `private.coupon_media_uploads` sem chave primária.
 
 ## 9. Avisos de segurança do advisor (revisados em 18/11/2026)
 Nada exigiu mudança de código ou de banco:

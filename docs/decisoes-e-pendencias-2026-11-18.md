@@ -20,7 +20,7 @@ Inglês: a base está pronta (arquivos em `flutter/lib/l10n`, troca PT/EN no Per
 ## Pendências técnicas — situação
 | Item | Situação |
 |---|---|
-| Banco vazio | Resolvido: migration `20261118120000_mvp_demo_seed.sql` criou 1 parceiro, 2 estabelecimentos, 3 experiências, 28 horários, 2 ofertas e 1 passaporte (rascunho), tudo marcado "(exemplo)". Remover: `delete from partners where id='00000000-0000-4000-8000-0000000000de'` e o passaporte `...00b1`. |
+| Banco vazio | Resolvido: migration `20261118040539_mvp_demo_seed.sql` criou 1 parceiro, 2 estabelecimentos, 3 experiências, 28 horários, 2 ofertas e 1 passaporte (rascunho), tudo marcado "(exemplo)". Remover: `delete from partners where id='00000000-0000-4000-8000-0000000000de'` e o passaporte `...00b1`. |
 | Excluir conta (LGPD) | Já existia: RPC `delete_my_account` aplicada no banco. |
 | RLS e alertas | Lidos. Nenhuma tabela sem RLS. Tabelas `private.*` sem política = bloqueadas (intencional). Funções SECURITY DEFINER são as RPCs do app (intencional). A ação: ativar "Leaked password protection" no painel Auth; `pg_net` no schema public (baixo risco). |
 | App sem login/reserva/cupom/passaporte | Desatualizado: o módulo `lib/mvp` já tem essas telas e RPCs. |
