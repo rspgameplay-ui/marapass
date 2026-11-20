@@ -1,8 +1,3 @@
--- Dados de exemplo para demonstração. Tudo marcado com "(exemplo)" e ligado ao
--- parceiro fixo 00000000-0000-4000-8000-0000000000de para remoção fácil:
---   delete from public.partners where id = '00000000-0000-4000-8000-0000000000de';
--- (as experiências, horários e ofertas caem em cascata pelo estabelecimento)
-
 insert into public.partners (id, legal_name, trade_name, status)
 values ('00000000-0000-4000-8000-0000000000de', 'Parceiro Exemplo Marapass', 'Parceiro Exemplo', 'approved')
 on conflict (id) do nothing;
@@ -39,8 +34,6 @@ values
   'Degustação de arroz de cuxá', 'Valor total da conta', now() + interval '60 days', now() + interval '75 days', now() + interval '90 days')
 on conflict (id) do nothing;
 
--- Passaporte criado como rascunho (não publicado): a publicação passa pelo fluxo
--- de aprovação comercial e não deve ser automática.
 insert into public.passport_products (id, name, description, price_cents, currency, validity_start_rule,
   duration_days, activation_deadline_days, booking_explanation, included_benefits_explanation, is_published)
 values ('00000000-0000-4000-8000-0000000000b1', 'Passaporte Lençóis 7 dias (exemplo)',
@@ -50,4 +43,4 @@ on conflict (id) do nothing;
 
 insert into public.passport_product_benefits (product_id, offer_id, issue_window_days, convert_window_days, use_window_days, max_per_holder, booking_required)
 select '00000000-0000-4000-8000-0000000000b1', '00000000-0000-4000-8000-0000000000f2', 7, 7, 7, 1, false
-where not exists (select 1 from public.passport_product_benefits where product_id = '00000000-0000-4000-8000-0000000000b1');
+where not exists (select 1 from public.passport_product_benefits where product_id = '00000000-0000-4000-8000-0000000000b1');;

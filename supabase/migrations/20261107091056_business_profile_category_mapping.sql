@@ -1,0 +1,8 @@
+create or replace function public.save_business_profile(p_actor uuid,p_partner_id uuid,p_establishment_id uuid,p_profile jsonb) returns uuid language plpgsql security invoker set search_path='' as $$
+declare v_id uuid:=p_establishment_id;begin
+ perform private.assert_partner_manager(p_partner_id,p_actor);
+ if length(p_profile->>'name') not between 2 and 160 or length(p_profile->>'city') not between 2 and 100 then raise exception 'invalid business profile';end if;
+ if v_id is null then v_id:=public.create_partner_establishment(p_partner_id,p_actor,p_profile->>'name',case p_profile->>'category' when 'Passeios' then 'tours' when 'Gastronomia' then 'gastronomy' when 'Hospedagem' then 'lodging' when 'Cultura' then 'culture' when 'Natureza' then 'nature' when 'Artesanato' then 'crafts' when 'Transporte turístico' then 'tourist_transport' when 'Eventos' then 'events' when 'Fotografia' then 'photography' else 'services' end,p_profile->>'city',p_profile->>'description');
+ elsif not exists(select 1 from public.establishments where id=v_id and partner_id=p_partner_id and is_active) then raise exception 'establishment denied';end if;
+ update public.establishments set name=p_profile->>'name',city=p_profile->>'city',category=case p_profile->>'category' when 'Passeios' then 'tours' when 'Gastronomia' then 'gastronomy' when 'Hospedagem' then 'lodging' when 'Cultura' then 'culture' when 'Natureza' then 'nature' when 'Artesanato' then 'crafts' when 'Transporte turístico' then 'tourist_transport' when 'Eventos' then 'events' when 'Fotografia' then 'photography' else 'services' end,description=p_profile->>'description',street_address=p_profile->>'address',public_profile=p_profile where id=v_id;
+ return v_id;end $$;;

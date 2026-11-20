@@ -1,19 +1,19 @@
 # Migrations
 
-O histórico oficial é o do banco (`supabase_migrations.schema_migrations` no projeto `Marapass`). Esta pasta guarda só as migrations a partir de 16/11/2026; as anteriores estão consolidadas em `../schema.sql`.
+Esta pasta tem o **histórico completo** do banco (68 migrations em 20/11/2026), baixado com `supabase migration fetch`. Cada arquivo é idêntico ao SQL registrado em `supabase_migrations.schema_migrations`.
+
+Exceção: as três migrations de cupons de 17/11 (`mvp_coupon_commerce`, `mvp_coupon_whatsapp`, `mvp_coupon_operations`) foram aplicadas sem guardar o SQL no histórico; os arquivos aqui vêm do PR 9.
+
+`../schema.sql` é a concatenação desta pasta, em ordem, e serve para recriar o banco do zero.
 
 ## Regra para migrations novas
 
 1. Aplique pelo Supabase (MCP `apply_migration` ou `supabase db push`).
-2. Salve o arquivo aqui com **a mesma versão que o banco registrou**: `<versão>_<nome>.sql`. Confira com `select version, name from supabase_migrations.schema_migrations order by version desc limit 5;`.
+2. Atualize esta pasta com o que o banco registrou:
 
-Assim um `supabase db push` futuro não tenta aplicar de novo o que já está no banco.
+   ```powershell
+   supabase migration fetch --project-ref nwwxobiqynawxxnbvubz --workdir <pasta temporária>
+   ```
 
-## Arquivos sem versão própria
-
-Estes dois não correspondem a uma única migration do banco e ficam só como referência. **Não aplique de novo:**
-
-| Arquivo | Corresponde a |
-|---|---|
-| `20261115_delete_my_account.sql` | `20261116095702_mvp_delete_account_and_partner_approval` e `20261119183558_delete_my_account_v2_turista` |
-| `20261117_mvp_admin_and_lodging.sql` | `20261116101224_mvp_admin_command` e `20261116102515_mvp_reservations_lodging_period` |
+   e copie o arquivo novo para cá. Não escreva o arquivo à mão com outra versão: um `supabase db push` futuro tentaria aplicá-lo de novo.
+3. Regenere o `schema.sql` (concatenação de `migrations/*.sql` com o cabeçalho `-- <versão> <nome>`).

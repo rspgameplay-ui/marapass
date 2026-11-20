@@ -1,5 +1,0 @@
--- Aplicada em 2026-11-17 (nomes: mvp_delete_account_and_partner_approval, mvp_revoke_demo_partner).
--- Exclusão da própria conta e parceiro com pedido + aprovação da equipe.
--- Aprovar um parceiro (pelo SQL do painel, com o id do usuário):
---   select public.mvp_decide_partner('<user_id>', true);
--- O SQL completo está em supabase_migrations.schema_migrations.

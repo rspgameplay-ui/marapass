@@ -55,3 +55,4 @@ begin
 end $$;
 revoke all on function public.admin_register_company_profile(uuid,text,text,text,text,text,text,text,numeric,numeric,text),public.admin_company_photo(uuid) from public,anon,authenticated;
 grant execute on function public.admin_register_company_profile(uuid,text,text,text,text,text,text,text,numeric,numeric,text),public.admin_company_photo(uuid) to authenticated;
+;
