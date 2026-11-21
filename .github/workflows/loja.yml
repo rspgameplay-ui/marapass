@@ -103,6 +103,17 @@ jobs:
           --dart-define-from-file=config/catalogo.json
           --dart-define=SITE_URL=${{ inputs.site_url }}
 
+      - name: Empacota o .ipa sem assinatura (para Sideloadly)
+        run: |
+          mkdir -p build/ipa/Payload
+          cp -R build/ios/archive/Runner.xcarchive/Products/Applications/Runner.app build/ipa/Payload/
+          cd build/ipa && zip -qry MaraPass.ipa Payload
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: marapass-ios-ipa
+          path: flutter/build/ipa/MaraPass.ipa
+
       - uses: actions/upload-artifact@v4
         with:
           name: marapass-ios-archive
