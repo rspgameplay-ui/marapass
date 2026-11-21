@@ -60,12 +60,12 @@ class _CouponsScreenState extends ConsumerState<CouponsScreen> {
       child: TicketCard(
         cupom: c.cupom!,
         status: c.expired
-            ? 'Expirado'
+            ? tr('Expirado')
             : c.sale != null
-            ? (couponStates[c.stage] ?? 'Emitido')
+            ? (couponStates[c.stage] ?? tr('Emitido'))
             : c.used
-            ? 'Utilizado'
-            : 'Ativado',
+            ? tr('Utilizado')
+            : tr('Ativado'),
         statusColor: c.used
             ? MP.textSecondary
             : (c.expired ? MP.warning : MP.success),
@@ -120,9 +120,9 @@ class _CouponsScreenState extends ConsumerState<CouponsScreen> {
               segments: [
                 ButtonSegment(
                   value: 0,
-                  label: Text('Disponíveis (${active.length + offers.length})'),
+                  label: Text('${tr('Disponíveis')} (${active.length + offers.length})'),
                 ),
-                ButtonSegment(value: 1, label: Text('Histórico (${used.length + expired.length})')),
+                ButtonSegment(value: 1, label: Text('${tr('Histórico')} (${used.length + expired.length})')),
               ],
               selected: {_tab},
               onSelectionChanged: (v) => setState(() => _tab = v.first),
@@ -196,7 +196,7 @@ class _CouponsScreenState extends ConsumerState<CouponsScreen> {
                 ),
                 child: TicketCard(
                   cupom: c,
-                  status: 'Disponível',
+                  status: tr('Disponível'),
                   statusColor: MP.info,
                   onTap: () =>
                       push<void>(context, CouponDetailScreen(cupom: c)),
@@ -273,13 +273,13 @@ class CouponDetailScreen extends ConsumerWidget {
                 const SizedBox(height: MP.s3),
                 MpInfoRow(
                   Icons.event_busy_rounded,
-                  'Válido até ${fmtDate(cupom.validade)}',
+                  '${tr('Válido até')} ${fmtDate(cupom.validade)}',
                 ),
                 if (!cupom.id.startsWith('po:'))
                   MpInfoRow(Icons.person_rounded, tr('Um cupom por pessoa')),
-                const MpInfoRow(
+                MpInfoRow(
                   Icons.qr_code_2_rounded,
-                  'Mostre o QR ao atendente na hora de pagar',
+                  tr('Mostre o QR ao atendente na hora de pagar'),
                 ),
                 if (item != null)
                   MpInfoRow(
@@ -458,7 +458,7 @@ class _ActiveState extends ConsumerState<CouponActiveScreen> {
         body: Padding(
           padding: const EdgeInsets.all(20),
           child: Text(
-            'Cupom ${c.code} emitido em ${fmtDate(c.issuedAt)}. Para conferir as condições originais, procure o atendimento MaraPass.',
+            '${tr('Cupom')} ${c.code} ${tr('emitido em')} ${fmtDate(c.issuedAt)}. ${tr('Para conferir as condições originais, procure o atendimento MaraPass')}.',
           ),
         ),
       );
@@ -471,10 +471,10 @@ class _ActiveState extends ConsumerState<CouponActiveScreen> {
     if (c.sale != null) return CouponReceipt(code: c.code, scope: 'tourist');
     final cupom = c.cupom!;
     final (label, fg, bg) = c.used
-        ? ('Utilizado', MP.textSecondary, MP.soft)
+        ? (tr('Utilizado'), MP.textSecondary, MP.soft)
         : c.expired
-        ? ('Expirado', MP.warning, MP.warningBg)
-        : ('Ativado', MP.success, MP.successBg);
+        ? (tr('Expirado'), MP.warning, MP.warningBg)
+        : (tr('Ativado'), MP.success, MP.successBg);
     return Scaffold(
       body: SafeArea(
         child: ListView(
@@ -483,7 +483,7 @@ class _ActiveState extends ConsumerState<CouponActiveScreen> {
             MpHeader(
               tr('Seu cupom'),
               subtitle: widget.justActivated
-                  ? 'Cupom ativado com sucesso!'
+                  ? tr('Cupom ativado com sucesso!')
                   : null,
             ),
             Padding(
@@ -537,7 +537,7 @@ class _ActiveState extends ConsumerState<CouponActiveScreen> {
                     if (c.active) ...[
                       const SizedBox(height: MP.s2),
                       Text(
-                        'O QR se renova em $_left s',
+                        '${tr('O QR se renova em')} $_left s',
                         style: const TextStyle(
                           fontSize: 15,
                           color: MP.textSecondary,
@@ -557,7 +557,7 @@ class _ActiveState extends ConsumerState<CouponActiveScreen> {
                             borderRadius: BorderRadius.circular(MP.rMedium),
                           ),
                           child: Text(
-                            _revealed ? c.code : 'Toque para ver o código',
+                            _revealed ? c.code : tr('Toque para ver o código'),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: _revealed ? 30 : 17,
@@ -584,7 +584,7 @@ class _ActiveState extends ConsumerState<CouponActiveScreen> {
                     ],
                     const SizedBox(height: MP.s2),
                     Text(
-                      'Válido até ${fmtDate(cupom.validade)}',
+                      '${tr('Válido até')} ${fmtDate(cupom.validade)}',
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ],
@@ -596,10 +596,10 @@ class _ActiveState extends ConsumerState<CouponActiveScreen> {
               padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
               child: Text(
                 c.active
-                    ? 'Mostre este QR ao atendente do parceiro. Ele vale uma única vez.'
+                    ? tr('Mostre este QR ao atendente do parceiro. Ele vale uma única vez.')
                     : c.used
-                    ? 'Este cupom foi usado em ${fmtDate(c.usedAt!)}.'
-                    : 'Este cupom venceu. Procure uma oferta nova em Cupons.',
+                    ? '${tr('Este cupom foi usado em')} ${fmtDate(c.usedAt!)}.'
+                    : tr('Este cupom venceu. Procure uma oferta nova em Cupons.'),
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
@@ -617,12 +617,12 @@ class _ActiveState extends ConsumerState<CouponActiveScreen> {
                   const SizedBox(height: MP.s2),
                   MpInfoRow(
                     Icons.bolt_rounded,
-                    'Ativado em ${fmtDate(c.issuedAt)} às ${fmtTime(c.issuedAt)}',
+                    '${tr('Ativado em')} ${fmtDate(c.issuedAt)} ${tr('às')} ${fmtTime(c.issuedAt)}',
                   ),
                   if (c.used)
                     MpInfoRow(
                       Icons.check_circle_rounded,
-                      'Usado em ${fmtDate(c.usedAt!)} às ${fmtTime(c.usedAt!)}',
+                      '${tr('Usado em')} ${fmtDate(c.usedAt!)} ${tr('às')} ${fmtTime(c.usedAt!)}',
                     ),
                 ],
               ),
@@ -713,18 +713,18 @@ class WalletSummary extends StatelessWidget {
           ),
           Text(
             store.remote == null
-                ? 'economia estimada com cupons usados'
-                : 'valor pago com cupons, após estornos',
+                ? tr('economia estimada com cupons usados')
+                : tr('valor pago com cupons, após estornos'),
             style: const TextStyle(color: MP.onDarkMuted, fontSize: 14),
           ),
           const SizedBox(height: MP.s4),
           Row(
             children: [
               _WalletMetric(value: '${active.length}', label: tr('cupons ativos')),
-              _WalletMetric(value: '${used.length}', label: 'usados'),
+              _WalletMetric(value: '${used.length}', label: tr('usados')),
               _WalletMetric(
                 value: '${store.points}',
-                label: 'pontos · ${store.stampedPolos.length} carimbos',
+                label: '${tr('pontos')} · ${store.stampedPolos.length} ${tr('carimbos')}',
               ),
             ],
           ),
@@ -742,7 +742,7 @@ class WalletSummary extends StatelessWidget {
                   const SizedBox(width: MP.s2),
                   Expanded(
                     child: Text(
-                      'Ainda pode economizar ${formatBrl(potential)} com os cupons ativos',
+                      '${tr('Ainda pode economizar')} ${formatBrl(potential)} ${tr('com os cupons ativos')}',
                       style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
                     ),
                   ),

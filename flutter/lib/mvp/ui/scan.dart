@@ -85,7 +85,7 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with SingleTickerProvid
       _line.repeat(reverse: true);
       _cam = MobileScannerController(detectionSpeed: DetectionSpeed.noDuplicates, formats: const [BarcodeFormat.qrCode]);
     } else {
-      _camError = 'Câmera indisponível neste aparelho.';
+      _camError = tr('Câmera indisponível neste aparelho.');
     }
   }
 
@@ -114,8 +114,8 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with SingleTickerProvid
       showMpSnack(
         context,
         raw.contains('marapass:offer:')
-            ? 'Esta oferta não está mais ativa. Veja as ofertas disponíveis em Cupons.'
-            : 'Este QR não é de um local MaraPass. Procure a placa no balcão ou na entrada.',
+            ? tr('Esta oferta não está mais ativa. Veja as ofertas disponíveis em Cupons.')
+            : tr('Este QR não é de um local MaraPass. Procure a placa no balcão ou na entrada.'),
       );
       return;
     }
@@ -151,7 +151,7 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with SingleTickerProvid
         try {
           me = await checkinLocate();
         } catch (_) {
-          throw const LocationFailure(LocationProblem.unavailable, 'sem GPS');
+          throw LocationFailure(LocationProblem.unavailable, tr('sem GPS'));
         }
         c = await store.checkInAsync(item, method: 'codigo', lat: me.lat, lng: me.lng);
       }
@@ -242,8 +242,8 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with SingleTickerProvid
                         WidgetsBinding.instance.addPostFrameCallback((_) {
                           if (mounted && _camError == null) {
                             setState(() => _camError = error.errorCode == MobileScannerErrorCode.permissionDenied
-                                ? 'Permita o uso da câmera nas configurações do navegador.'
-                                : 'Não foi possível abrir a câmera.');
+                                ? tr('Permita o uso da câmera nas configurações do navegador.')
+                                : tr('Não foi possível abrir a câmera.'));
                           }
                         });
                         return const ColoredBox(color: MP.scanBg);
@@ -293,7 +293,7 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with SingleTickerProvid
                             const SizedBox(height: MP.s2),
                           ],
                           Text(
-                            _camError ?? 'Aponte a câmera\npara o código',
+                            _camError ?? tr('Aponte a câmera\npara o código'),
                             textAlign: TextAlign.center,
                             style: const TextStyle(
                               color: Colors.white,
@@ -559,7 +559,7 @@ class _ManualSheetState extends State<_ManualSheet> {
 
   void _go() {
     if (parseScan(_ctrl.text) == null) {
-      setState(() => _error = 'Não reconhecemos este código. Confira as letras impressas embaixo do QR da placa.');
+      setState(() => _error = tr('Não reconhecemos este código. Confira as letras impressas embaixo do QR da placa.'));
       return;
     }
     Navigator.of(context).pop(_ctrl.text);
@@ -596,7 +596,7 @@ class _ManualSheetState extends State<_ManualSheet> {
         const SizedBox(height: MP.s4),
         MpPrimaryButton(key: const Key('plate-submit'), label: tr('Confirmar código'), onPressed: _go),
         const SizedBox(height: MP.s3),
-        MpNotice.demo('Demonstração: experimente ${plateCode(Content.items.first)} (${Content.items.first.titulo}).'),
+        MpNotice.demo('${tr('Demonstração: experimente')} ${plateCode(Content.items.first)} (${Content.items.first.titulo}).'),
       ],
     ),
   );
@@ -668,7 +668,7 @@ class _ResultSheetState extends ConsumerState<_ResultSheet> with SingleTickerPro
             ] else if (widget.already) ...[
               Text(tr('Visita já registrada hoje'), textAlign: TextAlign.center, style: Theme.of(context).textTheme.headlineSmall),
               const SizedBox(height: MP.s1),
-              Text('Você já fez check-in em ${item!.titulo} hoje.', textAlign: TextAlign.center, style: const TextStyle(fontSize: 16, color: MP.textSecondary)),
+              Text('${tr('Você já fez check-in em')} ${item!.titulo} ${tr('hoje')}.', textAlign: TextAlign.center, style: const TextStyle(fontSize: 16, color: MP.textSecondary)),
               const SizedBox(height: MP.s4),
               MpPrimaryButton(label: tr('Ver meu passaporte'), onPressed: _toPassport),
             ] else ...[
@@ -684,7 +684,7 @@ class _ResultSheetState extends ConsumerState<_ResultSheet> with SingleTickerPro
                   MpBadge(tr('+50 pontos'), fg: MP.success, icon: Icons.add_circle_rounded),
                   if (widget.newStamp)
                     MpBadge(
-                      'Novo carimbo: ${Content.polo(item.polo).nome} (+100)',
+                      '${tr('Novo carimbo')}: ${Content.polo(item.polo).nome} (+100)',
                       fg: MP.goldText,
                       bg: MP.goldBg,
                       icon: Icons.workspace_premium_rounded,

@@ -84,7 +84,7 @@ class _SaleOfferFormState extends ConsumerState<SaleOfferForm> {
             limit == null ||
             limit < 1 ||
             limit > 10000)) {
-      problem = 'Confira o nome e o estoque da oferta.';
+      problem = tr('Confira o nome e o estoque da oferta.');
     }
     if (price == null ||
         price < 1 ||
@@ -92,17 +92,17 @@ class _SaleOfferFormState extends ConsumerState<SaleOfferForm> {
         discount == null ||
         discount < 0 ||
         discount > (kind == 'percent' ? 10000 : price)) {
-      problem = 'Confira o preço e o desconto.';
+      problem = tr('Confira o preço e o desconto.');
     }
     if (per == null || per < 1 || per > 10000) {
-      problem = 'Informe um limite válido por turista.';
+      problem = tr('Informe um limite válido por turista.');
     }
     if (getValue('payment').isEmpty && getValue('url').isEmpty) {
-      problem = 'Informe como o turista deve pagar ao estabelecimento.';
+      problem = tr('Informe como o turista deve pagar ao estabelecimento.');
     }
     if (getValue('url').isNotEmpty &&
         (uri == null || uri.scheme != 'https' || uri.host.isEmpty)) {
-      problem = 'Use o endereço HTTPS do parceiro.';
+      problem = tr('Use o endereço HTTPS do parceiro.');
     }
     if (problem != null) {
       ScaffoldMessenger.of(context)
@@ -142,7 +142,7 @@ class _SaleOfferFormState extends ConsumerState<SaleOfferForm> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              draft ? 'Rascunho salvo.' : 'Oferta enviada para aprovação.',
+              draft ? tr('Rascunho salvo.') : tr('Oferta enviada para aprovação.'),
             ),
           ),
         );
@@ -180,8 +180,8 @@ class _SaleOfferFormState extends ConsumerState<SaleOfferForm> {
         padding: const EdgeInsets.all(20),
         children: [
           if (widget.offerId == null) ...[
-            field('title', 'Produto ou serviço'),
-            field('rules', 'Condições de uso', lines: 2),
+            field('title', tr('Produto ou serviço')),
+            field('rules', tr('Condições de uso'), lines: 2),
             DropdownButtonFormField<String>(
               initialValue: category,
               decoration: InputDecoration(labelText: tr('Categoria')),
@@ -203,7 +203,7 @@ class _SaleOfferFormState extends ConsumerState<SaleOfferForm> {
             ),
             field(
               'limit',
-              'Estoque total de cupons',
+              tr('Estoque total de cupons'),
               keyboard: TextInputType.number,
             ),
             TextButton(
@@ -217,18 +217,18 @@ class _SaleOfferFormState extends ConsumerState<SaleOfferForm> {
                 if (date != null && mounted) setState(() => until = date);
               },
               child: Text(
-                'Válido até ${until.day}/${until.month}/${until.year}',
+                '${tr('Válido até')} ${until.day}/${until.month}/${until.year}',
               ),
             ),
           ],
           field(
             'per_user',
-            'Limite por turista',
+            tr('Limite por turista'),
             keyboard: TextInputType.number,
           ),
           field(
             'price',
-            'Preço do item antes do desconto (R\$)',
+            '${tr('Preço do item antes do desconto (R')}\$)',
             keyboard: const TextInputType.numberWithOptions(decimal: true),
           ),
           SegmentedButton(
@@ -243,19 +243,19 @@ class _SaleOfferFormState extends ConsumerState<SaleOfferForm> {
           field(
             'discount',
             kind == 'promo'
-                ? 'Preço promocional (R\$)'
+                ? '${tr('Preço promocional (R')}\$)'
                 : kind == 'percent'
-                ? 'Desconto (%)'
-                : 'Desconto (R\$)',
+                ? tr('Desconto (%)')
+                : '${tr('Desconto (R')}\$)',
             keyboard: const TextInputType.numberWithOptions(decimal: true),
           ),
           if (due != null && due >= 0)
             Text(
-              'Turista paga ${formatBrl(due)} · Comissão na conversão ${formatBrl((due * 5 + 50) ~/ 100)}',
+              '${tr('Turista paga')} ${formatBrl(due)} · ${tr('Comissão na conversão')} ${formatBrl((due * 5 + 50) ~/ 100)}',
             ),
           field(
             'url',
-            'Link HTTPS para pagar ao parceiro',
+            tr('Link HTTPS para pagar ao parceiro'),
             keyboard: TextInputType.url,
           ),
           TextButton(
@@ -269,16 +269,16 @@ class _SaleOfferFormState extends ConsumerState<SaleOfferForm> {
               if (date != null && mounted) setState(() => starts = date);
             },
             child: Text(
-              'Início da vigência ${starts.day}/${starts.month}/${starts.year}',
+              '${tr('Início da vigência')} ${starts.day}/${starts.month}/${starts.year}',
             ),
           ),
-          field('hours', 'Horários de utilização do serviço'),
+          field('hours', tr('Horários de utilização do serviço')),
           field(
             'contact',
-            'WhatsApp comercial para contato (DDI e DDD)',
+            tr('WhatsApp comercial para contato (DDI e DDD)'),
             keyboard: TextInputType.phone,
           ),
-          field('payment', 'Instruções de pagamento direto', lines: 2),
+          field('payment', tr('Instruções de pagamento direto'), lines: 2),
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
             title: Text(tr('Compra elegível a pontos')),

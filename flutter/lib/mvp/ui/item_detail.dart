@@ -50,7 +50,7 @@ class ItemDetailScreen extends ConsumerWidget {
                   Navigator.of(context).pop();
                   showMpSnack(
                     context,
-                    'Link copiado. Cole na conversa que quiser.',
+                    tr('Link copiado. Cole na conversa que quiser.'),
                   );
                 }
               },
@@ -214,7 +214,7 @@ class ItemDetailScreen extends ConsumerWidget {
                         ),
                         TextSpan(
                           text: i.cat.reservavel
-                              ? ' por pessoa'
+                              ? tr(' por pessoa')
                               : (i.cat == Cat.hospedagem ? ' por noite' : ''),
                           style: const TextStyle(
                             fontSize: 16,
@@ -236,7 +236,7 @@ class ItemDetailScreen extends ConsumerWidget {
                 if (i.horario != null)
                   MpInfoRow(Icons.schedule_rounded, i.horario!),
                 if (i.saida != null)
-                  MpInfoRow(Icons.flag_rounded, 'Saída: ${i.saida}'),
+                  MpInfoRow(Icons.flag_rounded, '${tr('Saída')}: ${i.saida}'),
                 if (i.endereco != null)
                   MpInfoRow(
                     Icons.place_rounded,
@@ -250,10 +250,10 @@ class ItemDetailScreen extends ConsumerWidget {
                     onTap: () => callPhone(context, i.telefone!),
                   ),
                 if (i.artesao != null)
-                  MpInfoRow(Icons.person_rounded, 'Feito por ${i.artesao}'),
+                  MpInfoRow(Icons.person_rounded, '${tr('Feito por')} ${i.artesao}'),
                 MpInfoRow(
                   Icons.landscape_rounded,
-                  'Destino: ${polo.nome}',
+                  '${tr('Destino')}: ${polo.nome}',
                   onTap: () => openPolo(context, polo),
                 ),
                 if (cupom != null) ...[
@@ -357,8 +357,8 @@ class ItemDetailScreen extends ConsumerWidget {
               showMpSnack(
                 context,
                 saved
-                    ? 'Evento removido da sua agenda'
-                    : 'Evento salvo. Avisaremos perto do dia.',
+                    ? tr('Evento removido da sua agenda')
+                    : tr('Evento salvo. Avisaremos perto do dia.'),
               );
             },
           ),
@@ -413,7 +413,7 @@ class _PackList extends ConsumerWidget {
       children: [
         Text(tr('O que levar'), style: Theme.of(context).textTheme.titleLarge),
         Text(
-          'Toque para marcar · ${got.length}/${Content.oQueLevar.length}',
+          '${tr('Toque para marcar')} · ${got.length}/${Content.oQueLevar.length}',
           style: Theme.of(context).textTheme.bodySmall,
         ),
         const SizedBox(height: MP.s2),
@@ -481,7 +481,7 @@ class _ContactRow extends StatelessWidget {
               onTap: () => openWhatsApp(
                 context,
                 tel,
-                'Olá! Vi ${i.titulo} no MaraPass e gostaria de mais informações.',
+                '${tr('Olá! Vi')} ${i.titulo} ${tr('no MaraPass e gostaria de mais informações')}.',
               ),
             ),
           ),

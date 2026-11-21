@@ -7,35 +7,35 @@ class _OffersTab extends ConsumerWidget {
     final s = ref.watch(appStoreProvider);
     return SafeArea(
       child: ListView(
-        padding: const EdgeInsets.only(bottom: MP.s8),
+        padding: EdgeInsets.only(bottom: MP.s8),
         children: [
           _PartnerHeader(
-            'Gestão de cupons',
+            tr('Gestão de cupons'),
             subtitle: tr('Crie, pause e acompanhe suas ofertas.'),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
+            padding: EdgeInsets.symmetric(horizontal: MP.pageH),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 FilledButton.icon(
-                  key: const Key('p-create-offer'),
+                  key: Key('p-create-offer'),
                   onPressed: () =>
-                      push<void>(context, const CreateOfferScreen()),
-                  icon: const Icon(Icons.add_rounded),
+                      push<void>(context, CreateOfferScreen()),
+                  icon: Icon(Icons.add_rounded),
                   label: Text(tr('Criar nova oferta')),
                 ),
-                const SizedBox(height: MP.s4),
+                SizedBox(height: MP.s4),
                 if (CatalogCache.servingStale) ...[
                   MpNotice(
                     CatalogCache.lastSync == null
-                        ? 'Sem conexão: mostrando as ofertas salvas neste aparelho.'
-                        : 'Sem conexão: ofertas salvas em ${fmtDate(CatalogCache.lastSync!)}.',
+                        ? tr('Sem conexão: mostrando as ofertas salvas neste aparelho.')
+                        : '${tr('Sem conexão: ofertas salvas em')} ${fmtDate(CatalogCache.lastSync!)}.',
                     icon: Icons.cloud_off_rounded,
                     fg: MP.warning,
                     bg: MP.warningBg,
                   ),
-                  const SizedBox(height: MP.s3),
+                  SizedBox(height: MP.s3),
                 ],
                 for (final o in s.partnerOffers) ...[
                   MpCard(
@@ -55,16 +55,16 @@ class _OffersTab extends ConsumerWidget {
                             _OfferStatus(o.status),
                           ],
                         ),
-                        const SizedBox(height: 4),
+                        SizedBox(height: 4),
                         Text(
                           o.benefit,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w800,
                             color: MP.green,
                           ),
                         ),
-                        const SizedBox(height: MP.s2),
+                        SizedBox(height: MP.s2),
                         ClipRRect(
                           borderRadius: BorderRadius.circular(MP.rPill),
                           child: LinearProgressIndicator(
@@ -76,15 +76,15 @@ class _OffersTab extends ConsumerWidget {
                             backgroundColor: MP.soft,
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        SizedBox(height: 4),
                         Text(
-                          '${o.issued} emitidos · ${o.used} usados · limite ${o.limit} · até ${fmtDate(o.until)}',
+                          '${o.issued} ${tr('emitidos')} · ${o.used} ${tr('usados · limite')} ${o.limit} · ${tr('até')} ${fmtDate(o.until)}',
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: MP.s3),
+                  SizedBox(height: MP.s3),
                 ],
               ],
             ),
@@ -118,7 +118,7 @@ class OfferManageScreen extends ConsumerWidget {
     return Scaffold(
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.only(bottom: MP.s8),
+          padding: EdgeInsets.only(bottom: MP.s8),
           children: [
             MpHeader(o.title, subtitle: o.benefit),
             if (s.online)
@@ -132,7 +132,7 @@ class OfferManageScreen extends ConsumerWidget {
                 child: Text(tr('Configurar preço, desconto e pagamento')),
               ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
+              padding: EdgeInsets.symmetric(horizontal: MP.pageH),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -140,41 +140,41 @@ class OfferManageScreen extends ConsumerWidget {
                     alignment: Alignment.centerLeft,
                     child: _OfferStatus(o.status),
                   ),
-                  const SizedBox(height: MP.s3),
+                  SizedBox(height: MP.s3),
                   MpInfoRow(Icons.rule_rounded, o.rules),
                   MpInfoRow(
                     Icons.confirmation_number_rounded,
-                    'Limite total: ${o.limit}',
+                    '${tr('Limite total')}: ${o.limit}',
                   ),
                   MpInfoRow(
                     Icons.event_busy_rounded,
-                    'Válida até ${fmtDate(o.until)}',
+                    '${tr('Válida até')} ${fmtDate(o.until)}',
                   ),
                   if (o.pauseReason != null)
                     MpInfoRow(
                       Icons.pause_circle_rounded,
-                      'Pausada: ${o.pauseReason}',
+                      '${tr('Pausada')}: ${o.pauseReason}',
                     ),
-                  const SizedBox(height: MP.s4),
+                  SizedBox(height: MP.s4),
                   _OfferPhoto(offerId: o.id, imageUrl: o.imageUrl),
                   if (o.status == 'Ativa') ...[
-                    const SizedBox(height: MP.s4),
+                    SizedBox(height: MP.s4),
                     OfferQrCard(cupomId: 'po:${o.id}', title: o.title),
                   ],
-                  const SizedBox(height: MP.s4),
+                  SizedBox(height: MP.s4),
                   Row(
                     children: [
-                      Expanded(child: _Kpi('Emitidos', '${o.issued}')),
-                      const SizedBox(width: MP.s3),
+                      Expanded(child: _Kpi(tr('Emitidos'), '${o.issued}')),
+                      SizedBox(width: MP.s3),
                       Expanded(
-                        child: _Kpi('Usados', '${o.used}', color: MP.navy),
+                        child: _Kpi(tr('Usados'), '${o.used}', color: MP.navy),
                       ),
                     ],
                   ),
-                  const SizedBox(height: MP.s5),
+                  SizedBox(height: MP.s5),
                   if (o.status == 'Ativa')
                     OutlinedButton.icon(
-                      key: const Key('offer-pause'),
+                      key: Key('offer-pause'),
                       onPressed: () async {
                         const reasons = [
                           'Sem disponibilidade',
@@ -209,7 +209,7 @@ class OfferManageScreen extends ConsumerWidget {
                                   ListTile(
                                     minTileHeight: 60,
                                     title: Text(
-                                      x,
+                                      tr(x),
                                       style: const TextStyle(fontSize: 17),
                                     ),
                                     onTap: () => Navigator.of(context).pop(x),
@@ -222,13 +222,13 @@ class OfferManageScreen extends ConsumerWidget {
                           try {
                             await s.setOfferStatusAsync(
                               o.id,
-                              'Pausada',
+                              tr('Pausada'),
                               reason: r,
                             );
                             if (context.mounted) {
                               showMpSnack(
                                 context,
-                                'Oferta pausada. Turistas não veem mais o cupom.',
+                                tr('Oferta pausada. Turistas não veem mais o cupom.'),
                               );
                             }
                           } on MvpException catch (e) {
@@ -246,7 +246,7 @@ class OfferManageScreen extends ConsumerWidget {
                       key: const Key('offer-resume'),
                       onPressed: () async {
                         try {
-                          await s.setOfferStatusAsync(o.id, 'Ativa');
+                          await s.setOfferStatusAsync(o.id, tr('Ativa'));
                           if (context.mounted) {
                             showMpSnack(context, tr('Oferta ativa de novo.'));
                           }
@@ -270,11 +270,11 @@ class OfferManageScreen extends ConsumerWidget {
                         ),
                         onPressed: () async {
                           try {
-                            await s.setOfferStatusAsync(o.id, 'Ativa');
+                            await s.setOfferStatusAsync(o.id, tr('Ativa'));
                             if (context.mounted) {
                               showMpSnack(
                                 context,
-                                'Oferta publicada. Os turistas já podem ativar.',
+                                tr('Oferta publicada. Os turistas já podem ativar.'),
                               );
                             }
                           } on MvpException catch (e) {

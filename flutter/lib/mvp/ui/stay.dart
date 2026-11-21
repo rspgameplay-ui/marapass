@@ -215,7 +215,7 @@ class _StayState extends ConsumerState<StayAvailabilityScreen> {
                 Text(widget.item.titulo, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
                 const SizedBox(height: MP.s1),
                 Text('${fmtDate(_range.start)} a ${fmtDate(_range.end)} · ${r.people} hóspedes'),
-                Text(room.name),
+                Text(tr(room.name)),
                 Text('Total estimado: ${formatBrl(room.perNight * _nights)} (taxas incluídas)'),
               ],
             ),
@@ -252,7 +252,7 @@ class _StayState extends ConsumerState<StayAvailabilityScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(formatBrl(room.perNight * _nights), key: const Key('stay-total'), style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: MP.ink)),
-                    Text('$_nights ${_nights == 1 ? 'noite' : 'noites'} · taxas incluídas', style: const TextStyle(fontSize: 13, color: MP.textSecondary)),
+                    Text('$_nights ${_nights == 1 ? tr('noite') : tr('noites')} · ${tr('taxas incluídas')}', style: const TextStyle(fontSize: 13, color: MP.textSecondary)),
                   ],
                 ),
               ),
@@ -366,9 +366,9 @@ class _RoomCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(room.name, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: MP.ink)),
+                  Text(tr(room.name), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: MP.ink)),
                   const SizedBox(height: 2),
-                  Text(tooSmall ? 'Até ${room.sleeps} hóspedes: não comporta o grupo' : 'Até ${room.sleeps} hóspedes', style: const TextStyle(fontSize: 14, color: MP.textSecondary)),
+                  Text(tooSmall ? '${tr('Até')} ${room.sleeps} ${tr('hóspedes: não comporta o grupo')}' : '${tr('Até')} ${room.sleeps} ${tr('hóspedes')}', style: const TextStyle(fontSize: 14, color: MP.textSecondary)),
                   const SizedBox(height: MP.s2),
                   Wrap(
                     spacing: MP.s2,

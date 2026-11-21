@@ -12,7 +12,7 @@ class _PartnerResState extends ConsumerState<PartnerReservationsScreen> {
   Future<void> _useVoucher(String code) async {
     try {
       final r = await ref.read(appStoreProvider).useReservationAsync(code);
-      if (mounted) showMpSnack(context, 'Comprovante validado: ${r.item?.titulo ?? 'reserva'}, ${r.people} ${r.people == 1 ? 'pessoa' : 'pessoas'}.');
+      if (mounted) showMpSnack(context, '${tr('Comprovante validado')}: ${r.item?.titulo ?? 'reserva'}, ${r.people} ${r.people == 1 ? tr('pessoa') : tr('pessoas')}.');
     } on MvpException catch (e) {
       if (mounted) showMpSnack(context, e.message);
     }
@@ -105,11 +105,11 @@ class _PartnerResState extends ConsumerState<PartnerReservationsScreen> {
                     key: const Key('res-slots'),
                     icon: Icons.schedule_rounded,
                     title: tr('Horários e vagas'),
-                    subtitle: '$people ${people == 1 ? tr('pessoa confirmada') : tr('pessoas confirmadas')} · defina turnos e limite por dia',
+                    subtitle: '$people ${people == 1 ? tr('pessoa confirmada') : tr('pessoas confirmadas')} · ${tr('defina turnos e limite por dia')}',
                     onTap: () => push<void>(context, const PartnerSlotsScreen()),
                   ),
                   const SizedBox(height: MP.s4),
-                  MpSectionTitle('Aguardando resposta (${pending.length})'),
+                  MpSectionTitle('${tr('Aguardando resposta')} (${pending.length})'),
                   const SizedBox(height: MP.s2),
                   if (pending.isEmpty)
                     MpCard(
@@ -125,11 +125,11 @@ class _PartnerResState extends ConsumerState<PartnerReservationsScreen> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Text(
-                            '${r.customer} · ${r.people} ${r.people == 1 ? 'pessoa' : 'pessoas'}',
+                            '${r.customer} · ${r.people} ${r.people == 1 ? tr('pessoa') : tr('pessoas')}',
                             style: Theme.of(context).textTheme.titleMedium,
                           ),
                           Text(
-                            '${r.item?.titulo ?? ''}\n${fmtLong(r.date)} · ${r.period}',
+                            '${r.item?.titulo ?? ''}\n${fmtLong(r.date)} · ${trPeriod(r.period)}',
                             style: Theme.of(context).textTheme.bodySmall,
                           ),
                           const SizedBox(height: MP.s3),
@@ -163,7 +163,7 @@ class _PartnerResState extends ConsumerState<PartnerReservationsScreen> {
                     const SizedBox(height: MP.s3),
                   ],
                   const SizedBox(height: MP.s3),
-                  MpSectionTitle('Confirmadas (${confirmed.length})'),
+                  MpSectionTitle('${tr('Confirmadas')} (${confirmed.length})'),
                   const SizedBox(height: MP.s2),
                   for (final r in confirmed) ...[
                     MpListTile(
@@ -171,7 +171,7 @@ class _PartnerResState extends ConsumerState<PartnerReservationsScreen> {
                       tint: MP.successBg,
                       color: MP.success,
                       title: '${r.customer} · ${r.people}p',
-                      subtitle: '${fmtLong(r.date)} · ${r.period}',
+                      subtitle: '${fmtLong(r.date)} · ${trPeriod(r.period)}',
                     ),
                     const SizedBox(height: MP.s2),
                   ],
@@ -217,7 +217,7 @@ class PartnerEventsScreen extends StatelessWidget {
                       tint: MP.tintRed,
                       color: MP.error,
                       title: e.titulo,
-                      subtitle: '${fmtLong(e.data!)} · Publicado',
+                      subtitle: '${fmtLong(e.data!)} · ${tr('Publicado')}',
                       onTap: () => openItem(context, e),
                     ),
                     const SizedBox(height: MP.s2),
@@ -259,8 +259,8 @@ class _ServiceWizardState extends State<ServiceWizardScreen> {
   @override
   Widget build(BuildContext context) {
     final titles = widget.eventMode
-        ? ['Informações', 'Data e local', 'Benefício', 'Revisão']
-        : ['Tipo', 'Descrição', 'Preço e acesso', 'Revisão'];
+        ? [tr('Informações'), tr('Data e local'), tr('Benefício'), tr('Revisão')]
+        : [tr('Tipo'), tr('Descrição'), tr('Preço e acesso'), tr('Revisão')];
     final ok = switch (_step) {
       0 => widget.eventMode ? _name.text.trim().length >= 4 : true,
       1 => _desc.text.trim().length >= 10 || widget.eventMode,
@@ -272,8 +272,8 @@ class _ServiceWizardState extends State<ServiceWizardScreen> {
           padding: const EdgeInsets.only(bottom: MP.s8),
           children: [
             MpHeader(
-              widget.eventMode ? 'Criar evento' : 'Cadastrar serviço',
-              subtitle: 'Etapa ${_step + 1} de 4 · ${titles[_step]}',
+              widget.eventMode ? tr('Criar evento') : tr('Cadastrar serviço'),
+              subtitle: '${tr('Etapa')} ${_step + 1} ${tr('de')} 4 · ${tr(titles[_step])}',
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
@@ -301,11 +301,11 @@ RadioGroup<String>(
  groupValue: _kind,
  onChanged: (v) => setState(() => _kind = v!),
  child: Column(children: [
- for (final k in const [
-                      'Passeio',
-                      'Experiência',
-                      'Artesanato',
-                      'Fotografia',
+ for (final k in [
+                      tr('Passeio'),
+                      tr('Experiência'),
+                      tr('Artesanato'),
+                      tr('Fotografia'),
                     ]) RadioListTile<String>(
                         value: k,
                         activeColor: MP.green,
@@ -347,8 +347,8 @@ RadioGroup<String>(
                       style: const TextStyle(fontSize: 17),
                       decoration: InputDecoration(
                         labelText: widget.eventMode
-                            ? 'Local e horário'
-                            : 'Descrição para o turista',
+                            ? tr('Local e horário')
+                            : tr('Descrição para o turista'),
                       ),
                     ),
                   ],
@@ -359,8 +359,8 @@ RadioGroup<String>(
                       style: const TextStyle(fontSize: 18),
                       decoration: InputDecoration(
                         labelText: widget.eventMode
-                            ? 'Benefício (ex.: 2x1 no prato típico)'
-                            : 'Preço por pessoa',
+                            ? tr('Benefício (ex.: 2x1 no prato típico)')
+                            : tr('Preço por pessoa'),
                         prefixText: widget.eventMode ? null : r'R$ ',
                       ),
                     ),
@@ -383,7 +383,7 @@ RadioGroup<String>(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            _name.text.isEmpty ? '(sem nome)' : _name.text,
+                            _name.text.isEmpty ? tr('(sem nome)') : _name.text,
                             style: Theme.of(context).textTheme.titleLarge,
                           ),
                           if (!widget.eventMode) MpBadge(_kind, fg: MP.navy),
@@ -421,8 +421,8 @@ RadioGroup<String>(
                             color: MP.info,
                             bg: MP.infoBg,
                             title: widget.eventMode
-                                ? 'Evento em análise'
-                                : 'Serviço em análise',
+                                ? tr('Evento em análise')
+                                : tr('Serviço em análise'),
                             message: tr('A equipe MaraPass confere as informações e publica em breve.'),
                             primaryLabel: tr('Concluir'),
                             onPrimary: () => Navigator.of(context).pop(),

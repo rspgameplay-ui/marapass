@@ -31,7 +31,7 @@ Future<void> savePng(BuildContext context, GlobalKey key, String fileName) async
   final ok = downloadPng(data.buffer.asUint8List(), fileName);
   showMpSnack(
     context,
-    ok ? 'Placa baixada: $fileName' : 'Para baixar e imprimir, abra o painel pela versão web.',
+    ok ? '${tr('Placa baixada')}: $fileName' : tr('Para baixar e imprimir, abra o painel pela versão web.'),
   );
 }
 

@@ -58,7 +58,7 @@ class _CouponReceiptState extends ConsumerState<CouponReceipt> {
     if (!mounted) return;
     final store = ref.read(appStoreProvider);
     if (store.remote == null) {
-      setState(() => error = 'Este link exige conexão com o MaraPass.');
+      setState(() => error = tr('Este link exige conexão com o MaraPass.'));
       return;
     }
     if (!store.online &&
@@ -67,7 +67,7 @@ class _CouponReceiptState extends ConsumerState<CouponReceipt> {
           ref,
           reason: tr('Entre para consultar este cupom.'),
         )) {
-      if (mounted) setState(() => error = 'Entre para consultar este cupom.');
+      if (mounted) setState(() => error = tr('Entre para consultar este cupom.'));
       return;
     }
     try {
@@ -78,7 +78,7 @@ class _CouponReceiptState extends ConsumerState<CouponReceipt> {
       if (!mounted) return;
       setState(() {
         receipt = rows.firstOrNull;
-        error = rows.isEmpty ? 'Cupom indisponível para esta conta.' : null;
+        error = rows.isEmpty ? tr('Cupom indisponível para esta conta.') : null;
       });
     } catch (e) {
       if (mounted) setState(() => error = e.toString());
@@ -131,7 +131,7 @@ class _CouponReceiptState extends ConsumerState<CouponReceipt> {
       );
       if (note == null || !mounted) return;
       if (note.isEmpty) {
-        _message(context, 'Registre o motivo.');
+        _message(context, tr('Registre o motivo.'));
         return;
       }
     }
@@ -209,7 +209,7 @@ class _CouponReceiptState extends ConsumerState<CouponReceipt> {
                             data: 'marapass:cupom:$receiptCode',
                             size: 164,
                             semanticsLabel:
-                                'Código para o parceiro conferir este cupom',
+                                tr('Código para o parceiro conferir este cupom'),
                           ),
                         ),
                         SelectableText(
@@ -230,7 +230,7 @@ class _CouponReceiptState extends ConsumerState<CouponReceipt> {
                                   url,
                                   mode: LaunchMode.externalApplication,
                                 )) {
-                                  throw 'Não foi possível abrir o pagamento.';
+                                  throw tr('Não foi possível abrir o pagamento.');
                                 }
                               } catch (e) {
                                 if (context.mounted) _message(context, e);
@@ -277,8 +277,8 @@ class _CouponReceiptState extends ConsumerState<CouponReceipt> {
                           keyboardType: const TextInputType.numberWithOptions(
                             decimal: true,
                           ),
-                          decoration: const InputDecoration(
-                            labelText: 'Valor recebido pelo item (R\$)',
+                          decoration: InputDecoration(
+                            labelText: '${tr('Valor recebido pelo item (R')}\$)',
                           ),
                         ),
                         FilledButton(
@@ -295,11 +295,11 @@ class _CouponReceiptState extends ConsumerState<CouponReceipt> {
                                   if (result['ok'] != true) await load();
                                   if (result['ok'] != true) {
                                     throw switch (result['reason']) {
-                                      'amount_mismatch' => 'O valor diverge do cupom. Confira o pagamento antes de confirmar.',
-                                      'rate_limited' => 'Aguarde um minuto para tentar novamente.',
-                                      'expired' => 'Cupom vencido.',
+                                      'amount_mismatch' => tr('O valor diverge do cupom. Confira o pagamento antes de confirmar.'),
+                                      'rate_limited' => tr('Aguarde um minuto para tentar novamente.'),
+                                      'expired' => tr('Cupom vencido.'),
                                       _ =>
-                                        'Cupom indisponível para esta conta.',
+                                        tr('Cupom indisponível para esta conta.'),
                                     };
                                   }
                                 }),
@@ -340,14 +340,14 @@ class _CouponReceiptState extends ConsumerState<CouponReceipt> {
                                     '/${sale['contact']}',
                                     {
                                       'text':
-                                          'Quero falar sobre o cupom $receiptCode',
+                                          '${tr('Quero falar sobre o cupom')} $receiptCode',
                                     },
                                   );
                                   if (!await launchUrl(
                                     uri,
                                     mode: LaunchMode.externalApplication,
                                   )) {
-                                    throw 'Não foi possível abrir a conversa.';
+                                    throw tr('Não foi possível abrir a conversa.');
                                   }
                                 }),
                           child: Text(tr('Falar com o parceiro')),
@@ -377,7 +377,7 @@ class _CouponReceiptState extends ConsumerState<CouponReceipt> {
                               ? null
                               : () => transition(
                                   'dispute',
-                                  'Contestar',
+                                  tr('Contestar'),
                                   explain: true,
                                 ),
                           child: Text(tr('Contestar')),
@@ -388,7 +388,7 @@ class _CouponReceiptState extends ConsumerState<CouponReceipt> {
                               ? null
                               : () => transition(
                                   'resolve',
-                                  'Registrar solução',
+                                  tr('Registrar solução'),
                                   explain: true,
                                 ),
                           child: Text(tr('Resolver divergência')),
@@ -401,7 +401,7 @@ class _CouponReceiptState extends ConsumerState<CouponReceipt> {
                               ? null
                               : () => transition(
                                   'utilize',
-                                  'Registrar utilização',
+                                  tr('Registrar utilização'),
                                 ),
                           child: Text(tr('Registrar utilização')),
                         ),
@@ -410,7 +410,7 @@ class _CouponReceiptState extends ConsumerState<CouponReceipt> {
                           onPressed: busy
                               ? null
                               : () =>
-                                    transition('complete', 'Concluir entrega'),
+                                    transition('complete', tr('Concluir entrega')),
                           child: Text(tr('Concluir entrega')),
                         ),
                       Text('Pontos no Passaporte   ${r['points']}'),
@@ -420,7 +420,7 @@ class _CouponReceiptState extends ConsumerState<CouponReceipt> {
                           title: Text(
                             e['kind'] == 'refund'
                                 ? 'Estorno · ${e['reason']}'
-                                : 'Conversão confirmada',
+                                : tr('Conversão confirmada'),
                           ),
                           subtitle: Text(
                             '${_when(e['at'])} · ${e['reference']}',
@@ -437,8 +437,8 @@ class _CouponReceiptState extends ConsumerState<CouponReceipt> {
                                   const TextInputType.numberWithOptions(
                                     decimal: true,
                                   ),
-                              decoration: const InputDecoration(
-                                labelText: 'Valor devolvido (R\$)',
+                              decoration: InputDecoration(
+                                labelText: '${tr('Valor devolvido (R')}\$)',
                               ),
                             ),
                             TextField(
@@ -464,7 +464,7 @@ class _CouponReceiptState extends ConsumerState<CouponReceipt> {
                                           cents < 1 ||
                                           reference.text.trim().isEmpty ||
                                           reason.text.trim().isEmpty) {
-                                        throw 'Informe valor, referência e motivo.';
+                                        throw tr('Informe valor, referência e motivo.');
                                       }
                                       await remote.refundCoupon(
                                         receiptCode,
@@ -554,7 +554,7 @@ class _PartnerCouponListState extends ConsumerState<PartnerCouponList> {
   Future<void> open(String value, {String channel = 'panel'}) async {
     final code = commercialCouponCode(value);
     if (code == null) {
-      _message(context, 'Confira o código completo emitido pelo MaraPass.');
+      _message(context, tr('Confira o código completo emitido pelo MaraPass.'));
       return;
     }
     await Navigator.of(context).push(
@@ -609,10 +609,10 @@ class _PartnerCouponListState extends ConsumerState<PartnerCouponList> {
             ),
           Text(
             widget.lookup
-                ? 'Validar cupom'
+                ? tr('Validar cupom')
                 : widget.dashboard
-                ? 'Painel do parceiro'
-                : 'Extrato de cupons',
+                ? tr('Painel do parceiro')
+                : tr('Extrato de cupons'),
             style: Theme.of(context).textTheme.headlineSmall,
           ),
           if (widget.shortcuts != null) widget.shortcuts!,
@@ -639,7 +639,7 @@ class _PartnerCouponListState extends ConsumerState<PartnerCouponList> {
                     },
               child: Text(
                 filters.isEmpty
-                    ? 'Filtrar período de emissão'
+                    ? tr('Filtrar período de emissão')
                     : '${filters['from']} a ${filters['until']}',
               ),
             ),
@@ -752,7 +752,7 @@ class _CouponConsentState extends ConsumerState<CouponConsent> {
       if (enabled == true) {
         await r.setWa(false);
       } else if (!RegExp(r'^[1-9]\d{7,14}$').hasMatch(digits)) {
-        throw 'Informe o telefone com código do país e DDD.';
+        throw tr('Informe o telefone com código do país e DDD.');
       } else if ((r.confirmedPhone ?? '').replaceFirst('+', '') != digits &&
           !sent) {
         await r.startPhone('+$digits');
@@ -783,7 +783,7 @@ class _CouponConsentState extends ConsumerState<CouponConsent> {
           tr('Autorizo o MaraPass a enviar avisos de emissão dos meus cupons e das minhas ofertas a este número. Posso cancelar aqui ou responder SAIR.'),
         ),
         if (error != null)
-          TextButton(onPressed: load, child: Text('$error · Tentar novamente')),
+          TextButton(onPressed: load, child: Text('$error · ${tr('Tentar novamente')}')),
         if (enabled != null) ...[
           TextField(
             controller: phone,
@@ -805,10 +805,10 @@ class _CouponConsentState extends ConsumerState<CouponConsent> {
             onPressed: busy ? null : submit,
             child: Text(
               enabled == true
-                  ? 'Revogar autorização'
+                  ? tr('Revogar autorização')
                   : sent
-                  ? 'Verificar e autorizar'
-                  : 'Autorizar avisos de cupom',
+                  ? tr('Verificar e autorizar')
+                  : tr('Autorizar avisos de cupom'),
             ),
           ),
         ],

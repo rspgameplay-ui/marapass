@@ -36,7 +36,7 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
   bool _busy = false;
 
   /// Turnos do parceiro (vazio = horários padrão, sem limite cadastrado).
-  List<SlotDay> _slots = const [];
+  List<SlotDay> _slots = [];
 
   @override
   void initState() {
@@ -70,7 +70,7 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
       context,
       ref,
       reason:
-          'Entre para enviar o pedido de reserva. Você volta direto para cá.',
+          tr('Entre para enviar o pedido de reserva. Você volta direto para cá.'),
     );
     if (!ok || !mounted) return;
     setState(() => _busy = true);
@@ -103,7 +103,7 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
           details: _ResSummary(res: r),
           primaryLabel: tr('Ver minhas reservas'),
           onPrimary: () => Navigator.of(context).pushReplacement(
-            MaterialPageRoute<void>(builder: (_) => const ReservationsScreen()),
+            MaterialPageRoute<void>(builder: (_) => ReservationsScreen()),
           ),
           secondaryLabel: tr('Voltar ao início'),
           onSecondary: () {
@@ -126,7 +126,7 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
 
     Widget step(int n, String title, Widget child, {bool done = false}) =>
         Padding(
-          padding: const EdgeInsets.only(bottom: MP.sectionGap),
+          padding: EdgeInsets.only(bottom: MP.sectionGap),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -136,20 +136,20 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
                     radius: 16,
                     backgroundColor: done ? MP.green : MP.soft,
                     child: done
-                        ? const Icon(
+                        ? Icon(
                             Icons.check_rounded,
                             color: Colors.white,
                             size: 18,
                           )
                         : Text(
                             '$n',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontWeight: FontWeight.w800,
                               color: MP.ink,
                             ),
                           ),
                   ),
-                  const SizedBox(width: MP.s3),
+                  SizedBox(width: MP.s3),
                   Expanded(
                     child: Text(
                       title,
@@ -158,7 +158,7 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: MP.s3),
+              SizedBox(height: MP.s3),
               child,
             ],
           ),
@@ -167,17 +167,17 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
     return Scaffold(
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.only(bottom: MP.s6),
+          padding: EdgeInsets.only(bottom: MP.s6),
           children: [
             MpHeader(tr('Reservar'), subtitle: i.titulo),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
+              padding: EdgeInsets.symmetric(horizontal: MP.pageH),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   step(
                     1,
-                    'Escolha o dia',
+                    tr('Escolha o dia'),
                     MpMonthCalendar(
                       start: _day,
                       onChanged: (d, _) => setState(() {
@@ -196,7 +196,7 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
                     Row(
                       children: [
                         for (final p in [
-                          for (final (name, hours, icon) in const [
+                          for (final (name, hours, icon) in [
                             ('Manhã', '8h às 12h', Icons.wb_sunny_rounded),
                             ('Tarde', '14h às 18h', Icons.wb_twilight_rounded),
                           ])
@@ -205,7 +205,7 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
                                 name,
                                 switch (_slot(_day, name)) {
                                   null => hours,
-                                  final x when !x.open => 'Não funciona',
+                                  final x when !x.open => tr('Não funciona'),
                                   final x => '${x.hours} · ${x.left == 0 ? 'esgotado' : '${x.left} vagas'}',
                                 },
                                 icon,
@@ -221,7 +221,7 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
                                 if (left != null && _people > left) _people = left;
                               }) : null,
                               child: Container(
-                                padding: const EdgeInsets.all(MP.s4),
+                                padding: EdgeInsets.all(MP.s4),
                                 decoration: BoxDecoration(
                                   color: _period == p.$1 ? MP.navy : MP.soft,
                                   borderRadius: BorderRadius.circular(
@@ -237,9 +237,9 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
                                           : MP.navy,
                                       size: 32,
                                     ),
-                                    const SizedBox(height: 4),
+                                    SizedBox(height: 4),
                                     Text(
-                                      p.$1,
+                                      tr(p.$1),
                                       style: TextStyle(
                                         fontWeight: FontWeight.w800,
                                         fontSize: 18,
@@ -262,7 +262,7 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
                               ),
                             ),
                           ),
-                          if (p.$1 == 'Manhã') const SizedBox(width: MP.s3),
+                          if (p.$1 == 'Manhã') SizedBox(width: MP.s3),
                         ],
                       ],
                     ),
@@ -273,12 +273,12 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
                     tr('Quantas pessoas?'),
                     Row(
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.groups_rounded,
                           size: 36,
                           color: MP.navy,
                         ),
-                        const Spacer(),
+                        Spacer(),
                         MpStepper(
                           value: _people,
                           min: 1,
@@ -293,15 +293,15 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
                   if (cupom != null)
                     step(
                       4,
-                      'Cupom',
+                      tr('Cupom'),
                       SwitchListTile(
-                        key: const Key('use-coupon'),
+                        key: Key('use-coupon'),
                         value: _useCoupon,
                         onChanged: (v) => setState(() => _useCoupon = v),
                         contentPadding: EdgeInsets.zero,
                         title: Text(
-                          'Usar ${cupom.beneficio}',
-                          style: const TextStyle(
+                          '${tr('Usar')} ${cupom.beneficio}',
+                          style: TextStyle(
                             fontWeight: FontWeight.w800,
                             fontSize: 17,
                           ),
@@ -316,7 +316,7 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
                       child: Column(
                         children: [
                           _line(
-                            '${formatBrl(unit)} × $_people ${_people == 1 ? 'pessoa' : 'pessoas'}',
+                            '${formatBrl(unit)} × $_people ${_people == 1 ? tr('pessoa') : tr('pessoas')}',
                             formatBrl(unit * _people),
                           ),
                           if (discount > 0)
@@ -325,15 +325,15 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
                               '- ${formatBrl(discount)}',
                               color: MP.success,
                             ),
-                          const Divider(height: MP.s5),
+                          Divider(height: MP.s5),
                           _line(tr('Total estimado'), formatBrl(total), bold: true),
-                          const SizedBox(height: MP.s2),
+                          SizedBox(height: MP.s2),
                           Text(
                             tr('Cancelamento grátis até 24 horas antes do início, com reembolso integral.'),
-                            key: const Key('cancel-policy'),
-                            style: const TextStyle(color: MP.success, fontSize: 14, fontWeight: FontWeight.w700),
+                            key: Key('cancel-policy'),
+                            style: TextStyle(color: MP.success, fontSize: 14, fontWeight: FontWeight.w700),
                           ),
-                          const SizedBox(height: MP.s1),
+                          SizedBox(height: MP.s1),
                           Text(
                             tr('Nenhum pagamento é feito agora. O valor final é combinado com o parceiro.'),
                             style: TextStyle(
@@ -352,8 +352,8 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
       ),
       bottomNavigationBar: SafeArea(
         child: Container(
-          padding: const EdgeInsets.fromLTRB(MP.pageH, MP.s3, MP.pageH, MP.s3),
-          decoration: const BoxDecoration(
+          padding: EdgeInsets.fromLTRB(MP.pageH, MP.s3, MP.pageH, MP.s3),
+          decoration: BoxDecoration(
             color: MP.page,
             border: Border(top: BorderSide(color: MP.border)),
           ),
@@ -363,24 +363,24 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
             children: [
               if (ready)
                 Padding(
-                  padding: const EdgeInsets.only(bottom: MP.s2),
+                  padding: EdgeInsets.only(bottom: MP.s2),
                   child: Row(
                     children: [
-                      const Icon(Icons.event_available_rounded, color: MP.green, size: MP.iconSm),
-                      const SizedBox(width: MP.s2),
+                      Icon(Icons.event_available_rounded, color: MP.green, size: MP.iconSm),
+                      SizedBox(width: MP.s2),
                       Expanded(
                         child: Text(
-                          '${_day!.day.toString().padLeft(2, '0')}/${_day!.month.toString().padLeft(2, '0')} · $_period · $_people ${_people == 1 ? 'pessoa' : 'pessoas'}',
-                          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: MP.ink),
+                          '${_day!.day.toString().padLeft(2, '0')}/${_day!.month.toString().padLeft(2, '0')} · $_period · $_people ${_people == 1 ? tr('pessoa') : tr('pessoas')}',
+                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: MP.ink),
                         ),
                       ),
                       if (unit > 0)
-                        Text(formatBrl(total), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: MP.ink)),
+                        Text(formatBrl(total), style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: MP.ink)),
                     ],
                   ),
                 ),
               MpCtaButton(
-                key: const Key('booking-submit'),
+                key: Key('booking-submit'),
                 label: ready
                     ? tr('Solicitar reserva')
                     : (_day == null ? 'Escolha o dia' : tr('Escolha o horário')),
@@ -396,7 +396,7 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
 
   Widget _line(String a, String b, {bool bold = false, Color? color}) =>
       Padding(
-        padding: const EdgeInsets.symmetric(vertical: 3),
+        padding: EdgeInsets.symmetric(vertical: 3),
         child: Row(
           children: [
             Expanded(
@@ -431,17 +431,17 @@ class _ResSummary extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          res.item?.titulo ?? 'Passeio',
+          res.item?.titulo ?? tr('Passeio'),
           style: Theme.of(context).textTheme.titleLarge,
         ),
-        const SizedBox(height: MP.s2),
+        SizedBox(height: MP.s2),
         MpInfoRow(Icons.event_rounded, fmtLong(res.date)),
-        MpInfoRow(Icons.schedule_rounded, res.period),
+        MpInfoRow(Icons.schedule_rounded, trPeriod(res.period)),
         MpInfoRow(
           Icons.groups_rounded,
-          '${res.people} ${res.people == 1 ? 'pessoa' : 'pessoas'}',
+          '${res.people} ${res.people == 1 ? tr('pessoa') : tr('pessoas')}',
         ),
-        const SizedBox(height: MP.s2),
+        SizedBox(height: MP.s2),
         _StatusBadge(res.status),
       ],
     ),
@@ -491,7 +491,7 @@ class ReservationsScreen extends ConsumerWidget {
                       actionLabel: tr('Ver passeios'),
                       onAction: () => Navigator.of(context).pushReplacement(
                         MaterialPageRoute<void>(
-                          builder: (_) => const ExploreScreen(),
+                          builder: (_) => ExploreScreen(),
                         ),
                       ),
                     ),
@@ -499,7 +499,7 @@ class ReservationsScreen extends ConsumerWidget {
                 ],
               )
             : ListView(
-                padding: const EdgeInsets.only(bottom: MP.s8),
+                padding: EdgeInsets.only(bottom: MP.s8),
                 children: [
                   MpHeader(
                     tr('Minhas reservas'),
@@ -539,7 +539,7 @@ class _ResTile extends StatelessWidget {
   final LocalReservation res;
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.fromLTRB(MP.pageH, 0, MP.pageH, MP.s3),
+    padding: EdgeInsets.fromLTRB(MP.pageH, 0, MP.pageH, MP.s3),
     child: MpCard(
       onTap: () => push<void>(context, ReservationDetailScreen(id: res.id)),
       child: Row(
@@ -553,25 +553,25 @@ class _ResTile extends StatelessWidget {
               icon: Icons.event_rounded,
             ),
           ),
-          const SizedBox(width: MP.s3),
+          SizedBox(width: MP.s3),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  res.item?.titulo ?? 'Passeio',
+                  res.item?.titulo ?? tr('Passeio'),
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 Text(
-                  '${fmtLong(res.date)} · ${res.period}',
+                  '${fmtLong(res.date)} · ${trPeriod(res.period)}',
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
-                const SizedBox(height: 6),
+                SizedBox(height: 6),
                 _StatusBadge(res.status),
               ],
             ),
           ),
-          const Icon(
+          Icon(
             Icons.chevron_right_rounded,
             color: MP.textMuted,
             size: 28,
@@ -597,54 +597,54 @@ class ReservationDetailScreen extends ConsumerWidget {
     return Scaffold(
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.only(bottom: MP.s8),
+          padding: EdgeInsets.only(bottom: MP.s8),
           children: [
             MpHeader(tr('Sua reserva')),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
+              padding: EdgeInsets.symmetric(horizontal: MP.pageH),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   _ResSummary(res: r),
                   if (r.status == ResStatus.confirmada) ...[
-                    const SizedBox(height: MP.s3),
+                    SizedBox(height: MP.s3),
                     MpCard(
-                      key: const Key('res-voucher'),
+                      key: Key('res-voucher'),
                       child: Column(
                         children: [
                           Text(tr('Comprovante'), style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
-                          const SizedBox(height: MP.s2),
+                          SizedBox(height: MP.s2),
                           QrImageView(data: 'MARAPASS-RES:${r.id}', size: 200, backgroundColor: Colors.white),
-                          SelectableText(AppStore.reservationCode(r.id), style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, letterSpacing: 2)),
-                          const SizedBox(height: MP.s1),
+                          SelectableText(AppStore.reservationCode(r.id), style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, letterSpacing: 2)),
+                          SizedBox(height: MP.s1),
                           Text(tr('Mostre ao parceiro no dia. Ao ler o código, a visita entra no seu passaporte.'), textAlign: TextAlign.center, style: TextStyle(color: MP.textSecondary)),
                         ],
                       ),
                     ),
                   ],
                   if (r.status == ResStatus.concluida) ...[
-                    const SizedBox(height: MP.s3),
+                    SizedBox(height: MP.s3),
                     MpNotice(tr('Reserva utilizada. A visita foi registrada no seu passaporte.')),
                   ],
-                  const SizedBox(height: MP.s4),
+                  SizedBox(height: MP.s4),
                   if (open) ...[
                     MpListTile(
-                      key: const Key('res-reschedule'),
+                      key: Key('res-reschedule'),
                       icon: Icons.edit_calendar_rounded,
                       title: tr('Reagendar'),
                       subtitle: tr('Pedir outro dia ou horário'),
                       onTap: () => _reschedule(context, store, r),
                     ),
-                    const SizedBox(height: MP.s2),
+                    SizedBox(height: MP.s2),
                     MpListTile(
-                      key: const Key('res-people'),
+                      key: Key('res-people'),
                       icon: Icons.groups_rounded,
                       title: tr('Participantes'),
                       subtitle:
-                          '${r.people} ${r.people == 1 ? 'pessoa' : 'pessoas'}',
+                          '${r.people} ${r.people == 1 ? tr('pessoa') : tr('pessoas')}',
                       onTap: () => _people(context, store, r),
                     ),
-                    const SizedBox(height: MP.s2),
+                    SizedBox(height: MP.s2),
                   ],
                   MpListTile(
                     icon: Icons.chat_rounded,
@@ -655,36 +655,36 @@ class ReservationDetailScreen extends ConsumerWidget {
                       ComposeScreen(
                         kind: 'Reserva',
                         subject: r.item?.titulo ?? 'Reserva',
-                        hint: 'Escreva sua dúvida sobre a reserva',
+                        hint: tr('Escreva sua dúvida sobre a reserva'),
                       ),
                     ),
                   ),
-                  const SizedBox(height: MP.s4),
+                  SizedBox(height: MP.s4),
                   Text(
                     tr('Histórico'),
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
-                  const SizedBox(height: MP.s2),
+                  SizedBox(height: MP.s2),
                   for (final h in r.history.reversed)
                     Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 6),
+                      padding: EdgeInsets.symmetric(vertical: 6),
                       child: Row(
                         children: [
-                          const Icon(Icons.circle, size: 10, color: MP.green),
-                          const SizedBox(width: MP.s3),
+                          Icon(Icons.circle, size: 10, color: MP.green),
+                          SizedBox(width: MP.s3),
                           Expanded(
                             child: Text(
                               h,
-                              style: const TextStyle(fontSize: 16),
+                              style: TextStyle(fontSize: 16),
                             ),
                           ),
                         ],
                       ),
                     ),
                   if (open) ...[
-                    const SizedBox(height: MP.s6),
+                    SizedBox(height: MP.s6),
                     TextButton(
-                      key: const Key('res-cancel'),
+                      key: Key('res-cancel'),
                       onPressed: () => _cancel(context, store, r),
                       child: Text(
                         tr('Cancelar reserva'),
@@ -709,11 +709,11 @@ class ReservationDetailScreen extends ConsumerWidget {
     final now = DateTime.now();
     final d = await showDatePicker(
       context: context,
-      firstDate: now.add(const Duration(days: 1)),
-      lastDate: now.add(const Duration(days: 90)),
+      firstDate: now.add(Duration(days: 1)),
+      lastDate: now.add(Duration(days: 90)),
       initialDate: r.date.isAfter(now)
           ? r.date
-          : now.add(const Duration(days: 1)),
+          : now.add(Duration(days: 1)),
       helpText: tr('Novo dia'),
     );
     if (d == null || !context.mounted) return;
@@ -723,7 +723,7 @@ class ReservationDetailScreen extends ConsumerWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            for (final x in const ['Manhã', 'Tarde'])
+            for (final x in ['Manhã', 'Tarde'])
               ListTile(
                 minTileHeight: 64,
                 leading: Icon(
@@ -732,8 +732,8 @@ class ReservationDetailScreen extends ConsumerWidget {
                       : Icons.wb_twilight_rounded,
                 ),
                 title: Text(
-                  x,
-                  style: const TextStyle(
+                  tr(x),
+                  style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
                   ),
@@ -779,8 +779,8 @@ class ReservationDetailScreen extends ConsumerWidget {
               child: Text(tr('Cancelar')),
             ),
             FilledButton(
-              key: const Key('dlg-people-save'),
-              style: FilledButton.styleFrom(minimumSize: const Size(110, 52)),
+              key: Key('dlg-people-save'),
+              style: FilledButton.styleFrom(minimumSize: Size(110, 52)),
               onPressed: () => Navigator.of(context).pop(true),
               child: Text(tr('Salvar')),
             ),
@@ -826,7 +826,7 @@ class ReservationDetailScreen extends ConsumerWidget {
             for (final x in reasons)
               ListTile(
                 minTileHeight: 60,
-                title: Text(x, style: const TextStyle(fontSize: 17)),
+                title: Text(tr(x), style: const TextStyle(fontSize: 17)),
                 onTap: () => Navigator.of(context).pop(x),
               ),
           ],

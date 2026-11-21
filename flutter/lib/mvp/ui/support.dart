@@ -42,10 +42,10 @@ class SupportCenterScreen extends ConsumerWidget {
                     tint: MP.tintBlue,
                     onTap: () => push<void>(
                       context,
-                      const ComposeScreen(
+                      ComposeScreen(
                         kind: 'Suporte',
                         subject: 'Solicitação',
-                        hint: 'Conte o que aconteceu',
+                        hint: tr('Conte o que aconteceu'),
                       ),
                     ),
                   ),
@@ -59,10 +59,10 @@ class SupportCenterScreen extends ConsumerWidget {
                     color: MP.goldText,
                     onTap: () => push<void>(
                       context,
-                      const ComposeScreen(
+                      ComposeScreen(
                         kind: 'Sugestão',
                         subject: 'Sugestão',
-                        hint: 'Escreva a sua sugestão',
+                        hint: tr('Escreva a sua sugestão'),
                       ),
                     ),
                   ),
@@ -211,10 +211,10 @@ class _ComposeState extends ConsumerState<ComposeScreen> {
       MaterialPageRoute<void>(
         builder: (_) => MpStatusScreen(
           title: widget.kind == 'Sugestão'
-              ? 'Obrigado pela sugestão!'
-              : 'Mensagem enviada',
+              ? tr('Obrigado pela sugestão!')
+              : tr('Mensagem enviada'),
           message:
-              'Protocolo ${t.id}. Você recebe a resposta em Atendimento, aqui no app.',
+              '${tr('Protocolo')} ${t.id}. ${tr('Você recebe a resposta em Atendimento, aqui no app')}.',
           primaryLabel: tr('Ver atendimento'),
           onPrimary: () => Navigator.of(context).pushReplacement(
             MaterialPageRoute<void>(
@@ -325,7 +325,7 @@ class _TicketState extends ConsumerState<TicketScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            MpHeader(t.subject, subtitle: 'Protocolo ${t.id} · ${t.status}'),
+            MpHeader(t.subject, subtitle: '${tr('Protocolo')} ${t.id} · ${t.status}'),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
               child: OutlinedButton.icon(
@@ -333,7 +333,7 @@ class _TicketState extends ConsumerState<TicketScreen> {
                 onPressed: () => openWhatsApp(
                   context,
                   AppConfig.supportWhatsapp,
-                  'Olá! Preciso falar com uma pessoa sobre o protocolo ${t.id} (${t.kind}: ${t.subject}).',
+                  '${tr('Olá! Preciso falar com uma pessoa sobre o protocolo')} ${t.id} (${t.kind}: ${t.subject}).',
                 ),
                 icon: const Icon(Icons.chat_rounded, size: MP.iconMd),
                 label: Text(tr('Falar com uma pessoa no WhatsApp')),
@@ -345,7 +345,7 @@ class _TicketState extends ConsumerState<TicketScreen> {
                 children: [
                   bubble(t.body, true),
                   bubble(
-                    'Recebemos a sua mensagem. Respondemos em até 1 dia útil.',
+                    tr('Recebemos a sua mensagem. Respondemos em até 1 dia útil.'),
                     false,
                   ),
                   for (final r in t.replies) bubble(r, true),

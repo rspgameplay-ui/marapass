@@ -84,7 +84,7 @@ class _PassportScreenState extends ConsumerState<PassportScreen> {
             options: const [0, 1, 2, 3],
             selected: _tab,
             label: (v) =>
-                const ['Conquistas', 'Carimbos', 'Cidades', 'Extrato'][v],
+                tr(const ['Conquistas', 'Carimbos', 'Cidades', 'Extrato'][v]),
             onSelect: (v) => setState(() => _tab = v),
           ),
           const SizedBox(height: MP.s4),
@@ -122,11 +122,11 @@ class _Cover extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final lv = store.level;
-    final name = store.name ?? 'Viajante';
+    final name = store.name ?? tr('Viajante');
     final stamped = store.stampedPolos.length;
     final used = store.coupons.where((c) => c.used).length;
     return Semantics(
-      label: 'Nível ${lv.$1}, ${store.points} pontos, $stamped de ${Content.polos.length} carimbos',
+      label: '${tr('Nível')} ${lv.$1}, ${store.points} ${tr('pontos')}, $stamped ${tr('de')} ${Content.polos.length} ${tr('carimbos')}',
       child: Container(
         decoration: BoxDecoration(boxShadow: MP.shadowFloat),
         child: Column(
@@ -213,7 +213,7 @@ class _Cover extends StatelessWidget {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      lv.$4 == null ? 'Nível máximo alcançado' : 'Faltam ${lv.$4! - store.points} pts para ${lv.$3}',
+                      lv.$4 == null ? tr('Nível máximo alcançado') : appLang == 'en' ? '${lv.$4! - store.points} pts to ${lv.$3}' : 'Faltam ${lv.$4! - store.points} pts para ${lv.$3}',
                       style: const TextStyle(color: MP.textSecondary, fontSize: 13, fontWeight: FontWeight.w700),
                     ),
                     const SizedBox(height: MP.s4),
@@ -495,7 +495,7 @@ class _PoloStamps extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Um carimbo no primeiro check-in de cada polo · ${first.length} de ${Content.polos.length}',
+          '${tr('Um carimbo no primeiro check-in de cada polo')} · ${first.length} ${tr('de')} ${Content.polos.length}',
           style: Theme.of(context).textTheme.bodyMedium
               ?.copyWith(color: MP.textSecondary),
         ),
@@ -537,7 +537,7 @@ class _CityStamps extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '${got.length} de ${cities.length} cidades do programa',
+          '${got.length} ${tr('de')} ${cities.length} ${tr('cidades do programa')}',
           style: Theme.of(context).textTheme.bodyMedium
               ?.copyWith(color: MP.textSecondary),
         ),
@@ -624,7 +624,7 @@ class _Achievements extends StatelessWidget {
           const SizedBox(height: MP.s4),
         ],
         Text(
-          '$done de ${list.length} conquistas',
+          '$done ${tr('de')} ${list.length} ${tr('conquistas')}',
           style: Theme.of(context).textTheme.bodyMedium
               ?.copyWith(color: MP.textSecondary),
         ),
@@ -698,8 +698,8 @@ class _Achievements extends StatelessWidget {
         const SizedBox(height: MP.s4),
         MpNotice(
           store.remote != null
-              ? 'Compras elegíveis geram 1 ponto por real inteiro confirmado. Estornos ajustam os pontos no extrato.'
-              : 'Níveis: Viajante (0), Explorador (500), Aventureiro (1.000) e Mestre (2.500 pontos). Check-in vale 50, cupom usado 20 e o primeiro check-in em cada polo, 100.',
+              ? tr('Compras elegíveis geram 1 ponto por real inteiro confirmado. Estornos ajustam os pontos no extrato.')
+              : tr('Níveis: Viajante (0), Explorador (500), Aventureiro (1.000) e Mestre (2.500 pontos). Check-in vale 50, cupom usado 20 e o primeiro check-in em cada polo, 100.'),
         ),
       ],
     );
@@ -740,7 +740,7 @@ class _HistoryState extends State<_History> {
       final polo = Content.polo(c.polo).nome;
       out.add(_Entry(c.at, Icons.verified_rounded, MP.success, 'Visita: ${Content.item(c.itemId)?.titulo ?? 'Local'}', '${c.cidade} · $polo', 50, 'CK-${n.toString().padLeft(4, '0')}'));
       if (seenPolos.add(c.polo)) {
-        out.add(_Entry(c.at.add(const Duration(seconds: 1)), Icons.workspace_premium_rounded, MP.goldText, 'Carimbo novo: $polo', 'Primeira visita no polo', 100, 'ST-${c.polo.toUpperCase()}'));
+        out.add(_Entry(c.at.add(const Duration(seconds: 1)), Icons.workspace_premium_rounded, MP.goldText, '${tr('Carimbo novo')}: $polo', tr('Primeira visita no polo'), 100, 'ST-${c.polo.toUpperCase()}'));
       }
     }
     for (final e in store.commercialPoints) {
@@ -750,7 +750,7 @@ class _HistoryState extends State<_History> {
           Icons.receipt_long,
           MP.navy,
           '${e['kind'] == 'refund' ? 'Estorno' : 'Compra'}: ${e['title']}',
-          'Compra com cupom',
+          tr('Compra com cupom'),
           e['points'] as int,
           '${e['coupon_id']} · ${e['reference']}',
         ),
@@ -770,7 +770,7 @@ class _HistoryState extends State<_History> {
       );
     }
     for (final r in store.myReservations) {
-      out.add(_Entry(r.date, Icons.event_rounded, MP.textSecondary, 'Reserva: ${r.item?.titulo ?? ''}', r.period, 0, 'RS-${r.id.length > 6 ? r.id.substring(0, 6).toUpperCase() : r.id.toUpperCase()}', status: r.status.label));
+      out.add(_Entry(r.date, Icons.event_rounded, MP.textSecondary, 'Reserva: ${r.item?.titulo ?? ''}', trPeriod(r.period), 0, 'RS-${r.id.length > 6 ? r.id.substring(0, 6).toUpperCase() : r.id.toUpperCase()}', status: r.status.label));
     }
     out.sort((a, b) => a.at.compareTo(b.at));
     var bal = 0;
@@ -795,7 +795,7 @@ class _HistoryState extends State<_History> {
             for (final d in const [7, 30, 0]) ...[
               ChoiceChip(
                 key: Key('ledger-$d'),
-                label: Text(d == 0 ? tr('Tudo') : '$d dias'),
+                label: Text(d == 0 ? tr('Tudo') : '$d ${tr('dias')}'),
                 selected: _days == d,
                 showCheckmark: false,
                 selectedColor: MP.navy,
@@ -816,8 +816,8 @@ class _HistoryState extends State<_History> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(_days == 0 ? tr('Ganhos no total') : 'Ganhos em $_days dias', style: const TextStyle(fontSize: 13, color: MP.textSecondary)),
-                    Text('+$earned pts', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: MP.success)),
+                    Text(_days == 0 ? tr('Ganhos no total') : '${tr('Ganhos em')} $_days ${tr('dias')}', style: const TextStyle(fontSize: 13, color: MP.textSecondary)),
+                    Text('+$earned ${tr('pts')}', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: MP.success)),
                   ],
                 ),
               ),
@@ -873,7 +873,7 @@ class _LedgerRow extends StatelessWidget {
               children: [
                 Text(e.title, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: MP.ink)),
                 Text('${fmtTime(e.at)} · ${e.detail}', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 14, color: MP.textSecondary)),
-                Text('Ref. ${e.ref}', style: const TextStyle(fontSize: 13, color: MP.textMuted, letterSpacing: .4)),
+                Text('${tr('Ref')}. ${e.ref}', style: const TextStyle(fontSize: 13, color: MP.textMuted, letterSpacing: .4)),
               ],
             ),
           ),
@@ -885,7 +885,7 @@ class _LedgerRow extends StatelessWidget {
                 MpBadge(e.status!, fg: MP.textSecondary)
               else
                 Text('+${e.points}', style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: MP.success)),
-              Text('Saldo $balance', style: const TextStyle(fontSize: 13, color: MP.textSecondary)),
+              Text('${tr('Saldo')} $balance', style: const TextStyle(fontSize: 13, color: MP.textSecondary)),
             ],
           ),
         ],

@@ -187,13 +187,25 @@ class _Welcome extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Align(
-                alignment: Alignment.centerRight,
-                child: IconButton(
+              Row(
+                children: [
+                  // Turista estrangeiro escolhe o idioma antes de tudo.
+                  TextButton.icon(
+                    key: const Key('welcome-lang'),
+                    onPressed: () {
+                      final store = ref.read(appStoreProvider);
+                      store.setLanguage(store.language == 'en' ? 'pt' : 'en');
+                    },
+                    icon: const Icon(Icons.language_rounded, color: MP.ink),
+                    label: Text(appLang == 'en' ? 'Português' : 'English', style: const TextStyle(color: MP.ink, fontWeight: FontWeight.w700)),
+                  ),
+                  const Spacer(),
+                  IconButton(
                   tooltip: tr('Fechar'),
                   onPressed: onDone,
                   icon: const Icon(Icons.close_rounded, color: MP.ink, size: 28),
                 ),
+                ],
               ),
               const SizedBox(height: MP.s4),
               Text(
