@@ -264,7 +264,7 @@ class _PoiCard extends StatelessWidget {
                         const SizedBox(width: MP.s1),
                         Expanded(
                           child: Text(
-                            'Partida: $originLabel',
+                            '${tr('Partida')}: $originLabel',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(fontSize: 14, color: MP.textSecondary),
@@ -403,13 +403,13 @@ class _PlanCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Roteiro do dia · ${plan.city}', maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleMedium),
+                      Text('${tr('Roteiro do dia')} · ${plan.city}', maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleMedium),
                       Text(
                         busy
-                            ? 'Traçando o percurso…'
+                            ? tr('Traçando o percurso…')
                             : r == null
                             ? '${plan.stops.length} paradas'
-                            : '${_time(r.duration)} de carro · ${_km(r.distance)} · ${plan.stops.length} paradas',
+                            : '${_time(r.duration)} ${tr('de carro')} · ${_km(r.distance)} · ${plan.stops.length} ${tr('paradas')}',
                         key: const Key('plan-summary'),
                         style: const TextStyle(fontSize: 14, color: MP.textSecondary, fontWeight: FontWeight.w600),
                       ),

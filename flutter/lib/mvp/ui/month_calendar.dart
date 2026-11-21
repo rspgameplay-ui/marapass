@@ -197,7 +197,7 @@ class DayAgenda extends ConsumerWidget {
       for (final e in Content.byCat(Cat.evento).where((e) => e.data != null && same(e.data!)))
         (Icons.event_rounded, MP.error, e.titulo, '${hhmm(e.data!.hour * 60 + e.data!.minute)} · ${e.cidade}'),
       for (final r in store.reservations.where((r) => same(r.date) && r.status != ResStatus.cancelada))
-        (Icons.event_available_rounded, MP.navy, r.item?.titulo ?? 'Reserva', '${r.period} · ${r.status.label}'),
+        (Icons.event_available_rounded, MP.navy, r.item?.titulo ?? tr('Reserva'), '${trPeriod(r.period)} · ${r.status.label}'),
       for (final t in store.trips)
         for (final s in t.stopsOn(day)) (Icons.route_rounded, MP.green, s.label, '${hhmm(s.startMin)} · ${t.name}'),
     ];

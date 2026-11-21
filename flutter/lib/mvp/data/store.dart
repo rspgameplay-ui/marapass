@@ -228,8 +228,8 @@ class AppStore extends ChangeNotifier {
 
   Future<LocalCoupon> activateCouponAsync(String cupomId) async {
     if (remote != null && (!online || !cupomId.startsWith('po:'))) {
-      throw const MvpException(
-        'Para emitir, entre na sua conta e escolha uma oferta comercial aprovada.',
+      throw MvpException(
+        tr('Para emitir, entre na sua conta e escolha uma oferta comercial aprovada.'),
       );
     }
     if (!online) return activateCoupon(cupomId);
@@ -614,8 +614,8 @@ class AppStore extends ChangeNotifier {
         amountCents: amountCents,
         ok: ok,
         reason: switch (reason) {
-          'used' => 'Já utilizado',
-          'not_found' => 'Código inválido',
+          'used' => tr('Já utilizado'),
+          'not_found' => tr('Código inválido'),
           _ => null,
         },
       ),
@@ -626,8 +626,8 @@ class AppStore extends ChangeNotifier {
     return (
       false,
       reason == 'used'
-          ? 'Este cupom já foi utilizado e não vale de novo.'
-          : 'Código não encontrado. Confira as letras com o turista.',
+          ? tr('Este cupom já foi utilizado e não vale de novo.')
+          : tr('Código não encontrado. Confira as letras com o turista.'),
     );
   }
 
@@ -971,38 +971,38 @@ class AppStore extends ChangeNotifier {
         next ??= l;
       }
     }
-    return (cur.$1, cur.$2, next?.$1, next?.$2);
+    return (tr(cur.$1), cur.$2, next == null ? null : tr(next.$1), next?.$2);
   }
 
   List<(IconData, String, bool)> get achievements => [
-    (Icons.flag_rounded, 'Primeiro check-in', checkins.isNotEmpty),
+    (Icons.flag_rounded, tr('Primeiro check-in'), checkins.isNotEmpty),
     (
       Icons.local_activity_rounded,
-      'Primeiro cupom usado',
+      tr('Primeiro cupom usado'),
       coupons.any((c) => c.used),
     ),
-    (Icons.map_rounded, 'Três polos visitados', stampedPolos.length >= 3),
+    (Icons.map_rounded, tr('Três polos visitados'), stampedPolos.length >= 3),
     (
       Icons.event_available_rounded,
-      'Primeira reserva',
+      tr('Primeira reserva'),
       myReservations.isNotEmpty,
     ),
-    (Icons.favorite_rounded, 'Cinco favoritos', favorites.length >= 5),
-    (Icons.group_add_rounded, 'Convidou um amigo', invites > 0),
-    (Icons.explore_rounded, 'Dez visitas registradas', checkins.length >= 10),
+    (Icons.favorite_rounded, tr('Cinco favoritos'), favorites.length >= 5),
+    (Icons.group_add_rounded, tr('Convidou um amigo'), invites > 0),
+    (Icons.explore_rounded, tr('Dez visitas registradas'), checkins.length >= 10),
     (
       Icons.location_city_rounded,
-      'Cinco cidades carimbadas',
+      tr('Cinco cidades carimbadas'),
       stampedCities.length >= 5,
     ),
     (
       Icons.workspace_premium_rounded,
-      'Sete polos visitados',
+      tr('Sete polos visitados'),
       stampedPolos.length >= 7,
     ),
     (
       Icons.star_rounded,
-      'Primeira avaliação',
+      tr('Primeira avaliação'),
       checkins.any((c) => c.rating > 0),
     ),
   ];
@@ -1011,22 +1011,22 @@ class AppStore extends ChangeNotifier {
   /// ainda não foram concluídas, da mais próxima de fechar para a mais longe.
   List<(IconData, String, int, int)> get missions {
     final all = <(IconData, String, int, int)>[
-      (Icons.flag_rounded, 'Registre sua 1ª visita', checkins.length, 1),
-      (Icons.explore_rounded, 'Registre 10 visitas', checkins.length, 10),
-      (Icons.map_rounded, 'Visite 3 polos diferentes', stampedPolos.length, 3),
+      (Icons.flag_rounded, tr('Registre sua 1ª visita'), checkins.length, 1),
+      (Icons.explore_rounded, tr('Registre 10 visitas'), checkins.length, 10),
+      (Icons.map_rounded, tr('Visite 3 polos diferentes'), stampedPolos.length, 3),
       (
         Icons.location_city_rounded,
-        'Carimbe 5 cidades',
+        tr('Carimbe 5 cidades'),
         stampedCities.length,
         5,
       ),
       (
         Icons.local_activity_rounded,
-        'Use um cupom em um parceiro',
+        tr('Use um cupom em um parceiro'),
         coupons.where((c) => c.used).length,
         1,
       ),
-      (Icons.group_add_rounded, 'Convide um amigo', invites, 1),
+      (Icons.group_add_rounded, tr('Convide um amigo'), invites, 1),
     ];
     final open = all.where((m) => m.$3 < m.$4).toList()
       ..sort((a, b) => (b.$3 / b.$4).compareTo(a.$3 / a.$4));
@@ -1149,7 +1149,7 @@ class AppStore extends ChangeNotifier {
       );
       validations.insert(0, v);
       _save();
-      return (false, 'Código não encontrado. Confira as letras com o turista.');
+      return (false, tr('Código não encontrado. Confira as letras com o turista.'));
     }
     if (found.used) {
       validations.insert(
@@ -1164,7 +1164,7 @@ class AppStore extends ChangeNotifier {
         ),
       );
       _save();
-      return (false, 'Este cupom já foi utilizado e não vale de novo.');
+      return (false, tr('Este cupom já foi utilizado e não vale de novo.'));
     }
     if (found.expired) {
       validations.insert(
@@ -1181,7 +1181,7 @@ class AppStore extends ChangeNotifier {
       _save();
       return (
         false,
-        'Este cupom venceu. Oriente o turista a procurar uma oferta válida.',
+        tr('Este cupom venceu. Oriente o turista a procurar uma oferta válida.'),
       );
     }
     found.usedAt = DateTime.now();

@@ -85,7 +85,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
               SwitchListTile(
                 key: key,
                 secondary: Icon(icon),
-                title: Text(label, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
+                title: Text(label, style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
                 value: value,
                 onChanged: (v) => upd(() => on(v)),
                 contentPadding: EdgeInsets.zero,
@@ -93,61 +93,61 @@ class _CategoryScreenState extends State<CategoryScreen> {
 
           return SafeArea(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(0, 0, 0, MP.s4),
+              padding: EdgeInsets.fromLTRB(0, 0, 0, MP.s4),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
+                    padding: EdgeInsets.symmetric(horizontal: MP.pageH),
                     child: Text(tr('Filtros'), style: Theme.of(context).textTheme.titleLarge),
                   ),
-                  const SizedBox(height: MP.s3),
+                  SizedBox(height: MP.s3),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: MP.pageH),
                     child: Text(tr('Preço'), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
                   ),
-                  const SizedBox(height: MP.s1),
+                  SizedBox(height: MP.s1),
                   FilterChips<int>(
-                    options: const [0, 1, 2, 3],
+                    options: [0, 1, 2, 3],
                     selected: _faixa,
                     label: (v) => v == 0 ? tr('Todos') : r'$' * v,
                     onSelect: (v) => upd(() => _faixa = v),
                   ),
                   if (tipos != null) ...[
-                    const SizedBox(height: MP.s2),
+                    SizedBox(height: MP.s2),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: MP.pageH),
                       child: Text(tr('Tipo'), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
                     ),
-                    const SizedBox(height: MP.s1),
+                    SizedBox(height: MP.s1),
                     FilterChips<String>(
                       options: tipos,
                       selected: _tipo,
-                      label: (v) => v,
+                      label: (v) => tr(v),
                       onSelect: (v) => upd(() => _tipo = v),
                     ),
                   ],
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
+                    padding: EdgeInsets.symmetric(horizontal: MP.pageH),
                     child: Column(
                       children: [
-                        toggle(const Key('filter-near'), Icons.near_me_rounded, 'Mais perto primeiro', _perto, (v) => _perto = v),
-                        toggle(const Key('filter-a11y'), Icons.accessible_rounded, 'Só lugares acessíveis', _acessivel, (v) => _acessivel = v),
+                        toggle(Key('filter-near'), Icons.near_me_rounded, 'Mais perto primeiro', _perto, (v) => _perto = v),
+                        toggle(Key('filter-a11y'), Icons.accessible_rounded, 'Só lugares acessíveis', _acessivel, (v) => _acessivel = v),
                         if (widget.cat == Cat.evento)
-                          toggle(const Key('filter-destaque'), Icons.star_rounded, 'Só em destaque', _soDestaque, (v) => _soDestaque = v),
-                        const SizedBox(height: MP.s3),
+                          toggle(Key('filter-destaque'), Icons.star_rounded, 'Só em destaque', _soDestaque, (v) => _soDestaque = v),
+                        SizedBox(height: MP.s3),
                         Row(
                           children: [
                             TextButton(
                               onPressed: () => upd(_clearExtra),
                               child: Text(tr('Limpar')),
                             ),
-                            const SizedBox(width: MP.s2),
+                            SizedBox(width: MP.s2),
                             Expanded(
                               child: FilledButton(
-                                key: const Key('filter-apply'),
-                                style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(MP.buttonHeight)),
+                                key: Key('filter-apply'),
+                                style: FilledButton.styleFrom(minimumSize: Size.fromHeight(MP.buttonHeight)),
                                 onPressed: () => Navigator.of(sheetCtx).pop(),
                                 child: Text(tr('Ver resultados')),
                               ),
@@ -169,7 +169,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
   @override
   Widget build(BuildContext context) {
     final all = Content.byCat(widget.cat);
-    final cidades = ['Todas', ...Content.cidades(all)];
+    final cidades = [tr('Todas'), ...Content.cidades(all)];
     var list = all
         .where(
           (i) =>
@@ -201,35 +201,35 @@ class _CategoryScreenState extends State<CategoryScreen> {
     return Scaffold(
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.only(bottom: MP.s10),
+          padding: EdgeInsets.only(bottom: MP.s10),
           children: [
-            MpHeader(widget.cat.label, subtitle: _subtitles[widget.cat]),
+            MpHeader(widget.cat.label, subtitle: tr(_subtitles[widget.cat] ?? '')),
             // Só a cidade fica à vista; o resto vai para "Filtros", para a
             // lista aparecer logo (antes eram 4 fileiras de filtros).
             if (cidades.length > 2) ...[
               FilterChips<String>(
                 options: cidades,
                 selected: _cidade,
-                label: (v) => v,
+                label: (v) => tr(v),
                 onSelect: (v) => setState(() => _cidade = v),
               ),
-              const SizedBox(height: MP.s2),
+              SizedBox(height: MP.s2),
             ],
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
+              padding: EdgeInsets.symmetric(horizontal: MP.pageH),
               child: Row(
                 children: [
                   OutlinedButton.icon(
-                    key: const Key('filter-open'),
+                    key: Key('filter-open'),
                     onPressed: () => _openFilters(context, tipos),
-                    style: OutlinedButton.styleFrom(minimumSize: const Size(0, 48)),
-                    icon: const Icon(Icons.tune_rounded),
-                    label: Text(_extraCount == 0 ? tr('Filtros') : 'Filtros ($_extraCount)'),
+                    style: OutlinedButton.styleFrom(minimumSize: Size(0, 48)),
+                    icon: Icon(Icons.tune_rounded),
+                    label: Text(_extraCount == 0 ? tr('Filtros') : '${tr('Filtros')} ($_extraCount)'),
                   ),
                   if (_extraCount > 0) ...[
-                    const SizedBox(width: MP.s2),
+                    SizedBox(width: MP.s2),
                     TextButton(
-                      key: const Key('filter-clear'),
+                      key: Key('filter-clear'),
                       onPressed: () => setState(_clearExtra),
                       child: Text(tr('Limpar')),
                     ),
@@ -246,8 +246,8 @@ class _CategoryScreenState extends State<CategoryScreen> {
               ),
             if (widget.cat == Cat.evento)
               Padding(
-                key: const Key('events-calendar'),
-                padding: const EdgeInsets.fromLTRB(MP.pageH, MP.s3, MP.pageH, 0),
+                key: Key('events-calendar'),
+                padding: EdgeInsets.fromLTRB(MP.pageH, MP.s3, MP.pageH, 0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -261,21 +261,21 @@ class _CategoryScreenState extends State<CategoryScreen> {
                       DayAgenda(day: _evDay!),
                       Align(
                         alignment: Alignment.centerLeft,
-                        child: TextButton(key: const Key('events-all'), onPressed: () => setState(() => _evDay = null), child: Text(tr('Ver todos os eventos'))),
+                        child: TextButton(key: Key('events-all'), onPressed: () => setState(() => _evDay = null), child: Text(tr('Ver todos os eventos'))),
                       ),
                     ],
                   ],
                 ),
               ),
-            const SizedBox(height: MP.s4),
+            SizedBox(height: MP.s4),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
+              padding: EdgeInsets.symmetric(horizontal: MP.pageH),
               child: Text(
-                '${list.length} ${list.length == 1 ? 'resultado' : 'resultados'}',
+                '${list.length} ${list.length == 1 ? tr('resultado') : tr('resultados')}',
                 style: Theme.of(context).textTheme.labelMedium,
               ),
             ),
-            const SizedBox(height: MP.s2),
+            SizedBox(height: MP.s2),
             if (list.isEmpty)
               MpEmpty(
                 icon: Icons.search_off_rounded,
@@ -289,7 +289,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
               ),
             for (final i in list)
               Padding(
-                padding: const EdgeInsets.fromLTRB(
+                padding: EdgeInsets.fromLTRB(
                   MP.pageH,
                   0,
                   MP.pageH,
@@ -313,7 +313,7 @@ class _EventRow extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final d = item.data!;
     final saved = ref.watch(appStoreProvider.select((s) => s.isSaved(item.id)));
-    const mo = [
+    final mo = appLang == 'en' ? const ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'] : const [
       'JAN',
       'FEV',
       'MAR',
@@ -464,7 +464,7 @@ class PoloScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: MP.s5),
                 Text(
-                  'Melhor época: ${polo.melhorTexto}',
+                  '${tr('Melhor época')}: ${polo.melhorTexto}',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: MP.s3),

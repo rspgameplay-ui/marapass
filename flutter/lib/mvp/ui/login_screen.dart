@@ -50,7 +50,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Future<void> _send() async {
     if (!_emailOk) {
-      setState(() => _error = 'Digite um e-mail válido, como nome@email.com.');
+      setState(() => _error = tr('Digite um e-mail válido, como nome@email.com.'));
       return;
     }
     setState(() {
@@ -72,7 +72,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final code = _code.text.trim();
     if (code.length < 6) {
       setState(
-        () => _error = 'O código tem 6 números. Confira o e-mail que enviamos.',
+        () => _error = tr('O código tem 6 números. Confira o e-mail que enviamos.'),
       );
       return;
     }
@@ -133,15 +133,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             const MpLogo(width: 110),
             const SizedBox(height: MP.s6),
             Text(
-              _codeStep ? 'Digite o código' : 'Entre no MaraPass',
+              _codeStep ? tr('Digite o código') : tr('Entre no MaraPass'),
               style: Theme.of(context).textTheme.headlineSmall,
             ),
             const SizedBox(height: MP.s2),
             Text(
               _codeStep
-                  ? 'Enviamos um código para ${_email.text.trim()}.'
+                  ? '${tr('Enviamos um código para')} ${_email.text.trim()}.'
                   : (widget.reason ??
-                        'Sem senha: enviamos um código para o seu e-mail.'),
+                        tr('Sem senha: enviamos um código para o seu e-mail.')),
               style: Theme.of(context).textTheme.bodyMedium
                   ?.copyWith(color: MP.textSecondary),
             ),

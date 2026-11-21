@@ -188,7 +188,7 @@ class _PhotoHireState extends ConsumerState<PhotoHireScreen> {
         builder: (_) => MpStatusScreen(
           title: tr('Pedido enviado ao fotógrafo'),
           message:
-              'Ele confirma o horário e o ponto de encontro. As fotos chegam em Minhas galerias. Protocolo ${t.id}.',
+              '${tr('Ele confirma o horário e o ponto de encontro. As fotos chegam em Minhas galerias. Protocolo')} ${t.id}.',
           primaryLabel: tr('Ver minhas galerias'),
           onPrimary: () => Navigator.of(context).pushReplacement(
             MaterialPageRoute<void>(builder: (_) => const GalleriesScreen()),
@@ -245,13 +245,13 @@ class _PhotoHireState extends ConsumerState<PhotoHireScreen> {
                   Wrap(
                     spacing: MP.s2,
                     children: [
-                      for (final p in const [
+                      for (final p in [
                         'Nascer do sol',
                         'Meio do dia',
                         'Pôr do sol',
                       ])
                         ChoiceChip(
-                          label: Text(p),
+                          label: Text(tr(p)),
                           selected: _period == p,
                           labelStyle: TextStyle(
                             color: _period == p ? Colors.white : MP.ink,
@@ -328,7 +328,7 @@ class GalleriesScreen extends ConsumerWidget {
                     MpListTile(
                       icon: Icons.photo_library_rounded,
                       title: o.subject,
-                      subtitle: 'Aguardando a sessão · ${o.body}',
+                      subtitle: '${tr('Aguardando a sessão')} · ${o.body}',
                       tint: MP.tintPurple,
                       color: const Color(0xff5b3fa8),
                     ),
@@ -385,10 +385,10 @@ class GalleriesScreen extends ConsumerWidget {
                     subtitle: tr('Receba no hotel ou em casa'),
                     onTap: () => push<void>(
                       context,
-                      const ComposeScreen(
+                      ComposeScreen(
                         kind: 'Fotografia',
                         subject: 'Fotografias impressas',
-                        hint: 'Quantas fotos, tamanho e endereço de entrega (hotel ou casa)',
+                        hint: tr('Quantas fotos, tamanho e endereço de entrega (hotel ou casa)'),
                       ),
                     ),
                   ),
@@ -444,7 +444,7 @@ class _TransferState extends ConsumerState<TransferQuoteScreen> {
         builder: (_) => MpStatusScreen(
           title: tr('Cotação pedida'),
           message:
-              'A empresa responde com valor e horário. Você acompanha em Atendimento. Protocolo ${t.id}.',
+              '${tr('A empresa responde com valor e horário. Você acompanha em Atendimento. Protocolo')} ${t.id}.',
           primaryLabel: tr('Ver atendimento'),
           onPrimary: () => Navigator.of(context).pushReplacement(
             MaterialPageRoute<void>(
@@ -483,11 +483,11 @@ class _TransferState extends ConsumerState<TransferQuoteScreen> {
                             'Embarque: ${_from == 'Endereço' ? _addr.text.trim() : _from}',
                           ),
                           MpInfoRow(Icons.event_rounded, fmtLong(_day!)),
-                          MpInfoRow(Icons.groups_rounded, '$_pax passageiros'),
+                          MpInfoRow(Icons.groups_rounded, '$_pax ${tr('passageiros')}'),
                           if (i.precoCents != null)
                             MpInfoRow(
                               Icons.payments_rounded,
-                              'Referência: ${formatBrl(i.precoCents! * _pax)}',
+                              '${tr('Referência')}: ${formatBrl(i.precoCents! * _pax)}',
                             ),
                         ],
                       ),
@@ -547,7 +547,7 @@ RadioGroup<String>(
                       activeColor: MP.green,
                       secondary: Icon(f.$2, color: MP.navy),
                       title: Text(
-                        f.$1,
+                        tr(f.$1),
                         style: const TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.w700,

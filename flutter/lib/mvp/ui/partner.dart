@@ -40,8 +40,8 @@ Future<void> _decide(
       showMpSnack(
         context,
         accept
-            ? 'Reserva confirmada. O turista vê na hora.'
-            : 'Reserva recusada.',
+            ? tr('Reserva confirmada. O turista vê na hora.')
+            : tr('Reserva recusada.'),
       );
     }
   } on MvpException catch (e) {
@@ -118,8 +118,8 @@ class _PartnerHeader extends StatelessWidget {
         Consumer(
           builder: (context, ref, _) => MpBadge(
             ref.watch(appStoreProvider).remote == null
-                ? 'ÁREA DO PARCEIRO · DEMONSTRAÇÃO'
-                : 'ÁREA DO PARCEIRO',
+                ? tr('ÁREA DO PARCEIRO · DEMONSTRAÇÃO')
+                : tr('ÁREA DO PARCEIRO'),
             fg: MP.navy,
           ),
         ),
@@ -240,7 +240,7 @@ class _Dashboard extends ConsumerWidget {
             ),
           ),
           _PartnerHeader(
-            'Olá, $_partnerName',
+            '${tr('Olá')}, $_partnerName',
             subtitle: tr('Resumo de hoje'),
           ),
           Padding(
@@ -262,7 +262,7 @@ class _Dashboard extends ConsumerWidget {
                       children: [
                         Expanded(
                           child: _Kpi(
-                            'Validações hoje',
+                            tr('Validações hoje'),
                             '${todayVal.length}',
                             icon: Icons.verified_rounded,
                           ),
@@ -270,7 +270,7 @@ class _Dashboard extends ConsumerWidget {
                         const SizedBox(width: MP.s3),
                         Expanded(
                           child: _Kpi(
-                            'Cupons ativos',
+                            tr('Cupons ativos'),
                             '${s.partnerOffers.where((o) => o.status == 'Ativa').length}',
                             icon: Icons.local_activity_rounded,
                             color: MP.goldText,
@@ -284,7 +284,7 @@ class _Dashboard extends ConsumerWidget {
                       children: [
                         Expanded(
                           child: _Kpi(
-                            'Reservas pendentes',
+                            tr('Reservas pendentes'),
                             '${pending.length}',
                             icon: Icons.pending_actions_rounded,
                             color: MP.warning,
@@ -293,7 +293,7 @@ class _Dashboard extends ConsumerWidget {
                         const SizedBox(width: MP.s3),
                         Expanded(
                           child: _Kpi(
-                            'Vendas com cupom',
+                            tr('Vendas com cupom'),
                             formatBrl(revenue),
                             icon: Icons.payments_rounded,
                             color: MP.navy,
@@ -319,7 +319,7 @@ class _Dashboard extends ConsumerWidget {
                   key: const Key('p-reservations'),
                   icon: Icons.event_available_rounded,
                   title: tr('Central de reservas'),
-                  subtitle: '${pending.length} aguardando sua resposta',
+                  subtitle: '${pending.length} ${tr('aguardando sua resposta')}',
                   tint: MP.tintPurple,
                   color: const Color(0xff5b3fa8),
                   onTap: () =>
@@ -363,7 +363,7 @@ class _CreateOfferState extends ConsumerState<CreateOfferScreen> {
   final _title = TextEditingController();
   String _type = '%';
   final _value = TextEditingController(text: '10');
-  final _rules = TextEditingController(text: 'Válido de segunda a sexta.');
+  final _rules = TextEditingController(text: tr('Válido de segunda a sexta.'));
   int _limit = 100;
   DateTime _until = DateTime.now().add(const Duration(days: 60));
 
@@ -376,9 +376,9 @@ class _CreateOfferState extends ConsumerState<CreateOfferScreen> {
   }
 
   String get _benefit => switch (_type) {
-    '%' => '${_value.text.trim()}% de desconto',
+    '%' => '${_value.text.trim()}% ${tr('de desconto')}',
     r'R$' => 'R\$ ${_value.text.trim()} de desconto',
-    _ => 'Compre 1, ganhe 1',
+    _ => tr('Compre 1, ganhe 1'),
   };
 
   bool get _okStep0 =>
@@ -451,7 +451,7 @@ class _CreateOfferState extends ConsumerState<CreateOfferScreen> {
           children: [
             MpHeader(
               tr('Criar oferta'),
-              subtitle: 'Etapa ${_step + 1} de 3 · ${steps[_step]}',
+              subtitle: '${tr('Etapa')} ${_step + 1} ${tr('de 3')} · ${tr(steps[_step])}',
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
@@ -523,8 +523,8 @@ class _CreateOfferState extends ConsumerState<CreateOfferScreen> {
                         style: const TextStyle(fontSize: 18),
                         decoration: InputDecoration(
                           labelText: _type == '%'
-                              ? 'Percentual'
-                              : 'Valor em reais',
+                              ? tr('Percentual')
+                              : tr('Valor em reais'),
                         ),
                       ),
                     ],
@@ -575,7 +575,7 @@ class _CreateOfferState extends ConsumerState<CreateOfferScreen> {
                         if (d != null) setState(() => _until = d);
                       },
                       icon: const Icon(Icons.event_rounded),
-                      label: Text('Válida até ${fmtDate(_until)}'),
+                      label: Text('${tr('Válida até')} ${fmtDate(_until)}'),
                     ),
                   ],
                   if (_step == 2) ...[
@@ -601,7 +601,7 @@ class _CreateOfferState extends ConsumerState<CreateOfferScreen> {
                     MpInfoRow(Icons.rule_rounded, _rules.text),
                     MpInfoRow(
                       Icons.confirmation_number_rounded,
-                      'Até $_limit cupons',
+                      '${tr('Até')} $_limit ${tr('cupons')}',
                     ),
                   ],
                   const SizedBox(height: MP.s6),

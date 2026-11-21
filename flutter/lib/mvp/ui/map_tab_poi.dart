@@ -16,8 +16,9 @@ enum PoiKind {
   destinos('Cidades', Icons.location_city_rounded, MP.navy),
   outros('Outros', Icons.place_rounded, MP.textSecondary);
 
-  const PoiKind(this.label, this.icon, this.color);
-  final String label;
+  const PoiKind(this._label, this.icon, this.color);
+  final String _label;
+  String get label => tr(_label);
   final IconData icon;
   final Color color;
 

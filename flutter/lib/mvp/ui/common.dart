@@ -452,10 +452,10 @@ class TicketCard extends StatelessWidget {
                             Expanded(
                               child: Text(
                                 days < 0
-                                    ? 'Venceu'
+                                    ? tr('Venceu')
                                     : (days <= 7
-                                          ? 'Vence em $days ${days == 1 ? 'dia' : 'dias'}'
-                                          : 'Até ${_d(cupom.validade)}'),
+                                          ? (appLang == 'en' ? 'Expires in $days ${days == 1 ? 'day' : 'days'}' : 'Vence em $days ${days == 1 ? 'dia' : 'dias'}')
+                                          : '${tr('Até')} ${_d(cupom.validade)}'),
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w700,

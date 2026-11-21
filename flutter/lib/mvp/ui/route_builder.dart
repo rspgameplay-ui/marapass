@@ -45,7 +45,7 @@ class MyRoutesScreen extends ConsumerWidget {
                 child: MpListTile(
                   icon: Icons.route_rounded,
                   title: t.name,
-                  subtitle: '${_dm(t.start)} a ${_dm(t.end)} · ${t.stops.length} paradas',
+                  subtitle: '${_dm(t.start)} a ${_dm(t.end)} · ${t.stops.length} ${tr('paradas')}',
                   tint: MP.tintGreen,
                   onTap: () => push<void>(context, RouteBuilderScreen(trip: t)),
                 ),
@@ -146,7 +146,7 @@ class _RouteBuilderScreenState extends ConsumerState<RouteBuilderScreen> {
       builder: (ctx) => AlertDialog(
         title: Text(tr('Reservar tudo')),
         content: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-          for (final r in reqs) Padding(padding: const EdgeInsets.only(bottom: 6), child: Text('• ${r.item.titulo}: ${_dm(r.day)}, ${r.period}')),
+          for (final r in reqs) Padding(padding: const EdgeInsets.only(bottom: 6), child: Text('• ${r.item.titulo}: ${_dm(r.day)}, ${trPeriod(r.period)}')),
           const SizedBox(height: MP.s2),
           Text(tr('Cada parceiro confirma a vaga e combina o pagamento com você. Nada é cobrado no app.'), style: TextStyle(fontSize: 13, color: MP.textSecondary)),
         ]),
@@ -181,7 +181,7 @@ class _RouteBuilderScreenState extends ConsumerState<RouteBuilderScreen> {
     showMpSnack(
       context,
       failed.isEmpty
-          ? '${reqs.length} pedidos enviados. Acompanhe em Minhas reservas.'
+          ? '${reqs.length} ${tr('pedidos enviados. Acompanhe em Minhas reservas')}.'
           : 'Não foi possível enviar: ${failed.join('; ')}',
     );
   }
@@ -276,7 +276,7 @@ class _RouteBuilderScreenState extends ConsumerState<RouteBuilderScreen> {
                   key: const Key('route-reserve'),
                   onPressed: _busy ? null : _reserveAll,
                   icon: const Icon(Icons.event_available_rounded),
-                  label: Text(_busy ? tr('Enviando…') : 'Reservar tudo (${tripRequests(_t).length})'),
+                  label: Text(_busy ? tr('Enviando…') : '${tr('Reservar tudo')} (${tripRequests(_t).length})'),
                   style: FilledButton.styleFrom(backgroundColor: MP.green, minimumSize: const Size(0, 52)),
                 ),
         ),
@@ -323,7 +323,7 @@ class _RouteBuilderScreenState extends ConsumerState<RouteBuilderScreen> {
         }),
       ),
       const SizedBox(height: MP.s3),
-      for (final e in _t.days.expand(_eventsOn)) _tip(Icons.event_rounded, 'Evento nesta data: ${e.titulo} (${_dm(e.data!)})'),
+      for (final e in _t.days.expand(_eventsOn)) _tip(Icons.event_rounded, '${tr('Evento nesta data')}: ${e.titulo} (${_dm(e.data!)})'),
       const SizedBox(height: MP.s3),
       Row(children: [
         Expanded(child: Text(tr('Pessoas'), style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700))),
@@ -349,7 +349,7 @@ class _RouteBuilderScreenState extends ConsumerState<RouteBuilderScreen> {
       padding: const EdgeInsets.all(MP.pageH),
       children: [
         Row(children: [
-          Expanded(child: Text('Sua ordem em ${_dayLabel(_day)}', style: Theme.of(context).textTheme.titleMedium)),
+          Expanded(child: Text('${tr('Sua ordem em')} ${_dayLabel(_day)}', style: Theme.of(context).textTheme.titleMedium)),
           TextButton.icon(onPressed: () => _showOnMap(_day), icon: const Icon(Icons.map_rounded), label: Text(tr('Mapa'))),
         ]),
         if (day.isEmpty) MpNotice(tr('Adicione lugares da lista abaixo. Depois arraste para mudar a ordem.')),
@@ -370,13 +370,13 @@ class _RouteBuilderScreenState extends ConsumerState<RouteBuilderScreen> {
               ),
           ],
         ),
-        const SizedBox(height: MP.s4),
+        SizedBox(height: MP.s4),
         TextField(
-          key: const Key('route-search'),
+          key: Key('route-search'),
           decoration: InputDecoration(prefixIcon: Icon(Icons.search_rounded), hintText: tr('Buscar lugar ou cidade')),
           onChanged: (v) => _set(() => _q = v),
         ),
-        const SizedBox(height: MP.s2),
+        SizedBox(height: MP.s2),
         for (final i in options)
           ListTile(
             key: Key('route-add-${i.id}'),
@@ -384,7 +384,7 @@ class _RouteBuilderScreenState extends ConsumerState<RouteBuilderScreen> {
             leading: Icon(i.cat.icon, color: i.cat.tint.fg),
             title: Text(i.titulo),
             subtitle: Text([i.cidade, if (i.cupom != null) 'cupom disponível'].join(' · ')),
-            trailing: day.any((s) => s.itemId == i.id) ? const Icon(Icons.check_circle_rounded, color: MP.green) : const Icon(Icons.add_circle_outline_rounded),
+            trailing: day.any((s) => s.itemId == i.id) ? Icon(Icons.check_circle_rounded, color: MP.green) : Icon(Icons.add_circle_outline_rounded),
             onTap: day.any((s) => s.itemId == i.id) ? null : () => _addItem(i),
           ),
       ],
@@ -396,15 +396,15 @@ class _RouteBuilderScreenState extends ConsumerState<RouteBuilderScreen> {
     final day = _t.stopsOn(_day);
     final issues = tripConflicts(_t, _day);
     return ListView(
-      padding: const EdgeInsets.all(MP.pageH),
+      padding: EdgeInsets.all(MP.pageH),
       children: [
         for (final (k, s) in day.indexed) ...[
           if (k > 0 && driveMinutes(day[k - 1].item, s.item) != null)
-            _tip(Icons.directions_car_rounded, 'Distância até o próximo ponto: ${driveMinutes(day[k - 1].item, s.item)} min'),
+            _tip(Icons.directions_car_rounded, '${tr('Distância até o próximo ponto')}: ${driveMinutes(day[k - 1].item, s.item)} ${tr('min')}'),
           MpCard(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(s.label, style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: MP.s2),
+              SizedBox(height: MP.s2),
               Row(children: [
                 Expanded(
                   child: OutlinedButton.icon(
@@ -413,27 +413,27 @@ class _RouteBuilderScreenState extends ConsumerState<RouteBuilderScreen> {
                       final t = await showTimePicker(context: context, initialTime: TimeOfDay(hour: s.startMin ~/ 60, minute: s.startMin % 60));
                       if (t != null) _set(() => s.startMin = t.hour * 60 + t.minute);
                     },
-                    icon: const Icon(Icons.schedule_rounded),
-                    label: Text('Chegada ${hhmm(s.startMin)}'),
+                    icon: Icon(Icons.schedule_rounded),
+                    label: Text('${tr('Chegada')} ${hhmm(s.startMin)}'),
                   ),
                 ),
-                const SizedBox(width: MP.s2),
+                SizedBox(width: MP.s2),
                 DropdownButton<int>(
                   value: s.stayMin,
-                  items: [for (final m in const [30, 60, 90, 120, 180, 240, 360]) DropdownMenuItem(value: m, child: Text(m < 60 ? '$m min' : '${m ~/ 60}h${m % 60 == 0 ? '' : '30'}'))],
+                  items: [for (final m in [30, 60, 90, 120, 180, 240, 360]) DropdownMenuItem(value: m, child: Text(m < 60 ? '$m min' : '${m ~/ 60}h${m % 60 == 0 ? '' : '30'}'))],
                   onChanged: (v) => _set(() => s.stayMin = v ?? s.stayMin),
                 ),
               ]),
               if (_hint(s) case final h?) _tip(Icons.tips_and_updates_rounded, h),
-              for (final n in issues[s.id] ?? const <String>[]) _warn(n),
+              for (final n in issues[s.id] ?? <String>[]) _warn(n),
             ]),
           ),
-          const SizedBox(height: MP.s2),
+          SizedBox(height: MP.s2),
         ],
-        const SizedBox(height: MP.s2),
+        SizedBox(height: MP.s2),
         Wrap(spacing: MP.s2, children: [
           for (final e in pauseKinds.entries)
-            ActionChip(key: Key('route-pause-${e.key}'), avatar: const Icon(Icons.add_rounded, size: 18), label: Text(tr(e.value)), onPressed: () => _addPause(e.key)),
+            ActionChip(key: Key('route-pause-${e.key}'), avatar: Icon(Icons.add_rounded, size: 18), label: Text(tr(e.value)), onPressed: () => _addPause(e.key)),
         ]),
       ],
     );
@@ -451,7 +451,7 @@ class _RouteBuilderScreenState extends ConsumerState<RouteBuilderScreen> {
   // ---------- 4. Extras
   Widget _extras() {
     Widget group(String title, List<Item> items) => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      const SizedBox(height: MP.s3),
+      SizedBox(height: MP.s3),
       Text(title, style: Theme.of(context).textTheme.titleMedium),
       for (final i in items)
         CheckboxListTile(
@@ -468,13 +468,13 @@ class _RouteBuilderScreenState extends ConsumerState<RouteBuilderScreen> {
     List<Item> near(Cat c) => Content.byCat(c).where((i) => polos.isEmpty || polos.contains(i.polo)).toList();
     final events = _t.days.expand(_eventsOn).toList();
     return ListView(
-      padding: const EdgeInsets.all(MP.pageH),
+      padding: EdgeInsets.all(MP.pageH),
       children: [
         Text(tr('Inclua reservas e eventos do período. Eles entram no custo estimado.'), style: TextStyle(fontSize: 15, color: MP.textSecondary)),
-        group('Hospedagem', near(Cat.hospedagem)),
+        group(tr('Hospedagem'), near(Cat.hospedagem)),
         group('Passeios', near(Cat.passeio).where((i) => !_t.stops.any((s) => s.itemId == i.id)).toList()),
-        if (events.isNotEmpty) group('Eventos no período', events) else ...[
-          const SizedBox(height: MP.s3),
+        if (events.isNotEmpty) group(tr('Eventos no período'), events) else ...[
+          SizedBox(height: MP.s3),
           MpNotice(tr('Nenhum evento cadastrado nessas datas.')),
         ],
       ],
@@ -486,34 +486,34 @@ class _RouteBuilderScreenState extends ConsumerState<RouteBuilderScreen> {
     final cost = tripCost(_t);
     final total = cost.fold<int>(0, (n, c) => n + c.cents - c.discountCents);
     return ListView(
-      key: const Key('route-summary'),
-      padding: const EdgeInsets.all(MP.pageH),
+      key: Key('route-summary'),
+      padding: EdgeInsets.all(MP.pageH),
       children: [
         for (final d in _t.days) ...[
           Row(children: [
             Expanded(child: Text(_dayLabel(d), style: Theme.of(context).textTheme.titleLarge)),
             if (_t.stopsOn(d).any((s) => s.item?.lat != null))
-              TextButton.icon(onPressed: () => _showOnMap(d), icon: const Icon(Icons.map_rounded), label: Text(tr('Ver no mapa'))),
-            IconButton(tooltip: tr('Editar'), onPressed: () => _set(() { _day = d; _step = 1; }), icon: const Icon(Icons.edit_rounded)),
+              TextButton.icon(onPressed: () => _showOnMap(d), icon: Icon(Icons.map_rounded), label: Text(tr('Ver no mapa'))),
+            IconButton(tooltip: tr('Editar'), onPressed: () => _set(() { _day = d; _step = 1; }), icon: Icon(Icons.edit_rounded)),
           ]),
           if (_t.stopsOn(d).isEmpty) Text(tr('Dia livre.'), style: TextStyle(color: MP.textSecondary)),
           for (final s in _t.stopsOn(d)) _timelineRow(s, tripConflicts(_t, d)[s.id]),
-          const SizedBox(height: MP.s4),
+          SizedBox(height: MP.s4),
         ],
         MpCard(
-          key: const Key('route-cost'),
+          key: Key('route-cost'),
           child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             Text(tr('Custo estimado'), style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: MP.s2),
+            SizedBox(height: MP.s2),
             for (final c in cost.where((c) => c.cents > 0)) ...[
               _costRow(tr(c.label.split(' (').first) + (c.label.contains(' (') ? ' (${c.label.split(' (').last}' : ''), formatBrl(c.cents)),
               if (c.discountCents > 0) _costRow('Cupons em ${c.label.split(' ').first.toLowerCase()}', '− ${formatBrl(c.discountCents)}', color: MP.green),
             ],
-            const Divider(),
-            _costRow('Total do grupo (${_t.people} ${_t.people == 1 ? 'pessoa' : 'pessoas'})', formatBrl(total), bold: true),
+            Divider(),
+            _costRow('${tr('Total do grupo')} (${_t.people} ${_t.people == 1 ? tr('pessoa') : tr('pessoas')})', formatBrl(total), bold: true),
             _costRow(tr('Por pessoa'), formatBrl((total / _t.people).round())),
-            const SizedBox(height: MP.s2),
-            const Text('Valores aproximados. Alimentação estimada em R\$ 70 por pessoa por dia.', style: TextStyle(fontSize: 13, color: MP.textSecondary)),
+            SizedBox(height: MP.s2),
+            Text('${tr('Valores aproximados. Alimentação estimada em R\$ 70 por pessoa por dia')}.', style: TextStyle(fontSize: 13, color: MP.textSecondary)),
           ]),
         ),
       ],
@@ -522,15 +522,15 @@ class _RouteBuilderScreenState extends ConsumerState<RouteBuilderScreen> {
 
   Widget _timelineRow(TripStop s, List<String>? issues) => IntrinsicHeight(
     child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      SizedBox(width: 56, child: Text(hhmm(s.startMin), style: const TextStyle(fontWeight: FontWeight.w800, color: MP.textSecondary))),
-      Container(width: 4, margin: const EdgeInsets.symmetric(horizontal: MP.s2), decoration: BoxDecoration(color: s.item == null ? MP.yellow : MP.green, borderRadius: BorderRadius.circular(2))),
+      SizedBox(width: 56, child: Text(hhmm(s.startMin), style: TextStyle(fontWeight: FontWeight.w800, color: MP.textSecondary))),
+      Container(width: 4, margin: EdgeInsets.symmetric(horizontal: MP.s2), decoration: BoxDecoration(color: s.item == null ? MP.yellow : MP.green, borderRadius: BorderRadius.circular(2))),
       Expanded(
         child: Padding(
-          padding: const EdgeInsets.only(bottom: MP.s3),
+          padding: EdgeInsets.only(bottom: MP.s3),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(s.label, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
-            Text('${hhmm(s.startMin)} – ${hhmm(s.endMin)}${s.item == null ? '' : ' · ${s.item!.cidade}'}', style: const TextStyle(color: MP.textSecondary)),
-            for (final n in issues ?? const <String>[]) _warn(n),
+            Text(s.label, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+            Text('${hhmm(s.startMin)} – ${hhmm(s.endMin)}${s.item == null ? '' : ' · ${s.item!.cidade}'}', style: TextStyle(color: MP.textSecondary)),
+            for (final n in issues ?? <String>[]) _warn(n),
           ]),
         ),
       ),
@@ -538,7 +538,7 @@ class _RouteBuilderScreenState extends ConsumerState<RouteBuilderScreen> {
   );
 
   Widget _costRow(String l, String v, {bool bold = false, Color? color}) => Padding(
-    padding: const EdgeInsets.symmetric(vertical: 2),
+    padding: EdgeInsets.symmetric(vertical: 2),
     child: Row(children: [
       Expanded(child: Text(l, style: TextStyle(fontSize: 15, fontWeight: bold ? FontWeight.w800 : FontWeight.w500, color: color))),
       Text(v, style: TextStyle(fontSize: 15, fontWeight: bold ? FontWeight.w800 : FontWeight.w600, color: color)),
@@ -546,20 +546,20 @@ class _RouteBuilderScreenState extends ConsumerState<RouteBuilderScreen> {
   );
 
   Widget _tip(IconData icon, String text) => Padding(
-    padding: const EdgeInsets.only(top: MP.s2),
+    padding: EdgeInsets.only(top: MP.s2),
     child: Row(children: [
       Icon(icon, size: 18, color: MP.textSecondary),
-      const SizedBox(width: MP.s2),
-      Expanded(child: Text(text, style: const TextStyle(fontSize: 14, color: MP.textSecondary))),
+      SizedBox(width: MP.s2),
+      Expanded(child: Text(text, style: TextStyle(fontSize: 14, color: MP.textSecondary))),
     ]),
   );
 
   Widget _warn(String text) => Padding(
-    padding: const EdgeInsets.only(top: MP.s2),
+    padding: EdgeInsets.only(top: MP.s2),
     child: Row(children: [
-      const Icon(Icons.warning_amber_rounded, size: 18, color: MP.error),
-      const SizedBox(width: MP.s2),
-      Expanded(child: Text(text, style: const TextStyle(fontSize: 14, color: MP.error, fontWeight: FontWeight.w600))),
+      Icon(Icons.warning_amber_rounded, size: 18, color: MP.error),
+      SizedBox(width: MP.s2),
+      Expanded(child: Text(text, style: TextStyle(fontSize: 14, color: MP.error, fontWeight: FontWeight.w600))),
     ]),
   );
 }

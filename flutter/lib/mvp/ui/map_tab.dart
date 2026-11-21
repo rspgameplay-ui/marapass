@@ -52,7 +52,7 @@ class _MapTabState extends ConsumerState<MapTab> {
   bool _threeD = false;
   bool _showIslands = true;
   bool _showFerries = true;
-  Map<String, CoastalIsland> _islands = const {};
+  Map<String, CoastalIsland> _islands = {};
   NauticalCatalog? _ferries;
   final Set<PoiKind> _kinds = {...PoiKind.values};
   /// Categoria escolhida na barra inferior (null = todas).
@@ -64,7 +64,7 @@ class _MapTabState extends ConsumerState<MapTab> {
   int _searchSession = 0;
   Position? _searchFix;
   double? _searchCourse;
-  List<Poi> _pois = const [];
+  List<Poi> _pois = [];
 
   @override
   void initState() {
@@ -235,14 +235,14 @@ class _MapTabState extends ConsumerState<MapTab> {
     const s = 96.0;
     final rec = ui.PictureRecorder();
     final canvas = Canvas(rec);
-    final center = const Offset(s / 2, s / 2);
+    final center = Offset(s / 2, s / 2);
     final r = featured ? 40.0 : 34.0;
     canvas.drawCircle(
-      center + const Offset(0, 3),
+      center + Offset(0, 3),
       r,
       Paint()
-        ..color = const Color(0x33000000)
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4),
+        ..color = Color(0x33000000)
+        ..maskFilter = MaskFilter.blur(BlurStyle.normal, 4),
     );
     canvas.drawCircle(center, r, Paint()..color = Colors.white);
     canvas.drawCircle(center, r - 5, Paint()..color = k.color);
@@ -288,12 +288,12 @@ class _MapTabState extends ConsumerState<MapTab> {
     await c.addFillLayer(
       'islands',
       'islands-fill',
-      const FillLayerProperties(fillColor: '#0f8fa8', fillOpacity: .12),
+      FillLayerProperties(fillColor: '#0f8fa8', fillOpacity: .12),
     );
     await c.addLineLayer(
       'islands',
       'islands-line',
-      const LineLayerProperties(
+      LineLayerProperties(
         lineColor: '#0f8fa8',
         lineWidth: 1.6,
         lineOpacity: .8,
@@ -301,12 +301,12 @@ class _MapTabState extends ConsumerState<MapTab> {
     );
     await c.addSource(
       'ferries',
-      GeojsonSourceProperties(data: _line(const [])),
+      GeojsonSourceProperties(data: _line([])),
     );
     await c.addLineLayer(
       'ferries',
       'ferries-line',
-      const LineLayerProperties(
+      LineLayerProperties(
         lineColor: '#0b6e99',
         lineWidth: 3.5,
         lineDasharray: [2, 1.5],
@@ -314,11 +314,11 @@ class _MapTabState extends ConsumerState<MapTab> {
       ),
     );
     unawaited(_loadFerries());
-    await c.addSource('route', GeojsonSourceProperties(data: _line(const [])));
+    await c.addSource('route', GeojsonSourceProperties(data: _line([])));
     await c.addLineLayer(
       'route',
       'route-casing',
-      const LineLayerProperties(
+      LineLayerProperties(
         lineColor: '#ffffff',
         lineWidth: 11,
         lineCap: 'round',
@@ -328,7 +328,7 @@ class _MapTabState extends ConsumerState<MapTab> {
     await c.addLineLayer(
       'route',
       'route-line',
-      const LineLayerProperties(
+      LineLayerProperties(
         lineColor: '#1a73e8',
         lineWidth: 7,
         lineCap: 'round',
@@ -339,7 +339,7 @@ class _MapTabState extends ConsumerState<MapTab> {
     await c.addCircleLayer(
       'stops',
       'stops-dot',
-      const CircleLayerProperties(
+      CircleLayerProperties(
         circleColor: [
           'case',
           ['==', ['get', 'a'], 1],
@@ -354,7 +354,7 @@ class _MapTabState extends ConsumerState<MapTab> {
     await c.addSymbolLayer(
       'stops',
       'stops-num',
-      const SymbolLayerProperties(
+      SymbolLayerProperties(
         textField: ['get', 'n'],
         textFont: ['Noto Sans Bold'],
         textSize: 14,
@@ -372,7 +372,7 @@ class _MapTabState extends ConsumerState<MapTab> {
     await c.addCircleLayer(
       'origin',
       'origin-halo',
-      const CircleLayerProperties(
+      CircleLayerProperties(
         circleColor: '#1a73e8',
         circleOpacity: .2,
         circleRadius: 18,
@@ -381,7 +381,7 @@ class _MapTabState extends ConsumerState<MapTab> {
     await c.addCircleLayer(
       'origin',
       'origin-dot',
-      const CircleLayerProperties(
+      CircleLayerProperties(
         circleColor: '#1a73e8',
         circleRadius: 8,
         circleStrokeColor: '#ffffff',
@@ -400,7 +400,7 @@ class _MapTabState extends ConsumerState<MapTab> {
     await c.addCircleLayer(
       'pois',
       'clusters',
-      const CircleLayerProperties(
+      CircleLayerProperties(
         circleColor: '#0b3a66',
         circleOpacity: .92,
         circleStrokeColor: '#ffffff',
@@ -422,7 +422,7 @@ class _MapTabState extends ConsumerState<MapTab> {
     await c.addSymbolLayer(
       'pois',
       'cluster-count',
-      const SymbolLayerProperties(
+      SymbolLayerProperties(
         textField: ['get', 'point_count_abbreviated'],
         textFont: ['Noto Sans Bold'],
         textSize: 15,
@@ -434,7 +434,7 @@ class _MapTabState extends ConsumerState<MapTab> {
     await c.addSymbolLayer(
       'pois',
       'poi-icons',
-      const SymbolLayerProperties(
+      SymbolLayerProperties(
         iconImage: [
           'case',
           [
@@ -533,7 +533,7 @@ class _MapTabState extends ConsumerState<MapTab> {
       _planError = null;
     });
     await _c?.setGeoJsonSource('stops', _stops(plan));
-    await _c?.setGeoJsonSource('route', _line(const []));
+    await _c?.setGeoJsonSource('route', _line([]));
     await _fitPoints(pts);
     try {
       final r = await ref.read(routingRepositoryProvider).routeThrough(pts);
@@ -542,7 +542,7 @@ class _MapTabState extends ConsumerState<MapTab> {
       await _c?.setGeoJsonSource('route', _line(r.points));
       await _fitPoints(r.points);
     } catch (_) {
-      if (mounted) setState(() => _planError = 'Não foi possível traçar o percurso agora. As paradas estão marcadas no mapa.');
+      if (mounted) setState(() => _planError = tr('Não foi possível traçar o percurso agora. As paradas estão marcadas no mapa.'));
     } finally {
       if (mounted) setState(() => _planBusy = false);
     }
@@ -562,7 +562,7 @@ class _MapTabState extends ConsumerState<MapTab> {
         top: 190,
         bottom: 330,
       ),
-      duration: const Duration(milliseconds: 900),
+      duration: Duration(milliseconds: 900),
     );
   }
 
@@ -573,7 +573,7 @@ class _MapTabState extends ConsumerState<MapTab> {
       _planError = null;
     });
     await _c?.setGeoJsonSource('stops', _stops(null));
-    await _c?.setGeoJsonSource('route', _line(const []));
+    await _c?.setGeoJsonSource('route', _line([]));
   }
 
   void _navigate({required String name, required GeoPoint dest, required GeoPoint origin, required RoadRoute route, required String originLabel}) {
@@ -609,7 +609,7 @@ class _MapTabState extends ConsumerState<MapTab> {
     'type': 'FeatureCollection',
     'features': [
       if (_showFerries)
-        for (final r in _ferries?.routes ?? const <NauticalConnection>[])
+        for (final r in _ferries?.routes ?? <NauticalConnection>[])
           if (r.points.length > 1)
             {
               'type': 'Feature',
@@ -642,9 +642,9 @@ class _MapTabState extends ConsumerState<MapTab> {
       builder: (_) => StatefulBuilder(
         builder: (context, setSheet) => SafeArea(
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(MP.pageH, 0, MP.pageH, MP.s5),
+            padding: EdgeInsets.fromLTRB(MP.pageH, 0, MP.pageH, MP.s5),
             child: Column(
-              key: const Key('layers-sheet'),
+              key: Key('layers-sheet'),
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -652,11 +652,11 @@ class _MapTabState extends ConsumerState<MapTab> {
                   tr('Camadas do mapa'),
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
-                const SizedBox(height: MP.s2),
+                SizedBox(height: MP.s2),
                 SwitchListTile(
-                  key: const Key('layer-islands'),
+                  key: Key('layer-islands'),
                   contentPadding: EdgeInsets.zero,
-                  secondary: const Icon(
+                  secondary: Icon(
                     Icons.landscape_rounded,
                     color: MP.poiIsland,
                   ),
@@ -665,7 +665,7 @@ class _MapTabState extends ConsumerState<MapTab> {
                     style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
                   ),
                   subtitle: Text(
-                    '${_islands.length} ilhas com contorno e ficha de visita',
+                    '${_islands.length} ${tr('ilhas com contorno e ficha de visita')}',
                   ),
                   value: _showIslands,
                   onChanged: (v) {
@@ -675,9 +675,9 @@ class _MapTabState extends ConsumerState<MapTab> {
                   },
                 ),
                 SwitchListTile(
-                  key: const Key('layer-ferries'),
+                  key: Key('layer-ferries'),
                   contentPadding: EdgeInsets.zero,
-                  secondary: const Icon(
+                  secondary: Icon(
                     Icons.directions_boat_rounded,
                     color: Color(0xff0b6e99),
                   ),
@@ -687,8 +687,8 @@ class _MapTabState extends ConsumerState<MapTab> {
                   ),
                   subtitle: Text(
                     _ferries == null
-                        ? 'Carregando…'
-                        : '${_ferries!.routes.length} rotas náuticas documentadas',
+                        ? tr('Carregando…')
+                        : '${_ferries!.routes.length} ${tr('rotas náuticas documentadas')}',
                   ),
                   value: _showFerries,
                   onChanged: (v) {
@@ -698,9 +698,9 @@ class _MapTabState extends ConsumerState<MapTab> {
                   },
                 ),
                 SwitchListTile(
-                  key: const Key('layer-beaches'),
+                  key: Key('layer-beaches'),
                   contentPadding: EdgeInsets.zero,
-                  secondary: const Icon(
+                  secondary: Icon(
                     Icons.beach_access_rounded,
                     color: MP.poiBeach,
                   ),
@@ -764,7 +764,7 @@ class _MapTabState extends ConsumerState<MapTab> {
       if (island != null) ...[
         (
           Icons.info_outline_rounded,
-          'Sobre a ilha',
+          tr('Sobre a ilha'),
           () => push<void>(
             context,
             _LegacyPage(
@@ -777,11 +777,11 @@ class _MapTabState extends ConsumerState<MapTab> {
       if (hasMunicipalGuide(p.city))
         (
           Icons.menu_book_rounded,
-          'Guia de ${p.city}',
+          '${tr('Guia de')} ${p.city}',
           () => push<void>(
             context,
             _LegacyPage(
-              title: 'Guia de ${p.city}',
+              title: '${tr('Guia de')} ${p.city}',
               child: MunicipalVisitGuide(city: p.city),
             ),
           ),
@@ -804,7 +804,7 @@ class _MapTabState extends ConsumerState<MapTab> {
       setState(() {
         _pickingOrigin = false;
         _origin = o;
-        _originLabel = 'Ponto escolhido no mapa';
+        _originLabel = tr('Ponto escolhido no mapa');
       });
       await c.setGeoJsonSource('origin', _point(o));
       if (_selected != null) await _traceRoute();
@@ -826,7 +826,7 @@ class _MapTabState extends ConsumerState<MapTab> {
         'ferries-line',
       ], null);
       if (hits.isNotEmpty) break;
-      await Future<void>.delayed(const Duration(milliseconds: 150));
+      await Future<void>.delayed(Duration(milliseconds: 150));
     }
     // Prefere o agrupamento ou o ponto mais próximo do centro do toque.
     hits.sort((x, y) => _distTo(x, latLng).compareTo(_distTo(y, latLng)));
@@ -836,7 +836,7 @@ class _MapTabState extends ConsumerState<MapTab> {
     }
     final f = Map<String, dynamic>.from(hits.first as Map);
     final props = Map<String, dynamic>.from(
-      (f['properties'] as Map?) ?? const {},
+      (f['properties'] as Map?) ?? {},
     );
     if (props.containsKey('point_count')) {
       final coords = ((f['geometry'] as Map)['coordinates'] as List)
@@ -872,11 +872,11 @@ class _MapTabState extends ConsumerState<MapTab> {
       _route = null;
       _routeError = null;
     });
-    await _c?.setGeoJsonSource('route', _line(const []));
+    await _c?.setGeoJsonSource('route', _line([]));
     if (fly) {
       await _c?.animateCamera(
         CameraUpdate.newLatLngZoom(LatLng(p.point.lat, p.point.lng), 14),
-        duration: const Duration(milliseconds: 900),
+        duration: Duration(milliseconds: 900),
       );
     }
   }
@@ -908,9 +908,9 @@ class _MapTabState extends ConsumerState<MapTab> {
           bearing: next ? (cam?.bearing ?? 0) - 20 : 0,
         ),
       ),
-      duration: const Duration(milliseconds: 1400),
+      duration: Duration(milliseconds: 1400),
     );
-    await Future<void>.delayed(const Duration(milliseconds: 500));
+    await Future<void>.delayed(Duration(milliseconds: 500));
     if (mounted) setState(() => _veil = false);
   }
 
@@ -921,7 +921,7 @@ class _MapTabState extends ConsumerState<MapTab> {
       CameraUpdate.newCameraPosition(
         CameraPosition(target: cam?.target ?? _maranhao, zoom: cam?.zoom ?? 6),
       ),
-      duration: const Duration(milliseconds: 1000),
+      duration: Duration(milliseconds: 1000),
     );
   }
 
@@ -929,9 +929,9 @@ class _MapTabState extends ConsumerState<MapTab> {
   Future<GeoPoint?> _findOrigin() async {
     try {
       final pos = await LocationService().acquire().timeout(
-        const Duration(seconds: 8),
+        Duration(seconds: 8),
       );
-      _originLabel = 'Sua localização';
+      _originLabel = tr('Sua localização');
       return GeoPoint(pos.latitude, pos.longitude);
     } catch (_) {
       if (!mounted) return null;
@@ -965,7 +965,7 @@ class _MapTabState extends ConsumerState<MapTab> {
     await _c?.setGeoJsonSource('origin', _point(o));
     await _c?.animateCamera(
       CameraUpdate.newLatLngZoom(LatLng(o.lat, o.lng), 13),
-      duration: const Duration(milliseconds: 800),
+      duration: Duration(milliseconds: 800),
     );
   }
 
@@ -1011,11 +1011,11 @@ class _MapTabState extends ConsumerState<MapTab> {
           top: 160,
           bottom: 300,
         ),
-        duration: const Duration(milliseconds: 900),
+        duration: Duration(milliseconds: 900),
       );
     } catch (_) {
       setState(
-        () => _routeError = 'Não foi possível traçar a rota agora. Confira a internet e tente de novo.',
+        () => _routeError = tr('Não foi possível traçar a rota agora. Confira a internet e tente de novo.'),
       );
     } finally {
       if (mounted) setState(() => _routing = false);
@@ -1039,7 +1039,7 @@ class _MapTabState extends ConsumerState<MapTab> {
           bearing: bearing,
         ),
       ),
-      duration: const Duration(milliseconds: 1200),
+      duration: Duration(milliseconds: 1200),
     );
   }
 
@@ -1048,7 +1048,7 @@ class _MapTabState extends ConsumerState<MapTab> {
       _route = null;
       _routeError = null;
     });
-    await _c?.setGeoJsonSource('route', _line(const []));
+    await _c?.setGeoJsonSource('route', _line([]));
   }
 
   static String _norm(String s) {
@@ -1101,9 +1101,9 @@ class _MapTabState extends ConsumerState<MapTab> {
     taken.addAll(tours.map((p) => p.id));
     final places = all.where((p) => !taken.contains(p.id)).toList();
     return [
-      if (partners.isNotEmpty) ('Parceiros e ofertas', partners.take(8).toList()),
-      if (tours.isNotEmpty) ('Passeios e experiências', tours.take(8).toList()),
-      if (places.isNotEmpty) ('Pontos turísticos', places.take(10).toList()),
+      if (partners.isNotEmpty) (tr('Parceiros e ofertas'), partners.take(8).toList()),
+      if (tours.isNotEmpty) (tr('Passeios e experiências'), tours.take(8).toList()),
+      if (places.isNotEmpty) (tr('Pontos turísticos'), places.take(10).toList()),
     ];
   }
 
@@ -1247,8 +1247,8 @@ class _MapTabState extends ConsumerState<MapTab> {
                 key: const Key('map-3d'),
                 label: '3D',
                 tooltip: _threeD
-                    ? 'Ver de cima (2D)'
-                    : 'Ver em perspectiva (3D)',
+                    ? tr('Ver de cima (2D)')
+                    : tr('Ver em perspectiva (3D)'),
                 onTap: _toggle3d,
                 active: _threeD,
               ),

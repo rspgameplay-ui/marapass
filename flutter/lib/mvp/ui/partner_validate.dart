@@ -35,13 +35,13 @@ class _ValidateTabState extends ConsumerState<_ValidateTab> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Código: $code',
+              '${tr('Código')}: $code',
               style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 18),
             ),
             const SizedBox(height: MP.s2),
             Text(
               found?.cupom == null
-                  ? 'Cupom não encontrado nesta demonstração.'
+                  ? tr('Cupom não encontrado nesta demonstração.')
                   : '${found!.cupom!.parceiro}\n${found.cupom!.beneficio}',
               style: const TextStyle(fontSize: 17),
             ),
@@ -99,7 +99,7 @@ class _ValidateTabState extends ConsumerState<_ValidateTab> {
                         fontWeight: FontWeight.w800,
                       ),
                     ),
-                    MpInfoRow(Icons.tag_rounded, 'Código $code'),
+                    MpInfoRow(Icons.tag_rounded, '${tr('Código')} $code'),
                     MpInfoRow(
                       Icons.schedule_rounded,
                       '${fmtDate(DateTime.now())} às ${fmtTime(DateTime.now())}',
@@ -107,7 +107,7 @@ class _ValidateTabState extends ConsumerState<_ValidateTab> {
                     if (cents > 0)
                       MpInfoRow(
                         Icons.payments_rounded,
-                        'Compra de ${formatBrl(cents)}',
+                        '${tr('Compra de')} ${formatBrl(cents)}',
                       ),
                   ],
                 ),
@@ -130,7 +130,7 @@ class _ValidateTabState extends ConsumerState<_ValidateTab> {
         padding: const EdgeInsets.only(bottom: MP.s8),
         children: [
           _PartnerHeader(
-            'Validar cupom',
+            tr('Validar cupom'),
             subtitle: tr('Leia o QR ou digite o código do turista.'),
           ),
           Padding(
@@ -258,13 +258,13 @@ class _ReportsTabState extends ConsumerState<_ReportsTab> {
         padding: const EdgeInsets.only(bottom: MP.s8),
         children: [
           _PartnerHeader(
-            'Relatórios',
+            tr('Relatórios'),
             subtitle: tr('Faturamento, retenção e horários de pico.'),
           ),
           FilterChips<int>(
             options: const [7, 30],
             selected: _days,
-            label: (v) => 'Últimos $v dias',
+            label: (v) => '${tr('Últimos')} $v ${tr('dias')}',
             onSelect: (v) => setState(() => _days = v),
           ),
           const SizedBox(height: MP.s4),
@@ -275,11 +275,11 @@ class _ReportsTabState extends ConsumerState<_ReportsTab> {
               children: [
                 Row(
                   children: [
-                    Expanded(child: _Kpi('Cupons emitidos', '$issued')),
+                    Expanded(child: _Kpi(tr('Cupons emitidos'), '$issued')),
                     const SizedBox(width: MP.s3),
                     Expanded(
                       child: _Kpi(
-                        'Conversão',
+                        tr('Conversão'),
                         issued == 0
                             ? '0%'
                             : '${(used * 100 / issued).round()}%',
@@ -360,11 +360,11 @@ class _ReportsTabState extends ConsumerState<_ReportsTab> {
                       SizedBox(height: MP.s2),
                       MpInfoRow(
                         Icons.wb_sunny_rounded,
-                        'Manhã (8h às 11h): 45% dos usos',
+                        tr('Manhã (8h às 11h): 45% dos usos'),
                       ),
                       MpInfoRow(
                         Icons.wb_twilight_rounded,
-                        'Fim de tarde (16h às 19h): 35%',
+                        tr('Fim de tarde (16h às 19h): 35%'),
                       ),
                       MpInfoRow(Icons.nights_stay_rounded, tr('Noite: 20%')),
                     ],

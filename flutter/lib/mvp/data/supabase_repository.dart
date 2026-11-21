@@ -20,8 +20,8 @@ class SupabaseMvpRepository implements MvpRepository {
       await _client.rpc('delete_my_account');
     } on PostgrestException catch (e) {
       if (e.code == 'PGRST202' || e.code == '42883') {
-        throw const MvpException(
-          'A exclusão automática ainda não está ativa. Escreva para o suporte e removemos seus dados.',
+        throw MvpException(
+          tr('A exclusão automática ainda não está ativa. Escreva para o suporte e removemos seus dados.'),
         );
       }
       throw translateError(e);
@@ -43,33 +43,33 @@ MvpException translateError(Object e) {
   }
   if (e is AuthException) {
     if (raw.contains('expired') || raw.contains('invalid')) {
-      return const MvpException(
-        'Código inválido ou vencido. Peça um novo código.',
+      return MvpException(
+        tr('Código inválido ou vencido. Peça um novo código.'),
       );
     }
     if (raw.contains('rate') || raw.contains('seconds')) {
-      return const MvpException(
-        'Aguarde um instante antes de pedir outro código.',
+      return MvpException(
+        tr('Aguarde um instante antes de pedir outro código.'),
       );
     }
-    return const MvpException(
-      'Não foi possível entrar. Confira o e-mail e tente de novo.',
+    return MvpException(
+      tr('Não foi possível entrar. Confira o e-mail e tente de novo.'),
     );
   }
   if (raw.contains('jwt') ||
       raw.contains('not authenticated') ||
       raw.contains('permission denied') ||
       (e is PostgrestException && e.code == '42501')) {
-    return const MvpException(
-      'Sua sessão expirou. Entre de novo para continuar.',
+    return MvpException(
+      tr('Sua sessão expirou. Entre de novo para continuar.'),
     );
   }
   if (raw.contains('capacity') ||
       raw.contains('full') ||
       raw.contains('no seats') ||
       raw.contains('vaga')) {
-    return const MvpException(
-      'Esse horário não tem mais vagas. Escolha outro.',
+    return MvpException(
+      tr('Esse horário não tem mais vagas. Escolha outro.'),
     );
   }
   if (raw.contains('issue limit')) {
@@ -95,11 +95,11 @@ MvpException translateError(Object e) {
       raw.contains('failed host') ||
       raw.contains('network') ||
       raw.contains('connection')) {
-    return const MvpException(
-      'Sem conexão. Confira a internet e tente de novo.',
+    return MvpException(
+      tr('Sem conexão. Confira a internet e tente de novo.'),
     );
   }
-  return const MvpException(
-    'Não foi possível concluir agora. Tente de novo em instantes.',
+  return MvpException(
+    tr('Não foi possível concluir agora. Tente de novo em instantes.'),
   );
 }

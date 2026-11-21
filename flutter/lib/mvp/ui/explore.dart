@@ -148,7 +148,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                   key: Key('explore-cat-${c.name}'),
                   icon: c.icon,
                   title: c.label,
-                  subtitle: '${Content.byCat(c).length} opções',
+                  subtitle: '${Content.byCat(c).length} ${tr('opções')}',
                   tint: c.tint.bg,
                   color: c.tint.fg,
                   onTap: () => push<void>(context, CategoryScreen(cat: c)),
@@ -212,14 +212,14 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                 MP.s2,
               ),
               child: Text(
-                '${results.length} ${results.length == 1 ? 'resultado' : 'resultados'} para "$_q"',
+                '${results.length} ${results.length == 1 ? tr('resultado') : tr('resultados')} ${tr('para')} "$_q"',
                 style: Theme.of(context).textTheme.labelMedium,
               ),
             ),
             if (results.isEmpty)
               MpEmpty(
                 icon: Icons.search_off_rounded,
-                title: 'Nada encontrado para "$_q"',
+                title: '${tr('Nada encontrado para')} "$_q"',
                 message:
                     tr('Tente outra palavra, como o nome da cidade ou do prato.'),
                 actionLabel: tr('Limpar busca'),

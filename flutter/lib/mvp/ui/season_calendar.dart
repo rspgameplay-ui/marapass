@@ -7,11 +7,14 @@ import '../theme/tokens.dart';
 
 /// Uma época do ano no Maranhão: o que está acontecendo e o que vale a pena.
 class Season {
-  const Season(this.title, this.subtitle, this.icon, this.colors, this.highlights);
-  final String title, subtitle;
+  const Season(this._title, this._subtitle, this.icon, this.colors, this._highlights);
+  final String _title, _subtitle;
   final IconData icon;
   final List<Color> colors;
-  final List<String> highlights;
+  final List<String> _highlights;
+  String get title => tr(_title);
+  String get subtitle => tr(_subtitle);
+  List<String> get highlights => [for (final h in _highlights) tr(h)];
 }
 
 /// Calendário turístico do Maranhão, mês a mês.
@@ -161,7 +164,7 @@ class _SeasonCalendarCardState extends State<SeasonCalendarCard> {
     final sunday = d.subtract(Duration(days: d.weekday % 7));
     return Semantics(
       button: true,
-      label: 'Calendário: ${d.day} de ${_months[d.month - 1]}, ${s.title}. Toque para abrir.',
+      label: '${tr('Calendário')}: ${d.day} ${tr('de')} ${_months[d.month - 1]}, ${s.title}. ${tr('Toque para abrir')}.',
       child: Material(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
@@ -252,7 +255,7 @@ class _SeasonCalendarCardState extends State<SeasonCalendarCard> {
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                   child: Column(children: [
-                                    Text(_wd[k],
+                                    Text((appLang == 'en' ? const ['S', 'M', 'T', 'W', 'T', 'F', 'S'] : _wd)[k],
                                         style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.w700, color: today ? Colors.white70 : _muted)),
                                     Text('${day.day}',
                                         style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: today ? Colors.white : _ink)),
@@ -425,7 +428,7 @@ class _SeasonCalendarScreenState extends State<SeasonCalendarScreen> {
                       Icon(s.icon, color: accent, size: 20),
                       const SizedBox(width: 8),
                       Expanded(
-                        child: Text('Bom para turistar em ${_months[_sel.month - 1]}',
+                        child: Text('${tr('Bom para turistar em')} ${appLang == 'en' ? const ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][_sel.month - 1] : _months[_sel.month - 1]}',
                             style: TextStyle(color: accent, fontSize: 15, fontWeight: FontWeight.w800)),
                       ),
                       Text('${s.highlights.where(done.contains).length}/${s.highlights.length}',

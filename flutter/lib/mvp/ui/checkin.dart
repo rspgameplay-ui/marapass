@@ -132,7 +132,7 @@ class CheckinScreen extends ConsumerWidget {
                   icon: Icons.badge_rounded,
                   title: tr('Ver meu passaporte'),
                   subtitle:
-                      '${store.points} pontos · ${store.stampedPolos.length} de ${Content.polos.length} selos',
+                      '${store.points} ${tr('pontos')} · ${store.stampedPolos.length} ${tr('de')} ${Content.polos.length} ${tr('selos')}',
                   tint: MP.tintYellow,
                   color: MP.goldText,
                   onTap: () =>
@@ -211,8 +211,8 @@ class _PickPlaceState extends State<PickPlaceScreen> {
             MpHeader(
               tr('Onde você está?'),
               subtitle: _me != null
-                  ? 'Lugares mais próximos de você primeiro.'
-                  : (_locating ? 'Buscando sua localização…' : 'Sem localização: escolha o lugar na lista.'),
+                  ? tr('Lugares mais próximos de você primeiro.')
+                  : (_locating ? tr('Buscando sua localização…') : tr('Sem localização: escolha o lugar na lista.')),
             ),
             for (final i in list)
               Padding(
@@ -303,7 +303,7 @@ class _FlowState extends ConsumerState<CheckinFlowScreen> {
         context,
         e is MvpException
             ? e.message
-            : 'Não foi possível registrar agora. Tente de novo.',
+            : tr('Não foi possível registrar agora. Tente de novo.'),
       );
       Navigator.of(context).pop();
       return;
@@ -323,7 +323,7 @@ class _FlowState extends ConsumerState<CheckinFlowScreen> {
           bg: MP.infoBg,
           title: tr('Visita já registrada hoje'),
           message:
-              'Você já fez check-in em ${i.titulo} hoje. Volte amanhã ou visite outro lugar.',
+              '${tr('Você já fez check-in em')} ${i.titulo} ${tr('hoje. Volte amanhã ou visite outro lugar')}.',
           primaryLabel: tr('Ver meu passaporte'),
           onPrimary: () {
             ref.read(shellTabProvider.notifier).go(Tabs.passaporte);
@@ -337,7 +337,7 @@ class _FlowState extends ConsumerState<CheckinFlowScreen> {
           bg: MP.warningBg,
           title: tr('Você ainda não está no local'),
           message:
-              'Sua localização está a ${fmtMeters(_distance!)} de ${i.titulo}. O check-in vale a até ${fmtMeters(i.loc.checkinRadiusM)} do local. Se você já está lá, leia o QR da placa MaraPass.',
+              '${tr('Sua localização está a')} ${fmtMeters(_distance!)} ${tr('de')} ${i.titulo}. ${tr('O check-in vale a até')} ${fmtMeters(i.loc.checkinRadiusM)} ${tr('do local. Se você já está lá, leia o QR da placa MaraPass')}.',
           primaryLabel: tr('Ler QR da placa'),
           onPrimary: () => Navigator.of(context).pushReplacement(
             MaterialPageRoute<void>(builder: (_) => const ScanScreen()),
@@ -367,7 +367,7 @@ class _FlowState extends ConsumerState<CheckinFlowScreen> {
           bg: MP.tintBlue,
           title: tr('Precisamos confirmar que você está lá'),
           message:
-              'Vamos usar a sua localização só agora, para registrar a visita em ${i.titulo}. Ela não fica salva.',
+              '${tr('Vamos usar a sua localização só agora, para registrar a visita em')} ${i.titulo}. ${tr('Ela não fica salva')}.',
           primaryLabel: tr('Permitir e continuar'),
           onPrimary: _check,
           secondaryLabel: tr('Agora não'),
@@ -390,8 +390,8 @@ class _FlowState extends ConsumerState<CheckinFlowScreen> {
                 const SizedBox(height: MP.s5),
                 Text(
                   widget.viaPlate
-                      ? 'Placa reconhecida'
-                      : 'Verificando localização…',
+                      ? tr('Placa reconhecida')
+                      : tr('Verificando localização…'),
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
                 const SizedBox(height: MP.s2),
@@ -433,7 +433,7 @@ class _FlowState extends ConsumerState<CheckinFlowScreen> {
                     ),
                     if (_newStamp)
                       MpBadge(
-                        'Novo selo: ${polo.nome} (+100)',
+                        '${tr('Novo selo')}: ${polo.nome} (+100)',
                         fg: MP.goldText,
                         bg: MP.goldBg,
                         icon: Icons.workspace_premium_rounded,
@@ -458,13 +458,13 @@ class _FlowState extends ConsumerState<CheckinFlowScreen> {
                 ),
                 if (_stars > 0)
                   Text(
-                    const [
+                    [
                       '',
-                      'Que pena. Vamos avisar o parceiro.',
-                      'Obrigado pela sinceridade.',
-                      'Obrigado! Bom saber.',
-                      'Que bom que gostou!',
-                      'Maravilha! Obrigado!',
+                      tr('Que pena. Vamos avisar o parceiro.'),
+                      tr('Obrigado pela sinceridade.'),
+                      tr('Obrigado! Bom saber.'),
+                      tr('Que bom que gostou!'),
+                      tr('Maravilha! Obrigado!'),
                     ][_stars],
                     textAlign: TextAlign.center,
                     style: const TextStyle(

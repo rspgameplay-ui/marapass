@@ -47,7 +47,7 @@ class _PartnerSlotsState extends ConsumerState<PartnerSlotsScreen> {
   Future<void> _load() async {
     final r = ref.read(appStoreProvider).remote;
     if (r == null || !r.signedIn) {
-      setState(() => _error = 'Entre com a conta de parceiro para editar horários e vagas.');
+      setState(() => _error = tr('Entre com a conta de parceiro para editar horários e vagas.'));
       return;
     }
     try {
@@ -125,7 +125,7 @@ class _PartnerSlotsState extends ConsumerState<PartnerSlotsScreen> {
                           Wrap(spacing: 6, children: [
                             for (var d = 1; d <= 7; d++)
                               FilterChip(
-                                label: Text(_dows[d - 1]),
+                                label: Text((appLang == 'en' ? const ['M', 'T', 'W', 'T', 'F', 'S', 'S'] : _dows)[d - 1]),
                                 selected: f.weekdays.contains(d),
                                 onSelected: (v) => setState(() => v ? f.weekdays.add(d) : f.weekdays.remove(d)),
                               ),
@@ -133,7 +133,7 @@ class _PartnerSlotsState extends ConsumerState<PartnerSlotsScreen> {
                           const SizedBox(height: MP.s3),
                           FilledButton(
                             onPressed: _saving != null ? null : () => _save(f),
-                            child: Text(_saving == '${f.item}|${f.period}' ? tr('Salvando…') : (f.saved ? tr('Salvar alterações') : 'Ativar ${f.period.toLowerCase()}')),
+                            child: Text(_saving == '${f.item}|${f.period}' ? tr('Salvando…') : (f.saved ? tr('Salvar alterações') : '${tr('Ativar')} ${f.period.toLowerCase()}')),
                           ),
                         ],
                       ),

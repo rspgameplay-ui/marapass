@@ -45,7 +45,7 @@ class _PartnerRequestState extends ConsumerState<PartnerRequestScreen> {
 
   Future<void> _send() async {
     if (_business.text.trim().length < 2 || _city.text.trim().isEmpty || _phone.text.trim().length < 8) {
-      setState(() => _error = 'Preencha o nome do negócio, a cidade e um telefone com DDD.');
+      setState(() => _error = tr('Preencha o nome do negócio, a cidade e um telefone com DDD.'));
       return;
     }
     setState(() {

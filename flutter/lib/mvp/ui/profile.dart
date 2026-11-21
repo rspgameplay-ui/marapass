@@ -37,7 +37,7 @@ class ProfileScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final store = ref.watch(appStoreProvider);
     final user = ref.watch(authProvider);
-    final display = store.name ?? user?.email?.split('@').first ?? 'Visitante';
+    final display = store.name ?? user?.email?.split('@').first ?? tr('Visitante');
     final lv = store.level;
     final progress = lv.$4 == null
         ? 1.0
@@ -127,7 +127,7 @@ class ProfileScreen extends ConsumerWidget {
                           const SizedBox(height: 2),
                           Text(
                             user?.email ??
-                                'Visitante · entre para salvar sua viagem',
+                                tr('Visitante · entre para salvar sua viagem'),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
@@ -155,7 +155,7 @@ class ProfileScreen extends ConsumerWidget {
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
-                                  '${lv.$1} · ${store.points} pts',
+                                  '${lv.$1} · ${store.points} ${tr('pts')}',
                                   style: const TextStyle(
                                     color: MP.ink,
                                     fontWeight: FontWeight.w800,
@@ -210,8 +210,8 @@ class ProfileScreen extends ConsumerWidget {
                             Flexible(
                               child: Text(
                                 lv.$4 == null
-                                    ? 'Nível máximo'
-                                    : 'Próximo: ${lv.$3}',
+                                    ? tr('Nível máximo')
+                                    : '${tr('Próximo')}: ${lv.$3}',
                                 style: const TextStyle(
                                   color: MP.textSecondary,
                                   fontSize: 13,
@@ -234,8 +234,8 @@ class ProfileScreen extends ConsumerWidget {
                         const SizedBox(height: MP.s2),
                         Text(
                           lv.$4 == null
-                              ? 'Você completou todos os níveis.'
-                              : 'Faltam ${lv.$4! - store.points} pontos',
+                              ? tr('Você completou todos os níveis.')
+                              : '${tr('Faltam')} ${lv.$4! - store.points} ${tr('pontos')}',
                           style: const TextStyle(
                             color: MP.textSecondary,
                             fontSize: 14,
@@ -295,7 +295,7 @@ class ProfileScreen extends ConsumerWidget {
                         icon: Icons.event_note_rounded,
                         color: const Color(0xff6a4fb3),
                         title: tr('Minhas reservas'),
-                        subtitle: '${store.myReservations.length} reservas',
+                        subtitle: '${store.myReservations.length} ${tr('reservas')}',
                         onTap: () =>
                             push<void>(context, const ReservationsScreen()),
                       ),
@@ -304,7 +304,7 @@ class ProfileScreen extends ConsumerWidget {
                         color: const Color(0xffa87800),
                         title: tr('Meus cupons'),
                         subtitle:
-                            '${store.coupons.where((c) => c.active).length} ativos',
+                            '${store.coupons.where((c) => c.active).length} ${tr('ativos')}',
                         onTap: () {
                           ref.read(shellTabProvider.notifier).go(Tabs.cupons);
                           Navigator.of(context).popUntil((r) => r.isFirst);
@@ -369,8 +369,8 @@ class ProfileScreen extends ConsumerWidget {
                         icon: Icons.notifications_active_rounded,
                         title: tr('Avisos de ofertas'),
                         subtitle: store.offerAlerts
-                            ? 'Cupons novos e lembretes'
-                            : 'Só lembretes de reserva',
+                            ? tr('Cupons novos e lembretes')
+                            : tr('Só lembretes de reserva'),
                         value: store.offerAlerts,
                         onChanged: store.setOfferAlerts,
                       ),
@@ -833,9 +833,9 @@ class ConnectionsScreen extends ConsumerWidget {
                     icon: Icons.ios_share_rounded,
                     onPressed: () async {
                       await Clipboard.setData(
-                        const ClipboardData(
+                        ClipboardData(
                           text:
-                              'Vamos viajar pelo Maranhão com o MaraPass! $link',
+                              '${tr('Vamos viajar pelo Maranhão com o MaraPass')}! $link',
                         ),
                       );
                       store.invite();
@@ -849,7 +849,7 @@ class ConnectionsScreen extends ConsumerWidget {
                           onPrimary: () => openWhatsApp(
                             context,
                             '',
-                            'Vamos viajar pelo Maranhão com o MaraPass! $link',
+                            '${tr('Vamos viajar pelo Maranhão com o MaraPass')}! $link',
                           ),
                           secondaryLabel: tr('Fechar'),
                           onSecondary: () => Navigator.of(context).pop(),
@@ -859,7 +859,7 @@ class ConnectionsScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: MP.s3),
                   Text(
-                    'Convites enviados: ${store.invites}',
+                    '${tr('Convites enviados')}: ${store.invites}',
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
