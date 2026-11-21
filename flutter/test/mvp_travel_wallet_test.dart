@@ -80,7 +80,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Quartos disponíveis'), findsOneWidget);
     expect(find.byKey(const Key('stay-room-0')), findsOneWidget);
-    expect(find.text('Cancelamento grátis até 48 h'), findsWidgets);
+    expect(find.text('Cancelamento grátis até 24 h'), findsWidgets);
     expect(find.byKey(const Key('stay-total')), findsOneWidget);
   });
 
