@@ -329,6 +329,12 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
                           _line(tr('Total estimado'), formatBrl(total), bold: true),
                           const SizedBox(height: MP.s2),
                           Text(
+                            tr('Cancelamento grátis até 24 horas antes do início, com reembolso integral.'),
+                            key: const Key('cancel-policy'),
+                            style: const TextStyle(color: MP.success, fontSize: 14, fontWeight: FontWeight.w700),
+                          ),
+                          const SizedBox(height: MP.s1),
+                          Text(
                             tr('Nenhum pagamento é feito agora. O valor final é combinado com o parceiro.'),
                             style: TextStyle(
                               color: MP.textSecondary,
@@ -833,7 +839,9 @@ class ReservationDetailScreen extends ConsumerWidget {
       builder: (_) => AlertDialog(
         title: Text(tr('Cancelar a reserva?')),
         content: Text(
-          tr('Grátis até 24 horas antes. O parceiro será avisado.'),
+          r.freeCancel
+              ? tr('Dentro do prazo: reembolso integral de qualquer valor pago. O parceiro será avisado.')
+              : tr('Faltam menos de 24 horas para o início. Pela política de cancelamento, não há reembolso. O parceiro será avisado.'),
         ),
         actions: [
           TextButton(

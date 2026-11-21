@@ -1,12 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:marapass_mapa/mvp/data/content.dart';
+import 'package:marapass_mapa/mvp/data/store_models.dart';
 import 'package:marapass_mapa/mvp/data/trip.dart';
 
 import 'mvp_flow_test.dart' show boot, tapIt;
 
 void main() {
   final d = DateTime(2027, 1, 10);
+
+  test('cancelamento grátis só até 24 h antes do início', () {
+    LocalReservation at(DateTime day, String period) =>
+        LocalReservation(id: 'x', itemId: 'lagoas', date: day, period: period, people: 2, status: ResStatus.confirmada, history: []);
+    final n = DateTime.now();
+    expect(at(DateTime(n.year, n.month, n.day + 3), 'Manhã').freeCancel, isTrue);
+    expect(at(DateTime(n.year, n.month, n.day), 'Tarde').freeCancel, isFalse);
+    expect(at(DateTime(n.year, n.month, n.day + 1), 'Manhã').start.hour, 8);
+    expect(at(DateTime(n.year, n.month, n.day + 1), '2 noites · Quarto Standard').start.hour, 14);
+  });
 
   group('regras da rota', () {
     test('lê o horário de funcionamento, inclusive até a meia-noite', () {

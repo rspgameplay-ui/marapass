@@ -908,7 +908,7 @@ class AppStore extends ChangeNotifier {
     final r = reservations.firstWhere((e) => e.id == id);
     r
       ..status = ResStatus.cancelada
-      ..history.add('Cancelada: $reason');
+      ..history.add('Cancelada: $reason${r.freeCancel ? ' (dentro do prazo: reembolso integral)' : ' (menos de 24 h antes: sem reembolso)'}');
     _save();
   }
 

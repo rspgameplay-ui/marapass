@@ -88,6 +88,12 @@ class LocalReservation {
   String? cupomId;
   String customer;
   Item? get item => Content.item(itemId);
+
+  /// Início previsto: 8h de manhã, 14h à tarde e no check-in da hospedagem.
+  DateTime get start => DateTime(date.year, date.month, date.day, period == 'Manhã' ? 8 : 14);
+
+  /// Política do cliente: reembolso integral até 24 horas antes do início.
+  bool get freeCancel => DateTime.now().isBefore(start.subtract(const Duration(hours: 24)));
   Map<String, dynamic> toJson() => {
     'id': id,
     'it': itemId,
