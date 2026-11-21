@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../i18n.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -115,7 +116,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          tooltip: 'Voltar',
+          tooltip: tr('Voltar'),
           icon: const Icon(Icons.arrow_back),
           onPressed: () => _codeStep && !_busy
               ? setState(() {
@@ -153,8 +154,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 autofillHints: const [AutofillHints.email],
                 textInputAction: TextInputAction.done,
                 onSubmitted: (_) => _send(),
-                decoration: const InputDecoration(
-                  labelText: 'E-mail',
+                decoration: InputDecoration(
+                  labelText: tr('E-mail'),
                   prefixIcon: Icon(Icons.mail_outline),
                 ),
               )
@@ -175,8 +176,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   letterSpacing: 6,
                   fontWeight: FontWeight.w800,
                 ),
-                decoration: const InputDecoration(
-                  labelText: 'Código',
+                decoration: InputDecoration(
+                  labelText: tr('Código'),
                   prefixIcon: Icon(Icons.lock_outline),
                 ),
               ),
@@ -208,7 +209,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             const SizedBox(height: MP.s5),
             MpPrimaryButton(
               key: const Key('login-submit'),
-              label: _codeStep ? 'Entrar' : 'Enviar código',
+              label: _codeStep ? tr('Entrar') : tr('Enviar código'),
               busy: _busy,
               onPressed: _codeStep ? _verify : _send,
             ),
@@ -216,16 +217,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               const SizedBox(height: MP.s3),
               OutlinedButton(
                 onPressed: _busy ? null : _send,
-                child: const Text('Enviar outro código'),
+                child: Text(tr('Enviar outro código')),
               ),
             ] else ...[
               const SizedBox(height: MP.s4),
-              const Row(
+              Row(
                 children: [
                   Expanded(child: Divider()),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: MP.s3),
-                    child: Text('ou entre com'),
+                    child: Text(tr('ou entre com')),
                   ),
                   Expanded(child: Divider()),
                 ],
@@ -235,27 +236,27 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 key: const Key('login-google'),
                 onPressed: _busy ? null : () => _social('google'),
                 icon: const Icon(Icons.g_mobiledata_rounded, size: 32),
-                label: const Text('Continuar com Google'),
+                label: Text(tr('Continuar com Google')),
               ),
               const SizedBox(height: MP.s2),
               OutlinedButton.icon(
                 key: const Key('login-apple'),
                 onPressed: _busy ? null : () => _social('apple'),
                 icon: const Icon(Icons.apple_rounded, size: 26),
-                label: const Text('Continuar com Apple'),
+                label: Text(tr('Continuar com Apple')),
               ),
             ],
             const SizedBox(height: MP.s5),
             Text(
-              'Ao entrar, você concorda com os termos de uso e a política de privacidade do MaraPass.',
+              tr('Ao entrar, você concorda com os termos de uso e a política de privacidade do MaraPass.'),
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodySmall,
             ),
             Wrap(
               alignment: WrapAlignment.center,
               children: [
-                TextButton(onPressed: () => openLegal(context, 'termos'), child: const Text('Termos de uso')),
-                TextButton(onPressed: () => openLegal(context, 'privacidade'), child: const Text('Privacidade')),
+                TextButton(onPressed: () => openLegal(context, 'termos'), child: Text(tr('Termos de uso'))),
+                TextButton(onPressed: () => openLegal(context, 'privacidade'), child: Text(tr('Privacidade'))),
               ],
             ),
           ],

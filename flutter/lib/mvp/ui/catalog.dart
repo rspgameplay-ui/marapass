@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../i18n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/content.dart';
@@ -99,25 +100,25 @@ class _CategoryScreenState extends State<CategoryScreen> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
-                    child: Text('Filtros', style: Theme.of(context).textTheme.titleLarge),
+                    child: Text(tr('Filtros'), style: Theme.of(context).textTheme.titleLarge),
                   ),
                   const SizedBox(height: MP.s3),
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.symmetric(horizontal: MP.pageH),
-                    child: Text('Preço', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+                    child: Text(tr('Preço'), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
                   ),
                   const SizedBox(height: MP.s1),
                   FilterChips<int>(
                     options: const [0, 1, 2, 3],
                     selected: _faixa,
-                    label: (v) => v == 0 ? 'Todos' : r'$' * v,
+                    label: (v) => v == 0 ? tr('Todos') : r'$' * v,
                     onSelect: (v) => upd(() => _faixa = v),
                   ),
                   if (tipos != null) ...[
                     const SizedBox(height: MP.s2),
-                    const Padding(
+                    Padding(
                       padding: EdgeInsets.symmetric(horizontal: MP.pageH),
-                      child: Text('Tipo', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+                      child: Text(tr('Tipo'), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
                     ),
                     const SizedBox(height: MP.s1),
                     FilterChips<String>(
@@ -140,7 +141,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                           children: [
                             TextButton(
                               onPressed: () => upd(_clearExtra),
-                              child: const Text('Limpar'),
+                              child: Text(tr('Limpar')),
                             ),
                             const SizedBox(width: MP.s2),
                             Expanded(
@@ -148,7 +149,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                                 key: const Key('filter-apply'),
                                 style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(MP.buttonHeight)),
                                 onPressed: () => Navigator.of(sheetCtx).pop(),
-                                child: const Text('Ver resultados'),
+                                child: Text(tr('Ver resultados')),
                               ),
                             ),
                           ],
@@ -223,24 +224,24 @@ class _CategoryScreenState extends State<CategoryScreen> {
                     onPressed: () => _openFilters(context, tipos),
                     style: OutlinedButton.styleFrom(minimumSize: const Size(0, 48)),
                     icon: const Icon(Icons.tune_rounded),
-                    label: Text(_extraCount == 0 ? 'Filtros' : 'Filtros ($_extraCount)'),
+                    label: Text(_extraCount == 0 ? tr('Filtros') : 'Filtros ($_extraCount)'),
                   ),
                   if (_extraCount > 0) ...[
                     const SizedBox(width: MP.s2),
                     TextButton(
                       key: const Key('filter-clear'),
                       onPressed: () => setState(_clearExtra),
-                      child: const Text('Limpar'),
+                      child: Text(tr('Limpar')),
                     ),
                   ],
                 ],
               ),
             ),
             if (_perto)
-              const Padding(
+              Padding(
                 padding: EdgeInsets.fromLTRB(MP.pageH, MP.s3, MP.pageH, 0),
                 child: MpNotice(
-                  'Distâncias calculadas a partir de Barreirinhas nesta demonstração. A sua localização não é enviada.',
+                  tr('Distâncias calculadas a partir de Barreirinhas nesta demonstração. A sua localização não é enviada.'),
                 ),
               ),
             if (widget.cat == Cat.evento)
@@ -260,7 +261,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                       DayAgenda(day: _evDay!),
                       Align(
                         alignment: Alignment.centerLeft,
-                        child: TextButton(key: const Key('events-all'), onPressed: () => setState(() => _evDay = null), child: const Text('Ver todos os eventos')),
+                        child: TextButton(key: const Key('events-all'), onPressed: () => setState(() => _evDay = null), child: Text(tr('Ver todos os eventos'))),
                       ),
                     ],
                   ],
@@ -278,9 +279,9 @@ class _CategoryScreenState extends State<CategoryScreen> {
             if (list.isEmpty)
               MpEmpty(
                 icon: Icons.search_off_rounded,
-                title: 'Nada com esses filtros',
-                message: 'Tente outra cidade ou tire alguns filtros.',
-                actionLabel: 'Limpar filtros',
+                title: tr('Nada com esses filtros'),
+                message: tr('Tente outra cidade ou tire alguns filtros.'),
+                actionLabel: tr('Limpar filtros'),
                 onAction: () => setState(() {
                   _cidade = 'Todas';
                   _clearExtra();
@@ -377,9 +378,9 @@ class _EventRow extends ConsumerWidget {
                     spacing: MP.s2,
                     children: [
                       if (item.destaque)
-                        const MpBadge('Em destaque', fg: MP.error, bg: MP.tintRed),
+                        MpBadge(tr('Em destaque'), fg: MP.error, bg: MP.tintRed),
                       if (item.cupom != null)
-                        const MpBadge('Com benefício', fg: MP.warning, bg: MP.goldBg),
+                        MpBadge(tr('Com benefício'), fg: MP.warning, bg: MP.goldBg),
                     ],
                   ),
                 ],
@@ -469,7 +470,7 @@ class PoloScreen extends StatelessWidget {
                 const SizedBox(height: MP.s3),
                 MonthStrip(best: polo.melhor),
                 const SizedBox(height: MP.s5),
-                Text('Cidades', style: Theme.of(context).textTheme.titleMedium),
+                Text(tr('Cidades'), style: Theme.of(context).textTheme.titleMedium),
                 const SizedBox(height: MP.s2),
                 Wrap(
                   spacing: MP.s2,
@@ -483,16 +484,16 @@ class PoloScreen extends StatelessWidget {
                 OutlinedButton.icon(
                   onPressed: () => openMaps(context, '${polo.nome} Maranhão'),
                   icon: const Icon(Icons.directions_rounded),
-                  label: const Text('Como chegar'),
+                  label: Text(tr('Como chegar')),
                 ),
               ],
             ),
           ),
           if (items.isEmpty)
-            const Padding(
+            Padding(
               padding: EdgeInsets.symmetric(horizontal: MP.pageH),
               child: MpNotice(
-                'Os parceiros deste polo estão sendo cadastrados. Em breve aparecem passeios, restaurantes e hospedagens aqui.',
+                tr('Os parceiros deste polo estão sendo cadastrados. Em breve aparecem passeios, restaurantes e hospedagens aqui.'),
               ),
             ),
           for (final e in byCat.entries) ...[
@@ -532,9 +533,9 @@ class PolosScreen extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.only(bottom: MP.s8),
         children: [
-          const MpHeader(
-            'Os 11 polos do Maranhão',
-            subtitle: 'Escolha uma região para ver o que fazer.',
+          MpHeader(
+            tr('Os 11 polos do Maranhão'),
+            subtitle: tr('Escolha uma região para ver o que fazer.'),
           ),
           for (final p in Content.polos)
             Padding(
@@ -566,14 +567,14 @@ class AuthenticScreen extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.only(bottom: MP.s8),
           children: [
-            const MpHeader(
-              'Experiências autênticas',
-              subtitle: 'Vivências conduzidas pelas próprias comunidades. Não são apenas destinos.',
+            MpHeader(
+              tr('Experiências autênticas'),
+              subtitle: tr('Vivências conduzidas pelas próprias comunidades. Não são apenas destinos.'),
             ),
-            const Padding(
+            Padding(
               padding: EdgeInsets.fromLTRB(MP.pageH, 0, MP.pageH, MP.s4),
               child: MpNotice(
-                'Visitas a comunidades tradicionais acontecem só com agendamento e autorização. Respeite as regras de cada lugar.',
+                tr('Visitas a comunidades tradicionais acontecem só com agendamento e autorização. Respeite as regras de cada lugar.'),
                 icon: Icons.handshake_rounded,
                 fg: MP.green,
                 bg: MP.greenBg,

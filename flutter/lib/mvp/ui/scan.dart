@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
+import '../i18n.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_scanner/mobile_scanner.dart' hide GeoPoint;
@@ -156,11 +157,11 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with SingleTickerProvid
       }
     } on LocationFailure {
       if (mounted) setState(() => _busy = false);
-      if (mounted) showMpSnack(context, 'Código digitado precisa da sua localização. Permita o GPS ou leia o QR da placa.');
+      if (mounted) showMpSnack(context, tr('Código digitado precisa da sua localização. Permita o GPS ou leia o QR da placa.'));
       return;
     } catch (e) {
       if (mounted) setState(() => _busy = false);
-      if (mounted) showMpSnack(context, e is MvpException ? e.message : 'Não foi possível registrar agora. Tente de novo.');
+      if (mounted) showMpSnack(context, e is MvpException ? e.message : tr('Não foi possível registrar agora. Tente de novo.'));
       return;
     }
     if (!mounted) return;
@@ -190,26 +191,26 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with SingleTickerProvid
 
   Future<void> _toggleTorch() async {
     if (_cam == null || _camError != null) {
-      showMpSnack(context, 'Lanterna indisponível sem a câmera.');
+      showMpSnack(context, tr('Lanterna indisponível sem a câmera.'));
       return;
     }
     try {
       await _cam!.toggleTorch();
       setState(() => _torch = !_torch);
     } catch (_) {
-      if (mounted) showMpSnack(context, 'Este aparelho não tem lanterna disponível.');
+      if (mounted) showMpSnack(context, tr('Este aparelho não tem lanterna disponível.'));
     }
   }
 
   Future<void> _switch() async {
     if (_cam == null || _camError != null) {
-      showMpSnack(context, 'Câmera indisponível neste aparelho.');
+      showMpSnack(context, tr('Câmera indisponível neste aparelho.'));
       return;
     }
     try {
       await _cam!.switchCamera();
     } catch (_) {
-      if (mounted) showMpSnack(context, 'Só há uma câmera disponível.');
+      if (mounted) showMpSnack(context, tr('Só há uma câmera disponível.'));
     }
   }
 
@@ -316,12 +317,12 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with SingleTickerProvid
                   _GlassButton(
                     key: const Key('scan-close'),
                     icon: Icons.close_rounded,
-                    tooltip: 'Fechar',
+                    tooltip: tr('Fechar'),
                     onTap: () => Navigator.of(context).maybePop(),
                   ),
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      'Escanear QR Code do Local',
+                      tr('Escanear QR Code do Local'),
                       textAlign: TextAlign.center,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -331,7 +332,7 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with SingleTickerProvid
                   _GlassButton(
                     key: const Key('scan-manual'),
                     icon: Icons.keyboard_rounded,
-                    tooltip: 'Digitar código',
+                    tooltip: tr('Digitar código'),
                     onTap: _busy ? () {} : _manual,
                   ),
                 ],
@@ -348,7 +349,7 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with SingleTickerProvid
                   _GlassButton(
                     key: const Key('scan-torch'),
                     icon: _torch ? Icons.flashlight_on_rounded : Icons.flashlight_off_rounded,
-                    tooltip: _torch ? 'Desligar lanterna' : 'Ligar lanterna',
+                    tooltip: _torch ? tr('Desligar lanterna') : tr('Ligar lanterna'),
                     active: _torch,
                     onTap: _toggleTorch,
                   ),
@@ -356,7 +357,7 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with SingleTickerProvid
                   _GlassButton(
                     key: const Key('scan-switch'),
                     icon: Icons.cameraswitch_rounded,
-                    tooltip: 'Trocar câmera',
+                    tooltip: tr('Trocar câmera'),
                     onTap: _switch,
                   ),
                 ],
@@ -371,8 +372,8 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with SingleTickerProvid
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text(
-                    'Olá!\nLeio as placas dos locais e as ofertas dos parceiros.',
+                  Text(
+                    tr('Olá!\nLeio as placas dos locais e as ofertas dos parceiros.'),
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 18,
@@ -390,9 +391,9 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with SingleTickerProvid
                           child: _RecentTile(checkin: c),
                         ),
                       if (recent.isEmpty)
-                        const Expanded(
+                        Expanded(
                           child: Text(
-                            'Suas visitas recentes aparecem aqui.',
+                            tr('Suas visitas recentes aparecem aqui.'),
                             style: TextStyle(color: MP.onDarkMuted, fontSize: 14),
                           ),
                         )
@@ -401,7 +402,7 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with SingleTickerProvid
                       _GlassButton(
                         key: const Key('scan-history'),
                         icon: Icons.menu_book_rounded,
-                        tooltip: 'Abrir meu passaporte',
+                        tooltip: tr('Abrir meu passaporte'),
                         onTap: () {
                           ref.read(shellTabProvider.notifier).go(Tabs.passaporte);
                           Navigator.of(context).popUntil((r) => r.isFirst);
@@ -419,7 +420,7 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with SingleTickerProvid
                       minimumSize: const Size.fromHeight(MP.buttonHeight),
                     ),
                     icon: const Icon(Icons.my_location_rounded),
-                    label: const Text('Não achei o QR: usar localização'),
+                    label: Text(tr('Não achei o QR: usar localização')),
                   ),
                   // Simulação só em demonstração e sem conta: o turista real
                   // não vê este botão; logado, o servidor exige a placa real.
@@ -428,7 +429,7 @@ class _ScanScreenState extends ConsumerState<ScanScreen> with SingleTickerProvid
                       key: const Key('scan-simulate'),
                       onPressed: _busy ? null : () => _handle(plateCode(Content.items.first)),
                       style: TextButton.styleFrom(foregroundColor: MP.onDarkMuted),
-                      child: const Text('Simular leitura (demonstração)'),
+                      child: Text(tr('Simular leitura (demonstração)')),
                     ),
                 ],
               ),
@@ -571,9 +572,9 @@ class _ManualSheetState extends State<_ManualSheet> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text('Digitar código', style: Theme.of(context).textTheme.titleLarge),
+        Text(tr('Digitar código'), style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: MP.s1),
-        const Text('Use o código impresso embaixo do QR da placa MaraPass.', style: TextStyle(fontSize: 15, color: MP.textSecondary)),
+        Text(tr('Use o código impresso embaixo do QR da placa MaraPass.'), style: TextStyle(fontSize: 15, color: MP.textSecondary)),
         const SizedBox(height: MP.s4),
         TextField(
           key: const Key('plate-code'),
@@ -585,7 +586,7 @@ class _ManualSheetState extends State<_ManualSheet> {
             LengthLimitingTextInputFormatter(40),
           ],
           style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800, letterSpacing: 3),
-          decoration: const InputDecoration(labelText: 'Código da placa', hintText: 'MP-XXXXXX'),
+          decoration: InputDecoration(labelText: tr('Código da placa'), hintText: tr('MP-XXXXXX')),
           onSubmitted: (_) => _go(),
         ),
         if (_error != null) ...[
@@ -593,7 +594,7 @@ class _ManualSheetState extends State<_ManualSheet> {
           MpNotice(_error!, icon: Icons.error_outline_rounded, fg: MP.error, bg: MP.errorBg),
         ],
         const SizedBox(height: MP.s4),
-        MpPrimaryButton(key: const Key('plate-submit'), label: 'Confirmar código', onPressed: _go),
+        MpPrimaryButton(key: const Key('plate-submit'), label: tr('Confirmar código'), onPressed: _go),
         const SizedBox(height: MP.s3),
         MpNotice.demo('Demonstração: experimente ${plateCode(Content.items.first)} (${Content.items.first.titulo}).'),
       ],
@@ -651,13 +652,13 @@ class _ResultSheetState extends ConsumerState<_ResultSheet> with SingleTickerPro
             ),
             const SizedBox(height: MP.s4),
             if (cupom != null) ...[
-              Text('Oferta encontrada', textAlign: TextAlign.center, style: Theme.of(context).textTheme.headlineSmall),
+              Text(tr('Oferta encontrada'), textAlign: TextAlign.center, style: Theme.of(context).textTheme.headlineSmall),
               const SizedBox(height: MP.s1),
               Text('${cupom.beneficio} · ${cupom.parceiro}', textAlign: TextAlign.center, style: const TextStyle(fontSize: 17, color: MP.text)),
               const SizedBox(height: MP.s4),
               MpPrimaryButton(
                 key: const Key('scan-offer-open'),
-                label: 'Ativar cupom',
+                label: tr('Ativar cupom'),
                 icon: Icons.local_activity_rounded,
                 onPressed: () {
                   Navigator.of(context).pop();
@@ -665,13 +666,13 @@ class _ResultSheetState extends ConsumerState<_ResultSheet> with SingleTickerPro
                 },
               ),
             ] else if (widget.already) ...[
-              Text('Visita já registrada hoje', textAlign: TextAlign.center, style: Theme.of(context).textTheme.headlineSmall),
+              Text(tr('Visita já registrada hoje'), textAlign: TextAlign.center, style: Theme.of(context).textTheme.headlineSmall),
               const SizedBox(height: MP.s1),
               Text('Você já fez check-in em ${item!.titulo} hoje.', textAlign: TextAlign.center, style: const TextStyle(fontSize: 16, color: MP.textSecondary)),
               const SizedBox(height: MP.s4),
-              MpPrimaryButton(label: 'Ver meu passaporte', onPressed: _toPassport),
+              MpPrimaryButton(label: tr('Ver meu passaporte'), onPressed: _toPassport),
             ] else ...[
-              Text('Visita registrada!', textAlign: TextAlign.center, style: Theme.of(context).textTheme.headlineSmall),
+              Text(tr('Visita registrada!'), textAlign: TextAlign.center, style: Theme.of(context).textTheme.headlineSmall),
               const SizedBox(height: MP.s1),
               Text(item!.titulo, textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: MP.s3),
@@ -680,7 +681,7 @@ class _ResultSheetState extends ConsumerState<_ResultSheet> with SingleTickerPro
                 spacing: MP.s2,
                 runSpacing: MP.s2,
                 children: [
-                  const MpBadge('+50 pontos', fg: MP.success, icon: Icons.add_circle_rounded),
+                  MpBadge(tr('+50 pontos'), fg: MP.success, icon: Icons.add_circle_rounded),
                   if (widget.newStamp)
                     MpBadge(
                       'Novo carimbo: ${Content.polo(item.polo).nome} (+100)',
@@ -691,7 +692,7 @@ class _ResultSheetState extends ConsumerState<_ResultSheet> with SingleTickerPro
                 ],
               ),
               const SizedBox(height: MP.s4),
-              const Text('Como foi a experiência?', textAlign: TextAlign.center, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+              Text(tr('Como foi a experiência?'), textAlign: TextAlign.center, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
               StarRating(
                 value: _stars,
                 onChanged: (v) {
@@ -700,10 +701,10 @@ class _ResultSheetState extends ConsumerState<_ResultSheet> with SingleTickerPro
                 },
               ),
               const SizedBox(height: MP.s3),
-              MpPrimaryButton(key: const Key('checkin-to-passport'), label: 'Ver meu passaporte', onPressed: _toPassport),
+              MpPrimaryButton(key: const Key('checkin-to-passport'), label: tr('Ver meu passaporte'), onPressed: _toPassport),
             ],
             const SizedBox(height: MP.s1),
-            TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Continuar lendo')),
+            TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(tr('Continuar lendo'))),
           ],
         ),
       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../i18n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/config.dart';
@@ -24,9 +25,9 @@ class SupportCenterScreen extends ConsumerWidget {
         child: ListView(
           padding: const EdgeInsets.only(bottom: MP.s8),
           children: [
-            const MpHeader(
-              'Atendimento',
-              subtitle: 'Fale com o MaraPass e com os parceiros.',
+            MpHeader(
+              tr('Atendimento'),
+              subtitle: tr('Fale com o MaraPass e com os parceiros.'),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
@@ -36,8 +37,8 @@ class SupportCenterScreen extends ConsumerWidget {
                   MpListTile(
                     key: const Key('sup-open'),
                     icon: Icons.support_agent_rounded,
-                    title: 'Abrir solicitação',
-                    subtitle: 'Problema com cupom, reserva ou conta',
+                    title: tr('Abrir solicitação'),
+                    subtitle: tr('Problema com cupom, reserva ou conta'),
                     tint: MP.tintBlue,
                     onTap: () => push<void>(
                       context,
@@ -52,8 +53,8 @@ class SupportCenterScreen extends ConsumerWidget {
                   MpListTile(
                     key: const Key('sup-suggest'),
                     icon: Icons.lightbulb_rounded,
-                    title: 'Sugestões e avaliações',
-                    subtitle: 'Ajude a melhorar o programa',
+                    title: tr('Sugestões e avaliações'),
+                    subtitle: tr('Ajude a melhorar o programa'),
                     tint: MP.tintYellow,
                     color: MP.goldText,
                     onTap: () => push<void>(
@@ -69,20 +70,20 @@ class SupportCenterScreen extends ConsumerWidget {
                   MpListTile(
                     key: const Key('sup-channels'),
                     icon: Icons.forum_rounded,
-                    title: 'Canais e WhatsApp',
-                    subtitle: 'Telefone, e-mail e orientações',
+                    title: tr('Canais e WhatsApp'),
+                    subtitle: tr('Telefone, e-mail e orientações'),
                     tint: MP.tintGreen,
                     color: MP.green,
                     onTap: () => push<void>(context, const ChannelsScreen()),
                   ),
                   const SizedBox(height: MP.sectionGap),
-                  const MpSectionTitle('Minhas conversas'),
+                  MpSectionTitle(tr('Minhas conversas')),
                   const SizedBox(height: MP.s3),
                   if (tickets.isEmpty)
-                    const MpCard(
+                    MpCard(
                       color: MP.soft,
                       child: Text(
-                        'Nenhuma conversa ainda. Quando você abrir uma solicitação, ela aparece aqui com o protocolo.',
+                        tr('Nenhuma conversa ainda. Quando você abrir uma solicitação, ela aparece aqui com o protocolo.'),
                         style: TextStyle(fontSize: 16, color: MP.textSecondary),
                       ),
                     ),
@@ -139,7 +140,7 @@ class ChannelsScreen extends StatelessWidget {
                   MpListTile(
                     icon: Icons.mail_rounded,
                     title: t.supportEmail,
-                    subtitle: 'atendimento@marapass.com',
+                    subtitle: tr('atendimento@marapass.com'),
                   ),
                   const SizedBox(height: MP.s2),
                   MpListTile(
@@ -214,13 +215,13 @@ class _ComposeState extends ConsumerState<ComposeScreen> {
               : 'Mensagem enviada',
           message:
               'Protocolo ${t.id}. Você recebe a resposta em Atendimento, aqui no app.',
-          primaryLabel: 'Ver atendimento',
+          primaryLabel: tr('Ver atendimento'),
           onPrimary: () => Navigator.of(context).pushReplacement(
             MaterialPageRoute<void>(
               builder: (_) => const SupportCenterScreen(),
             ),
           ),
-          secondaryLabel: 'Fechar',
+          secondaryLabel: tr('Fechar'),
           onSecondary: () => Navigator.of(context).pop(),
         ),
       ),
@@ -243,8 +244,8 @@ class _ComposeState extends ConsumerState<ComposeScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 if (widget.kind == 'Sugestão') ...[
-                  const Text(
-                    'Que nota você dá para o MaraPass?',
+                  Text(
+                    tr('Que nota você dá para o MaraPass?'),
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
                   ),
                   StarRating(
@@ -270,7 +271,7 @@ class _ComposeState extends ConsumerState<ComposeScreen> {
                 FilledButton(
                   key: const Key('compose-send'),
                   onPressed: _ctrl.text.trim().length >= 5 ? _send : null,
-                  child: const Text('Enviar'),
+                  child: Text(tr('Enviar')),
                 ),
               ],
             ),
@@ -335,7 +336,7 @@ class _TicketState extends ConsumerState<TicketScreen> {
                   'Olá! Preciso falar com uma pessoa sobre o protocolo ${t.id} (${t.kind}: ${t.subject}).',
                 ),
                 icon: const Icon(Icons.chat_rounded, size: MP.iconMd),
-                label: const Text('Falar com uma pessoa no WhatsApp'),
+                label: Text(tr('Falar com uma pessoa no WhatsApp')),
               ),
             ),
             Expanded(
@@ -359,14 +360,14 @@ class _TicketState extends ConsumerState<TicketScreen> {
                     child: TextField(
                       key: const Key('ticket-reply'),
                       controller: _ctrl,
-                      decoration: const InputDecoration(
-                        hintText: 'Escreva aqui',
+                      decoration: InputDecoration(
+                        hintText: tr('Escreva aqui'),
                       ),
                     ),
                   ),
                   const SizedBox(width: MP.s2),
                   IconButton.filled(
-                    tooltip: 'Enviar',
+                    tooltip: tr('Enviar'),
                     iconSize: 26,
                     style: IconButton.styleFrom(
                       backgroundColor: MP.green,

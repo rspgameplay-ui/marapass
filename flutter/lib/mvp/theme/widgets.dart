@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../i18n.dart';
 
 import 'tokens.dart';
 
@@ -317,7 +318,7 @@ class MpError extends StatelessWidget {
             const SizedBox(height: MP.s4),
             OutlinedButton(
               onPressed: onRetry,
-              child: const Text('Tentar de novo'),
+              child: Text(tr('Tentar de novo')),
             ),
           ],
         ],
@@ -345,7 +346,7 @@ class _MpSkeletonListState extends State<MpSkeletonList> with SingleTickerProvid
 
   @override
   Widget build(BuildContext context) => Semantics(
-    label: 'Carregando',
+    label: tr('Carregando'),
     liveRegion: true,
     child: ExcludeSemantics(
       child: AnimatedBuilder(
@@ -479,21 +480,21 @@ class MpBackPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Semantics(
     button: true,
-    label: 'Voltar',
+    label: tr('Voltar'),
     child: Material(
       color: onDark ? Colors.white : MP.soft,
       borderRadius: BorderRadius.circular(MP.rPill),
       child: InkWell(
         borderRadius: BorderRadius.circular(MP.rPill),
         onTap: onPressed ?? () => Navigator.of(context).maybePop(),
-        child: const Padding(
+        child: Padding(
           padding: EdgeInsets.fromLTRB(10, 10, 16, 10),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(Icons.chevron_left_rounded, color: MP.ink),
               Text(
-                'Voltar',
+                tr('Voltar'),
                 style: TextStyle(
                   color: MP.ink,
                   fontWeight: FontWeight.w800,
@@ -588,14 +589,19 @@ class MpShortcut extends StatelessWidget {
               child: Icon(icon, color: color, size: 26),
             ),
             const SizedBox(height: 6),
-            Text(
-              label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontWeight: FontWeight.w800,
-                fontSize: 14,
-                color: MP.ink,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 2),
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 14,
+                    color: MP.ink,
+                  ),
+                ),
               ),
             ),
           ],
@@ -909,7 +915,7 @@ class MpStepper extends StatelessWidget {
     children: [
       IconButton.filledTonal(
         key: Key('$keyPrefix-minus'),
-        tooltip: 'Diminuir',
+        tooltip: tr('Diminuir'),
         iconSize: 28,
         onPressed: value > min ? () => onChanged(value - 1) : null,
         icon: const Icon(Icons.remove_rounded),
@@ -926,7 +932,7 @@ class MpStepper extends StatelessWidget {
       ),
       IconButton.filledTonal(
         key: Key('$keyPrefix-plus'),
-        tooltip: 'Aumentar',
+        tooltip: tr('Aumentar'),
         iconSize: 28,
         onPressed: value < max ? () => onChanged(value + 1) : null,
         icon: const Icon(Icons.add_rounded),

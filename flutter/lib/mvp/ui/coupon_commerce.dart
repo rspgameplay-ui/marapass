@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../i18n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -64,7 +65,7 @@ class _CouponReceiptState extends ConsumerState<CouponReceipt> {
         !await requireLogin(
           context,
           ref,
-          reason: 'Entre para consultar este cupom.',
+          reason: tr('Entre para consultar este cupom.'),
         )) {
       if (mounted) setState(() => error = 'Entre para consultar este cupom.');
       return;
@@ -114,16 +115,16 @@ class _CouponReceiptState extends ConsumerState<CouponReceipt> {
             autofocus: true,
             maxLength: 300,
             onChanged: (s) => value = s.trim(),
-            decoration: const InputDecoration(labelText: 'Motivo'),
+            decoration: InputDecoration(labelText: tr('Motivo')),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Voltar'),
+              child: Text(tr('Voltar')),
             ),
             FilledButton(
               onPressed: () => Navigator.pop(ctx, value),
-              child: const Text('Registrar'),
+              child: Text(tr('Registrar')),
             ),
           ],
         ),
@@ -147,7 +148,7 @@ class _CouponReceiptState extends ConsumerState<CouponReceipt> {
     final r = receipt, partner = widget.scope == 'partner';
     return Scaffold(
       appBar: AppBar(
-        title: Text(partner ? 'Conferir recebimento' : 'Meu cupom'),
+        title: Text(partner ? tr('Conferir recebimento') : tr('Meu cupom')),
       ),
       body: error != null
           ? Center(
@@ -157,7 +158,7 @@ class _CouponReceiptState extends ConsumerState<CouponReceipt> {
                   Text(error!),
                   TextButton(
                     onPressed: load,
-                    child: const Text('Tentar novamente'),
+                    child: Text(tr('Tentar novamente')),
                   ),
                 ],
               ),
@@ -235,26 +236,26 @@ class _CouponReceiptState extends ConsumerState<CouponReceipt> {
                                 if (context.mounted) _message(context, e);
                               }
                             },
-                            child: const Text('Pagar diretamente ao parceiro'),
+                            child: Text(tr('Pagar diretamente ao parceiro')),
                           ),
                         if (url == null || url.scheme != 'https')
                           OutlinedButton(
                             onPressed: () => showDialog<void>(
                               context: context,
                               builder: (ctx) => AlertDialog(
-                                title: const Text('Pagar ao parceiro'),
+                                title: Text(tr('Pagar ao parceiro')),
                                 content: SelectableText(
                                   sale['payment'] as String? ?? '',
                                 ),
                                 actions: [
                                   TextButton(
                                     onPressed: () => Navigator.pop(ctx),
-                                    child: const Text('Fechar'),
+                                    child: Text(tr('Fechar')),
                                   ),
                                 ],
                               ),
                             ),
-                            child: const Text('Ver instruções de pagamento'),
+                            child: Text(tr('Ver instruções de pagamento')),
                           ),
                         if (state == 'issued' || state == 'interested')
                           OutlinedButton(
@@ -263,11 +264,11 @@ class _CouponReceiptState extends ConsumerState<CouponReceipt> {
                                 : () => act(
                                     () => remote.reportPayment(receiptCode),
                                   ),
-                            child: const Text('Já paguei ao parceiro'),
+                            child: Text(tr('Já paguei ao parceiro')),
                           ),
                         if (state == 'payment_reported')
-                          const Text(
-                            'Aguardando o parceiro conferir o recebimento.',
+                          Text(
+                            tr('Aguardando o parceiro conferir o recebimento.'),
                           ),
                       ],
                       if (partner && open) ...[
@@ -302,7 +303,7 @@ class _CouponReceiptState extends ConsumerState<CouponReceipt> {
                                     };
                                   }
                                 }),
-                          child: const Text('Confirmo que recebi este valor'),
+                          child: Text(tr('Confirmo que recebi este valor')),
                         ),
                       ],
                       const Divider(),
@@ -349,7 +350,7 @@ class _CouponReceiptState extends ConsumerState<CouponReceipt> {
                                     throw 'Não foi possível abrir a conversa.';
                                   }
                                 }),
-                          child: const Text('Falar com o parceiro'),
+                          child: Text(tr('Falar com o parceiro')),
                         ),
                       if (open)
                         TextButton(
@@ -379,7 +380,7 @@ class _CouponReceiptState extends ConsumerState<CouponReceipt> {
                                   'Contestar',
                                   explain: true,
                                 ),
-                          child: const Text('Contestar'),
+                          child: Text(tr('Contestar')),
                         ),
                       if (state == 'disputed' && partner)
                         FilledButton(
@@ -390,7 +391,7 @@ class _CouponReceiptState extends ConsumerState<CouponReceipt> {
                                   'Registrar solução',
                                   explain: true,
                                 ),
-                          child: const Text('Resolver divergência'),
+                          child: Text(tr('Resolver divergência')),
                         ),
                       if (partner &&
                           r['stage'] == 'converted' &&
@@ -402,7 +403,7 @@ class _CouponReceiptState extends ConsumerState<CouponReceipt> {
                                   'utilize',
                                   'Registrar utilização',
                                 ),
-                          child: const Text('Registrar utilização'),
+                          child: Text(tr('Registrar utilização')),
                         ),
                       if (partner && r['stage'] == 'utilized')
                         OutlinedButton(
@@ -410,7 +411,7 @@ class _CouponReceiptState extends ConsumerState<CouponReceipt> {
                               ? null
                               : () =>
                                     transition('complete', 'Concluir entrega'),
-                          child: const Text('Concluir entrega'),
+                          child: Text(tr('Concluir entrega')),
                         ),
                       Text('Pontos no Passaporte   ${r['points']}'),
                       for (final e in r['entries'] as List)
@@ -428,7 +429,7 @@ class _CouponReceiptState extends ConsumerState<CouponReceipt> {
                         ),
                       if (partner && (r['paid'] as int) > 0)
                         ExpansionTile(
-                          title: const Text('Registrar reembolso já efetuado'),
+                          title: Text(tr('Registrar reembolso já efetuado')),
                           children: [
                             TextField(
                               controller: amount,
@@ -442,14 +443,14 @@ class _CouponReceiptState extends ConsumerState<CouponReceipt> {
                             ),
                             TextField(
                               controller: reference,
-                              decoration: const InputDecoration(
-                                labelText: 'Referência única do reembolso',
+                              decoration: InputDecoration(
+                                labelText: tr('Referência única do reembolso'),
                               ),
                             ),
                             TextField(
                               controller: reason,
-                              decoration: const InputDecoration(
-                                labelText: 'Motivo',
+                              decoration: InputDecoration(
+                                labelText: tr('Motivo'),
                               ),
                             ),
                             OutlinedButton(
@@ -477,7 +478,7 @@ class _CouponReceiptState extends ConsumerState<CouponReceipt> {
                                         reason.clear();
                                       }
                                     }),
-                              child: const Text('Registrar ajuste'),
+                              child: Text(tr('Registrar ajuste')),
                             ),
                           ],
                         ),
@@ -570,7 +571,7 @@ class _PartnerCouponListState extends ConsumerState<PartnerCouponList> {
     final code = await Navigator.of(context).push<String>(
       MaterialPageRoute(
         builder: (ctx) => Scaffold(
-          appBar: AppBar(title: const Text('Ler QR do cupom')),
+          appBar: AppBar(title: Text(tr('Ler QR do cupom'))),
           body: MobileScanner(
             onDetect: (capture) {
               if (read) return;
@@ -603,7 +604,7 @@ class _PartnerCouponListState extends ConsumerState<PartnerCouponList> {
               child: TextButton.icon(
                 onPressed: () => Navigator.maybePop(context),
                 icon: const Icon(Icons.arrow_back),
-                label: const Text('Modo turista'),
+                label: Text(tr('Modo turista')),
               ),
             ),
           Text(
@@ -650,7 +651,7 @@ class _PartnerCouponListState extends ConsumerState<PartnerCouponList> {
                         filters = {};
                         load(reset: true);
                       },
-                child: const Text('Limpar período'),
+                child: Text(tr('Limpar período')),
               ),
             if (summary.isNotEmpty)
               Text(
@@ -660,26 +661,26 @@ class _PartnerCouponListState extends ConsumerState<PartnerCouponList> {
           if (widget.lookup) ...[
             TextField(
               controller: input,
-              decoration: const InputDecoration(labelText: 'Código do cupom'),
+              decoration: InputDecoration(labelText: tr('Código do cupom')),
             ),
             FilledButton(
               onPressed: () => open(input.text),
-              child: const Text('Consultar cupom'),
+              child: Text(tr('Consultar cupom')),
             ),
             TextButton.icon(
               onPressed: scan,
               icon: const Icon(Icons.qr_code_scanner),
-              label: const Text('Ler QR'),
+              label: Text(tr('Ler QR')),
             ),
           ],
           TextButton.icon(
             onPressed: busy ? null : () => load(reset: true),
             icon: const Icon(Icons.refresh),
-            label: const Text('Atualizar'),
+            label: Text(tr('Atualizar')),
           ),
           if (error != null) Text(error!),
           if (rows.isEmpty && !busy && error == null)
-            const Text('Nenhum cupom comercial emitido nas suas ofertas.'),
+            Text(tr('Nenhum cupom comercial emitido nas suas ofertas.')),
           for (final row in rows)
             ListTile(
               contentPadding: EdgeInsets.zero,
@@ -693,7 +694,7 @@ class _PartnerCouponListState extends ConsumerState<PartnerCouponList> {
           if (more && rows.isNotEmpty)
             TextButton(
               onPressed: busy ? null : load,
-              child: const Text('Ver mais'),
+              child: Text(tr('Ver mais')),
             ),
         ],
       ),
@@ -774,12 +775,12 @@ class _CouponConsentState extends ConsumerState<CouponConsent> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Cupons pelo WhatsApp')),
+    appBar: AppBar(title: Text(tr('Cupons pelo WhatsApp'))),
     body: ListView(
       padding: const EdgeInsets.all(20),
       children: [
-        const Text(
-          'Autorizo o MaraPass a enviar avisos de emissão dos meus cupons e das minhas ofertas a este número. Posso cancelar aqui ou responder SAIR.',
+        Text(
+          tr('Autorizo o MaraPass a enviar avisos de emissão dos meus cupons e das minhas ofertas a este número. Posso cancelar aqui ou responder SAIR.'),
         ),
         if (error != null)
           TextButton(onPressed: load, child: Text('$error · Tentar novamente')),
@@ -788,16 +789,16 @@ class _CouponConsentState extends ConsumerState<CouponConsent> {
             controller: phone,
             enabled: !busy && !sent && enabled != true,
             keyboardType: TextInputType.phone,
-            decoration: const InputDecoration(
-              labelText: 'Telefone com DDI e DDD',
+            decoration: InputDecoration(
+              labelText: tr('Telefone com DDI e DDD'),
             ),
           ),
           if (sent)
             TextField(
               controller: otp,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Código de verificação recebido',
+              decoration: InputDecoration(
+                labelText: tr('Código de verificação recebido'),
               ),
             ),
           FilledButton(

@@ -8,7 +8,6 @@ class PartnerReservationsScreen extends ConsumerStatefulWidget {
 }
 
 class _PartnerResState extends ConsumerState<PartnerReservationsScreen> {
-  int _capacity = 12;
 
   Future<void> _useVoucher(String code) async {
     try {
@@ -24,11 +23,11 @@ class _PartnerResState extends ConsumerState<PartnerReservationsScreen> {
     final code = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Código do comprovante'),
-        content: TextField(key: const Key('res-code'), controller: c, autofocus: true, textCapitalization: TextCapitalization.characters, decoration: const InputDecoration(hintText: 'R-XXXXXXXX')),
+        title: Text(tr('Código do comprovante')),
+        content: TextField(key: const Key('res-code'), controller: c, autofocus: true, textCapitalization: TextCapitalization.characters, decoration: InputDecoration(hintText: tr('R-XXXXXXXX'))),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancelar')),
-          FilledButton(key: const Key('res-code-ok'), onPressed: () => Navigator.pop(ctx, c.text), child: const Text('Validar')),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(tr('Cancelar'))),
+          FilledButton(key: const Key('res-code-ok'), onPressed: () => Navigator.pop(ctx, c.text), child: Text(tr('Validar'))),
         ],
       ),
     );
@@ -40,7 +39,7 @@ class _PartnerResState extends ConsumerState<PartnerReservationsScreen> {
     final code = await Navigator.of(context).push<String>(
       MaterialPageRoute(
         builder: (ctx) => Scaffold(
-          appBar: AppBar(title: const Text('Ler comprovante')),
+          appBar: AppBar(title: Text(tr('Ler comprovante'))),
           body: MobileScanner(
             onDetect: (capture) {
               if (read) return;
@@ -76,9 +75,9 @@ class _PartnerResState extends ConsumerState<PartnerReservationsScreen> {
         child: ListView(
           padding: const EdgeInsets.only(bottom: MP.s8),
           children: [
-            const MpHeader(
-              'Central de reservas',
-              subtitle: 'Responda os pedidos e controle a capacidade.',
+            MpHeader(
+              tr('Central de reservas'),
+              subtitle: tr('Responda os pedidos e controle a capacidade.'),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
@@ -90,68 +89,33 @@ class _PartnerResState extends ConsumerState<PartnerReservationsScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        const Text('Comprovante do turista', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
-                        const Text('Leia o QR ou digite o código R-XXXXXXXX no dia do passeio.', style: TextStyle(color: MP.textSecondary)),
+                        Text(tr('Comprovante do turista'), style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                        Text(tr('Leia o QR ou digite o código R-XXXXXXXX no dia do passeio.'), style: TextStyle(color: MP.textSecondary)),
                         const SizedBox(height: MP.s2),
                         Row(children: [
-                          Expanded(child: OutlinedButton.icon(key: const Key('res-scan'), onPressed: _scanVoucher, icon: const Icon(Icons.qr_code_scanner_rounded), label: const Text('Ler QR'))),
+                          Expanded(child: OutlinedButton.icon(key: const Key('res-scan'), onPressed: _scanVoucher, icon: const Icon(Icons.qr_code_scanner_rounded), label: Text(tr('Ler QR')))),
                           const SizedBox(width: MP.s2),
-                          Expanded(child: OutlinedButton.icon(key: const Key('res-type'), onPressed: _typeVoucher, icon: const Icon(Icons.keyboard_rounded), label: const Text('Digitar'))),
+                          Expanded(child: OutlinedButton.icon(key: const Key('res-type'), onPressed: _typeVoucher, icon: const Icon(Icons.keyboard_rounded), label: Text(tr('Digitar')))),
                         ]),
                       ],
                     ),
                   ),
                   const SizedBox(height: MP.s3),
-                  MpCard(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            const Expanded(
-                              child: Text(
-                                'Capacidade por saída',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w800,
-                                ),
-                              ),
-                            ),
-                            MpStepper(
-                              value: _capacity,
-                              min: 2,
-                              max: 30,
-                              keyPrefix: 'cap',
-                              onChanged: (v) => setState(() => _capacity = v),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: MP.s2),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(MP.rPill),
-                          child: LinearProgressIndicator(
-                            value: (people / _capacity).clamp(0, 1),
-                            minHeight: 10,
-                            color: people > _capacity ? MP.error : MP.green,
-                            backgroundColor: MP.soft,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '$people de $_capacity lugares ocupados nas confirmadas',
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                      ],
-                    ),
+                  MpListTile(
+                    key: const Key('res-slots'),
+                    icon: Icons.schedule_rounded,
+                    title: tr('Horários e vagas'),
+                    subtitle: '$people ${people == 1 ? tr('pessoa confirmada') : tr('pessoas confirmadas')} · defina turnos e limite por dia',
+                    onTap: () => push<void>(context, const PartnerSlotsScreen()),
                   ),
                   const SizedBox(height: MP.s4),
                   MpSectionTitle('Aguardando resposta (${pending.length})'),
                   const SizedBox(height: MP.s2),
                   if (pending.isEmpty)
-                    const MpCard(
+                    MpCard(
                       color: MP.soft,
                       child: Text(
-                        'Nenhum pedido pendente.',
+                        tr('Nenhum pedido pendente.'),
                         style: TextStyle(fontSize: 16, color: MP.textSecondary),
                       ),
                     ),
@@ -176,7 +140,7 @@ class _PartnerResState extends ConsumerState<PartnerReservationsScreen> {
                                   key: Key('decline-${r.id}'),
                                   onPressed: () =>
                                       _decide(context, s, r.id, false),
-                                  child: const Text('Recusar'),
+                                  child: Text(tr('Recusar')),
                                 ),
                               ),
                               const SizedBox(width: MP.s2),
@@ -188,7 +152,7 @@ class _PartnerResState extends ConsumerState<PartnerReservationsScreen> {
                                   ),
                                   onPressed: () =>
                                       _decide(context, s, r.id, true),
-                                  child: const Text('Confirmar'),
+                                  child: Text(tr('Confirmar')),
                                 ),
                               ),
                             ],
@@ -232,7 +196,7 @@ class PartnerEventsScreen extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.only(bottom: MP.s8),
           children: [
-            const MpHeader('Eventos e ingressos'),
+            MpHeader(tr('Eventos e ingressos')),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
               child: Column(
@@ -244,7 +208,7 @@ class PartnerEventsScreen extends StatelessWidget {
                       const ServiceWizardScreen(eventMode: true),
                     ),
                     icon: const Icon(Icons.add_rounded),
-                    label: const Text('Criar evento'),
+                    label: Text(tr('Criar evento')),
                   ),
                   const SizedBox(height: MP.s4),
                   for (final e in events) ...[
@@ -361,8 +325,8 @@ RadioGroup<String>(
                       controller: _name,
                       onChanged: (_) => setState(() {}),
                       style: const TextStyle(fontSize: 18),
-                      decoration: const InputDecoration(
-                        labelText: 'Nome do evento',
+                      decoration: InputDecoration(
+                        labelText: tr('Nome do evento'),
                       ),
                     ),
                   if (_step == 1) ...[
@@ -370,8 +334,8 @@ RadioGroup<String>(
                       TextField(
                         controller: _name,
                         style: const TextStyle(fontSize: 18),
-                        decoration: const InputDecoration(
-                          labelText: 'Nome do serviço',
+                        decoration: InputDecoration(
+                          labelText: tr('Nome do serviço'),
                         ),
                       ),
                     const SizedBox(height: MP.s3),
@@ -404,8 +368,8 @@ RadioGroup<String>(
                       value: _accessible,
                       onChanged: (v) => setState(() => _accessible = v),
                       contentPadding: EdgeInsets.zero,
-                      title: const Text(
-                        'Acessível para pessoas com mobilidade reduzida',
+                      title: Text(
+                        tr('Acessível para pessoas com mobilidade reduzida'),
                         style: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.w700,
@@ -437,7 +401,7 @@ RadioGroup<String>(
                               ),
                             ),
                           if (_accessible)
-                            const MpBadge('Acessível', fg: MP.info),
+                            MpBadge(tr('Acessível'), fg: MP.info),
                         ],
                       ),
                     ),
@@ -445,11 +409,11 @@ RadioGroup<String>(
                   if (_step < 3)
                     FilledButton(
                       onPressed: ok ? () => setState(() => _step++) : null,
-                      child: const Text('Continuar'),
+                      child: Text(tr('Continuar')),
                     )
                   else
                     MpCtaButton(
-                      label: 'Enviar para análise',
+                      label: tr('Enviar para análise'),
                       onPressed: () => Navigator.of(context).pushReplacement(
                         MaterialPageRoute<void>(
                           builder: (_) => MpStatusScreen(
@@ -459,8 +423,8 @@ RadioGroup<String>(
                             title: widget.eventMode
                                 ? 'Evento em análise'
                                 : 'Serviço em análise',
-                            message: 'A equipe MaraPass confere as informações e publica em breve.',
-                            primaryLabel: 'Concluir',
+                            message: tr('A equipe MaraPass confere as informações e publica em breve.'),
+                            primaryLabel: tr('Concluir'),
                             onPrimary: () => Navigator.of(context).pop(),
                           ),
                         ),
@@ -470,7 +434,7 @@ RadioGroup<String>(
                     const SizedBox(height: MP.s3),
                     OutlinedButton(
                       onPressed: () => setState(() => _step--),
-                      child: const Text('Voltar etapa'),
+                      child: Text(tr('Voltar etapa')),
                     ),
                   ],
                 ],

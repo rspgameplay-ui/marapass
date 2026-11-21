@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../i18n.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -72,7 +73,7 @@ class ProfileScreen extends ConsumerWidget {
                     const Spacer(),
                     IconButton(
                       key: const Key('edit-name'),
-                      tooltip: 'Editar nome',
+                      tooltip: tr('Editar nome'),
                       onPressed: () => _editName(context, store),
                       style: IconButton.styleFrom(
                         backgroundColor: Colors.white24,
@@ -196,9 +197,9 @@ class ProfileScreen extends ConsumerWidget {
                               size: MP.iconMd,
                             ),
                             const SizedBox(width: MP.s2),
-                            const Expanded(
+                            Expanded(
                               child: Text(
-                                'Meu passaporte',
+                                tr('Meu passaporte'),
                                 style: TextStyle(
                                   fontWeight: FontWeight.w800,
                                   fontSize: 16,
@@ -252,7 +253,7 @@ class ProfileScreen extends ConsumerWidget {
                           icon: Icons.place_rounded,
                           color: MP.green,
                           value: '$visited',
-                          label: 'Lugares\nvisitados',
+                          label: tr('Lugares\nvisitados'),
                         ),
                       ),
                       const SizedBox(width: MP.s2),
@@ -262,7 +263,7 @@ class ProfileScreen extends ConsumerWidget {
                           icon: Icons.route_rounded,
                           color: const Color(0xff1a73e8),
                           value: '${store.routesDone}',
-                          label: 'Rotas\ntraçadas',
+                          label: tr('Rotas\ntraçadas'),
                         ),
                       ),
                       const SizedBox(width: MP.s2),
@@ -273,7 +274,7 @@ class ProfileScreen extends ConsumerWidget {
                           color: const Color(0xffa87800),
                           value:
                               '${store.stampedPolos.length}/${Content.polos.length}',
-                          label: 'Carimbos\ndos polos',
+                          label: tr('Carimbos\ndos polos'),
                         ),
                       ),
                     ],
@@ -282,18 +283,18 @@ class ProfileScreen extends ConsumerWidget {
                     const SizedBox(height: MP.s4),
                     MpCtaButton(
                       key: const Key('profile-login'),
-                      label: 'Entrar com e-mail',
+                      label: tr('Entrar com e-mail'),
                       onPressed: () => requireLogin(context, ref),
                     ),
                   ],
                   const SizedBox(height: MP.s5),
                   _Group(
-                    title: 'Minha viagem',
+                    title: tr('Minha viagem'),
                     children: [
                       _Row(
                         icon: Icons.event_note_rounded,
                         color: const Color(0xff6a4fb3),
-                        title: 'Minhas reservas',
+                        title: tr('Minhas reservas'),
                         subtitle: '${store.myReservations.length} reservas',
                         onTap: () =>
                             push<void>(context, const ReservationsScreen()),
@@ -301,7 +302,7 @@ class ProfileScreen extends ConsumerWidget {
                       _Row(
                         icon: Icons.local_activity_rounded,
                         color: const Color(0xffa87800),
-                        title: 'Meus cupons',
+                        title: tr('Meus cupons'),
                         subtitle:
                             '${store.coupons.where((c) => c.active).length} ativos',
                         onTap: () {
@@ -312,16 +313,16 @@ class ProfileScreen extends ConsumerWidget {
                       _Row(
                         icon: Icons.photo_library_rounded,
                         color: const Color(0xffb0407e),
-                        title: 'Minhas galerias',
-                        subtitle: 'Fotos e álbum da viagem',
+                        title: tr('Minhas galerias'),
+                        subtitle: tr('Fotos e álbum da viagem'),
                         onTap: () =>
                             push<void>(context, const GalleriesScreen()),
                       ),
                       _Row(
                         icon: Icons.group_add_rounded,
                         color: MP.green,
-                        title: 'Conexões MaraPass',
-                        subtitle: 'Convide amigos e família',
+                        title: tr('Conexões MaraPass'),
+                        subtitle: tr('Convide amigos e família'),
                         onTap: () =>
                             push<void>(context, const ConnectionsScreen()),
                       ),
@@ -329,12 +330,12 @@ class ProfileScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: MP.s4),
                   _Group(
-                    title: 'Preferências',
+                    title: tr('Preferências'),
                     children: [
                       if (store.online)
                         ListTile(
                           leading: const Icon(Icons.chat_outlined),
-                          title: const Text('Cupons pelo WhatsApp'),
+                          title: Text(tr('Cupons pelo WhatsApp')),
                           onTap: () =>
                               push<void>(context, const CouponConsent()),
                         ),
@@ -347,9 +348,9 @@ class ProfileScreen extends ConsumerWidget {
                         ),
                         trailing: SegmentedButton<String>(
                           showSelectedIcon: false,
-                          segments: const [
-                            ButtonSegment(value: 'pt', label: Text('PT')),
-                            ButtonSegment(value: 'en', label: Text('EN')),
+                          segments: [
+                            ButtonSegment(value: 'pt', label: Text(tr('PT'))),
+                            ButtonSegment(value: 'en', label: Text(tr('EN'))),
                           ],
                           selected: {store.language},
                           onSelectionChanged: (s) => store.setLanguage(s.first),
@@ -358,15 +359,15 @@ class ProfileScreen extends ConsumerWidget {
                       _SwitchRow(
                         key: const Key('big-text'),
                         icon: Icons.text_increase_rounded,
-                        title: 'Letra grande',
-                        subtitle: 'Aumenta o texto do app inteiro',
+                        title: tr('Letra grande'),
+                        subtitle: tr('Aumenta o texto do app inteiro'),
                         value: store.bigText,
                         onChanged: store.setBigText,
                       ),
                       _SwitchRow(
                         key: const Key('offer-alerts'),
                         icon: Icons.notifications_active_rounded,
-                        title: 'Avisos de ofertas',
+                        title: tr('Avisos de ofertas'),
                         subtitle: store.offerAlerts
                             ? 'Cupons novos e lembretes'
                             : 'Só lembretes de reserva',
@@ -377,48 +378,48 @@ class ProfileScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: MP.s4),
                   _Group(
-                    title: 'Ajuda',
+                    title: tr('Ajuda'),
                     children: [
                       _Row(
                         icon: Icons.support_agent_rounded,
                         color: MP.navy,
-                        title: 'Atendimento',
-                        subtitle: 'Conversas, suporte e sugestões',
+                        title: tr('Atendimento'),
+                        subtitle: tr('Conversas, suporte e sugestões'),
                         onTap: () =>
                             push<void>(context, const SupportCenterScreen()),
                       ),
                       _Row(
                         icon: Icons.help_rounded,
                         color: MP.navy,
-                        title: 'Perguntas frequentes',
+                        title: tr('Perguntas frequentes'),
                         onTap: () => push<void>(context, const HelpScreen()),
                       ),
                       _Row(
                         key: const Key('privacy'),
                         icon: Icons.privacy_tip_rounded,
                         color: MP.navy,
-                        title: 'Política de privacidade',
+                        title: tr('Política de privacidade'),
                         onTap: () => openLegal(context, 'privacidade'),
                       ),
                       _Row(
                         key: const Key('terms'),
                         icon: Icons.gavel_rounded,
                         color: MP.navy,
-                        title: 'Termos de uso',
+                        title: tr('Termos de uso'),
                         onTap: () => openLegal(context, 'termos'),
                       ),
                     ],
                   ),
                   const SizedBox(height: MP.s4),
                   _Group(
-                    title: 'Para empresas',
+                    title: tr('Para empresas'),
                     children: [
                       _Row(
                         key: const Key('partner-area'),
                         icon: Icons.storefront_rounded,
                         color: MP.navy,
-                        title: 'Área do parceiro',
-                        subtitle: 'Cupons, validação e reservas',
+                        title: tr('Área do parceiro'),
+                        subtitle: tr('Cupons, validação e reservas'),
                         onTap: () async {
                           final ok = await store.enterPartnerArea();
                           if (!context.mounted) return;
@@ -436,13 +437,13 @@ class ProfileScreen extends ConsumerWidget {
                   if (user != null) ...[
                     const SizedBox(height: MP.s4),
                     _Group(
-                      title: 'Conta',
+                      title: tr('Conta'),
                       children: [
                         _Row(
                           key: const Key('sign-out'),
                           icon: Icons.logout_rounded,
                           color: MP.textSecondary,
-                          title: 'Sair da conta',
+                          title: tr('Sair da conta'),
                           onTap: () async {
                             try {
                               await ref.read(authGatewayProvider).signOut();
@@ -457,7 +458,7 @@ class ProfileScreen extends ConsumerWidget {
                           key: const Key('delete-account'),
                           icon: Icons.delete_forever_rounded,
                           color: MP.error,
-                          title: 'Excluir minha conta',
+                          title: tr('Excluir minha conta'),
                           danger: true,
                           onTap: () => _delete(context, ref),
                         ),
@@ -465,8 +466,8 @@ class ProfileScreen extends ConsumerWidget {
                     ),
                   ],
                   const SizedBox(height: MP.s5),
-                  const Text(
-                    'Versão de teste: parceiros, ofertas e preços são de demonstração.',
+                  Text(
+                    tr('Versão de teste: parceiros, ofertas e preços são de demonstração.'),
                     textAlign: TextAlign.center,
                     style: TextStyle(color: MP.textSecondary, fontSize: 13),
                   ),
@@ -483,14 +484,14 @@ class ProfileScreen extends ConsumerWidget {
     final sure = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Excluir minha conta?'),
-        content: const Text(
-          'Seus dados pessoais, cupons e pedidos serão apagados. Isso não pode ser desfeito.',
+        title: Text(tr('Excluir minha conta?')),
+        content: Text(
+          tr('Seus dados pessoais, cupons e pedidos serão apagados. Isso não pode ser desfeito.'),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancelar'),
+            child: Text(tr('Cancelar')),
           ),
           FilledButton(
             key: const Key('delete-confirm'),
@@ -499,7 +500,7 @@ class ProfileScreen extends ConsumerWidget {
               minimumSize: const Size(120, 52),
             ),
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Excluir'),
+            child: Text(tr('Excluir')),
           ),
         ],
       ),
@@ -508,7 +509,7 @@ class ProfileScreen extends ConsumerWidget {
     try {
       await ref.read(mvpRepositoryProvider).deleteMyAccount();
       await ref.read(authGatewayProvider).signOut();
-      if (context.mounted) showMpSnack(context, 'Conta excluída.');
+      if (context.mounted) showMpSnack(context, tr('Conta excluída.'));
     } on MvpException catch (e) {
       if (context.mounted) showMpSnack(context, e.message);
     }
@@ -753,25 +754,25 @@ class _NameDialogState extends State<_NameDialog> {
 
   @override
   Widget build(BuildContext context) => AlertDialog(
-    title: const Text('Como podemos chamar você?'),
+    title: Text(tr('Como podemos chamar você?')),
     content: TextField(
       key: const Key('name-field'),
       controller: _ctrl,
       autofocus: true,
       textCapitalization: TextCapitalization.words,
       style: const TextStyle(fontSize: 18),
-      decoration: const InputDecoration(labelText: 'Seu nome'),
+      decoration: InputDecoration(labelText: tr('Seu nome')),
     ),
     actions: [
       TextButton(
         onPressed: () => Navigator.of(context).pop(),
-        child: const Text('Cancelar'),
+        child: Text(tr('Cancelar')),
       ),
       FilledButton(
         key: const Key('name-save'),
         style: FilledButton.styleFrom(minimumSize: const Size(110, 52)),
         onPressed: () => Navigator.of(context).pop(_ctrl.text.trim()),
-        child: const Text('Salvar'),
+        child: Text(tr('Salvar')),
       ),
     ],
   );
@@ -789,9 +790,9 @@ class ConnectionsScreen extends ConsumerWidget {
         child: ListView(
           padding: const EdgeInsets.only(bottom: MP.s8),
           children: [
-            const MpHeader(
-              'Conexões MaraPass',
-              subtitle: 'Convide quem vai viajar com você.',
+            MpHeader(
+              tr('Conexões MaraPass'),
+              subtitle: tr('Convide quem vai viajar com você.'),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
@@ -801,12 +802,12 @@ class ConnectionsScreen extends ConsumerWidget {
                   const MpPhoto(photo: 'p2', height: 180),
                   const SizedBox(height: MP.s4),
                   Text(
-                    'Viajar junto é melhor',
+                    tr('Viajar junto é melhor'),
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(height: MP.s2),
-                  const Text(
-                    'Mande o link para amigos e família. Quem entrar pelo convite já começa com o passaporte ativo.',
+                  Text(
+                    tr('Mande o link para amigos e família. Quem entrar pelo convite já começa com o passaporte ativo.'),
                     style: TextStyle(fontSize: 17, height: 1.5),
                   ),
                   const SizedBox(height: MP.s4),
@@ -828,7 +829,7 @@ class ConnectionsScreen extends ConsumerWidget {
                   const SizedBox(height: MP.s4),
                   MpCtaButton(
                     key: const Key('invite-share'),
-                    label: 'Compartilhar link',
+                    label: tr('Compartilhar link'),
                     icon: Icons.ios_share_rounded,
                     onPressed: () async {
                       await Clipboard.setData(
@@ -842,15 +843,15 @@ class ConnectionsScreen extends ConsumerWidget {
                       await push<void>(
                         context,
                         MpStatusScreen(
-                          title: 'Convite pronto!',
-                          message: 'O link foi copiado. Cole na conversa do WhatsApp ou onde preferir.',
-                          primaryLabel: 'Abrir o WhatsApp',
+                          title: tr('Convite pronto!'),
+                          message: tr('O link foi copiado. Cole na conversa do WhatsApp ou onde preferir.'),
+                          primaryLabel: tr('Abrir o WhatsApp'),
                           onPrimary: () => openWhatsApp(
                             context,
                             '',
                             'Vamos viajar pelo Maranhão com o MaraPass! $link',
                           ),
-                          secondaryLabel: 'Fechar',
+                          secondaryLabel: tr('Fechar'),
                           onSecondary: () => Navigator.of(context).pop(),
                         ),
                       );
@@ -897,15 +898,15 @@ class _HelpScreenState extends State<HelpScreen> {
         child: ListView(
           padding: const EdgeInsets.only(bottom: MP.s8),
           children: [
-            const MpHeader('Ajuda', subtitle: 'Perguntas frequentes.'),
+            MpHeader(tr('Ajuda'), subtitle: tr('Perguntas frequentes.')),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
               child: TextField(
                 key: const Key('help-search'),
                 onChanged: (v) => setState(() => _q = v.trim()),
                 style: const TextStyle(fontSize: 18),
-                decoration: const InputDecoration(
-                  hintText: 'Buscar na ajuda',
+                decoration: InputDecoration(
+                  hintText: tr('Buscar na ajuda'),
                   prefixIcon: Icon(Icons.search_rounded),
                 ),
               ),
@@ -914,9 +915,9 @@ class _HelpScreenState extends State<HelpScreen> {
             if (list.isEmpty)
               MpEmpty(
                 icon: Icons.help_outline_rounded,
-                title: 'Nada encontrado',
-                message: 'Fale com o atendimento que respondemos você.',
-                actionLabel: 'Abrir atendimento',
+                title: tr('Nada encontrado'),
+                message: tr('Fale com o atendimento que respondemos você.'),
+                actionLabel: tr('Abrir atendimento'),
                 onAction: () =>
                     push<void>(context, const SupportCenterScreen()),
               ),
@@ -965,7 +966,7 @@ class _HelpScreenState extends State<HelpScreen> {
                 onPressed: () =>
                     push<void>(context, const SupportCenterScreen()),
                 icon: const Icon(Icons.support_agent_rounded),
-                label: const Text('Falar com o atendimento'),
+                label: Text(tr('Falar com o atendimento')),
               ),
             ),
           ],

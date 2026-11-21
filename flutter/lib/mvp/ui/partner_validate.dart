@@ -29,7 +29,7 @@ class _ValidateTabState extends ConsumerState<_ValidateTab> {
     final go = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Conferência'),
+        title: Text(tr('Conferência')),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -46,8 +46,8 @@ class _ValidateTabState extends ConsumerState<_ValidateTab> {
               style: const TextStyle(fontSize: 17),
             ),
             const SizedBox(height: MP.s2),
-            const Text(
-              'Confira se é o titular e se a compra atende às condições.',
+            Text(
+              tr('Confira se é o titular e se a compra atende às condições.'),
               style: TextStyle(color: MP.textSecondary),
             ),
           ],
@@ -55,13 +55,13 @@ class _ValidateTabState extends ConsumerState<_ValidateTab> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancelar'),
+            child: Text(tr('Cancelar')),
           ),
           FilledButton(
             key: const Key('validate-confirm'),
             style: FilledButton.styleFrom(minimumSize: const Size(130, 52)),
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Confirmar uso'),
+            child: Text(tr('Confirmar uso')),
           ),
         ],
       ),
@@ -85,15 +85,15 @@ class _ValidateTabState extends ConsumerState<_ValidateTab> {
         icon: ok ? Icons.check_rounded : Icons.block_rounded,
         color: ok ? MP.success : MP.error,
         bg: ok ? MP.successBg : MP.errorBg,
-        title: ok ? 'Validação concluída' : 'Validação bloqueada',
+        title: ok ? tr('Validação concluída') : tr('Validação bloqueada'),
         message: msg,
         details: ok
             ? MpCard(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Comprovante',
+                    Text(
+                      tr('Comprovante'),
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w800,
@@ -113,7 +113,7 @@ class _ValidateTabState extends ConsumerState<_ValidateTab> {
                 ),
               )
             : null,
-        primaryLabel: 'Validar outro cupom',
+        primaryLabel: tr('Validar outro cupom'),
         onPrimary: () => Navigator.of(context).pop(),
       ),
     );
@@ -129,9 +129,9 @@ class _ValidateTabState extends ConsumerState<_ValidateTab> {
       child: ListView(
         padding: const EdgeInsets.only(bottom: MP.s8),
         children: [
-          const _PartnerHeader(
+          _PartnerHeader(
             'Validar cupom',
-            subtitle: 'Leia o QR ou digite o código do turista.',
+            subtitle: tr('Leia o QR ou digite o código do turista.'),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
@@ -153,8 +153,8 @@ class _ValidateTabState extends ConsumerState<_ValidateTab> {
                   ),
                 ),
                 const SizedBox(height: MP.s2),
-                const Text(
-                  'A leitura pela câmera entra na versão instalada. Aqui, digite o código.',
+                Text(
+                  tr('A leitura pela câmera entra na versão instalada. Aqui, digite o código.'),
                   textAlign: TextAlign.center,
                   style: TextStyle(color: MP.textSecondary, fontSize: 14),
                 ),
@@ -168,9 +168,9 @@ class _ValidateTabState extends ConsumerState<_ValidateTab> {
                     fontWeight: FontWeight.w800,
                     letterSpacing: 4,
                   ),
-                  decoration: const InputDecoration(
-                    labelText: 'Código do cupom',
-                    hintText: 'MP-XXXX',
+                  decoration: InputDecoration(
+                    labelText: tr('Código do cupom'),
+                    hintText: tr('MP-XXXX'),
                   ),
                   onChanged: (_) => setState(() {}),
                 ),
@@ -190,17 +190,17 @@ class _ValidateTabState extends ConsumerState<_ValidateTab> {
                 const SizedBox(height: MP.s4),
                 MpCtaButton(
                   key: const Key('validate-submit'),
-                  label: 'Conferir cupom',
+                  label: tr('Conferir cupom'),
                   onPressed: _code.text.trim().length >= 4 ? _check : null,
                 ),
                 const SizedBox(height: MP.sectionGap),
-                const MpSectionTitle('Últimas validações'),
+                MpSectionTitle(tr('Últimas validações')),
                 const SizedBox(height: MP.s2),
                 if (s.validations.isEmpty)
-                  const MpCard(
+                  MpCard(
                     color: MP.soft,
                     child: Text(
-                      'Nenhuma validação ainda.',
+                      tr('Nenhuma validação ainda.'),
                       style: TextStyle(fontSize: 16, color: MP.textSecondary),
                     ),
                   ),
@@ -257,9 +257,9 @@ class _ReportsTabState extends ConsumerState<_ReportsTab> {
       child: ListView(
         padding: const EdgeInsets.only(bottom: MP.s8),
         children: [
-          const _PartnerHeader(
+          _PartnerHeader(
             'Relatórios',
-            subtitle: 'Faturamento, retenção e horários de pico.',
+            subtitle: tr('Faturamento, retenção e horários de pico.'),
           ),
           FilterChips<int>(
             options: const [7, 30],
@@ -293,8 +293,8 @@ class _ReportsTabState extends ConsumerState<_ReportsTab> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Cupons usados por dia',
+                      Text(
+                        tr('Cupons usados por dia'),
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w800,
@@ -346,12 +346,12 @@ class _ReportsTabState extends ConsumerState<_ReportsTab> {
                   ),
                 ),
                 const SizedBox(height: MP.s4),
-                const MpCard(
+                MpCard(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Horários de pico',
+                        tr('Horários de pico'),
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w800,
@@ -366,13 +366,13 @@ class _ReportsTabState extends ConsumerState<_ReportsTab> {
                         Icons.wb_twilight_rounded,
                         'Fim de tarde (16h às 19h): 35%',
                       ),
-                      MpInfoRow(Icons.nights_stay_rounded, 'Noite: 20%'),
+                      MpInfoRow(Icons.nights_stay_rounded, tr('Noite: 20%')),
                     ],
                   ),
                 ),
                 const SizedBox(height: MP.s3),
-                const MpNotice.demo(
-                  'Números de demonstração somados às validações feitas neste aparelho.',
+                MpNotice.demo(
+                  tr('Números de demonstração somados às validações feitas neste aparelho.'),
                 ),
               ],
             ),

@@ -272,7 +272,7 @@ class _PoiCard extends StatelessWidget {
                         ),
                         IconButton(
                           key: const Key('route-origin'),
-                          tooltip: 'Alterar partida',
+                          tooltip: tr('Alterar partida'),
                           onPressed: onChangeOrigin,
                           icon: const Icon(Icons.edit_location_alt_rounded, color: MP.navy),
                         ),
@@ -291,11 +291,11 @@ class _PoiCard extends StatelessWidget {
                       onPressed: onNavigate,
                       style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(MP.buttonHeight)),
                       icon: const Icon(Icons.navigation_rounded),
-                      label: const Text('Iniciar navegação'),
+                      label: Text(tr('Iniciar navegação')),
                     ),
                   ),
                   const SizedBox(width: MP.s2),
-                  _SquareAction(key: const Key('route-3d'), label: '3D', tooltip: 'Ver a partida em 3D', onTap: onFollow3d),
+                  _SquareAction(key: const Key('route-3d'), label: '3D', tooltip: tr('Ver a partida em 3D'), onTap: onFollow3d),
                 ],
               ),
             ] else ...[
@@ -332,7 +332,7 @@ class _PoiCard extends StatelessWidget {
                         key: const Key('poi-details'),
                         onPressed: onDetails,
                         style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(MP.buttonHeight)),
-                        child: Text(it?.cat == Cat.hospedagem ? 'Disponibilidade' : 'Ver detalhes'),
+                        child: Text(it?.cat == Cat.hospedagem ? tr('Disponibilidade') : tr('Ver detalhes')),
                       ),
                     ),
                     const SizedBox(width: MP.s2),
@@ -340,7 +340,7 @@ class _PoiCard extends StatelessWidget {
                   Expanded(
                     child: MpPrimaryButton(
                       key: const Key('route-trace'),
-                      label: 'Traçar rota',
+                      label: tr('Traçar rota'),
                       icon: Icons.directions_rounded,
                       busy: routing,
                       onPressed: onRoute,
@@ -418,7 +418,7 @@ class _PlanCard extends StatelessWidget {
                 ),
                 IconButton(
                   key: const Key('plan-close'),
-                  tooltip: 'Fechar roteiro',
+                  tooltip: tr('Fechar roteiro'),
                   onPressed: onClose,
                   style: IconButton.styleFrom(backgroundColor: MP.soft, minimumSize: const Size(44, 44)),
                   icon: const Icon(Icons.close_rounded, color: MP.ink),
@@ -459,11 +459,11 @@ class _PlanCard extends StatelessWidget {
                     onPressed: r == null ? null : onNavigate,
                     style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(MP.buttonHeight)),
                     icon: const Icon(Icons.navigation_rounded),
-                    label: const Text('Iniciar navegação'),
+                    label: Text(tr('Iniciar navegação')),
                   ),
                 ),
                 const SizedBox(width: MP.s2),
-                _SquareAction(key: const Key('plan-3d'), label: '3D', tooltip: 'Ver a partida em 3D', onTap: onFollow3d),
+                _SquareAction(key: const Key('plan-3d'), label: '3D', tooltip: tr('Ver a partida em 3D'), onTap: onFollow3d),
               ],
             ),
           ],
@@ -490,9 +490,9 @@ class _SearchResults extends StatelessWidget {
     child: ConstrainedBox(
       constraints: BoxConstraints(maxHeight: maxHeight),
       child: groups.isEmpty
-          ? const Padding(
+          ? Padding(
               padding: EdgeInsets.all(MP.s5),
-              child: Text('Nada encontrado. Tente o nome do lugar, da empresa ou da cidade.'),
+              child: Text(tr('Nada encontrado. Tente o nome do lugar, da empresa ou da cidade.')),
             )
           : ListView(
               shrinkWrap: true,
@@ -520,7 +520,7 @@ class _SearchResults extends StatelessWidget {
                           ? Container(
                               padding: const EdgeInsets.symmetric(horizontal: MP.s2, vertical: 4),
                               decoration: BoxDecoration(color: MP.green, borderRadius: BorderRadius.circular(MP.rPill)),
-                              child: const Text('CUPOM', style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: .6)),
+                              child: Text(tr('CUPOM'), style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: .6)),
                             )
                           : null,
                       onTap: () => onPick(p),
@@ -551,13 +551,13 @@ class _OriginSheet extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(MP.pageH, 0, MP.pageH, MP.s5),
           children: [
             Text(
-              'De onde você sai?',
+              tr('De onde você sai?'),
               style: Theme.of(context).textTheme.titleLarge,
             ),
             if (gpsFailed) ...[
               const SizedBox(height: MP.s2),
-              const MpNotice(
-                'Não conseguimos sua localização. Verifique se o navegador tem permissão de localização, ou escolha o ponto de partida.',
+              MpNotice(
+                tr('Não conseguimos sua localização. Verifique se o navegador tem permissão de localização, ou escolha o ponto de partida.'),
                 icon: Icons.location_off_rounded,
                 fg: MP.warning,
                 bg: MP.warningBg,
@@ -574,11 +574,11 @@ class _OriginSheet extends StatelessWidget {
                   color: MP.routeBlue,
                 ),
               ),
-              title: const Text(
-                'Usar minha localização',
+              title: Text(
+                tr('Usar minha localização'),
                 style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
               ),
-              subtitle: const Text('Tentar o GPS de novo'),
+              subtitle: Text(tr('Tentar o GPS de novo')),
               onTap: () => Navigator.of(context).pop('gps'),
             ),
             ListTile(
@@ -588,16 +588,16 @@ class _OriginSheet extends StatelessWidget {
                 backgroundColor: MP.soft,
                 child: Icon(Icons.touch_app_rounded, color: MP.navy),
               ),
-              title: const Text(
-                'Tocar no mapa',
+              title: Text(
+                tr('Tocar no mapa'),
                 style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
               ),
-              subtitle: const Text('Escolha o ponto exato'),
+              subtitle: Text(tr('Escolha o ponto exato')),
               onTap: () => Navigator.of(context).pop('map'),
             ),
             const Divider(height: MP.s5),
-            const Text(
-              'Ou saia de uma cidade',
+            Text(
+              tr('Ou saia de uma cidade'),
               style: TextStyle(
                 fontWeight: FontWeight.w800,
                 fontSize: 15,
@@ -664,20 +664,20 @@ class _MapUnsupported extends StatelessWidget {
             const Icon(Icons.map_outlined, size: 56, color: MP.textSecondary),
             const SizedBox(height: MP.s4),
             Text(
-              'Mapa indisponível neste navegador',
+              tr('Mapa indisponível neste navegador'),
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: MP.s2),
-            const Text(
-              'O mapa interativo precisa de WebGL. Abra o MaraPass em outro navegador ou instale o app.',
+            Text(
+              tr('O mapa interativo precisa de WebGL. Abra o MaraPass em outro navegador ou instale o app.'),
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 16, color: MP.textSecondary),
             ),
             const SizedBox(height: MP.s4),
             MpPrimaryButton(
               key: const Key('map-open-external'),
-              label: 'Abrir no mapa do aparelho',
+              label: tr('Abrir no mapa do aparelho'),
               icon: Icons.open_in_new_rounded,
               onPressed: () => openMaps(context, 'Maranhão turismo'),
             ),

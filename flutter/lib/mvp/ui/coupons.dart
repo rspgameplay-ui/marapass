@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import '../i18n.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -82,11 +83,11 @@ class _CouponsScreenState extends ConsumerState<CouponsScreen> {
         padding: const EdgeInsets.only(bottom: MP.s10),
         children: [
           MpHero(
-            title: 'Cupons',
-            subtitle: 'Descontos em parceiros MaraPass.',
+            title: tr('Cupons'),
+            subtitle: tr('Descontos em parceiros MaraPass.'),
             trailing: PopupMenuButton<Object>(
               key: const Key('coupon-menu'),
-              tooltip: 'Filtrar por categoria',
+              tooltip: tr('Filtrar por categoria'),
               icon: const Icon(Icons.tune_rounded, color: Colors.white, size: 28),
               onSelected: (v) => setState(() {
                 if (v == 'all') {
@@ -99,7 +100,7 @@ class _CouponsScreenState extends ConsumerState<CouponsScreen> {
                 CheckedPopupMenuItem(
                   value: 'all',
                   checked: _cat == null,
-                  child: const Text('Todas as categorias'),
+                  child: Text(tr('Todas as categorias')),
                 ),
                 for (final c in cats)
                   CheckedPopupMenuItem(
@@ -157,33 +158,33 @@ class _CouponsScreenState extends ConsumerState<CouponsScreen> {
                   (_tab == 1 ? c.used : !c.used),
             ))
               ListTile(
-                title: const Text('Cupom anterior'),
+                title: Text(tr('Cupom anterior')),
                 subtitle: Text(c.code),
                 onTap: () =>
                     push<void>(context, CouponActiveScreen(couponId: c.id)),
               ),
           if (_tab == 1) ...[
             if (used.isEmpty && expired.isEmpty)
-              const MpEmpty(
+              MpEmpty(
                 icon: Icons.confirmation_number_outlined,
-                title: 'Nenhum cupom no histórico',
-                message: 'Cupons usados ou vencidos aparecem aqui.',
+                title: tr('Nenhum cupom no histórico'),
+                message: tr('Cupons usados ou vencidos aparecem aqui.'),
               ),
             for (final c in used) ticket(c),
             for (final c in expired) ticket(c),
           ] else ...[
             if (active.isNotEmpty) ...[
-              const Padding(
+              Padding(
                 padding: EdgeInsets.fromLTRB(MP.pageH, 0, MP.pageH, MP.s2),
-                child: MpSectionTitle('Meus cupons ativos'),
+                child: MpSectionTitle(tr('Meus cupons ativos')),
               ),
               for (final c in active) ticket(c),
               const SizedBox(height: MP.s3),
             ],
             if (offers.isNotEmpty)
-              const Padding(
+              Padding(
                 padding: EdgeInsets.fromLTRB(MP.pageH, 0, MP.pageH, MP.s2),
-                child: MpSectionTitle('Para ativar'),
+                child: MpSectionTitle(tr('Para ativar')),
               ),
             for (final c in offers)
               Padding(
@@ -202,10 +203,10 @@ class _CouponsScreenState extends ConsumerState<CouponsScreen> {
                 ),
               ),
             if (active.isEmpty && offers.isEmpty)
-              const MpEmpty(
+              MpEmpty(
                 icon: Icons.local_activity_outlined,
-                title: 'Nenhum cupom agora',
-                message: 'Novas ofertas dos parceiros aparecem aqui.',
+                title: tr('Nenhum cupom agora'),
+                message: tr('Novas ofertas dos parceiros aparecem aqui.'),
               ),
           ],
         ],
@@ -275,7 +276,7 @@ class CouponDetailScreen extends ConsumerWidget {
                   'Válido até ${fmtDate(cupom.validade)}',
                 ),
                 if (!cupom.id.startsWith('po:'))
-                  const MpInfoRow(Icons.person_rounded, 'Um cupom por pessoa'),
+                  MpInfoRow(Icons.person_rounded, tr('Um cupom por pessoa')),
                 const MpInfoRow(
                   Icons.qr_code_2_rounded,
                   'Mostre o QR ao atendente na hora de pagar',
@@ -288,8 +289,8 @@ class CouponDetailScreen extends ConsumerWidget {
                   ),
                 const SizedBox(height: MP.s4),
                 if (!cupom.id.startsWith('po:'))
-                  const MpNotice.demo(
-                    'Oferta de demonstração: não indica parceria comercial nesta versão de teste.',
+                  MpNotice.demo(
+                    tr('Oferta de demonstração: não indica parceria comercial nesta versão de teste.'),
                   ),
                 const SizedBox(height: MP.s5),
                 if (active != null)
@@ -299,17 +300,17 @@ class CouponDetailScreen extends ConsumerWidget {
                       context,
                       CouponActiveScreen(couponId: active.id),
                     ),
-                    child: const Text('Ver meu cupom ativo'),
+                    child: Text(tr('Ver meu cupom ativo')),
                   )
                 else if (store.remote == null || cupom.id.startsWith('po:'))
                   MpCtaButton(
                     key: const Key('coupon-activate'),
-                    label: 'Ativar cupom',
+                    label: tr('Ativar cupom'),
                     onPressed: () async {
                       final ok = await requireLogin(
                         context,
                         ref,
-                        reason: 'Entre para ativar o cupom. Você volta direto para esta oferta.',
+                        reason: tr('Entre para ativar o cupom. Você volta direto para esta oferta.'),
                       );
                       if (!ok || !context.mounted) return;
                       await push<void>(
@@ -367,9 +368,9 @@ class _ReviewState extends ConsumerState<CouponReviewScreen> {
         child: ListView(
           padding: const EdgeInsets.only(bottom: MP.s8),
           children: [
-            const MpHeader(
-              'Revisar ativação',
-              subtitle: 'Confira antes de ativar.',
+            MpHeader(
+              tr('Revisar ativação'),
+              subtitle: tr('Confira antes de ativar.'),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
@@ -378,22 +379,22 @@ class _ReviewState extends ConsumerState<CouponReviewScreen> {
                 children: [
                   TicketCard(cupom: c, onTap: () {}),
                   const SizedBox(height: MP.s4),
-                  const MpNotice(
-                    'O cupom é pessoal e o QR não pode ser compartilhado. Ele vale uma única vez e o atendente confere na hora.',
+                  MpNotice(
+                    tr('O cupom é pessoal e o QR não pode ser compartilhado. Ele vale uma única vez e o atendente confere na hora.'),
                     icon: Icons.lock_outline_rounded,
                     fg: MP.warning,
                     bg: MP.warningBg,
                   ),
                   const SizedBox(height: MP.s3),
-                  const Text(
-                    'Ao ativar, você aceita as condições desta oferta.',
+                  Text(
+                    tr('Ao ativar, você aceita as condições desta oferta.'),
                     key: Key('review-terms'),
                     style: TextStyle(fontSize: 15, color: MP.textSecondary),
                   ),
                   const SizedBox(height: MP.s4),
                   MpPrimaryButton(
                     key: const Key('review-confirm'),
-                    label: 'Confirmar ativação',
+                    label: tr('Confirmar ativação'),
                     busy: _busy,
                     onPressed: _confirm,
                   ),
@@ -453,7 +454,7 @@ class _ActiveState extends ConsumerState<CouponActiveScreen> {
     final c = store.coupons.where((e) => e.id == widget.couponId).firstOrNull;
     if (c != null && store.remote != null && c.sale == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Cupom anterior')),
+        appBar: AppBar(title: Text(tr('Cupom anterior'))),
         body: Padding(
           padding: const EdgeInsets.all(20),
           child: Text(
@@ -463,8 +464,8 @@ class _ActiveState extends ConsumerState<CouponActiveScreen> {
       );
     }
     if (c == null || c.cupom == null) {
-      return const Scaffold(
-        body: Center(child: Text('Cupom indisponível nesta conta.')),
+      return Scaffold(
+        body: Center(child: Text(tr('Cupom indisponível nesta conta.'))),
       );
     }
     if (c.sale != null) return CouponReceipt(code: c.code, scope: 'tourist');
@@ -480,7 +481,7 @@ class _ActiveState extends ConsumerState<CouponActiveScreen> {
           padding: const EdgeInsets.only(bottom: MP.s8),
           children: [
             MpHeader(
-              'Seu cupom',
+              tr('Seu cupom'),
               subtitle: widget.justActivated
                   ? 'Cupom ativado com sucesso!'
                   : null,
@@ -518,7 +519,7 @@ class _ActiveState extends ConsumerState<CouponActiveScreen> {
                     Opacity(
                       opacity: c.active ? 1 : .2,
                       child: Semantics(
-                        label: 'QR Code do cupom',
+                        label: tr('QR Code do cupom'),
                         child: QrImageView(
                           data: 'marapass:coupon:${c.code}:$_round',
                           size: 240,
@@ -574,11 +575,11 @@ class _ActiveState extends ConsumerState<CouponActiveScreen> {
                               ClipboardData(text: c.code),
                             );
                             if (context.mounted) {
-                              showMpSnack(context, 'Código copiado');
+                              showMpSnack(context, tr('Código copiado'));
                             }
                           },
                           icon: const Icon(Icons.copy_rounded),
-                          label: const Text('Copiar código'),
+                          label: Text(tr('Copiar código')),
                         ),
                     ],
                     const SizedBox(height: MP.s2),
@@ -610,7 +611,7 @@ class _ActiveState extends ConsumerState<CouponActiveScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Histórico deste cupom',
+                    tr('Histórico deste cupom'),
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: MP.s2),
@@ -692,13 +693,13 @@ class WalletSummary extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
               Icon(Icons.account_balance_wallet_rounded, color: MP.yellow, size: 22),
               SizedBox(width: MP.s2),
               Flexible(
                 child: Text(
-                  'Benefícios MaraPass',
+                  tr('Benefícios MaraPass'),
                   style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w700),
                 ),
               ),
@@ -719,7 +720,7 @@ class WalletSummary extends StatelessWidget {
           const SizedBox(height: MP.s4),
           Row(
             children: [
-              _WalletMetric(value: '${active.length}', label: 'cupons ativos'),
+              _WalletMetric(value: '${active.length}', label: tr('cupons ativos')),
               _WalletMetric(value: '${used.length}', label: 'usados'),
               _WalletMetric(
                 value: '${store.points}',

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../i18n.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -33,7 +34,7 @@ class ItemDetailScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'Compartilhar experiência',
+              tr('Compartilhar experiência'),
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: MP.s2),
@@ -54,7 +55,7 @@ class ItemDetailScreen extends ConsumerWidget {
                 }
               },
               icon: const Icon(Icons.link_rounded),
-              label: const Text('Copiar link'),
+              label: Text(tr('Copiar link')),
             ),
             const SizedBox(height: MP.s3),
             OutlinedButton.icon(
@@ -63,7 +64,7 @@ class ItemDetailScreen extends ConsumerWidget {
                 openWhatsApp(context, '', '${item.titulo} no MaraPass: $link');
               },
               icon: const Icon(Icons.chat_rounded),
-              label: const Text('Enviar pelo WhatsApp'),
+              label: Text(tr('Enviar pelo WhatsApp')),
             ),
           ],
         ),
@@ -119,7 +120,7 @@ class ItemDetailScreen extends ConsumerWidget {
                         shape: const CircleBorder(),
                         child: IconButton(
                           key: const Key('item-share'),
-                          tooltip: 'Compartilhar',
+                          tooltip: tr('Compartilhar'),
                           onPressed: () => _share(context),
                           icon: const Icon(
                             Icons.ios_share_rounded,
@@ -172,20 +173,20 @@ class ItemDetailScreen extends ConsumerWidget {
                   runSpacing: MP.s2,
                   children: [
                     if (i.acessivel && !((i.cat == Cat.hospedagem || i.cat == Cat.gastronomia) && i.comodidades.contains('Acessível')))
-                      const MpBadge(
-                        'Acessível',
+                      MpBadge(
+                        tr('Acessível'),
                         fg: MP.info,
                         icon: Icons.accessible_rounded,
                       ),
                     if (i.autentica)
-                      const MpBadge(
-                        'Experiência autêntica',
+                      MpBadge(
+                        tr('Experiência autêntica'),
                         fg: MP.green,
                         icon: Icons.handshake_rounded,
                       ),
                     if (store.alreadyCheckedIn(i.id))
-                      const MpBadge(
-                        'Você fez check-in hoje',
+                      MpBadge(
+                        tr('Você fez check-in hoje'),
                         fg: MP.success,
                         icon: Icons.verified_rounded,
                       ),
@@ -258,7 +259,7 @@ class ItemDetailScreen extends ConsumerWidget {
                 if (cupom != null) ...[
                   const SizedBox(height: MP.s4),
                   Text(
-                    'Cupom disponível',
+                    tr('Cupom disponível'),
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   const SizedBox(height: MP.s2),
@@ -283,7 +284,7 @@ class ItemDetailScreen extends ConsumerWidget {
                     onPressed: () =>
                         push<void>(context, CheckinFlowScreen(item: i)),
                     icon: const Icon(Icons.qr_code_scanner_rounded),
-                    label: const Text('Registrar visita aqui'),
+                    label: Text(tr('Registrar visita aqui')),
                   ),
                 const SizedBox(height: MP.s6),
               ],
@@ -304,7 +305,7 @@ class ItemDetailScreen extends ConsumerWidget {
         return [
           MpCtaButton(
             key: const Key('item-reserve'),
-            label: 'Reservar',
+            label: tr('Reservar'),
             onPressed: () => push<void>(context, BookingScreen(item: i)),
           ),
         ];
@@ -312,7 +313,7 @@ class ItemDetailScreen extends ConsumerWidget {
         return [
           MpCtaButton(
             key: const Key('item-availability'),
-            label: 'Ver disponibilidade',
+            label: tr('Ver disponibilidade'),
             icon: Icons.calendar_month_rounded,
             onPressed: () =>
                 push<void>(context, StayAvailabilityScreen(item: i)),
@@ -324,7 +325,7 @@ class ItemDetailScreen extends ConsumerWidget {
               onPressed: () =>
                   push<void>(context, CouponDetailScreen(cupom: cupom)),
               icon: const Icon(Icons.local_activity_rounded),
-              label: const Text('Ativar cupom'),
+              label: Text(tr('Ativar cupom')),
             ),
           ],
           const SizedBox(height: MP.s3),
@@ -335,7 +336,7 @@ class ItemDetailScreen extends ConsumerWidget {
           if (cupom != null) ...[
             MpCtaButton(
               key: const Key('item-coupon'),
-              label: 'Ativar cupom',
+              label: tr('Ativar cupom'),
               icon: Icons.local_activity_rounded,
               onPressed: () =>
                   push<void>(context, CouponDetailScreen(cupom: cupom)),
@@ -349,7 +350,7 @@ class ItemDetailScreen extends ConsumerWidget {
         return [
           MpCtaButton(
             key: const Key('item-save-event'),
-            label: saved ? 'Evento salvo' : 'Salvar evento',
+            label: saved ? tr('Evento salvo') : tr('Salvar evento'),
             icon: saved ? Icons.bookmark_rounded : Icons.bookmark_add_rounded,
             onPressed: () {
               store.toggleSaved(i.id);
@@ -366,14 +367,14 @@ class ItemDetailScreen extends ConsumerWidget {
             onPressed: () =>
                 openMaps(context, '${i.endereco ?? i.titulo} ${i.cidade}'),
             icon: const Icon(Icons.directions_rounded),
-            label: const Text('Como chegar'),
+            label: Text(tr('Como chegar')),
           ),
         ];
       case Cat.artesanato:
         return [
           MpCtaButton(
             key: const Key('item-buy'),
-            label: 'Quero comprar',
+            label: tr('Quero comprar'),
             icon: Icons.shopping_bag_rounded,
             onPressed: () => push<void>(context, CraftPurchaseScreen(item: i)),
           ),
@@ -382,7 +383,7 @@ class ItemDetailScreen extends ConsumerWidget {
         return [
           MpCtaButton(
             key: const Key('item-hire'),
-            label: 'Contratar fotógrafo',
+            label: tr('Contratar fotógrafo'),
             icon: Icons.photo_camera_rounded,
             onPressed: () => push<void>(context, PhotoHireScreen(item: i)),
           ),
@@ -391,7 +392,7 @@ class ItemDetailScreen extends ConsumerWidget {
         return [
           MpCtaButton(
             key: const Key('item-quote'),
-            label: 'Pedir cotação',
+            label: tr('Pedir cotação'),
             icon: Icons.request_quote_rounded,
             onPressed: () => push<void>(context, TransferQuoteScreen(item: i)),
           ),
@@ -410,7 +411,7 @@ class _PackList extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('O que levar', style: Theme.of(context).textTheme.titleLarge),
+        Text(tr('O que levar'), style: Theme.of(context).textTheme.titleLarge),
         Text(
           'Toque para marcar · ${got.length}/${Content.oQueLevar.length}',
           style: Theme.of(context).textTheme.bodySmall,
@@ -430,8 +431,8 @@ class _PackList extends ConsumerWidget {
             ),
           ),
         if (got.length == Content.oQueLevar.length)
-          const MpBadge(
-            'Tudo pronto para o passeio!',
+          MpBadge(
+            tr('Tudo pronto para o passeio!'),
             fg: MP.success,
             icon: Icons.celebration_rounded,
           ),
@@ -457,7 +458,7 @@ class _ContactRow extends StatelessWidget {
           child: _ContactButton(
             key: const Key('item-directions'),
             icon: Icons.directions_rounded,
-            label: 'Como chegar',
+            label: tr('Como chegar'),
             onTap: () => openMaps(context, i.mapsQuery),
           ),
         ),
@@ -467,7 +468,7 @@ class _ContactRow extends StatelessWidget {
             child: _ContactButton(
               key: const Key('item-call'),
               icon: Icons.call_rounded,
-              label: 'Ligar',
+              label: tr('Ligar'),
               onTap: () => callPhone(context, tel),
             ),
           ),
@@ -476,7 +477,7 @@ class _ContactRow extends StatelessWidget {
             child: _ContactButton(
               key: const Key('item-whatsapp'),
               icon: Icons.chat_rounded,
-              label: 'WhatsApp',
+              label: tr('WhatsApp'),
               onTap: () => openWhatsApp(
                 context,
                 tel,

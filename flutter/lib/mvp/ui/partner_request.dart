@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../i18n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/repository.dart';
@@ -79,7 +80,7 @@ class _PartnerRequestState extends ConsumerState<PartnerRequestScreen> {
         child: ListView(
           padding: const EdgeInsets.only(bottom: MP.s8),
           children: [
-            const MpHeader('Seja parceiro MaraPass', subtitle: 'Publique ofertas, valide cupons e receba reservas.'),
+            MpHeader(tr('Seja parceiro MaraPass'), subtitle: tr('Publique ofertas, valide cupons e receba reservas.')),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
               child: _loading
@@ -100,8 +101,8 @@ class _PartnerRequestState extends ConsumerState<PartnerRequestScreen> {
                       bg: MP.warningBg,
                     )
                   : status == 'aprovado'
-                  ? const MpNotice(
-                      'Cadastro aprovado. Volte e toque em Área do parceiro de novo.',
+                  ? MpNotice(
+                      tr('Cadastro aprovado. Volte e toque em Área do parceiro de novo.'),
                       icon: Icons.verified_rounded,
                       fg: MP.success,
                       bg: MP.successBg,
@@ -117,10 +118,10 @@ class _PartnerRequestState extends ConsumerState<PartnerRequestScreen> {
                           MpNotice(_error!, icon: Icons.error_outline_rounded, fg: MP.error, bg: MP.errorBg),
                           const SizedBox(height: MP.s3),
                         ],
-                        MpPrimaryButton(key: const Key('pr-send'), label: 'Enviar cadastro', busy: _busy, onPressed: _send),
+                        MpPrimaryButton(key: const Key('pr-send'), label: tr('Enviar cadastro'), busy: _busy, onPressed: _send),
                         const SizedBox(height: MP.s3),
-                        const Text(
-                          'A área do parceiro é liberada depois que a equipe MaraPass confirma o negócio.',
+                        Text(
+                          tr('A área do parceiro é liberada depois que a equipe MaraPass confirma o negócio.'),
                           style: TextStyle(fontSize: 14, color: MP.textSecondary),
                         ),
                       ],

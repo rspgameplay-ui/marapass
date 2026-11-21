@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../i18n.dart';
 
 import 'partner_slots.dart';
 import 'coupon_offer_form.dart';
@@ -75,29 +76,29 @@ class _PartnerShellState extends State<PartnerShell> {
     bottomNavigationBar: NavigationBar(
       selectedIndex: _i,
       onDestinationSelected: go,
-      destinations: const [
+      destinations: [
         NavigationDestination(
           icon: Icon(Icons.dashboard_outlined),
           selectedIcon: Icon(Icons.dashboard_rounded),
-          label: 'Painel',
+          label: tr('Painel'),
         ),
         NavigationDestination(
           icon: Icon(Icons.local_activity_outlined),
           selectedIcon: Icon(Icons.local_activity_rounded),
-          label: 'Cupons',
+          label: tr('Cupons'),
         ),
         NavigationDestination(
           icon: Icon(Icons.qr_code_scanner_rounded),
-          label: 'Validar',
+          label: tr('Validar'),
         ),
         NavigationDestination(
           icon: Icon(Icons.bar_chart_rounded),
-          label: 'Relatórios',
+          label: tr('Relatórios'),
         ),
         NavigationDestination(
           icon: Icon(Icons.storefront_outlined),
           selectedIcon: Icon(Icons.storefront_rounded),
-          label: 'Conta',
+          label: tr('Conta'),
         ),
       ],
     ),
@@ -186,20 +187,20 @@ class _Dashboard extends ConsumerWidget {
         dashboard: true,
         shortcuts: Wrap(
           children: [
-            TextButton(onPressed: () => onGo(1), child: const Text('Ofertas')),
-            TextButton(onPressed: () => onGo(2), child: const Text('Validar')),
+            TextButton(onPressed: () => onGo(1), child: Text(tr('Ofertas'))),
+            TextButton(onPressed: () => onGo(2), child: Text(tr('Validar'))),
             TextButton(
               onPressed: () =>
                   push<void>(context, const PartnerReservationsScreen()),
-              child: const Text('Reservas'),
+              child: Text(tr('Reservas')),
             ),
             TextButton(
               onPressed: () => push<void>(context, const PartnerEventsScreen()),
-              child: const Text('Eventos'),
+              child: Text(tr('Eventos')),
             ),
             TextButton(
               onPressed: () => push<void>(context, const SupportCenterScreen()),
-              child: const Text('Atendimento'),
+              child: Text(tr('Atendimento')),
             ),
           ],
         ),
@@ -228,8 +229,8 @@ class _Dashboard extends ConsumerWidget {
                 Flexible(
                   child: TextButton(
                     onPressed: () => Navigator.of(context).pop(),
-                    child: const Text(
-                      'Modo turista',
+                    child: Text(
+                      tr('Modo turista'),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -238,9 +239,9 @@ class _Dashboard extends ConsumerWidget {
               ],
             ),
           ),
-          const _PartnerHeader(
+          _PartnerHeader(
             'Olá, $_partnerName',
-            subtitle: 'Resumo de hoje',
+            subtitle: tr('Resumo de hoje'),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
@@ -249,7 +250,7 @@ class _Dashboard extends ConsumerWidget {
               children: [
                 MpCtaButton(
                   key: const Key('p-validate'),
-                  label: 'Validar cupom',
+                  label: tr('Validar cupom'),
                   icon: Icons.qr_code_scanner_rounded,
                   onPressed: () => onGo(2),
                 ),
@@ -303,12 +304,12 @@ class _Dashboard extends ConsumerWidget {
                   ],
                 ),
                 const SizedBox(height: MP.sectionGap),
-                const MpSectionTitle('Atalhos'),
+                MpSectionTitle(tr('Atalhos')),
                 const SizedBox(height: MP.s2),
                 MpListTile(
                   icon: Icons.add_circle_rounded,
-                  title: 'Criar oferta',
-                  subtitle: 'Cupom, desconto ou 2x1',
+                  title: tr('Criar oferta'),
+                  subtitle: tr('Cupom, desconto ou 2x1'),
                   tint: MP.tintGreen,
                   color: MP.green,
                   onTap: () => push<void>(context, const CreateOfferScreen()),
@@ -317,7 +318,7 @@ class _Dashboard extends ConsumerWidget {
                 MpListTile(
                   key: const Key('p-reservations'),
                   icon: Icons.event_available_rounded,
-                  title: 'Central de reservas',
+                  title: tr('Central de reservas'),
                   subtitle: '${pending.length} aguardando sua resposta',
                   tint: MP.tintPurple,
                   color: const Color(0xff5b3fa8),
@@ -327,8 +328,8 @@ class _Dashboard extends ConsumerWidget {
                 const SizedBox(height: MP.s2),
                 MpListTile(
                   icon: Icons.event_rounded,
-                  title: 'Eventos e ingressos',
-                  subtitle: 'Crie e valide eventos',
+                  title: tr('Eventos e ingressos'),
+                  subtitle: tr('Crie e valide eventos'),
                   tint: MP.tintRed,
                   color: MP.error,
                   onTap: () => push<void>(context, const PartnerEventsScreen()),
@@ -336,8 +337,8 @@ class _Dashboard extends ConsumerWidget {
                 const SizedBox(height: MP.s2),
                 MpListTile(
                   icon: Icons.inbox_rounded,
-                  title: 'Atendimento',
-                  subtitle: 'Mensagens de turistas',
+                  title: tr('Atendimento'),
+                  subtitle: tr('Mensagens de turistas'),
                   onTap: () => push<void>(context, const SupportCenterScreen()),
                 ),
               ],
@@ -388,20 +389,20 @@ class _CreateOfferState extends ConsumerState<CreateOfferScreen> {
     final sure = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Enviar para publicação?'),
-        content: const Text(
-          'A equipe MaraPass confere a oferta. Depois de publicada, ela aparece para os turistas.',
+        title: Text(tr('Enviar para publicação?')),
+        content: Text(
+          tr('A equipe MaraPass confere a oferta. Depois de publicada, ela aparece para os turistas.'),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Revisar'),
+            child: Text(tr('Revisar')),
           ),
           FilledButton(
             key: const Key('offer-publish-confirm'),
             style: FilledButton.styleFrom(minimumSize: const Size(120, 52)),
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Enviar'),
+            child: Text(tr('Enviar')),
           ),
         ],
       ),
@@ -428,9 +429,9 @@ class _CreateOfferState extends ConsumerState<CreateOfferScreen> {
           icon: Icons.hourglass_top_rounded,
           color: MP.info,
           bg: MP.infoBg,
-          title: 'Oferta em análise',
-          message: 'Recebemos a sua oferta. Em breve ela é publicada e você recebe um aviso.',
-          primaryLabel: 'Voltar aos cupons',
+          title: tr('Oferta em análise'),
+          message: tr('Recebemos a sua oferta. Em breve ela é publicada e você recebe um aviso.'),
+          primaryLabel: tr('Voltar aos cupons'),
           onPrimary: () => Navigator.of(context).pop(),
         ),
       ),
@@ -449,7 +450,7 @@ class _CreateOfferState extends ConsumerState<CreateOfferScreen> {
           padding: const EdgeInsets.only(bottom: MP.s8),
           children: [
             MpHeader(
-              'Criar oferta',
+              tr('Criar oferta'),
               subtitle: 'Etapa ${_step + 1} de 3 · ${steps[_step]}',
             ),
             Padding(
@@ -479,21 +480,21 @@ class _CreateOfferState extends ConsumerState<CreateOfferScreen> {
                       controller: _title,
                       onChanged: (_) => setState(() {}),
                       style: const TextStyle(fontSize: 18),
-                      decoration: const InputDecoration(
-                        labelText: 'Nome da oferta',
-                        hintText: 'Ex.: Desconto no almoço',
+                      decoration: InputDecoration(
+                        labelText: tr('Nome da oferta'),
+                        hintText: tr('Ex.: Desconto no almoço'),
                       ),
                     ),
                     const SizedBox(height: MP.s4),
                     Text(
-                      'Tipo de benefício',
+                      tr('Tipo de benefício'),
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: MP.s2),
                     SegmentedButton<String>(
                       showSelectedIcon: false,
-                      segments: const [
-                        ButtonSegment(value: '%', label: Text('% desconto')),
+                      segments: [
+                        ButtonSegment(value: '%', label: Text(tr('% desconto'))),
                         ButtonSegment(
                           value: r'R$',
                           label: Text(r'R$ desconto'),
@@ -534,8 +535,8 @@ class _CreateOfferState extends ConsumerState<CreateOfferScreen> {
                       minLines: 2,
                       maxLines: 4,
                       style: const TextStyle(fontSize: 17),
-                      decoration: const InputDecoration(
-                        labelText: 'Condições para o turista',
+                      decoration: InputDecoration(
+                        labelText: tr('Condições para o turista'),
                       ),
                     ),
                     const SizedBox(height: MP.s4),
@@ -543,7 +544,7 @@ class _CreateOfferState extends ConsumerState<CreateOfferScreen> {
                       children: [
                         Expanded(
                           child: Text(
-                            'Limite de cupons',
+                            tr('Limite de cupons'),
                             style: Theme.of(context).textTheme.titleMedium,
                           ),
                         ),
@@ -557,8 +558,8 @@ class _CreateOfferState extends ConsumerState<CreateOfferScreen> {
                       ],
                     ),
                     const SizedBox(height: MP.s2),
-                    const Text(
-                      'Um cupom por turista. Use o limite para controlar a sua capacidade.',
+                    Text(
+                      tr('Um cupom por turista. Use o limite para controlar a sua capacidade.'),
                       style: TextStyle(color: MP.textSecondary, fontSize: 15),
                     ),
                     const SizedBox(height: MP.s4),
@@ -579,7 +580,7 @@ class _CreateOfferState extends ConsumerState<CreateOfferScreen> {
                   ],
                   if (_step == 2) ...[
                     Text(
-                      'Assim o turista vai ver:',
+                      tr('Assim o turista vai ver:'),
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: MP.s3),
@@ -610,19 +611,19 @@ class _CreateOfferState extends ConsumerState<CreateOfferScreen> {
                       onPressed: _step == 0 && !_okStep0
                           ? null
                           : () => setState(() => _step++),
-                      child: const Text('Continuar'),
+                      child: Text(tr('Continuar')),
                     )
                   else
                     MpCtaButton(
                       key: const Key('offer-publish'),
-                      label: 'Enviar para publicação',
+                      label: tr('Enviar para publicação'),
                       onPressed: _publish,
                     ),
                   if (_step > 0) ...[
                     const SizedBox(height: MP.s3),
                     OutlinedButton(
                       onPressed: () => setState(() => _step--),
-                      child: const Text('Voltar etapa'),
+                      child: Text(tr('Voltar etapa')),
                     ),
                   ],
                 ],
@@ -649,7 +650,7 @@ class _AccountTab extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const MpCard(
+              MpCard(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -661,12 +662,12 @@ class _AccountTab extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      'Passeios · Barreirinhas - MA',
+                      tr('Passeios · Barreirinhas - MA'),
                       style: TextStyle(color: MP.textSecondary, fontSize: 16),
                     ),
                     SizedBox(height: MP.s2),
                     MpBadge(
-                      'Cadastur verificado',
+                      tr('Cadastur verificado'),
                       fg: MP.success,
                       icon: Icons.verified_rounded,
                     ),
@@ -677,44 +678,44 @@ class _AccountTab extends StatelessWidget {
               MpListTile(
                 key: const Key('partner-plates'),
                 icon: Icons.qr_code_2_rounded,
-                title: 'Placas MaraPass (QR)',
-                subtitle: 'Baixe e imprima a placa de check-in',
+                title: tr('Placas MaraPass (QR)'),
+                subtitle: tr('Baixe e imprima a placa de check-in'),
                 onTap: () => push<void>(context, const PlatesScreen()),
               ),
               const SizedBox(height: MP.s2),
               MpListTile(
                 key: const Key('partner-slots'),
                 icon: Icons.schedule_rounded,
-                title: 'Horários e vagas',
-                subtitle: 'Turnos, dias da semana e limite por dia',
+                title: tr('Horários e vagas'),
+                subtitle: tr('Turnos, dias da semana e limite por dia'),
                 onTap: () => push<void>(context, const PartnerSlotsScreen()),
               ),
               const SizedBox(height: MP.s2),
               MpListTile(
                 icon: Icons.event_available_rounded,
-                title: 'Central de reservas',
-                subtitle: 'Agenda e capacidade',
+                title: tr('Central de reservas'),
+                subtitle: tr('Agenda e capacidade'),
                 onTap: () =>
                     push<void>(context, const PartnerReservationsScreen()),
               ),
               const SizedBox(height: MP.s2),
               MpListTile(
                 icon: Icons.event_rounded,
-                title: 'Eventos e ingressos',
+                title: tr('Eventos e ingressos'),
                 onTap: () => push<void>(context, const PartnerEventsScreen()),
               ),
               const SizedBox(height: MP.s2),
               MpListTile(
                 icon: Icons.design_services_rounded,
-                title: 'Cadastrar serviço',
-                subtitle: 'Passeio, experiência ou artesanato',
+                title: tr('Cadastrar serviço'),
+                subtitle: tr('Passeio, experiência ou artesanato'),
                 onTap: () => push<void>(context, const ServiceWizardScreen()),
               ),
               const SizedBox(height: MP.s2),
               MpListTile(
                 icon: Icons.inbox_rounded,
-                title: 'Atendimento',
-                subtitle: 'Mensagens e suporte do parceiro',
+                title: tr('Atendimento'),
+                subtitle: tr('Mensagens e suporte do parceiro'),
                 onTap: () => push<void>(context, const SupportCenterScreen()),
               ),
               const SizedBox(height: MP.s6),
@@ -724,19 +725,19 @@ class _AccountTab extends StatelessWidget {
                   final ok = await showDialog<bool>(
                     context: context,
                     builder: (_) => AlertDialog(
-                      title: const Text('Sair da área do parceiro?'),
-                      content: const Text('Você volta para o modo turista.'),
+                      title: Text(tr('Sair da área do parceiro?')),
+                      content: Text(tr('Você volta para o modo turista.')),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.of(context).pop(false),
-                          child: const Text('Ficar'),
+                          child: Text(tr('Ficar')),
                         ),
                         FilledButton(
                           style: FilledButton.styleFrom(
                             minimumSize: const Size(110, 52),
                           ),
                           onPressed: () => Navigator.of(context).pop(true),
-                          child: const Text('Sair'),
+                          child: Text(tr('Sair')),
                         ),
                       ],
                     ),
@@ -746,7 +747,7 @@ class _AccountTab extends StatelessWidget {
                   }
                 },
                 icon: const Icon(Icons.logout_rounded),
-                label: const Text('Sair com segurança'),
+                label: Text(tr('Sair com segurança')),
               ),
             ],
           ),
@@ -773,20 +774,20 @@ class _OfferPhotoState extends ConsumerState<_OfferPhoto> {
     if (file == null || !mounted) return;
     final bytes = await file.readAsBytes();
     if (bytes.length > 5 * 1024 * 1024) {
-      if (mounted) showMpSnack(context, 'A foto passa de 5 MB. Escolha uma menor.');
+      if (mounted) showMpSnack(context, tr('A foto passa de 5 MB. Escolha uma menor.'));
       return;
     }
     final name = file.name.toLowerCase();
     final mime = file.mimeType ??
         (name.endsWith('.png') ? 'image/png' : (name.endsWith('.webp') ? 'image/webp' : 'image/jpeg'));
     if (!const {'image/jpeg', 'image/png', 'image/webp'}.contains(mime)) {
-      if (mounted) showMpSnack(context, 'Use uma foto em JPG, PNG ou WebP.');
+      if (mounted) showMpSnack(context, tr('Use uma foto em JPG, PNG ou WebP.'));
       return;
     }
     setState(() => _busy = true);
     try {
       await ref.read(appStoreProvider).setOfferImageAsync(widget.offerId, bytes, mime);
-      if (mounted) showMpSnack(context, 'Foto atualizada. Ela já aparece no cupom.');
+      if (mounted) showMpSnack(context, tr('Foto atualizada. Ela já aparece no cupom.'));
     } on MvpException catch (e) {
       if (mounted) showMpSnack(context, e.message);
     } finally {
@@ -812,7 +813,7 @@ class _OfferPhotoState extends ConsumerState<_OfferPhoto> {
         icon: _busy
             ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
             : const Icon(Icons.photo_library_rounded),
-        label: Text(widget.imageUrl == null ? 'Adicionar foto da oferta' : 'Trocar foto'),
+        label: Text(widget.imageUrl == null ? tr('Adicionar foto da oferta') : tr('Trocar foto')),
       ),
     ],
   );

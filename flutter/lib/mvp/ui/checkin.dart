@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import '../i18n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/tourism.dart';
@@ -66,11 +67,11 @@ class CheckinScreen extends ConsumerWidget {
       child: ListView(
         padding: const EdgeInsets.only(bottom: MP.s10),
         children: [
-          const MpHeader(
-            'Registrar visita',
+          MpHeader(
+            tr('Registrar visita'),
             back: true,
             subtitle:
-                'Faça check-in nos lugares que visitar e ganhe pontos e selos.',
+                tr('Faça check-in nos lugares que visitar e ganhe pontos e selos.'),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
@@ -91,8 +92,8 @@ class CheckinScreen extends ConsumerWidget {
                         color: Colors.white,
                       ),
                       const SizedBox(height: MP.s3),
-                      const Text(
-                        'Escanear QR Code',
+                      Text(
+                        tr('Escanear QR Code'),
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 24,
@@ -100,15 +101,15 @@ class CheckinScreen extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(height: MP.s1),
-                      const Text(
-                        'Aponte a câmera para a placa MaraPass no balcão ou na entrada do local.',
+                      Text(
+                        tr('Aponte a câmera para a placa MaraPass no balcão ou na entrada do local.'),
                         textAlign: TextAlign.center,
                         style: TextStyle(color: Colors.white, fontSize: 16),
                       ),
                       const SizedBox(height: MP.s4),
                       MpCtaButton(
                         key: const Key('checkin-plate'),
-                        label: 'Abrir leitor',
+                        label: tr('Abrir leitor'),
                         icon: Icons.qr_code_scanner_rounded,
                         onPressed: () =>
                             push<void>(context, const ScanScreen()),
@@ -120,8 +121,8 @@ class CheckinScreen extends ConsumerWidget {
                 MpListTile(
                   key: const Key('checkin-here'),
                   icon: Icons.my_location_rounded,
-                  title: 'Estou no local',
-                  subtitle: 'Escolha o lugar e confirme pela localização',
+                  title: tr('Estou no local'),
+                  subtitle: tr('Escolha o lugar e confirme pela localização'),
                   tint: MP.tintGreen,
                   color: MP.green,
                   onTap: () => push<void>(context, const PickPlaceScreen()),
@@ -129,7 +130,7 @@ class CheckinScreen extends ConsumerWidget {
                 const SizedBox(height: MP.s2),
                 MpListTile(
                   icon: Icons.badge_rounded,
-                  title: 'Ver meu passaporte',
+                  title: tr('Ver meu passaporte'),
                   subtitle:
                       '${store.points} pontos · ${store.stampedPolos.length} de ${Content.polos.length} selos',
                   tint: MP.tintYellow,
@@ -138,13 +139,13 @@ class CheckinScreen extends ConsumerWidget {
                       ref.read(shellTabProvider.notifier).go(Tabs.passaporte),
                 ),
                 const SizedBox(height: MP.sectionGap),
-                const MpSectionTitle('Visitas recentes'),
+                MpSectionTitle(tr('Visitas recentes')),
                 const SizedBox(height: MP.s3),
                 if (store.checkins.isEmpty)
-                  const MpCard(
+                  MpCard(
                     color: MP.soft,
                     child: Text(
-                      'Você ainda não registrou visitas. Que tal começar hoje?',
+                      tr('Você ainda não registrou visitas. Que tal começar hoje?'),
                       style: TextStyle(fontSize: 16, color: MP.textSecondary),
                     ),
                   ),
@@ -155,7 +156,7 @@ class CheckinScreen extends ConsumerWidget {
                       icon: Icons.verified_rounded,
                       tint: MP.successBg,
                       color: MP.success,
-                      title: Content.item(c.itemId)?.titulo ?? 'Visita',
+                      title: Content.item(c.itemId)?.titulo ?? tr('Visita'),
                       subtitle:
                           '${c.cidade} · ${fmtDate(c.at)}${c.rating > 0 ? ' · ${'★' * c.rating}' : ''}',
                     ),
@@ -208,7 +209,7 @@ class _PickPlaceState extends State<PickPlaceScreen> {
           padding: const EdgeInsets.only(bottom: MP.s8),
           children: [
             MpHeader(
-              'Onde você está?',
+              tr('Onde você está?'),
               subtitle: _me != null
                   ? 'Lugares mais próximos de você primeiro.'
                   : (_locating ? 'Buscando sua localização…' : 'Sem localização: escolha o lugar na lista.'),
@@ -320,10 +321,10 @@ class _FlowState extends ConsumerState<CheckinFlowScreen> {
           icon: Icons.verified_rounded,
           color: MP.info,
           bg: MP.infoBg,
-          title: 'Visita já registrada hoje',
+          title: tr('Visita já registrada hoje'),
           message:
               'Você já fez check-in em ${i.titulo} hoje. Volte amanhã ou visite outro lugar.',
-          primaryLabel: 'Ver meu passaporte',
+          primaryLabel: tr('Ver meu passaporte'),
           onPrimary: () {
             ref.read(shellTabProvider.notifier).go(Tabs.passaporte);
             Navigator.of(context).popUntil((r) => r.isFirst);
@@ -334,14 +335,14 @@ class _FlowState extends ConsumerState<CheckinFlowScreen> {
           icon: Icons.wrong_location_rounded,
           color: MP.warning,
           bg: MP.warningBg,
-          title: 'Você ainda não está no local',
+          title: tr('Você ainda não está no local'),
           message:
               'Sua localização está a ${fmtMeters(_distance!)} de ${i.titulo}. O check-in vale a até ${fmtMeters(i.loc.checkinRadiusM)} do local. Se você já está lá, leia o QR da placa MaraPass.',
-          primaryLabel: 'Ler QR da placa',
+          primaryLabel: tr('Ler QR da placa'),
           onPrimary: () => Navigator.of(context).pushReplacement(
             MaterialPageRoute<void>(builder: (_) => const ScanScreen()),
           ),
-          secondaryLabel: 'Tentar de novo',
+          secondaryLabel: tr('Tentar de novo'),
           onSecondary: _check,
         );
       case _Step.noGps:
@@ -349,14 +350,14 @@ class _FlowState extends ConsumerState<CheckinFlowScreen> {
           icon: Icons.location_off_rounded,
           color: MP.warning,
           bg: MP.warningBg,
-          title: 'Não conseguimos sua localização',
+          title: tr('Não conseguimos sua localização'),
           message:
-              'Permita a localização no navegador ou no aparelho e tente de novo. Você também pode registrar a visita lendo o QR da placa MaraPass.',
-          primaryLabel: 'Ler QR da placa',
+              tr('Permita a localização no navegador ou no aparelho e tente de novo. Você também pode registrar a visita lendo o QR da placa MaraPass.'),
+          primaryLabel: tr('Ler QR da placa'),
           onPrimary: () => Navigator.of(context).pushReplacement(
             MaterialPageRoute<void>(builder: (_) => const ScanScreen()),
           ),
-          secondaryLabel: 'Tentar de novo',
+          secondaryLabel: tr('Tentar de novo'),
           onSecondary: _check,
         );
       case _Step.permission:
@@ -364,12 +365,12 @@ class _FlowState extends ConsumerState<CheckinFlowScreen> {
           icon: Icons.location_on_rounded,
           color: MP.navy,
           bg: MP.tintBlue,
-          title: 'Precisamos confirmar que você está lá',
+          title: tr('Precisamos confirmar que você está lá'),
           message:
               'Vamos usar a sua localização só agora, para registrar a visita em ${i.titulo}. Ela não fica salva.',
-          primaryLabel: 'Permitir e continuar',
+          primaryLabel: tr('Permitir e continuar'),
           onPrimary: _check,
-          secondaryLabel: 'Agora não',
+          secondaryLabel: tr('Agora não'),
           onSecondary: () => Navigator.of(context).pop(),
         );
       case _Step.checking:
@@ -409,7 +410,7 @@ class _FlowState extends ConsumerState<CheckinFlowScreen> {
                 const SizedBox(height: MP.s5),
                 const _Confetti(),
                 Text(
-                  'Visita registrada!',
+                  tr('Visita registrada!'),
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.headlineMedium,
                 ),
@@ -425,8 +426,8 @@ class _FlowState extends ConsumerState<CheckinFlowScreen> {
                   spacing: MP.s2,
                   runSpacing: MP.s2,
                   children: [
-                    const MpBadge(
-                      '+50 pontos',
+                    MpBadge(
+                      tr('+50 pontos'),
                       fg: MP.success,
                       icon: Icons.add_circle_rounded,
                     ),
@@ -441,7 +442,7 @@ class _FlowState extends ConsumerState<CheckinFlowScreen> {
                 ),
                 const SizedBox(height: MP.sectionGap),
                 Text(
-                  'Como foi a experiência?',
+                  tr('Como foi a experiência?'),
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
@@ -473,8 +474,8 @@ class _FlowState extends ConsumerState<CheckinFlowScreen> {
                     ),
                   ),
                 const SizedBox(height: MP.s3),
-                const Text(
-                  'Sua avaliação é vista pela gestão do programa.',
+                Text(
+                  tr('Sua avaliação é vista pela gestão do programa.'),
                   textAlign: TextAlign.center,
                   style: TextStyle(color: MP.textSecondary, fontSize: 14),
                 ),
@@ -485,12 +486,12 @@ class _FlowState extends ConsumerState<CheckinFlowScreen> {
                     ref.read(shellTabProvider.notifier).go(Tabs.passaporte);
                     Navigator.of(context).popUntil((r) => r.isFirst);
                   },
-                  child: const Text('Ver meu passaporte'),
+                  child: Text(tr('Ver meu passaporte')),
                 ),
                 const SizedBox(height: MP.s3),
                 OutlinedButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('Voltar'),
+                  child: Text(tr('Voltar')),
                 ),
               ],
             ),

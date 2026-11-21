@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import '../i18n.dart';
 import '../theme/tokens.dart';
 
 
@@ -325,7 +326,7 @@ class _SeasonCalendarScreenState extends State<SeasonCalendarScreen> {
                     _pc.animateToPage(_indexOf(today), duration: const Duration(milliseconds: 320), curve: Curves.easeOutCubic);
                   },
                   style: TextButton.styleFrom(foregroundColor: Colors.white),
-                  child: const Text('Hoje', style: TextStyle(fontWeight: FontWeight.w800)),
+                  child: Text(tr('Hoje'), style: TextStyle(fontWeight: FontWeight.w800)),
                 ),
             ],
             flexibleSpace: FlexibleSpaceBar(
@@ -460,7 +461,7 @@ class _SeasonCalendarScreenState extends State<SeasonCalendarScreen> {
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 18, 16, 8),
-              child: Text('O ano no Maranhão', style: TextStyle(color: _ink.withValues(alpha: .9), fontSize: 15, fontWeight: FontWeight.w800)),
+              child: Text(tr('O ano no Maranhão'), style: TextStyle(color: _ink.withValues(alpha: .9), fontSize: 15, fontWeight: FontWeight.w800)),
             ),
           ),
           SliverToBoxAdapter(

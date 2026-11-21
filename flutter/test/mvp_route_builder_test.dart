@@ -33,6 +33,7 @@ void main() {
       final c = tripCost(t);
       expect(c[0].cents, 32000 * 2); // 2 noites
       expect(c[1].cents, 12000 * 2); // 2 pessoas
+      expect(c[1].discountCents, 5000 * 2); // cupom de R$ 50 por pessoa
       expect(c[3].cents, 7000 * 2 * 3); // 3 dias
     });
 

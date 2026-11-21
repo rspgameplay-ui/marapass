@@ -1,6 +1,7 @@
 import '../../core/config.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import '../i18n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -22,7 +23,7 @@ Future<void> openLegal(BuildContext context, String page) async {
   final base = kIsWeb ? Uri.base.origin : AppConfig.siteUrl;
   final uri = Uri.parse('$base/legal/$page.html');
   if (!await launchUrl(uri) && context.mounted) {
-    showMpSnack(context, 'Não foi possível abrir a página agora.');
+    showMpSnack(context, tr('Não foi possível abrir a página agora.'));
   }
 }
 
@@ -32,7 +33,7 @@ Future<void> openMaps(BuildContext context, String query) async {
   );
   if (!await launchUrl(uri, mode: LaunchMode.externalApplication) &&
       context.mounted) {
-    showMpSnack(context, 'Não foi possível abrir o mapa.');
+    showMpSnack(context, tr('Não foi possível abrir o mapa.'));
   }
 }
 
@@ -54,7 +55,7 @@ Future<void> openWhatsApp(
   );
   if (!await launchUrl(uri, mode: LaunchMode.externalApplication) &&
       context.mounted) {
-    showMpSnack(context, 'Não foi possível abrir o WhatsApp.');
+    showMpSnack(context, tr('Não foi possível abrir o WhatsApp.'));
   }
 }
 
@@ -73,7 +74,7 @@ class FavButton extends ConsumerWidget {
     return Semantics(
       button: true,
       toggled: on,
-      label: on ? 'Remover dos favoritos' : 'Adicionar aos favoritos',
+      label: on ? tr('Remover dos favoritos') : tr('Adicionar aos favoritos'),
       child: Material(
         color: Colors.white,
         shape: const CircleBorder(),
@@ -296,13 +297,13 @@ class ItemRow extends StatelessWidget {
                         icon: Icons.local_activity_rounded,
                       ),
                     if (item.acessivel)
-                      const MpBadge(
-                        'Acessível',
+                      MpBadge(
+                        tr('Acessível'),
                         fg: MP.info,
                         icon: Icons.accessible_rounded,
                       ),
                     if (item.autentica)
-                      const MpBadge('Autêntica', fg: MP.green),
+                      MpBadge(tr('Autêntica'), fg: MP.green),
                   ],
                 ),
               ],
@@ -497,7 +498,7 @@ class TicketCard extends StatelessWidget {
                                     foregroundColor: MP.green,
                                   ),
                                   icon: const Icon(Icons.qr_code_2_rounded, size: 20),
-                                  label: const Text('Resgatar'),
+                                  label: Text(tr('Resgatar')),
                                 ),
                             ],
                           ),
@@ -556,7 +557,10 @@ const _mo = [
   'novembro',
   'dezembro',
 ];
-String fmtLong(DateTime d) =>
-    '${_wd[d.weekday - 1]}, ${d.day} de ${_mo[d.month - 1]}';
+String fmtLong(DateTime d) => appLang == 'en'
+    ? '${_wdEn[d.weekday - 1]}, ${_moEn[d.month - 1]} ${d.day}'
+    : '${_wd[d.weekday - 1]}, ${d.day} de ${_mo[d.month - 1]}';
+const _wdEn = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+const _moEn = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 String fmtTime(DateTime d) =>
     '${d.hour.toString().padLeft(2, '0')}h${d.minute == 0 ? '' : d.minute.toString().padLeft(2, '0')}';

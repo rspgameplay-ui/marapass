@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../i18n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../auth/auth.dart';
@@ -41,9 +42,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   String _greeting() {
     final h = DateTime.now().hour;
-    if (h < 12) return 'Bom dia';
-    if (h < 18) return 'Boa tarde';
-    return 'Boa noite';
+    if (h < 12) return tr('Bom dia');
+    if (h < 18) return tr('Boa tarde');
+    return tr('Boa noite');
   }
 
   @override
@@ -95,7 +96,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   backgroundColor: MP.error,
                   child: IconButton(
                     key: const Key('home-bell'),
-                    tooltip: 'Avisos',
+                    tooltip: tr('Avisos'),
                     iconSize: 26,
                     style: IconButton.styleFrom(backgroundColor: const Color(0x26ffffff)),
                     onPressed: () => push<void>(context, const AvisosScreen()),
@@ -108,7 +109,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 const SizedBox(width: MP.s2),
                 Semantics(
                   button: true,
-                  label: 'Perfil',
+                  label: tr('Perfil'),
                   child: InkWell(
                     key: const Key('home-avatar'),
                     customBorder: const CircleBorder(),
@@ -137,20 +138,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               children: [
                 Text(
                   name == null
-                      ? '${_greeting()}, viajante!'
+                      ? '${_greeting()}, ${tr('viajante')}!'
                       : '${_greeting()}, ${name[0].toUpperCase()}${name.substring(1)}!',
                   style: Theme.of(context).textTheme.headlineMedium
                       ?.copyWith(color: Colors.white),
                 ),
                 Text(
-                  'Para onde você quer ir?',
+                  tr('Para onde você quer ir?'),
                   style: Theme.of(context).textTheme.bodyLarge
                       ?.copyWith(color: const Color(0xd9ffffff)),
                 ),
                 const SizedBox(height: MP.s4),
                 Semantics(
                   button: true,
-                  label: 'Buscar lugares e passeios',
+                  label: tr('Buscar lugares e passeios'),
                   child: InkWell(
                     key: const Key('home-search'),
                     borderRadius: BorderRadius.circular(MP.rMedium),
@@ -163,7 +164,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         borderRadius: BorderRadius.circular(MP.rLarge),
                         boxShadow: const [BoxShadow(color: Color(0x33061a2e), blurRadius: 18, offset: Offset(0, 8))],
                       ),
-                      child: const Row(
+                      child: Row(
                         children: [
                           Icon(
                             Icons.search_rounded,
@@ -173,7 +174,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           SizedBox(width: MP.s3),
                           Flexible(
                             child: Text(
-                              'Digite um lugar ou passeio',
+                              tr('Digite um lugar ou passeio'),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
@@ -201,10 +202,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 Row(
                   children: [
                     for (final (k, icon, label, tint, color, go) in <(String, IconData, String, Color, Color, Widget Function())>[
-                      ('qa-rota', Icons.route_rounded, 'Sua Rota', MP.tintGreen, MP.green, () => const MyRoutesScreen()),
-                      ('qa-hospedagem', Icons.hotel_rounded, 'Hospedagem', MP.tintBlue, MP.navy, () => const CategoryScreen(cat: Cat.hospedagem)),
-                      ('qa-passeios', Icons.hiking_rounded, 'Passeios', MP.tintYellow, MP.goldText, () => const CategoryScreen(cat: Cat.passeio)),
-                      ('qa-eventos', Icons.event_rounded, 'Eventos', MP.tintPurple, const Color(0xff5b3fa8), () => const CategoryScreen(cat: Cat.evento)),
+                      ('qa-rota', Icons.route_rounded, tr('Sua Rota'), MP.tintGreen, MP.green, () => const MyRoutesScreen()),
+                      ('qa-hospedagem', Icons.hotel_rounded, tr('Hospedagem'), MP.tintBlue, MP.navy, () => const CategoryScreen(cat: Cat.hospedagem)),
+                      ('qa-passeios', Icons.hiking_rounded, tr('Passeios'), MP.tintYellow, MP.goldText, () => const CategoryScreen(cat: Cat.passeio)),
+                      ('qa-eventos', Icons.event_rounded, tr('Eventos'), MP.tintPurple, const Color(0xff5b3fa8), () => const CategoryScreen(cat: Cat.evento)),
                     ]) ...[
                       if (k != 'qa-rota') const SizedBox(width: MP.s2),
                       Expanded(
@@ -235,9 +236,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Meu passaporte', style: Theme.of(context).textTheme.titleMedium),
+                            Text(tr('Meu passaporte'), style: Theme.of(context).textTheme.titleMedium),
                             Text(
-                              '${store.points} pontos · ${store.stampedPolos.length} carimbos',
+                              '${store.points} ${tr('pontos')} · ${store.stampedPolos.length} ${tr('carimbos')}',
                               style: const TextStyle(fontSize: 15, color: MP.textSecondary),
                             ),
                           ],
@@ -247,7 +248,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         key: const Key('qa-checkin'),
                         onPressed: () => push<void>(context, const ScanScreen()),
                         icon: const Icon(Icons.qr_code_2_rounded),
-                        label: const Text('Check-in'),
+                        label: Text(tr('Check-in')),
                         style: FilledButton.styleFrom(minimumSize: const Size(0, 48)),
                       ),
                     ],
@@ -283,8 +284,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: MP.pageH),
             child: MpSectionTitle(
-              'Passeios',
-              action: 'Ver todos',
+              tr('Passeios'),
+              action: tr('Ver todos'),
               onAction: () =>
                   push<void>(context, const CategoryScreen(cat: Cat.passeio)),
             ),
@@ -307,8 +308,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 MpSectionTitle(
-                  'Destinos',
-                  action: 'Ver os 11',
+                  tr('Destinos'),
+                  action: tr('Ver os 11'),
                   onAction: () => push<void>(context, const PolosScreen()),
                 ),
                 const SizedBox(height: MP.s3),
@@ -316,7 +317,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   children: [
                     ChoiceChip(
                       key: const Key('dest-all'),
-                      label: const Text('Todos'),
+                      label: Text(tr('Todos')),
                       selected: !_onlyFav,
                       labelStyle: TextStyle(
                         color: !_onlyFav ? Colors.white : MP.ink,
@@ -333,7 +334,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         size: 18,
                         color: _onlyFav ? Colors.white : MP.ink,
                       ),
-                      label: const Text('Favoritos'),
+                      label: Text(tr('Favoritos')),
                       selected: _onlyFav,
                       labelStyle: TextStyle(
                         color: _onlyFav ? Colors.white : MP.ink,
@@ -346,10 +347,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
                 const SizedBox(height: MP.s3),
                 if (polos.isEmpty)
-                  const MpCard(
+                  MpCard(
                     color: MP.soft,
                     child: Text(
-                      'Toque no coração de um destino para guardá-lo aqui.',
+                      tr('Toque no coração de um destino para guardá-lo aqui.'),
                       style: TextStyle(fontSize: 16, color: MP.textSecondary),
                     ),
                   ),
@@ -366,8 +367,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ],
                 const SizedBox(height: MP.s3),
                 MpSectionTitle(
-                  'Eventos',
-                  action: 'Agenda',
+                  tr('Eventos'),
+                  action: tr('Agenda'),
                   onAction: () => push<void>(
                     context,
                     const CategoryScreen(cat: Cat.evento),
@@ -398,8 +399,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              'Dica de quem conhece',
+                            Text(
+                              tr('Dica de quem conhece'),
                               style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w800,
@@ -442,15 +443,15 @@ class AvisosScreen extends ConsumerWidget {
       body: SafeArea(
         child: ListView(
           children: [
-            const MpHeader(
-              'Avisos',
-              subtitle: 'Novidades, lembretes e ofertas.',
+            MpHeader(
+              tr('Avisos'),
+              subtitle: tr('Novidades, lembretes e ofertas.'),
             ),
             if (!store.offerAlerts)
-              const Padding(
+              Padding(
                 padding: EdgeInsets.fromLTRB(MP.pageH, 0, MP.pageH, MP.s3),
                 child: MpNotice(
-                  'Os avisos de ofertas estão desligados. Você pode ligar em Perfil.',
+                  tr('Os avisos de ofertas estão desligados. Você pode ligar em Perfil.'),
                 ),
               ),
             for (final a in Content.avisos)

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import '../i18n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 
@@ -186,7 +187,7 @@ class _RouteNavScreenState extends ConsumerState<RouteNavScreen> {
     await _s.start();
     if (!mounted) return;
     if (!_s.active && _s.locationIssue != null) {
-      showMpSnack(context, 'Não conseguimos sua localização. Você pode simular o percurso.');
+      showMpSnack(context, tr('Não conseguimos sua localização. Você pode simular o percurso.'));
     } else if (_s.active) {
       _s.setFollow(true);
     }
@@ -216,7 +217,7 @@ class _RouteNavScreenState extends ConsumerState<RouteNavScreen> {
           shrinkWrap: true,
           padding: const EdgeInsets.fromLTRB(MP.pageH, 0, MP.pageH, MP.s6),
           children: [
-            Text('Passo a passo', style: Theme.of(context).textTheme.titleLarge),
+            Text(tr('Passo a passo'), style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: MP.s1),
             Text('${formatDistance(r.distance)} · ${formatDuration(r.duration)}', style: Theme.of(context).textTheme.bodySmall),
             const SizedBox(height: MP.s3),
@@ -286,7 +287,7 @@ class _RouteNavScreenState extends ConsumerState<RouteNavScreen> {
                     _RoundButton(
                       key: const Key('nav-voice'),
                       icon: s.voice ? Icons.volume_up_rounded : Icons.volume_off_rounded,
-                      tooltip: s.voice ? 'Desligar voz' : 'Ligar voz',
+                      tooltip: s.voice ? tr('Desligar voz') : tr('Ligar voz'),
                       active: s.voice,
                       onTap: () => s.setVoice(!s.voice),
                     ),
@@ -295,7 +296,7 @@ class _RouteNavScreenState extends ConsumerState<RouteNavScreen> {
                   _RoundButton(
                     key: const Key('nav-overview'),
                     icon: Icons.alt_route_rounded,
-                    tooltip: 'Ver a rota inteira',
+                    tooltip: tr('Ver a rota inteira'),
                     onTap: _overview,
                   ),
                   if (navigating && !s.follow) ...[
@@ -303,7 +304,7 @@ class _RouteNavScreenState extends ConsumerState<RouteNavScreen> {
                     _RoundButton(
                       key: const Key('nav-recenter'),
                       icon: Icons.navigation_rounded,
-                      tooltip: 'Voltar a seguir',
+                      tooltip: tr('Voltar a seguir'),
                       active: true,
                       onTap: _recenter,
                     ),
@@ -314,12 +315,12 @@ class _RouteNavScreenState extends ConsumerState<RouteNavScreen> {
           Positioned(
             left: MP.s3,
             bottom: (navigating ? 180 : 234) + pad.bottom,
-            child: const IgnorePointer(
+            child: IgnorePointer(
               child: DecoratedBox(
                 decoration: BoxDecoration(color: Color(0xd9ffffff), borderRadius: BorderRadius.all(Radius.circular(4))),
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                  child: Text('© OpenStreetMap · OpenFreeMap', style: TextStyle(fontSize: 11, color: MP.textSecondary)),
+                  child: Text(tr('© OpenStreetMap · OpenFreeMap'), style: TextStyle(fontSize: 11, color: MP.textSecondary)),
                 ),
               ),
             ),
@@ -462,7 +463,7 @@ class _ManeuverCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: MP.s4, vertical: MP.s2),
               child: Row(
                 children: [
-                  const Text('Depois', style: TextStyle(color: Color(0xffb9c8d8), fontSize: 14, fontWeight: FontWeight.w600)),
+                  Text(tr('Depois'), style: TextStyle(color: Color(0xffb9c8d8), fontSize: 14, fontWeight: FontWeight.w600)),
                   const SizedBox(width: MP.s2),
                   Icon(maneuverIcon(after), color: Colors.white, size: 22),
                   const SizedBox(width: MP.s2),
@@ -480,7 +481,7 @@ class _ManeuverCard extends StatelessWidget {
           ),
         if (session.rerouting || session.deviated && !session.simulating) ...[
           const SizedBox(height: MP.s2),
-          const MpNotice('Recalculando a rota…', icon: Icons.sync_rounded, fg: MP.warning, bg: MP.warningBg),
+          MpNotice(tr('Recalculando a rota…'), icon: Icons.sync_rounded, fg: MP.warning, bg: MP.warningBg),
         ],
       ],
     );
@@ -503,7 +504,7 @@ class _PreviewHeader extends StatelessWidget {
         children: [
           IconButton(
             key: const Key('nav-back'),
-            tooltip: 'Voltar ao mapa',
+            tooltip: tr('Voltar ao mapa'),
             onPressed: onBack,
             icon: const Icon(Icons.arrow_back_rounded),
           ),
@@ -590,7 +591,7 @@ class _BottomPanel extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Você chegou!', style: Theme.of(context).textTheme.titleLarge),
+                      Text(tr('Você chegou!'), style: Theme.of(context).textTheme.titleLarge),
                       Text(destinationName, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: MP.textSecondary, fontSize: 15)),
                     ],
                   ),
@@ -604,12 +605,12 @@ class _BottomPanel extends StatelessWidget {
             const SizedBox(height: MP.s4),
             MpPrimaryButton(
               key: const Key('nav-checkin'),
-              label: 'Registrar visita no Passaporte',
+              label: tr('Registrar visita no Passaporte'),
               icon: Icons.verified_rounded,
               onPressed: onCheckin,
             ),
             const SizedBox(height: MP.s2),
-            TextButton(onPressed: onEnd, child: const Text('Voltar ao mapa')),
+            TextButton(onPressed: onEnd, child: Text(tr('Voltar ao mapa'))),
           ] else ...[
             Row(
               crossAxisAlignment: CrossAxisAlignment.end,
@@ -633,7 +634,7 @@ class _BottomPanel extends StatelessWidget {
                 ),
                 IconButton.filledTonal(
                   key: const Key('nav-steps-btn'),
-                  tooltip: 'Passo a passo',
+                  tooltip: tr('Passo a passo'),
                   onPressed: onSteps,
                   style: IconButton.styleFrom(minimumSize: const Size(52, 52), backgroundColor: MP.soft),
                   icon: const Icon(Icons.format_list_bulleted_rounded, color: MP.navy),
@@ -659,12 +660,12 @@ class _BottomPanel extends StatelessWidget {
                   minimumSize: const Size.fromHeight(MP.buttonHeight),
                 ),
                 icon: const Icon(Icons.close_rounded),
-                label: Text(s.simulating ? 'Encerrar simulação' : 'Encerrar navegação'),
+                label: Text(s.simulating ? tr('Encerrar simulação') : tr('Encerrar navegação')),
               )
             else ...[
               MpPrimaryButton(
                 key: const Key('nav-start'),
-                label: 'Iniciar navegação',
+                label: tr('Iniciar navegação'),
                 icon: Icons.navigation_rounded,
                 busy: s.starting || s.phase == NavigationPhase.calculating,
                 onPressed: onStartGps,
@@ -674,7 +675,7 @@ class _BottomPanel extends StatelessWidget {
                 key: const Key('nav-simulate'),
                 onPressed: onSimulate,
                 icon: const Icon(Icons.play_circle_outline_rounded),
-                label: const Text('Simular percurso sem GPS'),
+                label: Text(tr('Simular percurso sem GPS')),
               ),
             ],
           ],
