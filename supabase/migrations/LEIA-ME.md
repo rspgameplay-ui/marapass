@@ -1,6 +1,6 @@
 # Migrations
 
-Esta pasta tem o **histórico completo** do banco (72 migrations em 20/11/2026), baixado com `supabase migration fetch`. Cada arquivo é idêntico ao SQL registrado em `supabase_migrations.schema_migrations`.
+Esta pasta tem o **histórico completo** do banco (73 migrations em 21/11/2026), baixado com `supabase migration fetch`. Cada arquivo é idêntico ao SQL registrado em `supabase_migrations.schema_migrations`.
 
 Exceção: as três migrations de cupons de 17/11 (`mvp_coupon_commerce`, `mvp_coupon_whatsapp`, `mvp_coupon_operations`) foram aplicadas sem guardar o SQL no histórico; os arquivos aqui vêm do PR 9.
 

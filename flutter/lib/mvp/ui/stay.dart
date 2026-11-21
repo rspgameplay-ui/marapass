@@ -69,9 +69,7 @@ class StayFacts extends StatelessWidget {
     final chips = <Widget>[
       if (i.cafeIncluso) const _Policy(Icons.free_breakfast_rounded, 'Café da manhã incluído', MP.green, MP.greenBg),
       if (stay)
-        i.cancelamentoGratis
-            ? const _Policy(Icons.event_available_rounded, 'Cancelamento grátis', MP.green, MP.greenBg)
-            : const _Policy(Icons.event_busy_rounded, 'Não reembolsável', MP.textSecondary, MP.soft),
+        const _Policy(Icons.event_available_rounded, 'Cancelamento grátis até 24 h', MP.green, MP.greenBg),
       for (final a in i.comodidades.take(compact ? 3 : 8))
         if (!(i.cafeIncluso && a.toLowerCase().contains('café'))) _Policy(amenityIcon(a), a, MP.navy, MP.tintBlue),
     ];
@@ -132,7 +130,7 @@ class _Policy extends StatelessWidget {
         Icon(icon, size: 16, color: fg),
         const SizedBox(width: 6),
         Flexible(
-          child: Text(label, maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: fg)),
+          child: Text(tr(label), maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: fg)),
         ),
       ],
     ),
@@ -379,9 +377,7 @@ class _RoomCard extends StatelessWidget {
                       room.breakfast
                           ? const _Policy(Icons.free_breakfast_rounded, 'Café incluído', MP.green, MP.greenBg)
                           : const _Policy(Icons.no_meals_rounded, 'Sem café', MP.textSecondary, MP.soft),
-                      room.refundable
-                          ? const _Policy(Icons.event_available_rounded, 'Cancelamento grátis até 48 h', MP.green, MP.greenBg)
-                          : const _Policy(Icons.event_busy_rounded, 'Não reembolsável', MP.warning, MP.warningBg),
+                      const _Policy(Icons.event_available_rounded, 'Cancelamento grátis até 24 h', MP.green, MP.greenBg),
                     ],
                   ),
                 ],
